@@ -1,23 +1,21 @@
-<p align="center">copyright @ Indra (Intelligent Network for Deliberation, Reasoning & Action)</p>
+<p align="center">copyright @ DrunkenBot</p>
 
 # DrunkenBot LLM-IDE
 
 <p align="center">
-  <img src="03.png" width="49%" />
-  <img src="04.png" width="49%" />
+  <img src="ref/03.png" width="49%" />
+  <img src="ref/04.png" width="49%" />
 </p>
 <p align="center">
-  <img src="01.png" width="49%" />
-  <img src="02.png" width="49%" />
+  <img src="ref/01.png" width="49%" />
+  <img src="ref/02.png" width="49%" />
 </p>
 
-DrunkenBot LLM-IDE is a PySide6 desktop app for preparing text/code datasets,
+DrunkenBot LLM-IDE is a desktop app for preparing text/code datasets,
 creating tokenizers, training small GPT-style language models, benchmarking
 checkpoints, exporting model artifacts, and testing local GGUF models in a
 streamed Markdown chat interface.
 
-The desktop app uses `drunken_bot_logo_small.png` as the main window, title bar,
-and Windows taskbar icon.
 
 Requires Python 3.9 or newer.
 
