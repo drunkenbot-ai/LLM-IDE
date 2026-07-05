@@ -5241,6 +5241,9 @@ class MainWindow(QMainWindow):
             "stopped": bool(getattr(result, "stopped", False)),
             "final_train_loss": result.final_train_loss,
             "final_val_loss": result.final_val_loss,
+            "best_val_loss": summary.get("best_val_loss"),
+            "recommended_checkpoint_path": summary.get("recommended_checkpoint_path"),
+            "best_checkpoint_path": summary.get("best_checkpoint_path"),
             "dataset_dir": self.train_data_dir.text(),
             "dataset_version": (summary.get("model_lineage") or {}).get("dataset_version"),
             "training_run_id": summary.get("training_run_id"),
@@ -5734,6 +5737,18 @@ class MainWindow(QMainWindow):
         log.append(f"Final train loss: {result.final_train_loss:.4f}")
         if result.final_val_loss is not None:
             log.append(f"Final validation loss: {result.final_val_loss:.4f}")
+        training_summary: dict[str, Any] = {}
+        try:
+            training_summary = json.loads(Path(result.summary_path).read_text(encoding="utf-8"))
+        except Exception:
+            training_summary = {}
+        best_checkpoint = str(training_summary.get("recommended_checkpoint_path") or "")
+        best_val_loss = training_summary.get("best_val_loss")
+        if best_checkpoint:
+            if best_val_loss is not None:
+                log.append(f"Recommended checkpoint: {best_checkpoint} (best validation loss {float(best_val_loss):.4f})")
+            else:
+                log.append(f"Recommended checkpoint: {best_checkpoint}")
         output_dir = self.active_training_output_dir or Path(result.checkpoint_path).parent
         self.export_model_dir.setText(str(output_dir))
         try:
@@ -5759,6 +5774,10 @@ class MainWindow(QMainWindow):
         ]
         if result.final_val_loss is not None:
             completion_lines.append(f"Final validation loss: {result.final_val_loss:.4f}")
+        if best_checkpoint:
+            completion_lines.append(f"Recommended checkpoint: {best_checkpoint}")
+        if best_val_loss is not None:
+            completion_lines.append(f"Best validation loss: {float(best_val_loss):.4f}")
         completion_lines.append(f"Output: {output_dir}")
         self._notify_complete(stage_key, title, completion_lines)
         self._append_training_history(result)

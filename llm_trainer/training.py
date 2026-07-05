@@ -716,6 +716,8 @@ def train_model(
     start_epoch = 0
     final_train_loss = 0.0
     final_val_loss: Optional[float] = None
+    best_val_loss: Optional[float] = None
+    best_checkpoint_path: Optional[Path] = None
 
     resume_path = training_config.resume_from_checkpoint if training_config.resume else None
     if resume_path is None and training_config.resume:
@@ -987,6 +989,30 @@ def train_model(
                         system_cpu_percent=system_cpu_percent(),
                         system_ram_percent=system_ram_percent(),
                     )
+                    if best_val_loss is None or final_val_loss < best_val_loss:
+                        best_val_loss = final_val_loss
+                        best_checkpoint_path = checkpoints_dir / "checkpoint_best_val.pt"
+                        save_checkpoint(
+                            best_checkpoint_path,
+                            model,
+                            optimizer,
+                            scheduler,
+                            scaler,
+                            model_config,
+                            training_config,
+                            global_step,
+                            epoch + 1,
+                            epoch_losses[-1] if epoch_losses else final_train_loss,
+                            final_val_loss,
+                        )
+                        emit_progress(
+                            progress,
+                            f"New best validation checkpoint: {best_checkpoint_path.name} ({best_val_loss:.4f}).",
+                            current_progress,
+                            checkpoint_quality="best_validation",
+                            best_val_loss=best_val_loss,
+                            best_checkpoint_path=str(best_checkpoint_path),
+                        )
 
                 if training_config.save_interval > 0 and global_step % training_config.save_interval == 0:
                     save_checkpoint(
@@ -1020,6 +1046,30 @@ def train_model(
                 total_steps,
                 8 + int(86 * (epoch + 1) / max(training_config.epochs, 1)),
             )
+            if best_val_loss is None or final_val_loss < best_val_loss:
+                best_val_loss = final_val_loss
+                best_checkpoint_path = checkpoints_dir / "checkpoint_best_val.pt"
+                save_checkpoint(
+                    best_checkpoint_path,
+                    model,
+                    optimizer,
+                    scheduler,
+                    scaler,
+                    model_config,
+                    training_config,
+                    global_step,
+                    epoch + 1,
+                    final_train_loss,
+                    final_val_loss,
+                )
+                emit_progress(
+                    progress,
+                    f"New best validation checkpoint: {best_checkpoint_path.name} ({best_val_loss:.4f}).",
+                    8 + int(86 * (epoch + 1) / max(training_config.epochs, 1)),
+                    checkpoint_quality="best_validation",
+                    best_val_loss=best_val_loss,
+                    best_checkpoint_path=str(best_checkpoint_path),
+                )
         print(f"epoch {epoch + 1}/{training_config.epochs}: train_loss={final_train_loss:.4f}")
         save_checkpoint(
             checkpoints_dir / f"checkpoint_epoch_{epoch + 1}.pt",
@@ -1085,6 +1135,9 @@ def train_model(
         "training_config": dataclass_to_jsonable(training_config),
         "final_train_loss": final_train_loss,
         "final_val_loss": final_val_loss,
+        "best_val_loss": best_val_loss,
+        "best_checkpoint_path": str(best_checkpoint_path) if best_checkpoint_path else None,
+        "recommended_checkpoint_path": str(best_checkpoint_path or checkpoint_path),
         "total_steps": global_step,
         "parameters": sum(p.numel() for p in model.parameters()),
         "adapter_checkpoint": str(training_config.output_dir / "final_adapter.pt") if training_config.peft_method == "lora" else None,

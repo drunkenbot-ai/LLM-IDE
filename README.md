@@ -1,6 +1,6 @@
 <p align="center">copyright @ Indra (Intelligent Network for Deliberation, Reasoning & Action)</p>
 
-# Micro LLM Creator
+# DrunkenBot LLM-IDE
 
 <p align="center">
   <img src="03.png" width="49%" />
@@ -11,10 +11,13 @@
   <img src="02.png" width="49%" />
 </p>
 
-Micro LLM Creator is a PySide6 desktop app for preparing text/code datasets,
+DrunkenBot LLM-IDE is a PySide6 desktop app for preparing text/code datasets,
 creating tokenizers, training small GPT-style language models, benchmarking
 checkpoints, exporting model artifacts, and testing local GGUF models in a
 streamed Markdown chat interface.
+
+The desktop app uses `drunken_bot_logo_small.png` as the main window, title bar,
+and Windows taskbar icon.
 
 Requires Python 3.9 or newer.
 
@@ -109,3 +112,20 @@ python -m llm_trainer.cli export-hf --model_dir runs/model
 That creates `runs/model/hf_model` with config, weights, tokenizer metadata,
 lineage, and a README. It is portable MicroGPT packaging, not a claim that the
 checkpoint is already a llama.cpp-supported Llama/Mistral/Gemma model.
+
+## Current IDE Features
+
+- Dataset Blueprint with dynamic bundled corpus discovery.
+- Dataset Ingestion with source/document counts, token counts, train/validation
+  windows, category charts, and token distribution charts.
+- Architecture Advisor with parameter and memory breakdowns.
+- Training Health Advisor for validation gaps, overfitting, and unstable loss.
+- Best-validation checkpoint tracking via `checkpoint_best_val.pt`.
+- Live Training Monitor with graph history persisted to SQLite.
+- Fine-tuning Lab with LoRA support and compatibility checks.
+- Job Manager groundwork for local, remote-worker, and RunPod-backed training.
+
+When validation is enabled, the trainer saves a recommended checkpoint at
+`checkpoints/checkpoint_best_val.pt` whenever validation loss improves. The final
+training summary records both the final model path and the recommended
+best-validation checkpoint.

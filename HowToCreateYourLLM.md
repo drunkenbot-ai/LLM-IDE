@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Micro LLM Creator is a desktop workflow for building a small local language
+DrunkenBot LLM-IDE is a desktop workflow for building a small local language
 model from your own text, PDFs, and source-code files. The app guides you
 through four main stages:
 
@@ -78,6 +78,25 @@ project/
 ## Step 2: Prepare Your Dataset
 
 Open the `IN` tab.
+
+After preparation, check three signals:
+
+`Documents`
+
+- Number of source items.
+- This can be small if each source file is large.
+
+`Windows`
+
+- Number of train/validation context slices.
+- This is what the trainer actually samples.
+- More windows usually means less repetition.
+
+`Dataset Statistics`
+
+- `Dataset Composition` shows the data mix as percentages.
+- `Token Distribution` shows min, average, median, and max source token length.
+- If one file dominates the max value, inspect it for repeated or noisy text.
 
 The dataset stage reads your files, extracts text/code, creates or reuses a
 tokenizer, tokenizes the corpus, and writes training/validation token files.
@@ -1083,6 +1102,47 @@ Open the `Chat` tab.
 
 GGUF is best for deployment-style testing. Native MicroGPT checkpoint loading
 is useful for testing immediately after training, before GGUF conversion.
+
+## Step 12: Pick The Best Checkpoint
+
+When validation is enabled, the app saves a best-validation checkpoint:
+
+```text
+models/
+  checkpoints/
+    checkpoint_best_val.pt
+  final_model.pt
+  training_summary.json
+```
+
+Use `checkpoint_best_val.pt` when:
+
+- Validation loss improved earlier and then got worse.
+- Training loss is very low but validation loss is high.
+- You want the checkpoint most likely to generalize.
+
+Use `final_model.pt` when:
+
+- Validation loss kept improving until the end.
+- You intentionally trained until the final step.
+- You want the exact final training state.
+
+The training log and notifications show the recommended checkpoint.
+
+## Step 13: Read The Architecture Advisor
+
+Before long runs, click `Refresh Estimate` in `AI`.
+
+Check:
+
+- `Params`: where model capacity is being spent.
+- `Memory`: rough weights, optimizer, activations, and KV-cache cost.
+- `Advisor`: whether the current token budget and model size look balanced.
+
+If the advisor says `data-light`, either add more data or reduce the model.
+
+If it says `memory check`, reduce batch size, context length, embedding size, or
+layer count.
 
 ## Recommended Starter Recipes
 
