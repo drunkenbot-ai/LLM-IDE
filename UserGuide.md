@@ -1,7 +1,7 @@
-# Micro LLM Creator User Guide
+# DrunkenBot LLM-IDE User Guide
 
 This guide explains how to create a small language model from scratch with
-Micro LLM Creator. The app is designed for local experiments: preparing text or
+DrunkenBot LLM-IDE. The app is designed for local experiments: preparing text or
 programming data, training a small GPT-style model, resuming interrupted runs,
 and exporting the result.
 
@@ -56,9 +56,72 @@ The app has five main work areas:
 10. Open `Chat`, load a GGUF model, and test prompts.
 11. Use `Save Project` to store paths and settings for the next session.
 
+### Dataset Counts, Windows, And Charts
+
+The `IN` tab separates source documents from training windows.
+
+`Documents`
+
+- Source items loaded from files or structured datasets.
+- A single long PDF or corpus file may count as one document.
+
+`Windows`
+
+- Sliding context slices used by the trainer.
+- This is closer to the real number of available training examples.
+- A low document count can still create many training windows when documents
+  are long.
+
+`Dataset Composition`
+
+- Bar chart showing the selected data mix.
+- Uses weighted mixture data when available.
+- Falls back to code/prose/conversation percentages.
+
+`Token Distribution`
+
+- Approximate minimum, average, median, and maximum token length per source.
+- Helps detect tiny snippets, very long files, or uneven source material.
+
+### Architecture Advisor
+
+The `AI` tab includes a model estimate panel.
+
+`Params`
+
+- Shows approximate parameter groups for embeddings, attention, and MLP blocks.
+- Use it to understand what changed after changing `n_embd`, `n_head`, or
+  `n_layer`.
+
+`Memory`
+
+- Shows rough weights, optimizer state, activation memory, and KV-cache memory.
+- This is an estimate, not an exact CUDA allocation.
+
+`Advisor`
+
+- `prepare data`: no prepared dataset was found.
+- `data-light`: model may be too large for the token budget.
+- `balanced`: token budget and model size look reasonable.
+- `data-rich`: dataset is large enough that a bigger model may be useful.
+- `memory check`: selected settings may be too heavy for the current GPU.
+
+### Best Validation Checkpoint
+
+When validation is enabled, DrunkenBot LLM-IDE saves:
+
+- Regular interval checkpoints.
+- Epoch checkpoints.
+- `checkpoints/checkpoint_best_val.pt` whenever validation loss improves.
+- `final_model.pt` at the end of training.
+
+For export or fine-tuning, prefer the recommended checkpoint when validation
+loss is better than the final checkpoint. The training log, notification, and
+`training_summary.json` show the recommended checkpoint path.
+
 ### Training Stages
 
-Micro LLM Creator separates model creation into stages.
+DrunkenBot LLM-IDE separates model creation into stages.
 
 `Base pretraining`
 
@@ -148,7 +211,7 @@ Important:
 
 ### Disk Space During Training
 
-Micro LLM Creator writes prepared datasets and checkpoints to the paths shown in
+DrunkenBot LLM-IDE writes prepared datasets and checkpoints to the paths shown in
 the app. Check these first when estimating disk use:
 
 - `datasets/`: corpus, tokenizer, token files, extraction cache, versions.
@@ -940,7 +1003,7 @@ Quick architecture presets.
 Core transformer block design.
 
 - `Classic GPT`: uses learned positional embeddings, LayerNorm, and GELU MLP.
-  This is the original Micro LLM Creator architecture and is best for old
+  This is the original DrunkenBot LLM-IDE architecture and is best for old
   checkpoints.
 - `Llama-like`: uses RoPE positional encoding, RMSNorm, and SwiGLU MLP. This is
   closer to modern Llama-style model blocks and is the better default for new
