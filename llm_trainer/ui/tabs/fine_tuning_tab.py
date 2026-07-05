@@ -58,6 +58,7 @@ def build_fine_tuning_tab(window) -> QWidget:
     window.training_mode.setMaximumWidth(300)
     window.training_mode.currentTextChanged.connect(window._update_training_mode_controls)
     window.training_mode.currentTextChanged.connect(window.refresh_fine_tune_workflow)
+    window.training_mode.currentTextChanged.connect(window._refresh_fine_tune_default_output)
     window._tip(
         window.training_mode,
         "Instruction tunes request-following, conversation tunes chat behavior, code tunes programming help, generic fine-tune adapts domain data.",
@@ -164,6 +165,7 @@ def build_fine_tuning_tab(window) -> QWidget:
     window.fine_tune_dataset_builder_stage = QComboBox()
     window.fine_tune_dataset_builder_stage.addItems(["Instruction fine-tune", "Conversation fine-tune", "Code fine-tune"])
     window.fine_tune_dataset_builder_stage.setMaximumWidth(300)
+    window.fine_tune_dataset_builder_stage.currentTextChanged.connect(window._refresh_fine_tune_default_output)
     window._tip(
         window.fine_tune_dataset_builder_stage,
         "Choose the fine-tune dataset type to configure in the Ingest tab.",
