@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import re
+from typing import Any
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -178,6 +179,24 @@ def default_data_root() -> Path:
     return Path(__file__).resolve().parents[2] / "default_data"
 
 
+def blueprint_data_root(window: Any | None = None) -> Path:
+    """Return the active Dataset Blueprint data root.
+
+    Args:
+        window: Optional main window carrying a project-local data root.
+
+    Returns:
+        Project-local training data root when available, otherwise bundled data.
+    """
+
+    root = getattr(window, "blueprint_data_root", None)
+    if root:
+        path = Path(root)
+        if path.exists():
+            return path
+    return default_data_root()
+
+
 def _slugify_category(value: str) -> str:
     """Convert folder/file text into a stable category key.
 
@@ -222,7 +241,7 @@ def _category_from_text(value: str) -> str | None:
     return None
 
 
-def default_data_category(path: Path) -> str:
+def default_data_category(path: Path, root: Path | None = None) -> str:
     """Infer the Dataset Blueprint category for a bundled file.
 
     Args:
@@ -232,7 +251,7 @@ def default_data_category(path: Path) -> str:
         Dataset category key used by the sampler.
     """
 
-    root = default_data_root()
+    root = root or default_data_root()
     try:
         relative = path.relative_to(root)
     except ValueError:
@@ -253,7 +272,7 @@ def default_data_category(path: Path) -> str:
     return "general_prose"
 
 
-def default_data_stage(path: Path) -> str:
+def default_data_stage(path: Path, root: Path | None = None) -> str:
     """Infer which training stage should use a bundled file.
 
     Args:
@@ -263,7 +282,7 @@ def default_data_stage(path: Path) -> str:
         Stage key: base, instruction, conversation, or code.
     """
 
-    root = default_data_root()
+    root = root or default_data_root()
     try:
         relative = path.relative_to(root)
     except ValueError:
@@ -275,21 +294,70 @@ def default_data_stage(path: Path) -> str:
     return "base"
 
 
-def iter_default_data_files() -> list[tuple[Path, str]]:
-    """List bundled default data files with categories.
+def iter_default_data_files(root: Path | None = None) -> list[tuple[Path, str]]:
+    """List default/project data files with categories.
+
+    Args:
+        root: Optional source root. Defaults to bundled default data.
 
     Returns:
         Pairs of file path and Dataset Blueprint category.
     """
 
-    root = default_data_root()
+    root = root or default_data_root()
     if not root.exists():
         return []
     return [
-        (path, default_data_category(path))
+        (path, default_data_category(path, root))
         for path in sorted(root.rglob("*"))
         if path.is_file() and path.suffix.lower() in SUPPORTED_DEFAULT_SUFFIXES and path.stat().st_size > 0
     ]
+
+
+def file_token_vocab_stats(path: Path, sample_bytes: int = 256 * 1024) -> dict[str, int | bool]:
+    """Estimate token and vocabulary counts for a data file.
+
+    Args:
+        path: Source file path.
+        sample_bytes: Maximum bytes to read for a fast estimate.
+
+    Returns:
+        Dictionary containing size, estimated tokens, estimated vocab, and
+        whether values were extrapolated from a sample.
+    """
+
+    size = path.stat().st_size
+    if path.suffix.lower() in {".json", ".jsonl", ".txt", ".md", ".text", *CODE_SUFFIXES}:
+        with path.open("rb") as handle:
+            raw = handle.read(sample_bytes)
+        text = raw.decode("utf-8", errors="ignore")
+        pieces = re.findall(r"\w+|[^\w\s]", text)
+        vocab = {piece.lower() for piece in pieces if piece.strip()}
+        multiplier = size / max(len(raw), 1) if raw and size > len(raw) else 1.0
+        return {
+            "bytes": size,
+            "tokens": int(round(len(pieces) * multiplier)),
+            "vocab": int(round(len(vocab) * min(multiplier, 3.0))),
+            "sampled": size > len(raw),
+        }
+    return {"bytes": size, "tokens": 0, "vocab": 0, "sampled": False}
+
+
+def file_stats_text(path: Path) -> str:
+    """Return compact size/token/vocab text for the tree viewer."""
+
+    try:
+        stats = file_token_vocab_stats(path)
+    except OSError:
+        return ""
+    size = float(stats["bytes"])
+    for unit in ("B", "KB", "MB", "GB"):
+        if size < 1024 or unit == "GB":
+            size_text = f"{size:.1f} {unit}" if unit != "B" else f"{size:.0f} B"
+            break
+        size /= 1024
+    prefix = "~" if stats.get("sampled") else ""
+    return f"{size_text} | {prefix}{int(stats['tokens']):,} tok | {prefix}{int(stats['vocab']):,} vocab"
 
 
 def dataset_plan_defaults(default_files: list[tuple[Path, str]] | None = None) -> dict[str, float]:
@@ -302,10 +370,17 @@ def dataset_plan_defaults(default_files: list[tuple[Path, str]] | None = None) -
         Default category weight mapping.
     """
 
-    values = dict(DATASET_DOMAIN_DEFAULTS)
-    for _path, category in default_files or iter_default_data_files():
-        values.setdefault(category, 0.0)
-    return values
+    if default_files is None:
+        return dict(DATASET_DOMAIN_DEFAULTS)
+    categories: list[str] = []
+    seen: set[str] = set()
+    for _path, category in default_files:
+        if category not in seen:
+            categories.append(category)
+            seen.add(category)
+    if not categories:
+        return dict(DATASET_DOMAIN_DEFAULTS)
+    return {category: DATASET_DOMAIN_DEFAULTS.get(category, 0.0) for category in categories}
 
 
 def build_dataset_plan_tab(window) -> QWidget:
@@ -334,14 +409,19 @@ def build_dataset_plan_tab(window) -> QWidget:
     title_row = QHBoxLayout()
     title = QLabel("Dataset Blueprint")
     title.setObjectName("PageTitle")
-    default_files = iter_default_data_files()
+    active_data_root = blueprint_data_root(window)
+    default_files = iter_default_data_files(active_data_root)
     plan_defaults = dataset_plan_defaults(default_files)
+    window.blueprint_data_root = active_data_root
 
     window.dataset_plan_total_label = QLabel("Total: 100.0%")
     window.dataset_plan_total_label.setObjectName("Metric")
+    window.dataset_plan_source_label = QLabel(f"Source: {active_data_root}")
+    window.dataset_plan_source_label.setObjectName("Muted")
     title_row.addWidget(title)
     title_row.addSpacing(12)
     title_row.addWidget(window.dataset_plan_total_label)
+    title_row.addWidget(window.dataset_plan_source_label, 1)
     title_row.addStretch(1)
     layout.addLayout(title_row)
 
@@ -367,6 +447,7 @@ def build_dataset_plan_tab(window) -> QWidget:
     domain_grid = QGridLayout()
     domain_grid.setHorizontalSpacing(14)
     domain_grid.setVerticalSpacing(6)
+    window.dataset_plan_domain_grid = domain_grid
     window.dataset_plan_spins = {}
     for index, (key, value) in enumerate(plan_defaults.items()):
         spin = window._double_spin(0.0, 100.0, value, 1.0, 1)
@@ -448,7 +529,7 @@ def build_dataset_plan_tab(window) -> QWidget:
 
     window.default_data_tree_updating = False
     window.default_data_tree = QTreeWidget()
-    window.default_data_tree.setHeaderLabels(["Category / file", "Size"])
+    window.default_data_tree.setHeaderLabels(["Category / file", "Stats"])
     window.default_data_tree.setRootIsDecorated(True)
     window.default_data_tree.setAlternatingRowColors(False)
     window.default_data_tree.setMinimumHeight(260)
@@ -466,11 +547,7 @@ def build_dataset_plan_tab(window) -> QWidget:
         window.default_data_tree.addTopLevelItem(category_item)
         window.default_data_category_items[category] = category_item
         for path in sorted(grouped_files[category], key=lambda item: item.name.lower()):
-            try:
-                size_text = f"{path.stat().st_size / 1024.0:.1f} KB"
-            except OSError:
-                size_text = ""
-            child = QTreeWidgetItem([path.name, size_text])
+            child = QTreeWidgetItem([path.name, file_stats_text(path)])
             child.setToolTip(0, str(path))
             child.setData(0, Qt.UserRole, {"kind": "file", "path": str(path), "category": category})
             child.setFlags(child.flags() | Qt.ItemIsUserCheckable)
@@ -479,7 +556,7 @@ def build_dataset_plan_tab(window) -> QWidget:
             window.default_data_actions[str(path)] = child
         category_item.setExpanded(True)
     if not window.default_data_actions:
-        window.default_data_tree.addTopLevelItem(QTreeWidgetItem(["No bundled default data files were found.", ""]))
+        window.default_data_tree.addTopLevelItem(QTreeWidgetItem(["No project/default data files were found.", ""]))
     window.default_data_tree.itemChanged.connect(window._handle_default_data_tree_changed)
     default_layout = QVBoxLayout()
     default_layout.addWidget(window.default_data_tree)

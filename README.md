@@ -114,6 +114,11 @@ checkpoint is already a llama.cpp-supported Llama/Mistral/Gemma model.
 ## Current IDE Features
 
 - Dataset Blueprint with dynamic bundled corpus discovery.
+- New projects copy the bundled default corpus into the project-local
+  `training_data/` folder so each project can curate its own starting library.
+- Dataset Blueprint categories are discovered from the project data folders and
+  file names instead of being fixed to a static list.
+- The Blueprint tree shows per-file size plus estimated token/vocabulary counts.
 - Dataset Ingestion with source/document counts, token counts, train/validation
   windows, category charts, and token distribution charts.
 - Architecture Advisor with parameter and memory breakdowns.

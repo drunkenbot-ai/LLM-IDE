@@ -56,6 +56,34 @@ The app has five main work areas:
 10. Open `Chat`, load a GGUF model, and test prompts.
 11. Use `Save Project` to store paths and settings for the next session.
 
+### Dataset Blueprint And Project Training Data
+
+When you create a new project, DrunkenBot LLM-IDE copies the bundled default
+training library into:
+
+```text
+project/
+  training_data/
+```
+
+The Dataset Blueprint tab reads from this project-local folder. This means each
+project can safely edit, delete, or add files without changing the app's bundled
+defaults.
+
+The target recipe is built dynamically from the folders and files under
+`training_data/`. If you add a new folder later, the Blueprint can show it as a
+new category. Known folder names such as `mathematics`, `reasoning`,
+`science`, `code`, `conversation`, and `instruction` are mapped to friendly
+categories.
+
+The bundled/project data tree shows each file with:
+
+- File size.
+- Estimated token count.
+- Estimated vocabulary count.
+
+Large files are sampled for these estimates so the UI stays responsive.
+
 ### Dataset Counts, Windows, And Charts
 
 The `IN` tab separates source documents from training windows.

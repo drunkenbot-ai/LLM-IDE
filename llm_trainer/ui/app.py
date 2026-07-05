@@ -80,6 +80,7 @@ from llm_trainer.ui.tabs.dataset_plan_tab import (
     DATASET_DOMAIN_DEFAULTS,
     DATASET_DOMAIN_PRESETS,
     build_dataset_plan_tab,
+    default_data_root,
     default_data_stage,
     dataset_plan_defaults,
     iter_default_data_files,
@@ -1950,10 +1951,12 @@ class MainWindow(QMainWindow):
         project_file = project_dir / "project.json"
         project_dir.mkdir(parents=True, exist_ok=True)
         self._ensure_project_workspace(project_dir)
+        copied_count = self._ensure_project_training_data(project_dir)
         self.current_project_file = project_file
         self._apply_project_state(self._default_project_state())
         self.search_box.setText(project_name)
         self._apply_project_workspace_paths(project_dir)
+        self._refresh_dataset_blueprint_source(project_dir / "training_data")
         self._apply_project_runtime_environment(project_dir)
         self._refresh_notification_manager(project_dir)
         if hasattr(self, "runpod_api_key"):
@@ -1964,6 +1967,7 @@ class MainWindow(QMainWindow):
         LOGGER.info("New project created: %s", project_file)
         self.dataset_log.append(f"Started a new project: {project_file}")
         self.dataset_log.append(f"Project workspace: {project_dir}")
+        self.dataset_log.append(f"Default training data copied: {copied_count} file(s)")
         self.dataset_log.append(f"Notifier config: {project_dir / 'notifier_config.json'}")
 
     def open_project(self) -> None:
@@ -1985,6 +1989,14 @@ class MainWindow(QMainWindow):
             return
         self.current_project_file = Path(project_file)
         self._ensure_project_workspace(self.current_project_file.parent)
+        dataset_state = data.get("dataset", {}) if isinstance(data, dict) else {}
+        self._refresh_dataset_blueprint_source(
+            self.current_project_file.parent / "training_data",
+            saved_paths=list(dataset_state.get("default_data_paths", [])),
+            saved_plan=dict(dataset_state.get("domain_plan", {})),
+            preset=str(dataset_state.get("domain_plan_preset", "Balanced Tiny LLM")),
+        )
+        self._apply_project_state(data)
         self._apply_project_runtime_environment(self.current_project_file.parent)
         self._refresh_notification_manager(self.current_project_file.parent)
         if hasattr(self, "runpod_api_key"):
@@ -2025,6 +2037,74 @@ class MainWindow(QMainWindow):
             (project_dir / name).mkdir(parents=True, exist_ok=True)
         ensure_notifier_config(project_dir / "notifier_config.json")
         ensure_runpod_config(project_dir / "runpod_config.json")
+
+    def _ensure_project_training_data(self, project_dir: Path) -> int:
+        """Copy bundled default data into the project training-data folder.
+
+        Existing files are left untouched so user edits are not overwritten.
+
+        Args:
+            project_dir: Project root folder.
+
+        Returns:
+            Number of files copied.
+        """
+
+        source_root = default_data_root()
+        target_root = project_dir / "training_data"
+        target_root.mkdir(parents=True, exist_ok=True)
+        if not source_root.exists():
+            return 0
+        copied = 0
+        for source in source_root.rglob("*"):
+            if not source.is_file():
+                continue
+            try:
+                relative = source.relative_to(source_root)
+            except ValueError:
+                continue
+            target = target_root / relative
+            if target.exists():
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+            copied += 1
+        LOGGER.info("Project default training data copied: project=%s files=%s", project_dir, copied)
+        return copied
+
+    def _refresh_dataset_blueprint_source(
+        self,
+        data_root: Path,
+        saved_paths: Optional[list[Any]] = None,
+        saved_plan: Optional[dict[str, Any]] = None,
+        preset: str = "Balanced Tiny LLM",
+    ) -> None:
+        """Rebuild the Dataset Blueprint tab from a source data folder.
+
+        Args:
+            data_root: Project-local training data folder.
+            saved_paths: Optional selected file paths to restore.
+            saved_plan: Optional saved domain recipe.
+            preset: Saved recipe preset.
+        """
+
+        if not hasattr(self, "pages"):
+            self.blueprint_data_root = Path(data_root)
+            return
+        self.blueprint_data_root = Path(data_root)
+        current_index = self.pages.currentIndex()
+        old_page = self.pages.widget(0)
+        new_page = self._build_dataset_plan_tab()
+        self.pages.removeWidget(old_page)
+        old_page.deleteLater()
+        self.pages.insertWidget(0, new_page)
+        if saved_plan is not None:
+            self._set_dataset_plan(saved_plan, preset)
+        if saved_paths is not None:
+            self._set_selected_default_data_paths(saved_paths)
+        elif self.current_project_file is not None:
+            self._set_selected_default_data_paths([])
+        self.pages.setCurrentIndex(current_index)
 
     def _refresh_notification_manager(self, project_dir: Optional[Path] = None) -> None:
         """Load notification settings for the current project.

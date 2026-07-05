@@ -45,13 +45,21 @@ The app creates a standard workspace:
 ```text
 project/
   project.json
-  data/
+  training_data/
   datasets/
   models/
   exports/
   cache/
   temp/
 ```
+
+When the project is created, the bundled default corpus is copied into
+`training_data/`. The Dataset Blueprint reads from that project-local copy.
+You can add folders, remove files, or turn categories off without modifying the
+app's original bundled data.
+
+The Blueprint tree groups files by inferred category and shows estimated tokens
+and vocabulary for each file.
 
 ### Project Parameters
 
