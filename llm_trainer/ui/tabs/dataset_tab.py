@@ -55,6 +55,7 @@ def build_dataset_tab(window) -> QWidget:
     window.dataset_quality_tokens = window._metric_chip("Tokens: -", "Total encoded tokens available for training.")
     window.dataset_quality_windows = window._metric_chip("Windows: -", "Sliding context windows the trainer can sample.")
     window.dataset_quality_vocab = window._metric_chip("Vocab: -", "Tokenizer vocabulary size used by the dataset.")
+    window.dataset_quality_rating = window._metric_chip("Rating: -", "Five-star dataset quality score based on tokens, windows, vocabulary, diversity, and extraction health.")
     window.dataset_quality_code = window._metric_chip("Code/prose: -", "Code and prose sample split.")
     window.dataset_quality_balance = window._metric_chip("Balance: -", "Code/prose balance detected during preview or preparation.")
     window.dataset_quality_readiness = window._metric_chip("Readiness: -", "Training readiness score based on size, duplicates, extraction quality, and dataset mix.")
@@ -67,6 +68,7 @@ def build_dataset_tab(window) -> QWidget:
         window.dataset_quality_tokens,
         window.dataset_quality_windows,
         window.dataset_quality_vocab,
+        window.dataset_quality_rating,
         window.dataset_quality_code,
         window.dataset_quality_readiness,
         window.dataset_quality_warning,

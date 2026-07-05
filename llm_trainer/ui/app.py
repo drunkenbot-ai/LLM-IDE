@@ -53,6 +53,7 @@ from llm_trainer.evaluation import DEFAULT_BENCHMARK_PROMPTS, evaluate_checkpoin
 from llm_trainer.export import export_gguf_with_llama_cpp, export_hf_microgpt_package, export_project_bundle, quantize_checkpoint
 from llm_trainer.fine_tuning_service import run_fine_tuning_job
 from llm_trainer.llama_chat import LlamaChatSession, load_llama_chat_session, stream_chat_reply
+from llm_trainer.lineage import read_json
 from llm_trainer.microgpt_chat import load_microgpt_chat_session, stream_microgpt_chat_reply
 from llm_trainer.notifier import NotificationManager, default_notifier_config_path, ensure_notifier_config
 from llm_trainer.runpod_cloud import (
@@ -1292,6 +1293,24 @@ class MainWindow(QMainWindow):
         failed_count = int(summary.get("failed_file_count", 0) or 0)
         warning = str(summary.get("warning") or "none")
         sequence_stats = summary.get("sequence_token_stats", {}) or {}
+        quality_score = float(summary.get("quality_score", 0.0) or 0.0)
+        quality_stars = float(summary.get("quality_stars", 0.0) or 0.0)
+        quality_label = str(summary.get("quality_label") or "")
+        if not quality_score and (token_count or train_window_count or vocab_size):
+            quality_score, quality_stars, quality_label = self._estimate_dataset_rating(
+                token_count,
+                vocab_size,
+                train_window_count,
+                val_window_count,
+                document_count,
+                code_count,
+                prose_count,
+                conversation_count,
+                skipped_count,
+                failed_count,
+                warning,
+                sequence_stats,
+            )
         self.dataset_quality_samples.setText(f"Documents: {document_count:,}")
         self.dataset_quality_tokens.setText(f"Tokens: {token_count:,}")
         if train_window_count or val_window_count:
@@ -1299,12 +1318,22 @@ class MainWindow(QMainWindow):
         else:
             self.dataset_quality_windows.setText("Windows: -")
         self.dataset_quality_vocab.setText(f"Vocab: {vocab_size:,}" if vocab_size else "Vocab: -")
+        self.dataset_quality_rating.setText(
+            f"Rating: {self._star_text(quality_stars)} {quality_stars:.1f}/5"
+            if quality_stars
+            else "Rating: -"
+        )
         self.dataset_quality_code.setText(f"Code/prose/chat: {code_count:,}/{prose_count:,}/{conversation_count:,}")
         self.dataset_quality_balance.setText("Balance: prepared")
         self.dataset_quality_readiness.setText("Readiness: preview needed")
         self.dataset_quality_cache.setText(f"Files: {processed_count:,} ok, {cached_count:,} cached, {skipped_count:,} skipped, {failed_count:,} failed")
         self.dataset_quality_warning.setText(f"Warnings: {warning}")
         self._tip(self.dataset_quality_samples, f"{character_count:,} source characters across prepared documents.")
+        if quality_stars:
+            self._tip(
+                self.dataset_quality_rating,
+                f"{quality_label or 'Rated'} dataset: {quality_score:.1f}/100. Higher scores usually mean more usable tokens, richer vocabulary, more windows, and fewer extraction issues.",
+            )
         self._tip(
             self.dataset_quality_windows,
             f"{train_window_count:,} training and {val_window_count:,} validation sliding windows.",
@@ -1329,7 +1358,89 @@ class MainWindow(QMainWindow):
                 )
             if train_window_count < 1_000:
                 advice.append("Add more text or lower context length if training looks repetitive.")
+            if quality_stars:
+                advice.append(f"Dataset rating: {quality_stars:.1f}/5 stars ({quality_label or 'rated'}, score {quality_score:.1f}/100).")
+                for reason in list(summary.get("quality_reasons", []) or [])[:4]:
+                    advice.append(f"- {reason}")
             self.dataset_advisor.setPlainText("\n".join(advice))
+
+    def _star_text(self, stars: float) -> str:
+        """Return a compact five-star display string.
+
+        Args:
+            stars: Rating from zero to five.
+
+        Returns:
+            Unicode star display with rounded whole stars.
+        """
+
+        whole = max(0, min(5, int(round(float(stars)))))
+        return "★" * whole + "☆" * (5 - whole)
+
+    def _estimate_dataset_rating(
+        self,
+        token_count: int,
+        vocab_size: int,
+        train_window_count: int,
+        val_window_count: int,
+        document_count: int,
+        code_count: int,
+        prose_count: int,
+        conversation_count: int,
+        skipped_count: int,
+        failed_count: int,
+        warning: str,
+        sequence_stats: dict[str, Any],
+    ) -> tuple[float, float, str]:
+        """Estimate a dataset rating for older summaries that lack saved quality fields.
+
+        Args:
+            token_count: Total prepared token count.
+            vocab_size: Tokenizer vocabulary size.
+            train_window_count: Number of training windows.
+            val_window_count: Number of validation windows.
+            document_count: Number of source documents.
+            code_count: Code sample count.
+            prose_count: Prose sample count.
+            conversation_count: Conversation/instruction sample count.
+            skipped_count: Skipped source file count.
+            failed_count: Failed source file count.
+            warning: Dataset warning text.
+            sequence_stats: Approximate source sequence statistics.
+
+        Returns:
+            Score, stars, and label.
+        """
+
+        def ratio(value: float, target: float) -> float:
+            return max(0.0, min(1.0, float(value) / float(target))) if target > 0 else 0.0
+
+        families = sum(1 for count in (code_count, prose_count, conversation_count) if count > 0)
+        score = (
+            30.0 * ratio(token_count, 1_000_000)
+            + 20.0 * ratio(train_window_count, 50_000)
+            + 18.0 * ratio(vocab_size, 8_000)
+            + 12.0 * ratio(document_count, 1_000)
+            + 8.0 * ratio(val_window_count, 2_000)
+            + 7.0 * ratio(families, 3)
+            + 5.0 * ratio(float(sequence_stats.get("average", 0.0) or 0.0), 256)
+        )
+        score -= min(20.0, failed_count * 3.0 + skipped_count * 0.5)
+        if warning and warning != "none":
+            score -= 5.0
+        score = max(0.0, min(100.0, score))
+        stars = round(score / 20.0 * 2.0) / 2.0
+        if score >= 85:
+            label = "Excellent"
+        elif score >= 70:
+            label = "Good"
+        elif score >= 50:
+            label = "Usable"
+        elif score >= 30:
+            label = "Weak"
+        else:
+            label = "Very weak"
+        return score, stars, label
 
     def _update_dataset_stat_charts(
         self,
@@ -1390,6 +1501,7 @@ class MainWindow(QMainWindow):
         self.dataset_quality_tokens.setText("Tokens: -")
         self.dataset_quality_windows.setText("Windows: -")
         self.dataset_quality_vocab.setText("Vocab: -")
+        self.dataset_quality_rating.setText("Rating: -")
         self.dataset_quality_code.setText("Code/prose: -")
         self.dataset_quality_balance.setText("Balance: -")
         self.dataset_quality_readiness.setText("Readiness: -")
@@ -4500,6 +4612,48 @@ class MainWindow(QMainWindow):
             self.fine_tune_output_dir.setText(str(path))
         return path
 
+    def _refresh_fine_tune_default_output(self, *_args: Any) -> None:
+        """Keep the fine-tune output folder stage-specific unless a custom folder was chosen."""
+
+        if not hasattr(self, "fine_tune_output_dir") or self.current_project_file is None:
+            return
+        project_dir = self.current_project_file.parent
+        fine_tunes_dir = project_dir / "fine_tunes"
+        stage = self._training_stage_value()
+        stage_folder = {
+            "instruction": "instruction_latest",
+            "conversation": "conversation_latest",
+            "code": "code_latest",
+            "domain": "domain_latest",
+        }.get(stage, "fine_tune_latest")
+        desired = fine_tunes_dir / stage_folder
+        current_text = self.fine_tune_output_dir.text().strip()
+        if not current_text:
+            self.fine_tune_output_dir.setText(str(desired))
+            return
+        try:
+            current = Path(current_text)
+            current_resolved = current.resolve()
+            fine_tunes_resolved = fine_tunes_dir.resolve()
+        except OSError:
+            return
+        managed_names = {
+            "latest",
+            "fine_tune",
+            "fine_tuned",
+            "instruction",
+            "conversation",
+            "code",
+            "domain",
+            "instruction_latest",
+            "conversation_latest",
+            "code_latest",
+            "domain_latest",
+            "fine_tune_latest",
+        }
+        if current_resolved.parent == fine_tunes_resolved and current.name in managed_names:
+            self.fine_tune_output_dir.setText(str(desired))
+
     def _prepare_fine_tune_run_folder(self, training_config: TrainingConfig) -> None:
         """Create fine-tune folders and snapshot the base checkpoint.
 
@@ -4517,6 +4671,16 @@ class MainWindow(QMainWindow):
         base_checkpoint = Path(base_checkpoint)
         if not base_checkpoint.exists():
             return
+        try:
+            base_resolved = base_checkpoint.resolve()
+            output_resolved = output_dir.resolve()
+            if base_resolved == (output_resolved / base_checkpoint.name) or output_resolved in base_resolved.parents:
+                raise ValueError(
+                    "Fine-tune base checkpoint must be outside the selected fine-tune output folder. "
+                    "Choose the original pretrained model checkpoint instead."
+                )
+        except RuntimeError as exc:
+            raise ValueError(f"Could not validate fine-tune base checkpoint path: {exc}") from exc
         snapshot_dir = output_dir / "base_model"
         snapshot_dir.mkdir(parents=True, exist_ok=True)
         copied_checkpoint = snapshot_dir / base_checkpoint.name
@@ -4669,6 +4833,7 @@ class MainWindow(QMainWindow):
 
         if not hasattr(self, "fine_tune_dataset_status"):
             return
+        self._refresh_fine_tune_default_output()
         ok, message = self._fine_tune_dataset_stage_status()
         self.fine_tune_dataset_status.setText(message)
         self.fine_tune_dataset_status.setProperty("state", "ok" if ok else "warning")
@@ -4679,6 +4844,7 @@ class MainWindow(QMainWindow):
         """Apply conservative fine-tuning defaults for the selected workflow."""
 
         stage = self._training_stage_value()
+        synced = self._sync_architecture_from_fine_tune_base()
         self._set_combo_text(self.peft_method, "LoRA adapters")
         self.lora_dropout.setValue(0.05)
         self._set_combo_text(self.lora_targets, "Attention projections")
@@ -4713,10 +4879,90 @@ class MainWindow(QMainWindow):
             self.lora_alpha.setValue(16.0)
             self.learning_rate.setValue(0.00005)
         self._update_training_mode_controls()
-        self.fine_tune_preview.setText(
-            "Recommended LoRA settings applied.\n"
-            "Use Check Fine-tune before starting so checkpoint and tokenizer compatibility are verified."
+        message = "Recommended LoRA settings applied."
+        if synced:
+            message += "\nArchitecture was synced from the selected base checkpoint."
+        message += "\nUse Check Fine-tune before starting so checkpoint and tokenizer compatibility are verified."
+        self.fine_tune_preview.setText(message)
+
+    def _sync_architecture_from_fine_tune_base(self) -> bool:
+        """Sync architecture controls from the selected fine-tune base checkpoint.
+
+        Returns:
+            True when a checkpoint was read and architecture controls were updated.
+        """
+
+        if not hasattr(self, "fine_tune_checkpoint"):
+            return False
+        checkpoint_text = self.fine_tune_checkpoint.text().strip()
+        if not checkpoint_text:
+            return False
+        checkpoint_path = Path(checkpoint_text)
+        if not checkpoint_path.exists():
+            return False
+        try:
+            checkpoint = torch.load(checkpoint_path, map_location="cpu")
+        except Exception as exc:
+            LOGGER.warning("Could not read fine-tune base checkpoint %s: %s", checkpoint_path, exc)
+            return False
+        model_config = checkpoint.get("model_config", {}) if isinstance(checkpoint, dict) else {}
+        if not isinstance(model_config, dict):
+            return False
+        mappings = {
+            "embedding_size": self.n_embd,
+            "head_count": self.n_head,
+            "layer_count": self.n_layer,
+            "context_length": self.context_length,
+        }
+        for key, widget in mappings.items():
+            if key in model_config:
+                try:
+                    widget.setValue(int(model_config[key]))
+                except (TypeError, ValueError):
+                    LOGGER.warning("Invalid %s in checkpoint %s: %r", key, checkpoint_path, model_config[key])
+        if "dropout" in model_config:
+            try:
+                self.dropout.setValue(float(model_config["dropout"]))
+            except (TypeError, ValueError):
+                LOGGER.warning("Invalid dropout in checkpoint %s: %r", checkpoint_path, model_config["dropout"])
+        norm_type = str(model_config.get("norm_type", "layernorm")).lower()
+        position_encoding = str(model_config.get("position_encoding", "learned")).lower()
+        mlp_type = str(model_config.get("mlp_type", "gelu")).lower()
+        if norm_type == "rmsnorm" or position_encoding == "rope" or mlp_type == "swiglu":
+            self._set_combo_text(self.architecture_style, "Modern LLM")
+        else:
+            self._set_combo_text(self.architecture_style, "Classic GPT")
+        attention_type = str(model_config.get("attention_type", "mha")).lower()
+        self._set_combo_by_data(
+            self.attention_type,
+            attention_type,
+            {
+                "mha": "Multi-head",
+                "mqa": "Multi-query",
+                "gqa": "Grouped-query",
+            },
         )
+        if "kv_head_count" in model_config:
+            try:
+                self.kv_head_count.setValue(int(model_config["kv_head_count"]))
+            except (TypeError, ValueError):
+                LOGGER.warning("Invalid kv_head_count in checkpoint %s: %r", checkpoint_path, model_config["kv_head_count"])
+        backend = str(model_config.get("attention_backend", "sdpa")).lower()
+        self._set_combo_by_data(
+            self.attention_backend,
+            backend,
+            {
+                "sdpa": "SDPA / Flash when available",
+                "eager": "PyTorch eager",
+            },
+        )
+        if "attention_window" in model_config:
+            try:
+                self.attention_window.setValue(int(model_config["attention_window"]))
+            except (TypeError, ValueError):
+                LOGGER.warning("Invalid attention_window in checkpoint %s: %r", checkpoint_path, model_config["attention_window"])
+        LOGGER.info("Fine-tune architecture synced from base checkpoint: %s", checkpoint_path)
+        return True
 
     def _attention_type_value(self) -> str:
         """Return the selected attention layout identifier.
@@ -5220,6 +5466,7 @@ class MainWindow(QMainWindow):
             else:
                 lines.append("[OK] Base checkpoint weights can be used for fine-tuning.")
             lines.append(f"[OK] {stage_message}" if stage_ok else f"[BLOCK] {stage_message}")
+            lines.extend(self._fine_tune_lineage_advice(base_path))
             lines.extend(f"[OK] {line}" for line in report.info)
             behavior_warnings = [
                 warning for warning in report.warnings
@@ -5235,6 +5482,51 @@ class MainWindow(QMainWindow):
             self.fine_tune_preview.setText("\n".join(lines))
         except Exception as exc:
             self.fine_tune_preview.setText(f"[BLOCK] Could not check fine-tune compatibility:\n{exc}")
+
+    def _fine_tune_lineage_advice(self, base_path: Path) -> list[str]:
+        """Return guidance about the selected fine-tune base checkpoint.
+
+        Args:
+            base_path: Selected checkpoint path.
+
+        Returns:
+            Lines for the fine-tune compatibility report.
+        """
+
+        lines: list[str] = []
+        try:
+            output_dir = self._fine_tune_output_path().resolve()
+            base_resolved = base_path.resolve()
+            if output_dir == base_resolved.parent or output_dir in base_resolved.parents:
+                return [
+                    "[BLOCK] Selected base checkpoint is inside the current fine-tune output folder.",
+                    "[FIX] Choose the original pretrained model or a completed earlier fine-tune from another folder.",
+                ]
+        except OSError:
+            pass
+        lineage_path = base_path.parent / "model_lineage.json"
+        summary_path = base_path.parent / "training_summary.json"
+        lineage = read_json(lineage_path, default={}) or {}
+        summary = read_json(summary_path, default={}) or {}
+        training_mode = str(lineage.get("training_mode") or (summary.get("training_config") or {}).get("training_mode") or "")
+        stage = str((summary.get("model_lineage") or lineage).get("fine_tune_stage") or "")
+        if training_mode == "fine_tune":
+            stage_text = f" ({stage})" if stage else ""
+            lines.append(f"[INFO] Selected base is a previous fine-tuned checkpoint{stage_text}.")
+            lines.append("[INFO] This is correct for cumulative tuning, such as conversation -> instruction -> code.")
+        elif training_mode == "pretrain":
+            lines.append("[OK] Selected base is the pretrained model checkpoint.")
+            lines.append("[INFO] This is correct when starting a new independent fine-tune branch.")
+        else:
+            lines.append("[INFO] Could not read model lineage; compatibility check will still validate tensor shapes.")
+        project_base = self.current_project_file.parent / "models" / "final_model.pt" if self.current_project_file else None
+        if project_base and project_base.exists():
+            try:
+                if base_path.resolve() != project_base.resolve() and training_mode != "fine_tune":
+                    lines.append(f"[HINT] Project pretrained model is: {project_base}")
+            except OSError:
+                pass
+        return lines
 
     def _training_history_path(self) -> Path:
         """Return the training history path for the selected model folder.
@@ -5830,9 +6122,10 @@ class MainWindow(QMainWindow):
             else:
                 log.append(f"Recommended checkpoint: {best_checkpoint}")
         output_dir = self.active_training_output_dir or Path(result.checkpoint_path).parent
+        stage_key = self.active_task_kind if self.active_task_kind in {"training", "fine_tune"} else "training"
         self.export_model_dir.setText(str(output_dir))
         try:
-            if Path(output_dir).resolve() == Path(self.model_dir.text()).resolve():
+            if stage_key != "fine_tune" and Path(output_dir).resolve() == Path(self.model_dir.text()).resolve():
                 self.fine_tune_checkpoint.setText(str(result.checkpoint_path))
         except OSError:
             pass
@@ -5843,7 +6136,6 @@ class MainWindow(QMainWindow):
         else:
             self.project_state.setText("Training complete")
             self.train_status.setText(f"Training: loss {result.final_train_loss:.4f}")
-        stage_key = self.active_task_kind if self.active_task_kind in {"training", "fine_tune"} else "training"
         title = "Fine-tuning complete" if stage_key == "fine_tune" else "Model training complete"
         if getattr(result, "stopped", False):
             title = "Fine-tuning stopped" if stage_key == "fine_tune" else "Model training stopped"
