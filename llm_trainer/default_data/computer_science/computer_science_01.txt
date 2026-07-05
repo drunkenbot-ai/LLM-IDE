@@ -1,0 +1,77 @@
+A computer follows instructions.
+The instructions are called a program.
+A programmer writes a program.
+The computer runs the program.
+
+The CPU is the central processing unit.
+It performs many instructions.
+The GPU is good at many similar calculations.
+Games and machine learning often use GPUs.
+
+RAM is working memory.
+RAM is fast.
+RAM forgets data when power is off.
+Storage keeps data longer.
+
+A file stores data.
+A folder groups files.
+An operating system manages files, memory, and devices.
+Windows, Linux, and macOS are operating systems.
+
+The internet connects many computers.
+A browser shows web pages.
+A server sends data.
+A client asks for data.
+
+An algorithm is a set of steps.
+Making tea can be an algorithm.
+Boil water.
+Add tea.
+Wait.
+Pour into a cup.
+
+A variable stores a value.
+In Python, x = 5 stores five in x.
+The value can be used later.
+The value can also change.
+
+A loop repeats work.
+If you print numbers from one to five, a loop helps.
+Without a loop, you write many similar lines.
+
+A function groups steps.
+A function can take input.
+A function can return output.
+Functions make programs easier to read.
+
+Data structures organize data.
+A list keeps items in order.
+A dictionary connects keys to values.
+A set stores unique items.
+
+SQL is used with databases.
+A database stores structured data.
+A table has rows and columns.
+A query asks the database for information.
+
+Git tracks changes in files.
+A commit saves a snapshot.
+A branch lets people work separately.
+Good commit messages explain the change.
+
+Linux uses many commands.
+pwd shows the current folder.
+ls lists files.
+cd changes folders.
+mkdir creates a folder.
+
+Debugging means finding and fixing errors.
+Read the error message.
+Find the line number.
+Check the input.
+Test one change at a time.
+
+Good code is clear.
+Names should explain meaning.
+Short functions are easier to test.
+Comments should explain why, not repeat what.

@@ -1,0 +1,4992 @@
+
+
+# Emotion Dataset - Happy
+
+Emma got a new puppy.
+She is smiling.
+How does Emma feel?
+Happy.
+
+---
+
+Ben saw his friend at the park.
+He waved and ran over.
+How does Ben feel?
+Happy.
+
+---
+
+Lily ate her favorite cake.
+She licked the plate.
+How does Lily feel?
+Happy.
+
+---
+
+The sun came out after rain.
+The children played outside.
+How do the children feel?
+Happy.
+
+---
+
+Dad came home early.
+He hugged his daughter.
+How does the daughter feel?
+Happy.
+
+---
+
+Mia found a pretty seashell.
+She put it in her pocket.
+How does Mia feel?
+Happy.
+
+---
+
+The team won the soccer game.
+Everyone cheered.
+How do the players feel?
+Happy.
+
+---
+
+Grandma sent a gift in the mail.
+The child opened it quickly.
+How does the child feel?
+Happy.
+
+---
+
+The garden grew colorful flowers.
+The girl looked at them.
+How does the girl feel?
+Happy.
+
+---
+
+Tom finished his puzzle.
+He clapped his hands.
+How does Tom feel?
+Happy.
+
+---
+
+Sara heard her favorite song.
+She started dancing.
+How does Sara feel?
+Happy.
+
+---
+
+The family went to the beach.
+The kids built a sandcastle.
+How do the kids feel?
+Happy.
+
+---
+
+The teacher gave a gold star.
+The student smiled wide.
+How does the student feel?
+Happy.
+
+---
+
+The rain stopped just in time.
+The picnic could start.
+How does the family feel?
+Happy.
+
+---
+
+The baby laughed at the funny face.
+Everyone laughed too.
+How does the baby feel?
+Happy.
+
+---
+
+The boy caught a big fish.
+He showed it to his dad.
+How does the boy feel?
+Happy.
+
+---
+
+The girl got a new bike.
+She rode it around the block.
+How does the girl feel?
+Happy.
+
+---
+
+The movie had a happy ending.
+The audience clapped.
+How does the audience feel?
+Happy.
+
+---
+
+The cookies came out of the oven.
+They smelled delicious.
+How does the baker feel?
+Happy.
+
+---
+
+The dog caught the ball.
+It wagged its tail.
+How does the dog feel?
+Happy.
+
+---
+
+The class went on a field trip.
+Everyone was excited and happy.
+How do the students feel?
+Happy.
+
+---
+
+The letter from grandma arrived.
+The boy read it twice.
+How does the boy feel?
+Happy.
+
+---
+
+The flowers bloomed in spring.
+The girl picked one for her mom.
+How does the girl feel?
+Happy.
+
+---
+
+The song was beautiful.
+The singer received applause.
+How does the singer feel?
+Happy.
+
+---
+
+The children built a snowman.
+They gave it a hat.
+How do the children feel?
+Happy.
+
+---
+
+The boy learned to tie his shoes.
+He did it by himself.
+How does the boy feel?
+Happy.
+
+---
+
+The family had a picnic.
+The sun was warm.
+How does the family feel?
+Happy.
+
+---
+
+The girl saw a rainbow.
+She pointed at the colors.
+How does the girl feel?
+Happy.
+
+---
+
+The dog greeted its owner at the door.
+It jumped and barked.
+How does the dog feel?
+Happy.
+
+---
+
+The boy finished his chores.
+He got to play outside.
+How does the boy feel?
+Happy.
+
+---
+
+The baby took its first step.
+The parents clapped and cheered.
+How do the parents feel?
+Happy.
+
+---
+
+The butterfly landed on the flower.
+The girl watched it closely.
+How does the girl feel?
+Happy.
+
+---
+
+The ice cream was cold and sweet.
+The child ate it slowly.
+How does the child feel?
+Happy.
+
+---
+
+The girl found a four-leaf clover.
+She believed it was lucky.
+How does the girl feel?
+Happy.
+
+---
+
+The boy made a new friend.
+They played together all day.
+How does the boy feel?
+Happy.
+
+---
+
+The flowers smelled wonderful.
+The woman put them in a vase.
+How does the woman feel?
+Happy.
+
+---
+
+The child got a hug from mom.
+She felt warm inside.
+How does the child feel?
+Happy.
+
+---
+
+The stars were bright in the sky.
+The boy made a wish.
+How does the boy feel?
+Happy.
+
+---
+
+The cake was delicious.
+Everyone had a second slice.
+How do the people feel?
+Happy.
+
+---
+
+The boy helped his dad garden.
+They planted new seeds.
+How does the boy feel?
+Happy.
+
+---
+
+The girl drew a beautiful picture.
+She hung it on the fridge.
+How does the girl feel?
+Happy.
+
+---
+
+The sun was shining.
+The birds were singing.
+How do the people feel?
+Happy.
+
+---
+
+The boy found a toy he lost.
+He hugged it tightly.
+How does the boy feel?
+Happy.
+
+---
+
+The family had a dinner together.
+Everyone shared stories.
+How does the family feel?
+Happy.
+
+---
+
+The child won a small prize.
+He told his mom proudly.
+How does the child feel?
+Happy.
+
+---
+
+The puppy licked the child's face.
+The child giggled.
+How does the child feel?
+Happy.
+
+---
+
+The girl got a new dress.
+She twirled in front of the mirror.
+How does the girl feel?
+Happy.
+
+---
+
+The boy saw his favorite cartoon.
+He laughed out loud.
+How does the boy feel?
+Happy.
+
+---
+
+The cookies were shared with friends.
+Everyone enjoyed them.
+How do the friends feel?
+Happy.
+
+---
+
+The garden was full of butterflies.
+The child chased them gently.
+How does the child feel?
+Happy.
+
+---
+
+The boy got a letter from his pen pal.
+He read it happily.
+How does the boy feel?
+Happy.
+
+---
+
+# Sad
+
+Emma dropped her ice cream.
+It fell on the ground.
+How does Emma feel?
+Sad.
+
+---
+
+The boy's goldfish died.
+He buried it in the garden.
+How does the boy feel?
+Sad.
+
+---
+
+Mom said they could not go to the zoo.
+The girl looked down.
+How does the girl feel?
+Sad.
+
+---
+
+The swing broke at the park.
+The children could not play.
+How do the children feel?
+Sad.
+
+---
+
+The boy's balloon flew away.
+He watched it float up.
+How does the boy feel?
+Sad.
+
+---
+
+The rain ruined the outdoor party.
+Everyone had to go inside.
+How do the people feel?
+Sad.
+
+---
+
+The girl lost her favorite hair clip.
+She looked everywhere.
+How does the girl feel?
+Sad.
+
+---
+
+The cat ran away from home.
+The owner called its name.
+How does the owner feel?
+Sad.
+
+---
+
+The cake fell on the floor.
+Mom worked hard on it.
+How does mom feel?
+Sad.
+
+---
+
+The boy's friend moved away.
+They said goodbye.
+How does the boy feel?
+Sad.
+
+---
+
+The girl's drawing got torn.
+She tried to tape it.
+How does the girl feel?
+Sad.
+
+---
+
+The sun set too quickly.
+The children had to go home.
+How do the children feel?
+Sad.
+
+---
+
+The flower wilted in the heat.
+The girl watered it too late.
+How does the girl feel?
+Sad.
+
+---
+
+The song was very slow.
+It reminded her of goodbye.
+How does she feel?
+Sad.
+
+---
+
+The boy's kite crashed.
+It broke into pieces.
+How does the boy feel?
+Sad.
+
+---
+
+The girl missed her grandmother.
+She held her photo.
+How does the girl feel?
+Sad.
+
+---
+
+The playground was empty.
+No one came to play.
+How does the child feel?
+Sad.
+
+---
+
+The bird's nest fell down.
+The eggs broke.
+How does the child feel?
+Sad.
+
+---
+
+The cookie jar was empty.
+The child wanted a snack.
+How does the child feel?
+Sad.
+
+---
+
+The movie had a sad ending.
+The girl wiped her eyes.
+How does the girl feel?
+Sad.
+
+---
+
+The boy spilled his milk.
+He had no more to drink.
+How does the boy feel?
+Sad.
+
+---
+
+The girl's bracelet snapped.
+The beads scattered.
+How does the girl feel?
+Sad.
+
+---
+
+The dog was sick.
+It would not eat.
+How does the owner feel?
+Sad.
+
+---
+
+The old tree was cut down.
+The birds lost their home.
+How does the child feel?
+Sad.
+
+---
+
+The girl's favorite show ended.
+There were no more episodes.
+How does the girl feel?
+Sad.
+
+---
+
+The boy's hat blew off.
+It landed in the river.
+How does the boy feel?
+Sad.
+
+---
+
+The phone call was bad news.
+The woman sat down slowly.
+How does she feel?
+Sad.
+
+---
+
+The butterfly's wing was torn.
+It could not fly.
+How does the child feel?
+Sad.
+
+---
+
+The snow melted too fast.
+The snowman disappeared.
+How do the children feel?
+Sad.
+
+---
+
+The library book was due.
+The girl had not finished it.
+How does the girl feel?
+Sad.
+
+---
+
+The boy's toy broke.
+He could not fix it.
+How does the boy feel?
+Sad.
+
+---
+
+The rain came down hard.
+The picnic was cancelled.
+How does the family feel?
+Sad.
+
+---
+
+The girl's pet hamster died.
+She cried in her room.
+How does the girl feel?
+Sad.
+
+---
+
+The teacher announced a test.
+The student was not ready.
+How does the student feel?
+Sad.
+
+---
+
+The boy's drawing was erased.
+He spent hours on it.
+How does the boy feel?
+Sad.
+
+---
+
+The cake was all eaten.
+There was no piece left.
+How does the child feel?
+Sad.
+
+---
+
+The friend forgot the plan.
+They could not meet.
+How does the child feel?
+Sad.
+
+---
+
+The balloon popped suddenly.
+The child was startled and sad.
+How does the child feel?
+Sad.
+
+---
+
+The girl's dress got muddy.
+It was her favorite dress.
+How does the girl feel?
+Sad.
+
+---
+
+The boy's homework was lost.
+He had to redo it.
+How does the boy feel?
+Sad.
+
+---
+
+The stars were hidden by clouds.
+The boy could not count them.
+How does the boy feel?
+Sad.
+
+---
+
+The car broke down.
+The trip was delayed.
+How does the family feel?
+Sad.
+
+---
+
+The girl's music stopped.
+Her toy ran out of batteries.
+How does the girl feel?
+Sad.
+
+---
+
+The man lost his wallet.
+He searched everywhere.
+How does the man feel?
+Sad.
+
+---
+
+The tree lost all its leaves.
+It looked bare.
+How does the gardener feel?
+Sad.
+
+---
+
+The bird flew south for winter.
+The child waved goodbye.
+How does the child feel?
+Sad.
+
+---
+
+The girl's painting got wet.
+The colors ran together.
+How does the girl feel?
+Sad.
+
+---
+
+The boy's shoes were too small.
+He could not wear them.
+How does the boy feel?
+Sad.
+
+---
+
+The family pet was old and tired.
+It slept all the time.
+How does the family feel?
+Sad.
+
+---
+
+The sun was too hot.
+The flowers drooped.
+How does the gardener feel?
+Sad.
+
+---
+
+The party was over.
+Everyone went home.
+How does the birthday child feel?
+Sad.
+
+---
+
+# Angry
+
+Someone broke Tom's toy truck.
+He saw the pieces on the floor.
+How does Tom feel?
+Angry.
+
+---
+
+The dog ate Sara's sandwich.
+She had nothing for lunch.
+How does Sara feel?
+Angry.
+
+---
+
+The boy drew on the wall.
+His mom saw it and frowned.
+How does mom feel?
+Angry.
+
+---
+
+Someone took Ben's crayon.
+He did not give it back.
+How does Ben feel?
+Angry.
+
+---
+
+The computer stopped working.
+The girl lost her work.
+How does the girl feel?
+Angry.
+
+---
+
+The car cut in front of dad.
+Dad honked the horn.
+How does dad feel?
+Angry.
+
+---
+
+The teacher was talking.
+The students kept whispering.
+How does the teacher feel?
+Angry.
+
+---
+
+The boy kicked the ball.
+It broke the window.
+How does the neighbor feel?
+Angry.
+
+---
+
+The milk spilled on the carpet.
+The child left it there.
+How does mom feel?
+Angry.
+
+---
+
+Someone scratched the new car.
+The owner saw the mark.
+How does the owner feel?
+Angry.
+
+---
+
+The phone battery died.
+The call was cut off.
+How does the caller feel?
+Angry.
+
+---
+
+The cat knocked over the vase.
+It shattered on the floor.
+How does the owner feel?
+Angry.
+
+---
+
+The boy was blamed for something.
+He did not do it.
+How does the boy feel?
+Angry.
+
+---
+
+The restaurant served cold food.
+The customer complained.
+How does the customer feel?
+Angry.
+
+---
+
+The alarm clock did not ring.
+The man was late for work.
+How does the man feel?
+Angry.
+
+---
+
+Someone stole her bicycle.
+She reported it to her dad.
+How does she feel?
+Angry.
+
+---
+
+The television remote was lost.
+The family could not change the channel.
+How does the family feel?
+Angry.
+
+---
+
+The rain leaked through the roof.
+The water damaged the floor.
+How does the homeowner feel?
+Angry.
+
+---
+
+The neighbor played loud music.
+The baby could not sleep.
+How does the parent feel?
+Angry.
+
+---
+
+The boy pushed his brother.
+The brother fell and cried.
+How does the pushed brother feel?
+Angry.
+
+---
+
+The store ran out of bread.
+The customer needed it for dinner.
+How does the customer feel?
+Angry.
+
+---
+
+The pencil broke while writing.
+The student had no sharpener.
+How does the student feel?
+Angry.
+
+---
+
+The bird pecked the fruit.
+The farmer lost his harvest.
+How does the farmer feel?
+Angry.
+
+---
+
+The boy hid his sister's doll.
+She could not find it.
+How does the sister feel?
+Angry.
+
+---
+
+The company forgot her order.
+She waited for nothing.
+How does she feel?
+Angry.
+
+---
+
+The gate was locked.
+The child could not get in.
+How does the child feel?
+Angry.
+
+---
+
+The towel was taken by someone.
+The swimmer had no towel.
+How does the swimmer feel?
+Angry.
+
+---
+
+The printer jammed.
+The report could not print.
+How does the worker feel?
+Angry.
+
+---
+
+The child was not allowed to play.
+He watched others from the window.
+How does the child feel?
+Angry.
+
+---
+
+The garbage truck came early.
+The bin was not outside.
+How does the resident feel?
+Angry.
+
+---
+
+The seat was taken.
+The traveler had to stand.
+How does the traveler feel?
+Angry.
+
+---
+
+The pizza arrived cold.
+The family was hungry.
+How does the family feel?
+Angry.
+
+---
+
+The song kept skipping.
+The listener was annoyed.
+How does the listener feel?
+Angry.
+
+---
+
+The child's drawing was copied.
+The other child took credit.
+How does the child feel?
+Angry.
+
+---
+
+The water was too cold.
+The swimmer went out.
+How does the swimmer feel?
+Angry.
+
+---
+
+The toy was expensive.
+It broke in one day.
+How does the parent feel?
+Angry.
+
+---
+
+The movie was paused every minute.
+The viewer got frustrated.
+How does the viewer feel?
+Angry.
+
+---
+
+The girl's hair got pulled.
+She yelled at her brother.
+How does she feel?
+Angry.
+
+---
+
+The train was delayed.
+The passenger missed the meeting.
+How does the passenger feel?
+Angry.
+
+---
+
+The dog chewed the shoes.
+The owner had no pair.
+How does the owner feel?
+Angry.
+
+---
+
+The light bulb burned out.
+The room was dark.
+How does the reader feel?
+Angry.
+
+---
+
+The child was teased at school.
+The teacher had to intervene.
+How does the child feel?
+Angry.
+
+---
+
+The pen leaked on the shirt.
+The stain would not come out.
+How does the wearer feel?
+Angry.
+
+---
+
+The door was stuck.
+The man could not enter.
+How does the man feel?
+Angry.
+
+---
+
+The soccer player was fouled.
+The referee did not see it.
+How does the player feel?
+Angry.
+
+---
+
+The toast was burnt.
+The child had no breakfast.
+How does the child feel?
+Angry.
+
+---
+
+The flower pot was knocked over.
+The dirt spilled everywhere.
+How does the gardener feel?
+Angry.
+
+---
+
+The wind blew the papers away.
+The office worker chased them.
+How does the worker feel?
+Angry.
+
+---
+
+The seatbelt was stuck.
+The passenger could not unbuckle.
+How does the passenger feel?
+Angry.
+
+---
+
+The game froze on the screen.
+The gamer lost all progress.
+How does the gamer feel?
+Angry.
+
+---
+
+# Afraid
+
+A loud thunder woke the child.
+The room was dark.
+How does the child feel?
+Afraid.
+
+---
+
+The dog growled at the stranger.
+The child hid behind mom.
+How does the child feel?
+Afraid.
+
+---
+
+The roller coaster went very high.
+The rider closed his eyes.
+How does the rider feel?
+Afraid.
+
+---
+
+The girl heard a noise at night.
+She pulled the blanket over her head.
+How does the girl feel?
+Afraid.
+
+---
+
+The boat rocked in the storm.
+The passenger held on tight.
+How does the passenger feel?
+Afraid.
+
+---
+
+The big dog ran toward the child.
+The child froze in place.
+How does the child feel?
+Afraid.
+
+---
+
+The light went out suddenly.
+The girl was alone.
+How does the girl feel?
+Afraid.
+
+---
+
+The plane hit turbulence.
+The passenger gripped the armrest.
+How does the passenger feel?
+Afraid.
+
+---
+
+The snake slithered across the path.
+The hiker stepped back.
+How does the hiker feel?
+Afraid.
+
+---
+
+The car skidded on the ice.
+The driver held the wheel tightly.
+How does the driver feel?
+Afraid.
+
+---
+
+The spider crawled up the wall.
+The child screamed.
+How does the child feel?
+Afraid.
+
+---
+
+The tree branch tapped the window.
+The boy thought it was a person.
+How does the boy feel?
+Afraid.
+
+---
+
+The water was very deep.
+The swimmer could not see the bottom.
+How does the swimmer feel?
+Afraid.
+
+---
+
+The stranger asked for directions.
+The child did not answer.
+How does the child feel?
+Afraid.
+
+---
+
+The horse ran very fast.
+The rider pulled the reins.
+How does the rider feel?
+Afraid.
+
+---
+
+The house was empty.
+The woman heard a creak.
+How does the woman feel?
+Afraid.
+
+---
+
+The thunder was very close.
+The dog hid under the bed.
+How does the dog feel?
+Afraid.
+
+---
+
+The elevator stopped between floors.
+The person pushed the alarm.
+How does the person feel?
+Afraid.
+
+---
+
+The fire alarm went off.
+The student felt panic.
+How does the student feel?
+Afraid.
+
+---
+
+The mask looked scary.
+The toddler started crying.
+How does the toddler feel?
+Afraid.
+
+---
+
+The road was icy and curvy.
+The driver slowed down.
+How does the driver feel?
+Afraid.
+
+---
+
+The shadow moved on the wall.
+The child looked around.
+How does the child feel?
+Afraid.
+
+---
+
+The balloon popped loudly.
+The baby jumped and cried.
+How does the baby feel?
+Afraid.
+
+---
+
+The floor creaked in the old house.
+The visitor stopped walking.
+How does the visitor feel?
+Afraid.
+
+---
+
+The bee buzzed near the child's ear.
+The child stood very still.
+How does the child feel?
+Afraid.
+
+---
+
+The movie had a scary monster.
+The girl covered her eyes.
+How does the girl feel?
+Afraid.
+
+---
+
+The bridge swayed in the wind.
+The walker held the rail.
+How does the walker feel?
+Afraid.
+
+---
+
+The dark alley had no lights.
+The woman turned back.
+How does the woman feel?
+Afraid.
+
+---
+
+The dog chased the cat up the tree.
+The cat meowed loudly.
+How does the cat feel?
+Afraid.
+
+---
+
+The storm knocked down a tree.
+The family hid in the basement.
+How does the family feel?
+Afraid.
+
+---
+
+The teacher called the student's name.
+The student had not done the work.
+How does the student feel?
+Afraid.
+
+---
+
+The water rose in the basement.
+The homeowner watched nervously.
+How does the homeowner feel?
+Afraid.
+
+---
+
+The steep cliff overlooked the sea.
+The visitor stepped back.
+How does the visitor feel?
+Afraid.
+
+---
+
+The fire spread quickly.
+The people ran to safety.
+How do the people feel?
+Afraid.
+
+---
+
+The clown had a big red nose.
+The child started to cry.
+How does the child feel?
+Afraid.
+
+---
+
+The cave was very dark.
+The explorer used a flashlight.
+How does the explorer feel?
+Afraid.
+
+---
+
+The dentist held a big needle.
+The patient looked away.
+How does the patient feel?
+Afraid.
+
+---
+
+The child lost her parents in the store.
+She started crying.
+How does the child feel?
+Afraid.
+
+---
+
+The wild animal came close to the tent.
+The camper kept quiet.
+How does the camper feel?
+Afraid.
+
+---
+
+The news on TV was frightening.
+The family watched silently.
+How does the family feel?
+Afraid.
+
+---
+
+The water in the river was fast.
+The swimmer stayed on the bank.
+How does the swimmer feel?
+Afraid.
+
+---
+
+The box moved by itself.
+The child ran out of the room.
+How does the child feel?
+Afraid.
+
+---
+
+The tree fell across the road.
+The driver stopped quickly.
+How does the driver feel?
+Afraid.
+
+---
+
+The man in the mask came near.
+The girl backed away.
+How does the girl feel?
+Afraid.
+
+---
+
+The loud bang came from nowhere.
+Everyone in the room froze.
+How do the people feel?
+Afraid.
+
+---
+
+The boat capsized in the rough sea.
+The sailor clung to the side.
+How does the sailor feel?
+Afraid.
+
+---
+
+The child had a nightmare.
+He woke up crying.
+How does the child feel?
+Afraid.
+
+---
+
+The tall ladder wobbled.
+The painter held on tight.
+How does the painter feel?
+Afraid.
+
+---
+
+The wind howled like a wolf.
+The family stayed inside.
+How does the family feel?
+Afraid.
+
+---
+
+The bear stood on its hind legs.
+The hiker backed away slowly.
+How does the hiker feel?
+Afraid.
+
+---
+
+The firecracker went off nearby.
+The dog yelped and ran.
+How does the dog feel?
+Afraid.
+
+---
+
+# Proud
+
+The boy built a tall tower of blocks.
+He showed his dad.
+How does the boy feel?
+Proud.
+
+---
+
+The girl finished her painting.
+She signed her name at the bottom.
+How does the girl feel?
+Proud.
+
+---
+
+Tom learned to ride his bike.
+He rode down the street.
+How does Tom feel?
+Proud.
+
+---
+
+The student got an A on the test.
+She put it on the fridge.
+How does the student feel?
+Proud.
+
+---
+
+The boy caught a big fish.
+He held it up for everyone.
+How does the boy feel?
+Proud.
+
+---
+
+The girl planted a flower.
+It grew tall and bloomed.
+How does the girl feel?
+Proud.
+
+---
+
+The child cleaned his room by himself.
+Mom said it looked nice.
+How does the child feel?
+Proud.
+
+---
+
+The boy wrote his name clearly.
+He showed the teacher.
+How does the boy feel?
+Proud.
+
+---
+
+The girl baked cookies alone.
+They came out perfect.
+How does the girl feel?
+Proud.
+
+---
+
+The child climbed to the top of the slide.
+She waved to her mom.
+How does the child feel?
+Proud.
+
+---
+
+The boy fixed his broken toy.
+It worked again.
+How does the boy feel?
+Proud.
+
+---
+
+The girl sang a song on stage.
+Everyone clapped.
+How does the girl feel?
+Proud.
+
+---
+
+The child tied his shoes without help.
+He stood up and walked.
+How does the child feel?
+Proud.
+
+---
+
+The boy drew a picture of his family.
+He gave it to his mom.
+How does the boy feel?
+Proud.
+
+---
+
+The girl finished reading a big book.
+She told the story to her dad.
+How does the girl feel?
+Proud.
+
+---
+
+The child made a card for grandma.
+Grandma smiled and hugged her.
+How does the child feel?
+Proud.
+
+---
+
+The boy won the spelling bee.
+He held the trophy.
+How does the boy feel?
+Proud.
+
+---
+
+The girl created a clay pot.
+It came out round and smooth.
+How does the girl feel?
+Proud.
+
+---
+
+The child memorized a poem.
+She recited it to the class.
+How does the child feel?
+Proud.
+
+---
+
+The boy built a birdhouse.
+The birds came to live in it.
+How does the boy feel?
+Proud.
+
+---
+
+The girl painted her room.
+It looked bright and new.
+How does the girl feel?
+Proud.
+
+---
+
+The child played a song on the piano.
+His parents listened quietly.
+How does the child feel?
+Proud.
+
+---
+
+The boy helped his mom carry groceries.
+She said he was strong.
+How does the boy feel?
+Proud.
+
+---
+
+The girl sewed a button on her shirt.
+It stayed on perfectly.
+How does the girl feel?
+Proud.
+
+---
+
+The child solved a hard puzzle.
+He put the last piece in.
+How does the child feel?
+Proud.
+
+---
+
+The boy scored a goal in soccer.
+His team cheered.
+How does the boy feel?
+Proud.
+
+---
+
+The girl made her own lunch.
+She packed it in a bag.
+How does the girl feel?
+Proud.
+
+---
+
+The child folded all the laundry.
+The pile was neat.
+How does the child feel?
+Proud.
+
+---
+
+The boy learned a magic trick.
+He performed it for his friends.
+How does the boy feel?
+Proud.
+
+---
+
+The girl wrote a story.
+She read it out loud.
+How does the girl feel?
+Proud.
+
+---
+
+The child woke up early on his own.
+He got dressed quietly.
+How does the child feel?
+Proud.
+
+---
+
+The boy cut the grass for his dad.
+The yard looked tidy.
+How does the boy feel?
+Proud.
+
+---
+
+The girl swam across the pool.
+She reached the other side.
+How does the girl feel?
+Proud.
+
+---
+
+The child set the table for dinner.
+He put out all the plates.
+How does the child feel?
+Proud.
+
+---
+
+The boy made a robot from boxes.
+It stood upright.
+How does the boy feel?
+Proud.
+
+---
+
+The girl dusted the furniture.
+The room shone.
+How does the girl feel?
+Proud.
+
+---
+
+The child poured his own drink.
+He did not spill.
+How does the child feel?
+Proud.
+
+---
+
+The boy named all the planets.
+His teacher was impressed.
+How does the boy feel?
+Proud.
+
+---
+
+The girl climbed the monkey bars.
+She crossed to the end.
+How does the girl feel?
+Proud.
+
+---
+
+The child took care of the pet.
+The pet was healthy.
+How does the child feel?
+Proud.
+
+---
+
+The boy won a ribbon at the fair.
+He pinned it to his shirt.
+How does the boy feel?
+Proud.
+
+---
+
+The girl made a friendship bracelet.
+She gave it to her best friend.
+How does the girl feel?
+Proud.
+
+---
+
+The child answered all the questions.
+He knew every answer.
+How does the child feel?
+Proud.
+
+---
+
+The boy built a model airplane.
+It looked realistic.
+How does the boy feel?
+Proud.
+
+---
+
+The girl learned to skip rope.
+She skipped fifty times.
+How does the girl feel?
+Proud.
+
+---
+
+The child wrote a thank-you note.
+He mailed it himself.
+How does the child feel?
+Proud.
+
+---
+
+The boy fixed the leaky faucet.
+The water stopped dripping.
+How does the boy feel?
+Proud.
+
+---
+
+The girl carried the heavy bag.
+She did not complain.
+How does the girl feel?
+Proud.
+
+---
+
+The child finished his homework early.
+He had time to play.
+How does the child feel?
+Proud.
+
+---
+
+The boy shared his snack.
+Everyone got a piece.
+How does the boy feel?
+Proud.
+
+---
+
+The girl helped her friend tie a bow.
+The friend smiled.
+How does the girl feel?
+Proud.
+
+---
+
+# Embarrassed
+
+Emma tripped on the stairs.
+Her books fell everywhere.
+How does Emma feel?
+Embarrassed.
+
+---
+
+The boy called the teacher "mom".
+The class laughed.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl wore her shirt backwards.
+Someone pointed it out.
+How does the girl feel?
+Embarrassed.
+
+---
+
+Tom farted loudly in the library.
+Everyone looked at him.
+How does Tom feel?
+Embarrassed.
+
+---
+
+The child sang loudly.
+Then he realized the music was off.
+How does the child feel?
+Embarrassed.
+
+---
+
+The girl had food on her face.
+She did not know.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The boy waved at a stranger.
+The stranger did not wave back.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The child's pants ripped at the park.
+She had to go home.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy spelled his name wrong.
+The teacher corrected him.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl's voice cracked while speaking.
+Everyone heard it.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child walked into the wrong classroom.
+The teacher asked him to leave.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy sneezed and his hat fell off.
+Everyone looked at him.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl's cup spilled on the table.
+The drink ran everywhere.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child laughed at a joke.
+No one else laughed.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy forgot his lines in the play.
+He stood silent on stage.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl fell off the swing.
+The other kids saw her fall.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child wore two different socks.
+His friend noticed.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy tried to tell a joke.
+He forgot the punchline.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl's skirt was tucked in her tights.
+She did not realize.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child burped loudly at the table.
+Everyone turned to look.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy dropped his tray in the cafeteria.
+Food went everywhere.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl called her friend by the wrong name.
+The friend looked confused.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child's drawing was shown to the class.
+He was not proud of it.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy's voice squeaked while singing.
+The choir stopped.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl waved to her dad.
+He was not looking.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child tripped over his own feet.
+He fell on the ground.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy's nose started bleeding in class.
+Blood dripped on his desk.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl laughed too loudly.
+People stared at her.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child asked a silly question.
+Everyone knew the answer.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy's fly was open.
+His friend whispered to him.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl's paper had a big stain.
+She turned it in anyway.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child's shoe came off while running.
+He had to hop back.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy read the wrong page.
+The class waited for him.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl got hiccups during the test.
+Everyone heard her.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child's mom kissed him at school.
+The other kids saw.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy's eraser made a loud squeak.
+The class looked up.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl wore a costume on the wrong day.
+She was the only one dressed up.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child's backpack was unpacked.
+All his things fell out.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy sneezed and made a mess.
+He had no tissue.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl called her teacher "grandma".
+The class giggled.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child's glasses fell off his face.
+They hit the floor loudly.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy's hat flew off in the wind.
+Everyone watched him chase it.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl farted during the test.
+She tried to hide it.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child went to the wrong birthday party.
+He had a gift for a stranger.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy's socks had holes.
+His friend noticed.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl dropped her phone and it cracked.
+Everyone looked at her.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child waved at the parade.
+The float went past without seeing him.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy sang in the shower.
+His sister heard him.
+How does the boy feel?
+Embarrassed.
+
+---
+
+The girl tripped and her bag flew open.
+All her things scattered.
+How does the girl feel?
+Embarrassed.
+
+---
+
+The child cried in class.
+He tried to stop.
+How does the child feel?
+Embarrassed.
+
+---
+
+The boy's mom called him a baby name.
+His friends heard it.
+How does the boy feel?
+Embarrassed.
+
+---
+
+# Excited
+
+Tomorrow is Emma's birthday.
+She cannot fall asleep.
+How does Emma feel?
+Excited.
+
+---
+
+Ben is going to Disneyland.
+He packed his bag early.
+How does Ben feel?
+Excited.
+
+---
+
+The circus is coming to town.
+The children look at the posters.
+How do the children feel?
+Excited.
+
+---
+
+The girl got a letter from her pen pal.
+She tore it open fast.
+How does the girl feel?
+Excited.
+
+---
+
+The family is going to the beach.
+The boy packed his sand toys.
+How does the boy feel?
+Excited.
+
+---
+
+The school announced a field trip.
+The students cheered.
+How do the students feel?
+Excited.
+
+---
+
+The new movie is out today.
+The friends ran to the theater.
+How do the friends feel?
+Excited.
+
+---
+
+The baby saw a balloon.
+She reached out her hands.
+How does the baby feel?
+Excited.
+
+---
+
+The dog knows it is walk time.
+It runs to the door.
+How does the dog feel?
+Excited.
+
+---
+
+The child sees the ice cream truck.
+He runs to get his money.
+How does the child feel?
+Excited.
+
+---
+
+The snow is falling outside.
+The children grab their sleds.
+How do the children feel?
+Excited.
+
+---
+
+The girl won a prize in the contest.
+She jumped up and down.
+How does the girl feel?
+Excited.
+
+---
+
+The boy sees his grandma at the airport.
+He waves his arms.
+How does the boy feel?
+Excited.
+
+---
+
+The science fair is tomorrow.
+The student checks his project.
+How does the student feel?
+Excited.
+
+---
+
+The family is going camping.
+The child packs his sleeping bag.
+How does the child feel?
+Excited.
+
+---
+
+The girl gets a new bicycle.
+She rides it around the yard.
+How does the girl feel?
+Excited.
+
+---
+
+The movie premiere is tonight.
+The fans waited in line.
+How do the fans feel?
+Excited.
+
+---
+
+The birthday cake arrives.
+The child sees the candles.
+How does the child feel?
+Excited.
+
+---
+
+The boat ride is about to start.
+The passengers smile widely.
+How do the passengers feel?
+Excited.
+
+---
+
+The girl hears the music start.
+It is her favorite song.
+How does the girl feel?
+Excited.
+
+---
+
+The boy is going to a friend's house.
+He puts on his shoes quickly.
+How does the boy feel?
+Excited.
+
+---
+
+The holiday decorations go up.
+The child helps hang them.
+How does the child feel?
+Excited.
+
+---
+
+The star is about to perform.
+The audience claps loudly.
+How does the performer feel?
+Excited.
+
+---
+
+The new playground opened.
+The kids run to the swings.
+How do the kids feel?
+Excited.
+
+---
+
+The girl gets a package in the mail.
+She rips the paper off.
+How does the girl feel?
+Excited.
+
+---
+
+The boy sees the hot air balloon.
+It is huge and colorful.
+How does the boy feel?
+Excited.
+
+---
+
+The school play is tonight.
+The actors are backstage.
+How do the actors feel?
+Excited.
+
+---
+
+The family is going on a train ride.
+The child looks out the window.
+How does the child feel?
+Excited.
+
+---
+
+The girl gets a new pair of shoes.
+She wears them around the house.
+How does the girl feel?
+Excited.
+
+---
+
+The boy sees the fireworks.
+They are loud and bright.
+How does the boy feel?
+Excited.
+
+---
+
+The zoo has a baby panda.
+Everyone wants to see it.
+How do the people feel?
+Excited.
+
+---
+
+The child is going to a party.
+She picks her best dress.
+How does the child feel?
+Excited.
+
+---
+
+The boy is about to meet a hero.
+He holds his autograph book.
+How does the boy feel?
+Excited.
+
+---
+
+The girls find a hidden treasure.
+It is a box of old coins.
+How do the girls feel?
+Excited.
+
+---
+
+The boy smells popcorn.
+He knows it is movie night.
+How does the boy feel?
+Excited.
+
+---
+
+The child hears the bell ring.
+School is over for the day.
+How does the child feel?
+Excited.
+
+---
+
+The girl sees a rainbow.
+She runs to tell her mom.
+How does the girl feel?
+Excited.
+
+---
+
+The boy's team is winning.
+He cheers from the stands.
+How does the boy feel?
+Excited.
+
+---
+
+The family is going to a wedding.
+The child puts on a bow tie.
+How does the child feel?
+Excited.
+
+---
+
+The girl gets a call from her best friend.
+She smiles brightly.
+How does the girl feel?
+Excited.
+
+---
+
+The boy sees a big truck outside.
+It has a crane on it.
+How does the boy feel?
+Excited.
+
+---
+
+The child finds a four-leaf clover.
+She thinks she is lucky.
+How does the child feel?
+Excited.
+
+---
+
+The girl opens her lunchbox.
+It has her favorite treat.
+How does the girl feel?
+Excited.
+
+---
+
+The boy sees the moon through a telescope.
+It is very close.
+How does the boy feel?
+Excited.
+
+---
+
+The family is going ice skating.
+The child puts on skates.
+How does the child feel?
+Excited.
+
+---
+
+The girl sees a shooting star.
+She makes a wish.
+How does the girl feel?
+Excited.
+
+---
+
+The boy finds a fossil at the beach.
+He shows it to his dad.
+How does the boy feel?
+Excited.
+
+---
+
+The child is going to see a parade.
+She brings a flag to wave.
+How does the child feel?
+Excited.
+
+---
+
+The girl learns a new dance.
+She shows it to her friends.
+How does the girl feel?
+Excited.
+
+---
+
+The boy gets a new video game.
+He puts it in the console.
+How does the boy feel?
+Excited.
+
+---
+
+The child sees a butterfly emerging.
+It spreads its wings.
+How does the child feel?
+Excited.
+
+---
+
+# Lonely
+
+The boy sat alone at lunch.
+Everyone else had friends.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl moved to a new town.
+She did not know anyone.
+How does the girl feel?
+Lonely.
+
+---
+
+The child played by himself.
+He had no one to share with.
+How does the child feel?
+Lonely.
+
+---
+
+The boy watched others playing.
+He was not invited.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl's best friend moved away.
+She felt empty inside.
+How does the girl feel?
+Lonely.
+
+---
+
+The old man lived by himself.
+No one visited him.
+How does the old man feel?
+Lonely.
+
+---
+
+The child looked at the empty swing.
+No one else was at the park.
+How does the child feel?
+Lonely.
+
+---
+
+The girl called her friend.
+The friend was not home.
+How does the girl feel?
+Lonely.
+
+---
+
+The boy sat on his bed.
+He had no one to talk to.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl saw happy families.
+She missed her own family.
+How does the girl feel?
+Lonely.
+
+---
+
+The child's siblings were all busy.
+He had no one to play with.
+How does the child feel?
+Lonely.
+
+---
+
+The boy walked home alone.
+The street was quiet.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl ate dinner by herself.
+She wished someone was there.
+How does the girl feel?
+Lonely.
+
+---
+
+The child's pet was sleeping.
+He wanted to play.
+How does the child feel?
+Lonely.
+
+---
+
+The boy read a book alone.
+He wanted to tell someone about it.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl looked at the stars.
+She wished she had a friend.
+How does the girl feel?
+Lonely.
+
+---
+
+The child sat in the corner.
+No one noticed him.
+How does the child feel?
+Lonely.
+
+---
+
+The boy's parents were at work.
+He was home with no one.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl colored by herself.
+She had no one to share crayons with.
+How does the girl feel?
+Lonely.
+
+---
+
+The child watched the rain alone.
+He had no one to splash in puddles with.
+How does the child feel?
+Lonely.
+
+---
+
+The boy's friends went to the movies.
+He was not invited.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl's phone never rang.
+No one texted her.
+How does the girl feel?
+Lonely.
+
+---
+
+The child was new at school.
+Everyone had groups already.
+How does the child feel?
+Lonely.
+
+---
+
+The boy sat on the steps.
+The street was empty.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl played with a single toy.
+She wished for a playmate.
+How does the girl feel?
+Lonely.
+
+---
+
+The child heard laughter outside.
+He was inside alone.
+How does the child feel?
+Lonely.
+
+---
+
+The boy's neighbor was on vacation.
+He missed his friend.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl looked at old photos.
+She missed her old friends.
+How does the girl feel?
+Lonely.
+
+---
+
+The child had no one to share his snack with.
+He ate it quietly.
+How does the child feel?
+Lonely.
+
+---
+
+The boy went to the fair alone.
+Everyone else had partners.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl's sister was at camp.
+She missed her sister.
+How does the girl feel?
+Lonely.
+
+---
+
+The child's group project had no partner.
+He worked alone.
+How does the child feel?
+Lonely.
+
+---
+
+The boy sat on the park bench.
+No one was around.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl walked down the empty hall.
+All the doors were closed.
+How does the girl feel?
+Lonely.
+
+---
+
+The child celebrated his birthday alone.
+No one came to the party.
+How does the child feel?
+Lonely.
+
+---
+
+The boy looked at the busy street.
+He felt disconnected.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl had no one to dance with.
+She sat and watched.
+How does the girl feel?
+Lonely.
+
+---
+
+The child's mom was on the phone.
+He had no one to talk to.
+How does the child feel?
+Lonely.
+
+---
+
+The boy went to the library alone.
+He picked out a book.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl's team had no partner for her.
+She sat on the bench.
+How does the girl feel?
+Lonely.
+
+---
+
+The child's friends were all sick.
+He was the only one healthy.
+How does the child feel?
+Lonely.
+
+---
+
+The boy looked at the empty chair.
+His friend used to sit there.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl had no one to walk home with.
+She walked quietly.
+How does the girl feel?
+Lonely.
+
+---
+
+The child's game needed two players.
+He played by himself.
+How does the child feel?
+Lonely.
+
+---
+
+The boy's dog was at the vet.
+He missed his pet.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl's grandmother was far away.
+She could not visit.
+How does the girl feel?
+Lonely.
+
+---
+
+The child was the last one picked.
+He stood alone.
+How does the child feel?
+Lonely.
+
+---
+
+The boy's brother was at college.
+He missed his brother.
+How does the boy feel?
+Lonely.
+
+---
+
+The girl sat in the cafeteria corner.
+She ate her lunch silently.
+How does the girl feel?
+Lonely.
+
+---
+
+The child had no one to tell a secret.
+He kept it inside.
+How does the child feel?
+Lonely.
+
+---
+
+The boy looked at the swing set.
+It was empty and still.
+How does the boy feel?
+Lonely.
+
+---
+
+# Responding to Emotions
+
+User: I am sad today.
+Assistant: I am sorry to hear that.
+Would you like to talk about it?
+
+---
+
+User: I lost my dog.
+Assistant: That must be very hard.
+I am sorry for your loss.
+
+---
+
+User: I am so happy!
+Assistant: That is wonderful!
+Tell me what happened.
+
+---
+
+User: I am scared of the dark.
+Assistant: It is okay to be scared.
+You can turn on a nightlight.
+
+---
+
+User: I am angry at my friend.
+Assistant: It is good to share your feelings.
+Can you tell me why?
+
+---
+
+User: I feel lonely.
+Assistant: I am here to listen.
+You are not alone right now.
+
+---
+
+User: I failed my exam.
+Assistant: That is disappointing.
+You can study more and try again.
+
+---
+
+User: I am excited for the trip.
+Assistant: That sounds amazing!
+I am excited for you too.
+
+---
+
+User: I fell in front of everyone.
+Assistant: That sounds embarrassing.
+Everyone falls sometimes.
+
+---
+
+User: I am proud of my drawing.
+Assistant: You should be proud!
+I would love to see it.
+
+---
+
+User: My friend is moving away.
+Assistant: That is sad.
+Will you stay in touch?
+
+---
+
+User: I got a new toy.
+Assistant: That is great!
+What toy did you get?
+
+---
+
+User: I am tired.
+Assistant: You should rest.
+Sleep will help you feel better.
+
+---
+
+User: I am worried about my test.
+Assistant: It is normal to worry.
+You prepared well.
+
+---
+
+User: My sister broke my phone.
+Assistant: That must make you angry.
+Did you tell her how you feel?
+
+---
+
+User: I had a bad dream.
+Assistant: Dreams can be scary.
+You are safe now.
+
+---
+
+User: I won a prize!
+Assistant: Congratulations!
+That is a big achievement.
+
+---
+
+User: I miss my grandma.
+Assistant: That is a loving feeling.
+You can call her or write a letter.
+
+---
+
+User: I have no one to play with.
+Assistant: That can feel lonely.
+You can join a club or invite someone.
+
+---
+
+User: I made a mistake.
+Assistant: Everyone makes mistakes.
+What can you learn from it?
+
+---
+
+User: I am nervous about the speech.
+Assistant: Nerves are normal.
+Take a deep breath and practice.
+
+---
+
+User: I lost my favorite book.
+Assistant: That is disappointing.
+I hope you find it soon.
+
+---
+
+User: My garden is blooming.
+Assistant: That sounds beautiful!
+You did a great job.
+
+---
+
+User: I am overwhelmed with work.
+Assistant: Take a break.
+One step at a time.
+
+---
+
+User: My pet is sick.
+Assistant: That must be worrying.
+Take good care of them.
+
+---
+
+User: I finished my project.
+Assistant: Well done!
+You worked hard.
+
+---
+
+User: I am confused.
+Assistant: That is okay.
+Can I explain anything?
+
+---
+
+User: I am grateful for my family.
+Assistant: That is lovely.
+Gratitude is a beautiful feeling.
+
+---
+
+User: I am bored.
+Assistant: Boredom happens.
+Try a new hobby or activity.
+
+---
+
+User: I was blamed wrongly.
+Assistant: That is unfair.
+You can calmly explain your side.
+
+---
+
+User: I feel invisible.
+Assistant: You matter.
+I see you and hear you.
+
+---
+
+User: I am jealous of my friend.
+Assistant: Jealousy is normal.
+Focus on your own strengths.
+
+---
+
+User: I am relieved school is over.
+Assistant: Relief is a good feeling.
+Enjoy your free time.
+
+---
+
+User: I am shocked by the news.
+Assistant: That is a lot to process.
+Take your time.
+
+---
+
+User: I am hopeful for tomorrow.
+Assistant: Hope is powerful.
+I hope it is a good day.
+
+---
+
+User: I am frustrated with the puzzle.
+Assistant: Frustration happens.
+Take a break and try again later.
+
+---
+
+User: I am accepted into the team.
+Assistant: Congratulations!
+You earned that spot.
+
+---
+
+User: I am missing my old house.
+Assistant: Change is hard.
+New memories will come.
+
+---
+
+User: I am disgusted by the smell.
+Assistant: That is understandable.
+Maybe you can open a window.
+
+---
+
+User: I am amazed by the sunset.
+Assistant: Nature is beautiful.
+Thank you for sharing that.
+
+---
+
+User: I am ashamed of my behavior.
+Assistant: It is brave to admit that.
+You can make better choices now.
+
+---
+
+User: I am delighted with the gift.
+Assistant: That is wonderful!
+It sounds like a thoughtful gift.
+
+---
+
+User: I am unsure about my decision.
+Assistant: It is okay to be unsure.
+Trust your feelings.
+
+---
+
+User: I am crying and I don't know why.
+Assistant: Tears can release emotion.
+It is okay to let it out.
+
+---
+
+User: I am calm today.
+Assistant: That is a peaceful feeling.
+Enjoy the calmness.
+
+---
+
+User: I am grateful for your help.
+Assistant: You are very welcome.
+I am glad to help.
+
+---
+
+User: I am struggling with homework.
+Assistant: That can be difficult.
+What subject is it?
+
+---
+
+User: I am happy because it is sunny.
+Assistant: Sunlight can boost mood.
+Enjoy the sunshine!
+
+---
+
+User: I am upset with my brother.
+Assistant: Family conflicts are hard.
+Can you talk to him calmly?
+
+---
+
+User: I am proud of my sister.
+Assistant: That is kind of you.
+She is lucky to have you.
+
+---
+
+# Mixed Reasoning + Emotion
+
+John broke his mother's favorite cup.
+She looked upset.
+How does she feel?
+Upset.
+What should John do?
+Apologize and help clean up.
+
+---
+
+The girl practiced her spelling daily.
+She won the spelling bee.
+How does she feel?
+Proud.
+Why?
+Because she worked hard.
+
+---
+
+Tom laughed at his friend's fall.
+His friend started crying.
+How does the friend feel?
+Sad.
+What should Tom do?
+Say sorry and help him up.
+
+---
+
+The man gave a coat to a cold child.
+The child smiled.
+How does the child feel?
+Grateful.
+Why?
+Because the man helped him.
+
+---
+
+The boy lied to his teacher.
+The teacher looked disappointed.
+How does the teacher feel?
+Disappointed.
+Why?
+Because the boy lied.
+
+---
+
+The girl found money on the ground.
+She returned it to the owner.
+How does the owner feel?
+Thankful.
+Why?
+Because she gave it back.
+
+---
+
+The child did not share his crayons.
+His sister looked sad.
+How does the sister feel?
+Left out.
+What should the child do?
+Share his crayons.
+
+---
+
+The man helped an old lady cross the street.
+She said thank you.
+How does the man feel?
+Good.
+Why?
+Because he helped.
+
+---
+
+The boy broke a window with his ball.
+He ran away.
+The owner looked angry.
+How does the owner feel?
+Angry.
+What should the boy do?
+Tell the truth and offer to help.
+
+---
+
+The girl gave her lunch to a hungry friend.
+The friend felt better.
+How does the girl feel?
+Kind.
+Why?
+Because she shared.
+
+---
+
+The child cheated on a test.
+The teacher found out.
+How does the teacher feel?
+Disappointed.
+What should the child do?
+Admit it and apologize.
+
+---
+
+The girl helped clean up the park.
+Everyone thanked her.
+How does she feel?
+Proud.
+Why?
+Because she helped the community.
+
+---
+
+The boy said mean words to his friend.
+His friend walked away crying.
+How does the friend feel?
+Hurt.
+What should the boy do?
+Apologize sincerely.
+
+---
+
+The old man fell and could not get up.
+Two people helped him.
+How does the old man feel?
+Relieved.
+Why?
+Because he got help.
+
+---
+
+The girl forgot to water her plant.
+It withered.
+How does she feel?
+Sad.
+Why?
+Because the plant died.
+
+---
+
+The child shared his cookie.
+His friend was happy.
+How does the child feel?
+Glad.
+Why?
+Because he made his friend happy.
+
+---
+
+The boy broke his promise to his sister.
+She looked disappointed.
+How does she feel?
+Disappointed.
+What should he do?
+Keep his promises next time.
+
+---
+
+The girl stood up for her friend.
+The friend was being teased.
+How does the friend feel?
+Grateful.
+Why?
+Because she was defended.
+
+---
+
+The child took a toy without asking.
+The owner was upset.
+How does the owner feel?
+Angry.
+What should the child do?
+Return it and ask permission.
+
+---
+
+The boy helped his dad in the garage.
+Dad thanked him.
+How does the boy feel?
+Useful.
+Why?
+Because he helped.
+
+---
+
+The girl cried after losing her necklace.
+Her mom hugged her.
+How does she feel after the hug?
+Comforted.
+Why?
+Because her mom showed love.
+
+---
+
+The child was rude to a guest.
+The guest looked uncomfortable.
+How does the guest feel?
+Uncomfortable.
+What should the child do?
+Apologize and be polite.
+
+---
+
+The boy worked hard to clean the car.
+His dad was impressed.
+How does the boy feel?
+Proud.
+Why?
+Because his effort was noticed.
+
+---
+
+The girl told a secret about her friend.
+The friend felt betrayed.
+How does the friend feel?
+Betrayed.
+What should the girl do?
+Keep secrets next time.
+
+---
+
+The child picked up trash on the beach.
+People noticed and smiled.
+How does the child feel?
+Good.
+Why?
+Because he helped the environment.
+
+---
+
+The boy was patient and waited his turn.
+The teacher praised him.
+How does the boy feel?
+Pleased.
+Why?
+Because he was patient.
+
+---
+
+The girl gave a gift to her sick friend.
+The friend smiled weakly.
+How does the friend feel?
+Touched.
+Why?
+Because of the kind gesture.
+
+---
+
+The child yelled at his parent.
+The parent looked hurt.
+How does the parent feel?
+Hurt.
+What should the child do?
+Say sorry and calm down.
+
+---
+
+The boy returned a lost wallet.
+The owner was very relieved.
+How does the owner feel?
+Relieved.
+Why?
+Because he got his wallet back.
+
+---
+
+The girl protected a younger kid from a bully.
+The younger kid hugged her.
+How does the younger kid feel?
+Safe.
+Why?
+Because she was protected.
+
+---
+
+The child forgot to do a chore.
+His mom sighed.
+How does the mom feel?
+Frustrated.
+What should the child do?
+Do the chore right away.
+
+---
+
+The boy helped his sister learn to read.
+His sister could read a book.
+How does the boy feel?
+Proud.
+Why?
+Because he taught her.
+
+---
+
+The girl shared her umbrella in the rain.
+The other person stayed dry.
+How does the other person feel?
+Thankful.
+Why?
+Because she shared.
+
+---
+
+The child knocked over a display in the store.
+The clerk looked annoyed.
+How does the clerk feel?
+Annoyed.
+What should the child do?
+Help pick up the items.
+
+---
+
+The boy gave a compliment to his friend.
+The friend smiled.
+How does the friend feel?
+Happy.
+Why?
+Because of the kind words.
+
+---
+
+The girl cleaned up her mess at the table.
+Her mom nodded approvingly.
+How does the girl feel?
+Good.
+Why?
+Because she was responsible.
+
+---
+
+The child lied to avoid trouble.
+His dad found out.
+How does his dad feel?
+Disappointed.
+What should the child do?
+Tell the truth.
+
+---
+
+The boy offered his seat to an elderly person.
+The elderly person said thank you.
+How does the boy feel?
+Proud.
+Why?
+Because he was respectful.
+
+---
+
+The girl consoled her crying friend.
+Her friend stopped crying.
+How does the friend feel?
+Better.
+Why?
+Because she was comforted.
+
+---
+
+The child was honest about breaking a vase.
+His mom thanked him for honesty.
+How does the child feel?
+Relieved.
+Why?
+Because he told the truth.
+
+---
+
+The boy invited a new student to play.
+The new student smiled.
+How does the new student feel?
+Included.
+Why?
+Because he was invited.
+
+---
+
+The girl did not help when asked.
+Her mom looked annoyed.
+How does the mom feel?
+Annoyed.
+What should the girl do?
+Help when asked.
+
+---
+
+The child kept the library book overdue.
+The librarian looked stern.
+How does the librarian feel?
+Stern.
+What should the child do?
+Return the book and pay a fine.
+
+---
+
+The boy listened patiently to his grandpa.
+Grandpa was happy.
+How does the boy feel?
+Good.
+Why?
+Because he made grandpa happy.
+
+---
+
+The girl painted a picture for her grandma.
+Grandma hung it on the wall.
+How does the girl feel?
+Proud.
+Why?
+Because her art was appreciated.
+
+---
+
+The child used kind words to everyone.
+People liked being around him.
+How does the child feel?
+Happy.
+Why?
+Because he spread kindness.
+
+---
+
+The boy said sorry without meaning it.
+His friend knew.
+How does the friend feel?
+Unsatisfied.
+What should the boy do?
+Mean what he says.
+
+---
+
+The girl helped bake bread for a neighbor.
+The neighbor was grateful.
+How does the girl feel?
+Good.
+Why?
+Because she did a kind deed.
+
+---
+
+The child stayed up late and woke up grumpy.
+His mom asked what was wrong.
+How does the child feel?
+Grumpy.
+What should he do?
+Go to bed earlier next time.
+
+---
+
+The boy held the door for a stranger.
+The stranger smiled.
+How does the boy feel?
+Polite.
+Why?
+Because he showed good manners.
+
+---
+
+# Social Reasoning
+
+An old man dropped his cane.
+What should you do?
+Pick it up and give it to him.
+
+---
+
+A child is crying alone on the playground.
+What should you do?
+Ask if they need help.
+
+---
+
+You see someone struggling with heavy bags.
+What should you do?
+Offer to help carry them.
+
+---
+
+You borrow a tool from a neighbor.
+You are done using it.
+What should you do?
+Return it promptly.
+
+---
+
+You find a wallet on the sidewalk.
+What should you do?
+Try to return it to its owner.
+
+---
+
+Someone does not have a seat on the bus.
+What should you do?
+Offer your seat.
+
+---
+
+A friend is sad about failing a test.
+What should you say?
+"Try again, you can do it."
+
+---
+
+You see trash on the ground.
+What should you do?
+Pick it up and throw it away.
+
+---
+
+Someone drops their groceries.
+What should you do?
+Help pick them up.
+
+---
+
+You hear a fire alarm.
+What should you do?
+Leave the building calmly.
+
+---
+
+A person is lost and asks for help.
+What should you do?
+Guide them or get an adult.
+
+---
+
+You have extra food at lunch.
+Your friend has none.
+What should you do?
+Share your food.
+
+---
+
+Someone is being bullied.
+What should you do?
+Tell a teacher or adult.
+
+---
+
+A friend is sick and cannot play.
+What should you do?
+Visit them or bring them a card.
+
+---
+
+You see a child wandering alone in a store.
+What should you do?
+Tell a store employee.
+
+---
+
+You promised to meet a friend.
+You are running late.
+What should you do?
+Call and let them know.
+
+---
+
+Someone's glasses fell on the floor.
+What should you do?
+Pick them up carefully.
+
+---
+
+You find a lost dog with no collar.
+What should you do?
+Call animal control or help find its owner.
+
+---
+
+A classmate does not understand the lesson.
+What should you do?
+Offer to explain it.
+
+---
+
+You have too many toys at home.
+Your friend has none.
+What should you do?
+Share or donate some toys.
+
+---
+
+You see a puddle and a person walking behind you.
+What should you do?
+Walk around it carefully.
+
+---
+
+Someone sneezes without covering their mouth.
+What should you say?
+"Please cover your mouth."
+
+---
+
+A person is carrying a baby and a bag.
+What should you do?
+Help carry the bag.
+
+---
+
+Your friend's drawing got torn.
+What should you do?
+Help tape it back together.
+
+---
+
+You see a car with its lights on in the daytime.
+What should you do?
+It is not your car, ignore it.
+
+---
+
+A new student looks lost.
+What should you do?
+Show them around.
+
+---
+
+Someone is about to step on a snail on the path.
+What should you do?
+Gently warn them.
+
+---
+
+You have a seat and an older person enters.
+What should you do?
+Offer them the seat.
+
+---
+
+Your friend is crying over a broken toy.
+What should you do?
+Comfort them and see if you can fix it.
+
+---
+
+You see a book on the ground.
+What should you do?
+Pick it up and put it on a table.
+
+---
+
+A person has a flat tire.
+What should you do?
+Offer to call for help.
+
+---
+
+You have a candy and your friend has none.
+What should you do?
+Share the candy.
+
+---
+
+Someone is choking on food.
+What should you do?
+Call for help immediately.
+
+---
+
+You see a child about to run into the street.
+What should you do?
+Call out to stop them.
+
+---
+
+Your friend is scared of the dark.
+What should you do?
+Stay with them and turn on a light.
+
+---
+
+You see a bicycle lying on its side.
+What should you do?
+Pick it up and stand it upright.
+
+---
+
+A person is crying at the park.
+What should you do?
+Ask if they are okay.
+
+---
+
+You finish drinking water from a cup.
+What should you do?
+Wash the cup and put it away.
+
+---
+
+You see someone trying to reach a high shelf.
+What should you do?
+Offer to help them reach it.
+
+---
+
+A friend is angry and shouting.
+What should you do?
+Stay calm and listen.
+
+---
+
+You see a wallet on a park bench.
+What should you do?
+Take it to the lost and found.
+
+---
+
+Someone is having trouble opening a jar.
+What should you do?
+Offer to help open it.
+
+---
+
+You see a parent with a crying baby.
+What should you do?
+Be quiet and not add to the noise.
+
+---
+
+A friend says they are bored.
+What should you do?
+Suggest an activity.
+
+---
+
+You have a secret that your friend told you.
+What should you do?
+Keep it a secret.
+
+---
+
+You see a spill on the floor.
+What should you do?
+Tell an adult and help clean it up.
+
+---
+
+A person is standing in the rain with no umbrella.
+What should you do?
+Share your umbrella if you have one.
+
+---
+
+You hear someone talking badly about your friend.
+What should you do?
+Defend your friend calmly.
+
+---
+
+A child is scared of a dog.
+What should you do?
+Tell them the dog is friendly and stay calm.
+
+---
+
+You finish playing with a toy.
+What should you do?
+Put it back where it belongs.
+
+---
+
+You see someone sleeping on the bus.
+What should you do?
+Be quiet and not wake them.
+
+---
+
+# Emotion Recognition - Physical Clues
+
+The girl is smiling wide and clapping.
+How does she feel?
+Happy.
+
+---
+
+The boy has tears on his cheeks.
+His shoulders are shaking.
+How does he feel?
+Sad.
+
+---
+
+The child is stomping his feet.
+His face is red.
+How does he feel?
+Angry.
+
+---
+
+The girl is hugging her stuffed animal tightly.
+She is hiding under the blanket.
+How does she feel?
+Afraid.
+
+---
+
+The boy is standing tall.
+He is showing his drawing to everyone.
+How does he feel?
+Proud.
+
+---
+
+The girl is looking at the floor.
+Her face is red and warm.
+How does she feel?
+Embarrassed.
+
+---
+
+The child is jumping up and down.
+He cannot stop smiling.
+How does he feel?
+Excited.
+
+---
+
+The boy is sitting by himself.
+He is looking out the window.
+How does he feel?
+Lonely.
+
+---
+
+The girl is yawning and rubbing her eyes.
+How does she feel?
+Tired.
+
+---
+
+The child is frowning and crossing his arms.
+How does he feel?
+Upset or Angry.
+
+---
+
+The woman has a soft smile.
+She is patting the child's head.
+How does she feel?
+Loving.
+
+---
+
+The man is pacing back and forth.
+He keeps looking at his watch.
+How does he feel?
+Worried.
+
+---
+
+The girl is singing and spinning around.
+How does she feel?
+Joyful.
+
+---
+
+The boy is biting his nails.
+He looks at the test paper.
+How does he feel?
+Nervous.
+
+---
+
+The child is holding a gift.
+His eyes are wide and bright.
+How does he feel?
+Surprised and happy.
+
+---
+
+The girl is shaking and pale.
+She hears the loud noise.
+How does she feel?
+Scared.
+
+---
+
+The boy is breathing fast.
+He is looking at the big dog.
+How does he feel?
+Frightened.
+
+---
+
+The woman is crying but smiling.
+She just saw her son after a long time.
+How does she feel?
+Happy and emotional.
+
+---
+
+The child is sitting quietly.
+He is not playing with anyone.
+How does he feel?
+Lonely or bored.
+
+---
+
+The man is shouting and hitting the table.
+How does he feel?
+Angry.
+
+---
+
+The girl is hugging her friend.
+She is smiling and laughing.
+How does she feel?
+Happy.
+
+---
+
+The boy is looking down.
+He is holding a broken toy.
+How does he feel?
+Sad.
+
+---
+
+The child is drawing a picture.
+She keeps looking at her mom for approval.
+How does she feel?
+Proud and eager.
+
+---
+
+The girl has a big frown.
+She is holding her stomach.
+How does she feel?
+Sick or upset.
+
+---
+
+The boy is running fast and laughing.
+How does he feel?
+Excited and happy.
+
+---
+
+The woman is covering her mouth.
+She is surprised by the news.
+How does she feel?
+Shocked.
+
+---
+
+The child is yawning and lying on the floor.
+How does he feel?
+Tired.
+
+---
+
+The girl is trembling.
+She holds her friend's hand tightly.
+How does she feel?
+Afraid.
+
+---
+
+The boy has a smug smile.
+He just won the game.
+How does he feel?
+Proud.
+
+---
+
+The child is kicking the ground.
+She is looking at the spilled milk.
+How does she feel?
+Frustrated.
+
+---
+
+The man is sighing and slumping in his chair.
+He looks at the bills.
+How does he feel?
+Worried.
+
+---
+
+The girl is jumping into her mother's arms.
+She is grinning.
+How does she feel?
+Happy.
+
+---
+
+The boy is hiding behind a chair.
+He is peeking out slowly.
+How does he feel?
+Scared or shy.
+
+---
+
+The child is making a card.
+She is coloring it carefully.
+How does she feel?
+Focused and caring.
+
+---
+
+The girl is lying on her bed.
+She is hugging a pillow.
+How does she feel?
+Lonely or sad.
+
+---
+
+The boy is sitting straight and tall.
+He received a certificate.
+How does he feel?
+Proud.
+
+---
+
+The woman is crying.
+Her shoulders are shaking.
+How does she feel?
+Sad.
+
+---
+
+The man is clapping loudly.
+He is smiling at the performer.
+How does he feel?
+Appreciative.
+
+---
+
+The child is looking at the ground.
+He is mumbling something.
+How does he feel?
+Embarrassed.
+
+---
+
+The girl is laughing loudly.
+Her friends are laughing too.
+How does she feel?
+Happy and included.
+
+---
+
+The boy is biting his lip.
+He is looking at the closed door.
+How does he feel?
+Nervous.
+
+---
+
+The child is hugging a dog.
+She is giggling.
+How does she feel?
+Loving and happy.
+
+---
+
+The girl is frowning and folding her arms.
+She looks at her brother.
+How does she feel?
+Annoyed.
+
+---
+
+The boy is holding his chest.
+He looks at the scary movie.
+How does he feel?
+Afraid.
+
+---
+
+The woman is wiping her tears.
+She is smiling at the photo.
+How does she feel?
+Nostalgic and sad.
+
+---
+
+The child is skipping down the street.
+He is singing a song.
+How does he feel?
+Joyful.
+
+---
+
+The girl is sitting in the corner.
+She is drawing alone.
+How does she feel?
+Lonely.
+
+---
+
+The boy is standing still.
+His eyes are wide.
+He sees the huge roller coaster.
+How does he feel?
+Afraid and excited.
+
+---
+
+The child is clapping after a performance.
+He is smiling wide.
+How does he feel?
+Proud of himself or others.
+
+---
+
+The woman is pacing and looking at the clock.
+She is waiting for a call.
+How does she feel?
+Anxious.
+
+---
+
+The girl is looking at the sunset.
+She is smiling softly.
+How does she feel?
+Peaceful.
+
+---
+
+# Apologizing and Making Amends
+
+The boy broke his friend's toy.
+What should he say?
+I am sorry.
+What should he do?
+Try to fix it or replace it.
+
+---
+
+The girl forgot her friend's birthday.
+What should she do?
+Say sorry and give a card late.
+
+---
+
+The child pushed his brother.
+His brother fell.
+What should he do?
+Help him up and say sorry.
+
+---
+
+The boy took a cookie without asking.
+His mom saw him.
+What should he do?
+Apologize and ask next time.
+
+---
+
+The girl was late to meet her friend.
+She did not call.
+What should she do?
+Apologize and explain why.
+
+---
+
+The child yelled at his parent.
+He was wrong.
+What should he do?
+Say sorry and speak calmly next time.
+
+---
+
+The boy wrote on the wall.
+The wall is now dirty.
+What should he do?
+Say sorry and help clean it.
+
+---
+
+The girl made fun of her friend's hair.
+The friend looked hurt.
+What should she do?
+Apologize sincerely.
+
+---
+
+The child did not share his snacks.
+His friend felt left out.
+What should he do?
+Share next time.
+
+---
+
+The boy broke a vase at the store.
+He did not have money.
+What should he do?
+Tell the store owner and apologize.
+
+---
+
+The girl lost her friend's book.
+She borrowed it.
+What should she do?
+Offer to buy a new one.
+
+---
+
+The child made a mess in the kitchen.
+He left it for mom.
+What should he do?
+Clean it up and say sorry.
+
+---
+
+The boy lied about doing his homework.
+The teacher found out.
+What should he do?
+Admit the lie and do the work.
+
+---
+
+The girl took a toy from her sister.
+Her sister cried.
+What should she do?
+Return it and say sorry.
+
+---
+
+The child told a secret.
+The secret hurt his friend.
+What should he do?
+Apologize and keep secrets next time.
+
+---
+
+The boy ate the last piece of cake.
+He knew his sister wanted it.
+What should he do?
+Offer to share another treat.
+
+---
+
+The girl stepped on her friend's foot.
+Her friend said ouch.
+What should she do?
+Say sorry and ask if she is okay.
+
+---
+
+The child broke a rule at school.
+The teacher was disappointed.
+What should he do?
+Apologize and not repeat it.
+
+---
+
+The boy spilled juice on the carpet.
+He did not clean it.
+What should he do?
+Clean it up and tell his parents.
+
+---
+
+The girl said something mean in anger.
+She regretted it.
+What should she do?
+Apologize and take it back.
+
+---
+
+The child was selfish with his toys.
+His cousin had none.
+What should he do?
+Share his toys.
+
+---
+
+The boy did not help with chores.
+His dad did all the work.
+What should he do?
+Help next time and apologize.
+
+---
+
+The girl broke her promise.
+Her friend felt bad.
+What should she do?
+Say sorry and keep promises going forward.
+
+---
+
+The child drew on a library book.
+The book is damaged.
+What should he do?
+Tell the librarian and offer to pay.
+
+---
+
+The boy borrowed a pen and lost it.
+The owner needed it.
+What should he do?
+Buy a new pen and apologize.
+
+---
+
+The girl forgot to water the plants.
+They wilted.
+What should she do?
+Apologize and water them regularly.
+
+---
+
+The child was rough with the family pet.
+The pet yelped.
+What should he do?
+Apologize and be gentle.
+
+---
+
+The boy made a mistake in a group project.
+The team suffered.
+What should he do?
+Apologize and help fix it.
+
+---
+
+The girl took credit for her friend's idea.
+The friend felt bad.
+What should she do?
+Give credit back and apologize.
+
+---
+
+The child did not listen to his mom.
+His mom had to repeat herself.
+What should he do?
+Listen and say sorry.
+
+---
+
+The boy left the door open.
+The dog ran outside.
+What should he do?
+Apologize and help find the dog.
+
+---
+
+The girl sang too loudly.
+The baby woke up.
+What should she do?
+Say sorry and be quieter.
+
+---
+
+The child used his friend's phone without asking.
+His friend was upset.
+What should he do?
+Ask next time and apologize.
+
+---
+
+The boy hit a ball and broke a window.
+He ran away.
+What should he do?
+Go back and apologize to the owner.
+
+---
+
+The girl did not return her brother's jacket.
+He was cold.
+What should she do?
+Return it and say sorry.
+
+---
+
+The child teased a younger kid.
+The kid cried.
+What should he do?
+Apologize and stop teasing.
+
+---
+
+The boy made a noise during the test.
+The class was distracted.
+What should he do?
+Apologize to the class.
+
+---
+
+The girl took a book without borrowing it.
+The librarian noticed.
+What should she do?
+Borrow it properly and apologize.
+
+---
+
+The child did not feed his pet on time.
+The pet was hungry.
+What should he do?
+Feed the pet and apologize.
+
+---
+
+The boy tripped his friend on purpose.
+His friend fell.
+What should he do?
+Help him up and say sorry.
+
+---
+
+The girl threw her trash on the ground.
+A person saw her.
+What should she do?
+Pick it up and throw it in the bin.
+
+---
+
+The child used too much paint.
+He wasted it.
+What should he do?
+Use less next time and apologize.
+
+---
+
+The boy was rude to a guest.
+The guest looked uncomfortable.
+What should he do?
+Apologize and be polite.
+
+---
+
+The girl put glue on her friend's chair.
+The friend sat down.
+What should she do?
+Clean it up and apologize.
+
+---
+
+The child locked the door by mistake.
+His sister was outside.
+What should he do?
+Open the door and say sorry.
+
+---
+
+The boy dropped his friend's phone.
+The screen cracked.
+What should he do?
+Offer to help fix it and apologize.
+
+---
+
+The girl yelled at her little sister.
+Her sister was scared.
+What should she do?
+Hug her sister and say sorry.
+
+---
+
+The child hid his brother's shoes.
+The brother was late.
+What should he do?
+Give them back and apologize.
+
+---
+
+The boy ate his friend's snack.
+His friend had no snack.
+What should he do?
+Share his own snack and apologize.
+
+---
+
+The girl laughed at her friend's mistake.
+The friend felt small.
+What should she do?
+Apologize and be kind.
+
+---
+
+# Recognizing When Someone Needs Help
+
+A woman is carrying many heavy bags.
+Her arms are shaking.
+What should you do?
+Offer to help her.
+
+---
+
+A child is looking around and crying.
+He cannot find his mom.
+What should you do?
+Help him find a store employee.
+
+---
+
+An old man is walking slowly with a cane.
+He drops his keys.
+What should you do?
+Pick them up and hand them to him.
+
+---
+
+A friend is holding their stomach and frowning.
+They look pale.
+What should you do?
+Ask if they feel sick.
+
+---
+
+A person is struggling to open a door.
+Their hands are full.
+What should you do?
+Open the door for them.
+
+---
+
+A classmate is looking at the board confused.
+They have a sad face.
+What should you do?
+Offer to explain the lesson.
+
+---
+
+Someone dropped their papers on the floor.
+They are scattered.
+What should you do?
+Help gather the papers.
+
+---
+
+A child is sitting alone on the bench.
+No one is playing with them.
+What should you do?
+Ask if they want to play.
+
+---
+
+A man is looking at a flat tire.
+He looks worried.
+What should you do?
+Offer to call for help.
+
+---
+
+A person is coughing a lot.
+They cannot speak.
+What should you do?
+Ask if they need water or help.
+
+---
+
+A friend is wiping tears.
+They are not talking.
+What should you do?
+Sit with them and offer comfort.
+
+---
+
+An elderly woman is trying to reach a high shelf.
+She is stretching.
+What should you do?
+Reach it for her.
+
+---
+
+A person is looking at a map and frowning.
+They seem lost.
+What should you do?
+Ask if they need directions.
+
+---
+
+A child is shivering.
+They are not wearing a coat.
+What should you do?
+Offer a jacket or take them inside.
+
+---
+
+A friend is limping.
+They are holding their ankle.
+What should you do?
+Ask if they are hurt.
+
+---
+
+Someone is carrying a crying baby and groceries.
+They look stressed.
+What should you do?
+Help with the groceries.
+
+---
+
+A classmate drops their lunch tray.
+Food spills everywhere.
+What should you do?
+Help them clean it up.
+
+---
+
+A person is trying to climb the stairs with a heavy suitcase.
+What should you do?
+Offer to carry it for them.
+
+---
+
+A child is searching for their lost shoe.
+They look upset.
+What should you do?
+Help them look for it.
+
+---
+
+A friend is yawning and rubbing their eyes.
+They look very tired.
+What should you do?
+Let them rest or help them.
+
+---
+
+Someone is standing under a broken umbrella in the rain.
+They are getting wet.
+What should you do?
+Share your umbrella.
+
+---
+
+A person is trying to get a high note off the fridge.
+They are too short.
+What should you do?
+Get it for them.
+
+---
+
+A student is crying after a test.
+They look very sad.
+What should you do?
+Say something kind.
+
+---
+
+A dog is wandering without its owner.
+It looks scared.
+What should you do?
+Try to find its owner.
+
+---
+
+A child is trying to tie their shoe.
+They are struggling.
+What should you do?
+Help them tie it.
+
+---
+
+A person is holding a lot of books.
+They are about to fall.
+What should you do?
+Help steady them.
+
+---
+
+A friend is sitting quietly and not eating.
+They look unhappy.
+What should you do?
+Ask what is wrong.
+
+---
+
+A neighbor is trying to move a heavy couch.
+They look tired.
+What should you do?
+Offer to help lift it.
+
+---
+
+A child is standing alone in the rain.
+They have no umbrella.
+What should you do?
+Share your umbrella or call for help.
+
+---
+
+A person is trying to read a small print.
+They are squinting.
+What should you do?
+Offer to read it for them.
+
+---
+
+A classmate is sleeping on the desk.
+They look exhausted.
+What should you do?
+Let them rest quietly.
+
+---
+
+Someone is looking for a lost ring on the ground.
+They are searching frantically.
+What should you do?
+Help them look.
+
+---
+
+A friend is holding a broken toy.
+They look sad.
+What should you do?
+Try to fix it or comfort them.
+
+---
+
+A person is trying to take a photo but cannot hold the camera steady.
+What should you do?
+Offer to take the photo for them.
+
+---
+
+A child is standing by a busy road.
+They look scared.
+What should you do?
+Hold their hand and cross safely.
+
+---
+
+A friend has a bloody nose.
+They look startled.
+What should you do?
+Give them a tissue and tilt their head.
+
+---
+
+A person is trying to get their bag from under a seat.
+They cannot reach it.
+What should you do?
+Help them get it.
+
+---
+
+A classmate is staring at a blank page.
+They do not know what to write.
+What should you do?
+Give them an idea.
+
+---
+
+Someone is walking with crutches.
+They drop their phone.
+What should you do?
+Pick it up for them.
+
+---
+
+A friend is shivering and it is cold.
+They forgot their jacket.
+What should you do?
+Share a blanket or jacket.
+
+---
+
+A person is trying to open a jar.
+Their hands are slipping.
+What should you do?
+Open it for them.
+
+---
+
+A child is crying because their balloon blew away.
+What should you do?
+Comfort them.
+
+---
+
+A student is looking for a seat in a crowded room.
+They look nervous.
+What should you do?
+Offer them your seat.
+
+---
+
+A person is fumbling with their keys.
+They are stressed.
+What should you do?
+Offer to help calmly.
+
+---
+
+A friend is apologizing too much for a small mistake.
+What should you say?
+"It is okay, do not worry."
+
+---
+
+Someone is trying to carry a baby and a stroller up the stairs.
+What should you do?
+Help carry the stroller.
+
+---
+
+A child is scratching a mosquito bite.
+It looks irritated.
+What should you do?
+Get them some cream.
+
+---
+
+A person is looking at a broken phone.
+They look upset.
+What should you do?
+Offer to help them fix it.
+
+---
+
+A friend is walking slowly and holding their head.
+They look dizzy.
+What should you do?
+Help them sit down.
+
+---
+
+A person is trying to tie a knot but cannot.
+They are getting frustrated.
+What should you do?
+Help them tie it.
+
+---
+
+A child is trying to climb a high slide.
+They look scared.
+What should you do?
+Encourage them or help them down.
+
+---
