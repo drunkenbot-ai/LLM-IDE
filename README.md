@@ -121,6 +121,10 @@ checkpoint is already a llama.cpp-supported Llama/Mistral/Gemma model.
 - The Blueprint tree shows per-file size plus estimated token/vocabulary counts.
 - Dataset Ingestion with source/document counts, token counts, train/validation
   windows, category charts, and token distribution charts.
+- Dataset preparation now records corpus block diversity in `dataset_summary.json`
+  and lowers the dataset rating when the final corpus is duplicate-heavy.
+- Validation token splits are chunk-shuffled with a fixed seed so held-out loss
+  samples the whole corpus instead of only the tail of `corpus.txt`.
 - Architecture Advisor with parameter and memory breakdowns.
 - Training Health Advisor for validation gaps, overfitting, and unstable loss.
 - Best-validation checkpoint tracking via `checkpoint_best_val.pt`.

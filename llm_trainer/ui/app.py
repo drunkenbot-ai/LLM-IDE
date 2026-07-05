@@ -1296,6 +1296,10 @@ class MainWindow(QMainWindow):
         quality_score = float(summary.get("quality_score", 0.0) or 0.0)
         quality_stars = float(summary.get("quality_stars", 0.0) or 0.0)
         quality_label = str(summary.get("quality_label") or "")
+        corpus_block_count = int(summary.get("corpus_block_count", 0) or 0)
+        unique_block_count = int(summary.get("unique_block_count", 0) or 0)
+        duplicate_block_count = int(summary.get("duplicate_block_count", 0) or 0)
+        duplicate_block_ratio = float(summary.get("duplicate_block_ratio", 0.0) or 0.0)
         if not quality_score and (token_count or train_window_count or vocab_size):
             quality_score, quality_stars, quality_label = self._estimate_dataset_rating(
                 token_count,
@@ -1327,6 +1331,17 @@ class MainWindow(QMainWindow):
         self.dataset_quality_balance.setText("Balance: prepared")
         self.dataset_quality_readiness.setText("Readiness: preview needed")
         self.dataset_quality_cache.setText(f"Files: {processed_count:,} ok, {cached_count:,} cached, {skipped_count:,} skipped, {failed_count:,} failed")
+        if corpus_block_count:
+            self.dataset_quality_duplicates.setText(f"Duplicates: {duplicate_block_ratio * 100:.1f}%")
+            self._tip(
+                self.dataset_quality_duplicates,
+                (
+                    f"{duplicate_block_count:,} repeated blocks out of {corpus_block_count:,}; "
+                    f"{unique_block_count:,} unique blocks."
+                ),
+            )
+        else:
+            self.dataset_quality_duplicates.setText("Duplicates: -")
         self.dataset_quality_warning.setText(f"Warnings: {warning}")
         self._tip(self.dataset_quality_samples, f"{character_count:,} source characters across prepared documents.")
         if quality_stars:
@@ -1358,6 +1373,11 @@ class MainWindow(QMainWindow):
                 )
             if train_window_count < 1_000:
                 advice.append("Add more text or lower context length if training looks repetitive.")
+            if corpus_block_count:
+                advice.append(
+                    f"Block diversity: {unique_block_count:,}/{corpus_block_count:,} unique blocks "
+                    f"({duplicate_block_ratio * 100:.1f}% repeated)."
+                )
             if quality_stars:
                 advice.append(f"Dataset rating: {quality_stars:.1f}/5 stars ({quality_label or 'rated'}, score {quality_score:.1f}/100).")
                 for reason in list(summary.get("quality_reasons", []) or [])[:4]:
@@ -3972,6 +3992,11 @@ class MainWindow(QMainWindow):
                 "warning": result.warning,
                 "mixture_report": mixture_report,
                 "sequence_token_stats": getattr(result, "sequence_token_stats", {}),
+                "duplicate_block_count": getattr(result, "duplicate_block_count", 0),
+                "unique_block_count": getattr(result, "unique_block_count", 0),
+                "corpus_block_count": getattr(result, "corpus_block_count", 0),
+                "duplicate_block_ratio": getattr(result, "duplicate_block_ratio", 0.0),
+                "unique_block_ratio": getattr(result, "unique_block_ratio", 1.0),
             }
         )
         self.train_data_dir.setText(str(result.output_dir))

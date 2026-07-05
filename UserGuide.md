@@ -325,6 +325,12 @@ Preview Dataset checks for:
 - exact duplicate files with identical content
 - repeated extracted text previews
 
+After `Prepare Dataset`, the app also checks the written `corpus.txt` for
+repeated text blocks. This catches generated or exported corpus files that are
+large on disk but mostly repeat the same few examples. The duplicate block
+ratio is saved in `dataset_summary.json`, shown in the `Duplicates` chip, and
+included in the five-star dataset rating.
+
 Effect on the LLM:
 
 - Duplicate-heavy datasets make small models memorize repeated passages.
@@ -772,6 +778,9 @@ Effect:
 
 - Validation loss helps detect overfitting.
 - Too much validation leaves less training data.
+- The app splits tokens into fixed-size chunks and shuffles those chunks with a
+  fixed seed before selecting validation data. This makes validation sample the
+  whole corpus instead of only the last file or category.
 
 Recommendation:
 

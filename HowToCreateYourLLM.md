@@ -105,9 +105,15 @@ After preparation, check three signals:
 - `Dataset Composition` shows the data mix as percentages.
 - `Token Distribution` shows min, average, median, and max source token length.
 - If one file dominates the max value, inspect it for repeated or noisy text.
+- `Duplicates` shows repeated block percentage after preparation. A high value
+  means the final corpus has many repeated examples even if the token count is
+  large.
 
 The dataset stage reads your files, extracts text/code, creates or reuses a
 tokenizer, tokenizes the corpus, and writes training/validation token files.
+Validation data is selected by shuffling fixed-size token chunks with a fixed
+seed, so validation loss samples the whole corpus instead of only the final
+source file.
 
 Recommended first run:
 

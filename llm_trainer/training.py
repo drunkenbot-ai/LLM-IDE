@@ -213,20 +213,58 @@ def set_seed(seed: int) -> None:
         torch.cuda.manual_seed_all(seed)
 
 
-def split_tokens(tokens: list[int], validation_split: float) -> tuple[list[int], list[int]]:
+def split_tokens(
+    tokens: list[int],
+    validation_split: float,
+    chunk_size: int = 2048,
+    seed: int = 1337,
+) -> tuple[list[int], list[int]]:
     """Split tokens into train and validation streams.
+
+    The corpus is written to disk as one big concatenation of source
+    documents, then tokenized into a single flat stream. A plain positional
+    split would make validation depend on whichever source happened to be at
+    the tail of the corpus. This chunks and deterministically shuffles the
+    stream first, so validation samples are drawn from across the corpus.
 
     Args:
         tokens: Full token stream.
         validation_split: Fraction reserved for validation.
+        chunk_size: Number of tokens per shuffle unit.
+        seed: Fixed seed for reproducible train/validation assignment.
 
     Returns:
         Pair of training tokens and validation tokens.
     """
 
-    split_at = int(len(tokens) * (1.0 - validation_split))
-    split_at = max(1, min(split_at, len(tokens) - 1))
-    return tokens[:split_at], tokens[split_at:]
+    total = len(tokens)
+    if total <= 1 or validation_split <= 0:
+        return list(tokens), []
+    if validation_split >= 1:
+        return [], list(tokens)
+
+    chunk_size = max(1, chunk_size)
+    chunk_ranges = [(start, min(start + chunk_size, total)) for start in range(0, total, chunk_size)]
+    if len(chunk_ranges) <= 1:
+        split_at = int(total * (1.0 - validation_split))
+        split_at = max(1, min(split_at, total - 1))
+        return tokens[:split_at], tokens[split_at:]
+
+    shuffled_indices = list(range(len(chunk_ranges)))
+    random.Random(seed).shuffle(shuffled_indices)
+    val_chunk_count = max(1, round(len(chunk_ranges) * validation_split))
+    val_chunk_count = min(val_chunk_count, len(chunk_ranges) - 1)
+    val_chunk_indices = set(shuffled_indices[:val_chunk_count])
+
+    train_tokens: list[int] = []
+    val_tokens: list[int] = []
+    for chunk_index, (start, end) in enumerate(chunk_ranges):
+        piece = tokens[start:end]
+        if chunk_index in val_chunk_indices:
+            val_tokens.extend(piece)
+        else:
+            train_tokens.extend(piece)
+    return train_tokens, val_tokens
 
 
 def make_optimizer(model: MicroGPT, training_config: TrainingConfig) -> torch.optim.Optimizer:
