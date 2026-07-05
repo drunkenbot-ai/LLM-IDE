@@ -17,7 +17,7 @@ from threading import Event, Thread
 from typing import Any, Optional, Union
 
 import torch
-from PySide6.QtCore import QPoint, Qt, QThread, QTimer, Slot, qInstallMessageHandler
+from PySide6.QtCore import QObject, QEvent, QPoint, Qt, QThread, QTimer, Slot, qInstallMessageHandler
 from PySide6.QtGui import QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap, QPolygon
 from PySide6.QtWidgets import (
     QApplication,
@@ -72,7 +72,7 @@ from llm_trainer.training_planning import estimate_training_resources, format_by
 from llm_trainer.training_service import run_training_job
 from llm_trainer.ui.chat_widgets import ChatMessageWidget
 from llm_trainer.ui.markdown_renderer import markdown_to_html
-from llm_trainer.ui.workers import TaskWorker
+from llm_trainer.ui.workers import ProcessTaskWorker, TaskWorker
 from llm_trainer.ui.tabs.benchmark_tab import build_benchmark_tab
 from llm_trainer.ui.tabs.chat_tab import build_chat_tab
 from llm_trainer.ui.tabs.dataset_tab import build_dataset_tab
@@ -80,6 +80,8 @@ from llm_trainer.ui.tabs.dataset_plan_tab import (
     DATASET_DOMAIN_DEFAULTS,
     DATASET_DOMAIN_PRESETS,
     build_dataset_plan_tab,
+    default_data_stage,
+    dataset_plan_defaults,
     iter_default_data_files,
 )
 from llm_trainer.ui.tabs.live_tab import build_live_training_tab
@@ -94,23 +96,24 @@ except ImportError:
     psutil = None
 
 
-WINDOWS_APP_ID = "MicroLLMCreator.Lightning"
+APP_NAME = "DrunkenBot LLM-IDE"
+WINDOWS_APP_ID = "DrunkenBot.LLMIDE"
 LOGGER = logging.getLogger(__name__)
 
 
 class MainWindow(QMainWindow):
-    """Main PySide6 window for Micro LLM Creator."""
+    """Main PySide6 window for DrunkenBot LLM-IDE."""
 
     def __init__(self) -> None:
         """Create the main application window."""
 
         super().__init__()
         self.log_file_path = setup_logging()
-        LOGGER.info("Creating Micro LLM Creator main window")
+        LOGGER.info("Creating %s main window", APP_NAME)
         if QApplication.instance():
             QApplication.instance().setFont(QFont("Arial", 10))
-        self.setWindowTitle("Micro LLM Creator")
-        self.setWindowIcon(self._lightning_icon())
+        self.setWindowTitle(APP_NAME)
+        self.setWindowIcon(self._app_icon())
         self._windows_icon_handles: list[int] = []
         self.resize(1240, 820)
         self.thread: Optional[QThread] = None
@@ -135,6 +138,7 @@ class MainWindow(QMainWindow):
         self.training_cards: list[QWidget] = []
         self.training_controls_grid: Optional[QGridLayout] = None
         self.training_controls_columns = 3
+        self.training_health_points: list[tuple[int, Optional[float], Optional[float]]] = []
         self.active_training_log: Optional[QTextEdit] = None
         self.active_training_progress: Optional[QProgressBar] = None
         self.active_training_final_button_text = "Start Training"
@@ -165,8 +169,44 @@ class MainWindow(QMainWindow):
         shell = self._build_shell()
         self.setCentralWidget(shell)
         self._install_ui_event_logging(shell)
+        self._install_wheel_guard(shell)
         self._refresh_notification_manager()
         self.job_manager_timer.start()
+
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
+        """Prevent accidental wheel changes on compact option widgets.
+
+        Args:
+            watched: Widget receiving the event.
+            event: Qt event.
+
+        Returns:
+            True when the event is handled by the filter.
+        """
+
+        guarded_types = (QSpinBox, QDoubleSpinBox, QComboBox)
+        if isinstance(watched, guarded_types):
+            if event.type() == QEvent.Type.MouseButtonPress:
+                watched.setProperty("_wheel_enabled_after_click", True)
+            elif event.type() == QEvent.Type.FocusOut:
+                watched.setProperty("_wheel_enabled_after_click", False)
+            elif event.type() == QEvent.Type.Wheel and not watched.property("_wheel_enabled_after_click"):
+                return True
+        return super().eventFilter(watched, event)
+
+    def _install_wheel_guard(self, root: QWidget) -> None:
+        """Require a click before spin boxes and combos react to mouse wheel.
+
+        Args:
+            root: Root widget to scan for child controls.
+        """
+
+        for widget in root.findChildren(QWidget):
+            if not isinstance(widget, (QSpinBox, QDoubleSpinBox, QComboBox)):
+                continue
+            widget.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+            widget.setProperty("_wheel_enabled_after_click", False)
+            widget.installEventFilter(self)
 
     def _install_ui_event_logging(self, root: QWidget) -> None:
         """Log user-facing widget actions and parameter changes.
@@ -259,16 +299,23 @@ class MainWindow(QMainWindow):
         top_layout = QHBoxLayout(top)
         top_layout.setContentsMargins(16, 8, 16, 8)
         top_layout.setSpacing(8)
-        logo = QLabel("ML")
+        logo = QLabel()
         logo.setObjectName("Logo")
+        logo_pixmap = self._app_logo_pixmap(36)
+        if logo_pixmap.isNull():
+            logo.setText("DB")
+        else:
+            logo.setPixmap(logo_pixmap)
+        logo.setFixedSize(42, 42)
+        logo.setScaledContents(False)
         self.search_box = QLineEdit()
         self.search_box.setPlaceholderText("Project name...")
         self.search_box.setMaximumWidth(260)
-        self._tip(self.search_box, "Project name used when saving or reopening a Micro LLM Creator project.")
+        self._tip(self.search_box, f"Project name used when saving or reopening a {APP_NAME} project.")
         self.new_project_button = QPushButton("New Project")
         self.new_project_button.setMaximumWidth(130)
         self.new_project_button.clicked.connect(self.new_project)
-        self._tip(self.new_project_button, "Start a fresh Micro LLM Creator project with default paths and settings.")
+        self._tip(self.new_project_button, f"Start a fresh {APP_NAME} project with default paths and settings.")
         self.save_project_button = QPushButton("Save Project")
         self.save_project_button.setMaximumWidth(130)
         self.save_project_button.clicked.connect(self.save_project)
@@ -409,7 +456,7 @@ class MainWindow(QMainWindow):
             button.setChecked(button_index == index)
         self._refresh_training_layout()
         if index == 5:
-            self.refresh_job_manager_tab()
+            QTimer.singleShot(20, self.refresh_job_manager_tab)
 
     def resizeEvent(self, event: Any) -> None:
         """Refresh responsive layouts when the main window changes size.
@@ -1231,6 +1278,8 @@ class MainWindow(QMainWindow):
 
         document_count = int(summary.get("document_count", 0) or 0)
         token_count = int(summary.get("token_count", 0) or 0)
+        train_window_count = int(summary.get("train_window_count", 0) or 0)
+        val_window_count = int(summary.get("val_window_count", 0) or 0)
         character_count = int(summary.get("character_count", 0) or 0)
         vocab_size = int(summary.get("tokenizer_vocab_size", summary.get("vocab_size", 0)) or 0)
         code_count = int(summary.get("code_sample_count", 0) or 0)
@@ -1241,21 +1290,104 @@ class MainWindow(QMainWindow):
         skipped_count = int(summary.get("skipped_file_count", 0) or 0)
         failed_count = int(summary.get("failed_file_count", 0) or 0)
         warning = str(summary.get("warning") or "none")
-        self.dataset_quality_samples.setText(f"Samples: {document_count:,}")
+        sequence_stats = summary.get("sequence_token_stats", {}) or {}
+        self.dataset_quality_samples.setText(f"Documents: {document_count:,}")
         self.dataset_quality_tokens.setText(f"Tokens: {token_count:,}")
+        if train_window_count or val_window_count:
+            self.dataset_quality_windows.setText(f"Windows: {train_window_count:,}/{val_window_count:,}")
+        else:
+            self.dataset_quality_windows.setText("Windows: -")
         self.dataset_quality_vocab.setText(f"Vocab: {vocab_size:,}" if vocab_size else "Vocab: -")
         self.dataset_quality_code.setText(f"Code/prose/chat: {code_count:,}/{prose_count:,}/{conversation_count:,}")
         self.dataset_quality_balance.setText("Balance: prepared")
         self.dataset_quality_readiness.setText("Readiness: preview needed")
         self.dataset_quality_cache.setText(f"Files: {processed_count:,} ok, {cached_count:,} cached, {skipped_count:,} skipped, {failed_count:,} failed")
         self.dataset_quality_warning.setText(f"Warnings: {warning}")
-        self._tip(self.dataset_quality_samples, f"{character_count:,} source characters across prepared samples.")
+        self._tip(self.dataset_quality_samples, f"{character_count:,} source characters across prepared documents.")
+        self._tip(
+            self.dataset_quality_windows,
+            f"{train_window_count:,} training and {val_window_count:,} validation sliding windows.",
+        )
+        self._update_dataset_stat_charts(summary, code_count, prose_count, conversation_count, sequence_stats)
+        if hasattr(self, "dataset_advisor") and (train_window_count or val_window_count):
+            advice = [
+                "Documents are source items. Windows are the actual context slices used by training.",
+                f"This dataset can provide about {train_window_count:,} training windows and {val_window_count:,} validation windows.",
+            ]
+            if sequence_stats:
+                advice.append(
+                    "Approx token distribution per source: "
+                    f"min {int(sequence_stats.get('min', 0) or 0):,}, "
+                    f"avg {float(sequence_stats.get('average', 0.0) or 0.0):,.0f}, "
+                    f"median {float(sequence_stats.get('median', 0.0) or 0.0):,.0f}, "
+                    f"max {int(sequence_stats.get('max', 0) or 0):,}."
+                )
+            if document_count < 100 and train_window_count >= 10_000:
+                advice.append(
+                    "A low document count can still be useful when each document is long, because the trainer samples many overlapping windows."
+                )
+            if train_window_count < 1_000:
+                advice.append("Add more text or lower context length if training looks repetitive.")
+            self.dataset_advisor.setPlainText("\n".join(advice))
+
+    def _update_dataset_stat_charts(
+        self,
+        summary: dict[str, Any],
+        code_count: int,
+        prose_count: int,
+        conversation_count: int,
+        sequence_stats: dict[str, Any],
+    ) -> None:
+        """Update dataset statistics charts.
+
+        Args:
+            summary: Dataset summary fields.
+            code_count: Number of code samples.
+            prose_count: Number of prose samples.
+            conversation_count: Number of conversation or instruction samples.
+            sequence_stats: Approximate token distribution statistics.
+        """
+
+        if not hasattr(self, "dataset_mix_chart"):
+            return
+        mixture_report = summary.get("mixture_report", {}) or {}
+        family_rows = list((mixture_report.get("families", {}) or {}).values())
+        labels: list[str] = []
+        values: list[float] = []
+        for row in family_rows:
+            actual = float(row.get("actual_percent", 0.0) or 0.0)
+            selected = int(row.get("selected_documents", 0) or 0)
+            if actual > 0.0 or selected > 0:
+                labels.append(str(row.get("label") or "source"))
+                values.append(actual)
+        if not labels:
+            total = max(code_count + prose_count + conversation_count, 1)
+            labels = ["Code", "Prose", "Conversation"]
+            values = [
+                code_count * 100.0 / total,
+                prose_count * 100.0 / total,
+                conversation_count * 100.0 / total,
+            ]
+        self.dataset_mix_chart.set_values(labels, values, "%")
+        if sequence_stats:
+            self.dataset_sequence_chart.set_values(
+                ["Min", "Average", "Median", "Max"],
+                [
+                    float(sequence_stats.get("min", 0) or 0),
+                    float(sequence_stats.get("average", 0.0) or 0.0),
+                    float(sequence_stats.get("median", 0.0) or 0.0),
+                    float(sequence_stats.get("max", 0) or 0),
+                ],
+            )
+        else:
+            self.dataset_sequence_chart.clear()
 
     def _reset_dataset_quality_report(self) -> None:
         """Reset dataset quality chips to their empty state."""
 
-        self.dataset_quality_samples.setText("Samples: -")
+        self.dataset_quality_samples.setText("Documents: -")
         self.dataset_quality_tokens.setText("Tokens: -")
+        self.dataset_quality_windows.setText("Windows: -")
         self.dataset_quality_vocab.setText("Vocab: -")
         self.dataset_quality_code.setText("Code/prose: -")
         self.dataset_quality_balance.setText("Balance: -")
@@ -1264,6 +1396,10 @@ class MainWindow(QMainWindow):
         self.dataset_quality_duplicates.setText("Duplicates: -")
         self.dataset_quality_extraction.setText("Extraction: -")
         self.dataset_quality_warning.setText("Warnings: none")
+        if hasattr(self, "dataset_mix_chart"):
+            self.dataset_mix_chart.clear()
+        if hasattr(self, "dataset_sequence_chart"):
+            self.dataset_sequence_chart.clear()
         if hasattr(self, "dataset_advisor"):
             self.dataset_advisor.setPlainText("Run Preview Dataset to get cleanup suggestions.")
 
@@ -1568,23 +1704,54 @@ class MainWindow(QMainWindow):
         else:
             self._tip(self.load_llm_button, "Load the GGUF model into memory once for repeated chat messages.")
 
-    def _lightning_icon(self) -> QIcon:
-        """Create the window lightning icon.
+    def _app_icon(self) -> QIcon:
+        """Create the application icon.
 
         Returns:
-            Lightning icon.
+            Application icon.
         """
 
-        return self._static_lightning_icon()
+        return self._static_app_icon()
 
     @staticmethod
-    def _static_lightning_icon() -> QIcon:
-        """Create the static lightning icon.
+    def _app_logo_path() -> Path:
+        """Return the bundled logo path.
 
         Returns:
-            Lightning icon.
+            Logo path.
         """
 
+        return Path(__file__).resolve().parents[2] / "drunken_bot_logo_small.png"
+
+    @staticmethod
+    def _app_logo_pixmap(size: int = 64) -> QPixmap:
+        """Load the bundled logo as a pixmap.
+
+        Args:
+            size: Maximum square size.
+
+        Returns:
+            Logo pixmap, or null pixmap when the file is missing.
+        """
+
+        pixmap = QPixmap(str(MainWindow._app_logo_path()))
+        if pixmap.isNull():
+            return pixmap
+        return pixmap.scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+    @staticmethod
+    def _static_app_icon() -> QIcon:
+        """Create the static app icon.
+
+        Returns:
+            Application icon.
+        """
+
+        logo_path = MainWindow._app_logo_path()
+        if logo_path.exists():
+            icon = QIcon(str(logo_path))
+            if not icon.isNull():
+                return icon
         pixmap = QPixmap(64, 64)
         pixmap.fill(Qt.transparent)
         painter = QPainter(pixmap)
@@ -1616,7 +1783,7 @@ class MainWindow(QMainWindow):
             Path to the generated ``.ico`` file.
         """
 
-        return Path(__file__).with_name("micro_llm_creator_lightning.ico")
+        return Path(__file__).with_name("drunkenbot_llm_ide.ico")
 
     @staticmethod
     def _ensure_windows_icon_file() -> Optional[Path]:
@@ -1631,14 +1798,14 @@ class MainWindow(QMainWindow):
         icon_path = MainWindow._windows_icon_path()
         if icon_path.exists():
             return icon_path
-        icon = MainWindow._static_lightning_icon()
+        icon = MainWindow._static_app_icon()
         pixmap = icon.pixmap(256, 256)
         if pixmap.isNull() or not pixmap.save(str(icon_path), "ICO"):
             return None
         return icon_path
 
     def apply_windows_taskbar_icon(self) -> None:
-        """Apply the lightning icon to the native Windows window handle."""
+        """Apply the app icon to the native Windows window handle."""
 
         if sys.platform != "win32":
             return
@@ -1947,7 +2114,7 @@ class MainWindow(QMainWindow):
             },
             "dataset": {
                 "domain_plan_preset": "Balanced Tiny LLM",
-                "domain_plan": dict(DATASET_DOMAIN_DEFAULTS),
+                "domain_plan": dataset_plan_defaults(),
                 "default_data_paths": [str(path) for path, _category in iter_default_data_files()],
                 "auto_vocab": True,
                 "manual_vocab_size": 8000,
@@ -2088,11 +2255,18 @@ class MainWindow(QMainWindow):
         self.training_step_metric.setText("Step: -")
         self.training_loss_metric.setText("Train loss: -")
         self.training_val_metric.setText("Val loss: -")
+        self.training_health_metric.setText("Health: -")
+        self.training_health_points = []
         self.training_lr_metric.setText("LR: -")
         self.training_speed_metric.setText("Speed: -")
         self.training_grad_metric.setText("Grad: -")
         self.training_vram_metric.setText("VRAM: -")
         self.training_eta_metric.setText("ETA: -")
+        self.model_size_metric.setText("Model: -")
+        self.vram_estimate_metric.setText("VRAM est: -")
+        self.parameter_breakdown_metric.setText("Params: -")
+        self.memory_breakdown_metric.setText("Memory: -")
+        self.architecture_advisor_metric.setText("Advisor: -")
         self.history_metric.setText(f"Runs: {len(self._load_training_history())}")
         self.loss_chart.clear()
         self.optimization_chart.clear()
@@ -2600,6 +2774,7 @@ class MainWindow(QMainWindow):
         stop_button: Optional[QPushButton] = None,
         busy_text: str = "Working",
         task_kind: str = "",
+        isolate_process: bool = False,
     ) -> None:
         """Run a long task on a background thread.
 
@@ -2614,6 +2789,7 @@ class MainWindow(QMainWindow):
             stop_button: Optional stop button to enable while running.
             busy_text: Button text shown while running.
             task_kind: Optional notification stage key.
+            isolate_process: Run the task inside a child process.
         """
 
         if self.thread is not None:
@@ -2633,7 +2809,8 @@ class MainWindow(QMainWindow):
         self.active_log = log
         self.active_progress_bar = progress_bar
         self.thread = QThread(self)
-        self.worker = TaskWorker(
+        worker_class = ProcessTaskWorker if isolate_process else TaskWorker
+        self.worker = worker_class(
             fn,
             *args,
             progress_queue=self.progress_queue,
@@ -2860,7 +3037,9 @@ class MainWindow(QMainWindow):
                 self.fine_tune_val_metric.setText(f"Val loss: {float(val_loss):.4f}")
         step = event.get("step")
         if step is not None and (train_loss is not None or val_loss is not None):
-            self.loss_chart.add_metrics(int(step), train_loss, val_loss)
+            step_int_for_loss = int(step)
+            self.loss_chart.add_metrics(step_int_for_loss, train_loss, val_loss)
+            self._update_training_health(step_int_for_loss, train_loss, val_loss)
         if step is None:
             return
         step_int = int(step)
@@ -2921,6 +3100,49 @@ class MainWindow(QMainWindow):
                 system_ram,
                 data_workers,
             )
+
+    def _update_training_health(
+        self,
+        step: int,
+        train_loss: Optional[float],
+        val_loss: Optional[float],
+    ) -> None:
+        """Update the training health advisor from recent loss values.
+
+        Args:
+            step: Current optimizer step.
+            train_loss: Latest training loss.
+            val_loss: Latest validation loss.
+        """
+
+        self.training_health_points.append((step, train_loss, val_loss))
+        self.training_health_points = self.training_health_points[-12:]
+        latest_train = next((item[1] for item in reversed(self.training_health_points) if item[1] is not None), None)
+        latest_val = next((item[2] for item in reversed(self.training_health_points) if item[2] is not None), None)
+        val_points = [(item[0], item[2]) for item in self.training_health_points if item[2] is not None]
+        if latest_train is None and latest_val is None:
+            label = "Health: collecting"
+            tip = "Waiting for train and validation loss."
+        elif latest_train is not None and latest_val is not None and latest_train < 0.2 and latest_val > max(2.0, latest_train * 8.0):
+            label = "Health: validation gap"
+            tip = "Training loss is very low while validation loss is high. Check overfitting, validation split, tokenizer match, or eval settings."
+        elif len(val_points) >= 3 and val_points[-1][1] > val_points[-2][1] > val_points[-3][1]:
+            label = "Health: overfitting?"
+            tip = "Validation loss has increased for three checks. Consider stopping, reducing epochs, or improving validation data."
+        elif latest_train is not None and (latest_train > 20.0 or not math.isfinite(latest_train)):
+            label = "Health: diverging"
+            tip = "Training loss is unstable or extremely high. Lower learning rate and check gradients/data."
+        elif latest_val is not None and latest_val > 10.0:
+            label = "Health: high val loss"
+            tip = "Validation loss is high. This may be early training, a difficult validation split, or a dataset/tokenizer mismatch."
+        elif latest_train is not None and latest_val is not None and latest_val <= latest_train * 1.8:
+            label = "Health: stable"
+            tip = "Training and validation loss are reasonably close."
+        else:
+            label = "Health: watching"
+            tip = "Collecting more loss points before making a stronger diagnosis."
+        self.training_health_metric.setText(label)
+        self._tip(self.training_health_metric, tip)
 
     @staticmethod
     def _finite_metric(value: Any) -> Optional[float]:
@@ -3092,7 +3314,7 @@ class MainWindow(QMainWindow):
             return
         drained = 0
         last_percent = None
-        while drained < 50:
+        while drained < 12:
             try:
                 event = self.progress_queue.get_nowait()
             except Empty:
@@ -3202,6 +3424,7 @@ class MainWindow(QMainWindow):
 
         conversation_paths = self._split_path_list(self.local_conversation_dataset.text())
         instruction_paths = self._split_path_list(self.local_instruction_dataset.text())
+        dataset_stage = self._dataset_stage_value()
         return DatasetConfig(
             input_dir=Path(self.input_dir.text()),
             output_dir=Path(self.dataset_dir.text()),
@@ -3212,7 +3435,7 @@ class MainWindow(QMainWindow):
             instruction_dataset_path=instruction_paths[0] if instruction_paths else None,
             conversation_dataset_paths=conversation_paths,
             instruction_dataset_paths=instruction_paths,
-            default_data_paths=self._selected_default_data_paths(),
+            default_data_paths=self._selected_default_data_paths_for_stage(dataset_stage),
             mixture_weights=self._mixture_weights_from_ui(),
             min_frequency=self.min_frequency.value(),
             context_length=self.context_length.value(),
@@ -3229,8 +3452,25 @@ class MainWindow(QMainWindow):
             prepare_mode=self._prepare_mode_value(),
             tokenizer_strategy=self._tokenizer_strategy_value(),
             tokenizer_path=Path(self.tokenizer_path.text()) if self.tokenizer_path.text().strip() else None,
-            dataset_stage=self._dataset_stage_value(),
+            dataset_stage=dataset_stage,
         )
+
+    def _selected_default_data_paths_for_stage(self, stage: str) -> list[Path]:
+        """Return selected bundled files that match the dataset purpose.
+
+        Args:
+            stage: Dataset preparation stage.
+
+        Returns:
+            Selected paths suitable for the requested stage.
+        """
+
+        allowed_stage_files = []
+        for path in self._selected_default_data_paths():
+            file_stage = default_data_stage(path)
+            if file_stage == "base" or file_stage == stage:
+                allowed_stage_files.append(path)
+        return allowed_stage_files
 
     @staticmethod
     def _split_path_list(text: str) -> list[Path]:
@@ -3342,8 +3582,9 @@ class MainWindow(QMainWindow):
             vocab = int(result.summary.get("tokenizer_vocab_size", 0) or 0)
             self.dataset_log.append(f"Prepared summary: {tokens:,} tokens, vocab {vocab:,}.")
         else:
-            self.dataset_quality_samples.setText(f"Samples: {len(result.sample_previews):,} previewed")
+            self.dataset_quality_samples.setText(f"Preview: {len(result.sample_previews):,} shown")
             self.dataset_quality_tokens.setText("Tokens: not prepared")
+            self.dataset_quality_windows.setText("Windows: not prepared")
             self.dataset_quality_vocab.setText("Vocab: not prepared")
             self.dataset_quality_code.setText(f"Code/prose: {result.code_preview_count:,}/{result.prose_preview_count:,}")
             self.dataset_quality_cache.setText(f"Files: {result.source_file_count:,} source")
@@ -3466,6 +3707,7 @@ class MainWindow(QMainWindow):
             stop_button=self.stop_dataset_button,
             busy_text="Preparing Dataset",
             task_kind="dataset",
+            isolate_process=True,
         )
 
     @Slot(object)
@@ -3492,6 +3734,10 @@ class MainWindow(QMainWindow):
             f"Prepared {result.document_count} documents, {result.character_count:,} characters, "
             f"{result.token_count:,} tokens, vocab {result.vocab_size:,}."
         )
+        if getattr(result, "train_window_count", 0) or getattr(result, "val_window_count", 0):
+            self.dataset_log.append(
+                f"Training windows: {result.train_window_count:,}; validation windows: {result.val_window_count:,}."
+            )
         self.dataset_log.append(
             f"Cache summary: reused {result.cached_file_count:,} file(s), processed {result.processed_file_count:,} file(s)."
         )
@@ -3520,6 +3766,8 @@ class MainWindow(QMainWindow):
             {
                 "document_count": result.document_count,
                 "token_count": result.token_count,
+                "train_window_count": getattr(result, "train_window_count", 0),
+                "val_window_count": getattr(result, "val_window_count", 0),
                 "character_count": result.character_count,
                 "tokenizer_vocab_size": result.vocab_size,
                 "code_sample_count": result.code_sample_count,
@@ -3531,6 +3779,7 @@ class MainWindow(QMainWindow):
                 "failed_file_count": result.failed_file_count,
                 "warning": result.warning,
                 "mixture_report": mixture_report,
+                "sequence_token_stats": getattr(result, "sequence_token_stats", {}),
             }
         )
         self.train_data_dir.setText(str(result.output_dir))
@@ -3552,7 +3801,12 @@ class MainWindow(QMainWindow):
                 f"Tokens: {result.token_count:,}",
                 f"Vocabulary: {result.vocab_size:,}",
                 (
-                    "Samples: "
+                    "Windows: "
+                    f"{getattr(result, 'train_window_count', 0):,} training, "
+                    f"{getattr(result, 'val_window_count', 0):,} validation"
+                ),
+                (
+                    "Content mix: "
                     f"{result.code_sample_count:,} code, "
                     f"{result.prose_sample_count:,} prose, "
                     f"{getattr(result, 'conversation_sample_count', 0):,} conversation"
@@ -3770,7 +4024,7 @@ class MainWindow(QMainWindow):
         """
 
         if not hasattr(self, "dataset_plan_spins"):
-            return dict(DATASET_DOMAIN_DEFAULTS)
+            return dataset_plan_defaults()
         return {key: float(widget.value()) for key, widget in self.dataset_plan_spins.items()}
 
     def _selected_default_data_paths(self) -> list[Path]:
@@ -3784,8 +4038,8 @@ class MainWindow(QMainWindow):
             return [path for path, _category in iter_default_data_files()]
         return [
             Path(path)
-            for path, checkbox in self.default_data_actions.items()
-            if checkbox.isChecked()
+            for path, item in self.default_data_actions.items()
+            if item.checkState(0) == Qt.Checked
         ]
 
     def _set_selected_default_data_paths(self, paths: list[Any]) -> None:
@@ -3801,8 +4055,66 @@ class MainWindow(QMainWindow):
             selected = {str(Path(path)) for path in paths}
         else:
             selected = set(self.default_data_actions)
-        for path, checkbox in self.default_data_actions.items():
-            checkbox.setChecked(path in selected)
+        self.default_data_tree_updating = True
+        try:
+            for path, item in self.default_data_actions.items():
+                item.setCheckState(0, Qt.Checked if path in selected else Qt.Unchecked)
+            self._refresh_default_data_category_states()
+        finally:
+            self.default_data_tree_updating = False
+
+    def _handle_default_data_tree_changed(self, item: Any, column: int) -> None:
+        """Handle category and file toggles in the bundled data tree.
+
+        Args:
+            item: Changed tree item.
+            column: Changed column index.
+        """
+
+        if column != 0 or getattr(self, "default_data_tree_updating", False):
+            return
+        data = item.data(0, Qt.UserRole) or {}
+        if data.get("kind") != "category":
+            self.default_data_tree_updating = True
+            try:
+                self._refresh_default_data_category_states()
+            finally:
+                self.default_data_tree_updating = False
+            if hasattr(self, "_mixture_weights_state"):
+                delattr(self, "_mixture_weights_state")
+            return
+        state = item.checkState(0)
+        if state == Qt.PartiallyChecked:
+            return
+        self.default_data_tree_updating = True
+        try:
+            for index in range(item.childCount()):
+                item.child(index).setCheckState(0, state)
+        finally:
+            self.default_data_tree_updating = False
+        if hasattr(self, "_mixture_weights_state"):
+            delattr(self, "_mixture_weights_state")
+
+    def _refresh_default_data_category_states(self) -> None:
+        """Refresh category checkbox states from child file selections."""
+
+        if not hasattr(self, "default_data_category_items"):
+            return
+        for category_item in self.default_data_category_items.values():
+            checked = 0
+            partial = False
+            for index in range(category_item.childCount()):
+                state = category_item.child(index).checkState(0)
+                if state == Qt.Checked:
+                    checked += 1
+                elif state == Qt.PartiallyChecked:
+                    partial = True
+            if partial or 0 < checked < category_item.childCount():
+                category_item.setCheckState(0, Qt.PartiallyChecked)
+            elif checked == category_item.childCount() and category_item.childCount() > 0:
+                category_item.setCheckState(0, Qt.Checked)
+            else:
+                category_item.setCheckState(0, Qt.Unchecked)
 
     def _set_dataset_plan(self, plan: dict[str, Any], preset: str = "Custom") -> None:
         """Restore high-level dataset blueprint controls.
@@ -3816,13 +4128,13 @@ class MainWindow(QMainWindow):
             return
         self._restoring_dataset_plan = True
         try:
-            values = {**DATASET_DOMAIN_DEFAULTS, **(plan or {})}
+            values = {**dataset_plan_defaults(), **(plan or {})}
             for key, widget in self.dataset_plan_spins.items():
                 widget.blockSignals(True)
                 try:
-                    widget.setValue(float(values.get(key, DATASET_DOMAIN_DEFAULTS[key])))
+                    widget.setValue(float(values.get(key, 0.0)))
                 except (TypeError, ValueError):
-                    widget.setValue(DATASET_DOMAIN_DEFAULTS[key])
+                    widget.setValue(0.0)
                 widget.blockSignals(False)
             self.dataset_plan_preset.blockSignals(True)
             if preset in DATASET_DOMAIN_PRESETS or preset == "Custom":
@@ -3863,7 +4175,7 @@ class MainWindow(QMainWindow):
         values = self._dataset_plan_from_ui()
         total = sum(values.values())
         if total <= 0:
-            self._set_dataset_plan(DATASET_DOMAIN_DEFAULTS, "Balanced Tiny LLM")
+            self._set_dataset_plan(dataset_plan_defaults(), "Balanced Tiny LLM")
             if hasattr(self, "_mixture_weights_state"):
                 delattr(self, "_mixture_weights_state")
             return
@@ -3893,31 +4205,31 @@ class MainWindow(QMainWindow):
         plan = self._dataset_plan_from_ui()
         total = sum(plan.values())
         if total <= 0:
-            plan = dict(DATASET_DOMAIN_DEFAULTS)
+            plan = dataset_plan_defaults()
             total = sum(plan.values())
         normalized = {key: value * 100.0 / total for key, value in plan.items()}
         mixture = {
             **normalized,
             "local_prose": (
-                normalized["stories"]
-                + normalized["social_emotional"] * 0.25
-                + normalized["reasoning"] * 0.35
-                + normalized["general_prose"] * 0.50
+                normalized.get("stories", 0.0)
+                + normalized.get("social_emotional", 0.0) * 0.25
+                + normalized.get("reasoning", 0.0) * 0.35
+                + normalized.get("general_prose", 0.0) * 0.50
             ),
-            "source_code": normalized["code_technical"],
+            "source_code": normalized.get("code_technical", 0.0),
             "online_base": (
-                normalized["factual_knowledge"]
-                + normalized["mathematics"] * 0.75
-                + normalized["language_basics"]
-                + normalized["general_prose"] * 0.50
+                normalized.get("factual_knowledge", 0.0)
+                + normalized.get("mathematics", 0.0) * 0.75
+                + normalized.get("language_basics", 0.0)
+                + normalized.get("general_prose", 0.0) * 0.50
             ),
             "instruction": (
-                normalized["reasoning"] * 0.65
-                + normalized["structured_qa"]
-                + normalized["safety_uncertainty"]
-                + normalized["mathematics"] * 0.25
+                normalized.get("reasoning", 0.0) * 0.65
+                + normalized.get("structured_qa", 0.0)
+                + normalized.get("safety_uncertainty", 0.0)
+                + normalized.get("mathematics", 0.0) * 0.25
             ),
-            "conversation": normalized["social_emotional"] * 0.75,
+            "conversation": normalized.get("social_emotional", 0.0) * 0.75,
         }
         self._set_mixture_weights(mixture)
         if hasattr(self, "dataset_log"):
@@ -3935,7 +4247,7 @@ class MainWindow(QMainWindow):
         if not hasattr(self, "mixture_local_prose"):
             if not hasattr(self, "_mixture_weights_state"):
                 self.apply_dataset_plan_to_ingestion()
-            return dict(getattr(self, "_mixture_weights_state", DATASET_DOMAIN_DEFAULTS))
+            return dict(getattr(self, "_mixture_weights_state", dataset_plan_defaults()))
         return {
             "local_prose": float(self.mixture_local_prose.value()),
             "source_code": float(self.mixture_source_code.value()),
@@ -3955,7 +4267,7 @@ class MainWindow(QMainWindow):
         if not hasattr(self, "mixture_local_prose"):
             return
         defaults = {
-            **DATASET_DOMAIN_DEFAULTS,
+            **dataset_plan_defaults(),
             "local_prose": 50.0,
             "source_code": 30.0,
             "online_base": 20.0,
@@ -4419,11 +4731,20 @@ class MainWindow(QMainWindow):
         self.manual_vocab_size.setEnabled(not reuses_tokenizer and not self.auto_vocab.isChecked())
         self.min_frequency.setEnabled(not reuses_tokenizer)
 
-    def _update_model_estimate_chips(self, estimate: dict[str, Any]) -> None:
+    def _update_model_estimate_chips(
+        self,
+        estimate: dict[str, Any],
+        model_config: Optional[ModelConfig] = None,
+        training_config: Optional[TrainingConfig] = None,
+        train_tokens: int = 0,
+    ) -> None:
         """Update model and VRAM estimate chips.
 
         Args:
             estimate: Estimate dictionary from the training planning service.
+            model_config: Model architecture used for the estimate.
+            training_config: Training options used for the estimate.
+            train_tokens: Number of available training tokens.
         """
 
         params = int(estimate.get("parameters", 0))
@@ -4431,6 +4752,118 @@ class MainWindow(QMainWindow):
         vram_bytes = float(estimate.get("vram_bytes", 0))
         self.model_size_metric.setText(f"Model: {params / 1_000_000:.2f}M, ckpt {format_bytes(checkpoint_bytes)}")
         self.vram_estimate_metric.setText(f"VRAM est: {format_bytes(vram_bytes)}")
+        parameter_breakdown = estimate.get("parameter_breakdown", {}) or {}
+        memory_breakdown = estimate.get("memory_breakdown", {}) or {}
+        embedding_params = int(parameter_breakdown.get("token_embedding", 0)) + int(
+            parameter_breakdown.get("position_embedding", 0)
+        )
+        attention_params = int(parameter_breakdown.get("attention", 0))
+        mlp_params = int(parameter_breakdown.get("mlp", 0))
+        norm_params = int(parameter_breakdown.get("norms", 0))
+        self.parameter_breakdown_metric.setText(
+            "Params: "
+            f"emb {self._compact_number(embedding_params)}, "
+            f"attn {self._compact_number(attention_params)}, "
+            f"mlp {self._compact_number(mlp_params)}"
+        )
+        self._tip(
+            self.parameter_breakdown_metric,
+            (
+                f"Embedding: {embedding_params:,}\n"
+                f"Attention: {attention_params:,}\n"
+                f"MLP: {mlp_params:,}\n"
+                f"Norms/output: {norm_params:,}\n"
+                f"Total: {params:,}"
+            ),
+        )
+        weights = float(memory_breakdown.get("weights", 0))
+        optimizer = float(memory_breakdown.get("optimizer", 0))
+        activations = float(memory_breakdown.get("activations", 0))
+        kv_cache = float(memory_breakdown.get("kv_cache", 0))
+        self.memory_breakdown_metric.setText(
+            f"Memory: w {format_bytes(weights)}, opt {format_bytes(optimizer)}, act {format_bytes(activations)}"
+        )
+        self._tip(
+            self.memory_breakdown_metric,
+            (
+                f"Weights: {format_bytes(weights)}\n"
+                f"Optimizer state: {format_bytes(optimizer)}\n"
+                f"Activations: {format_bytes(activations)}\n"
+                f"KV cache estimate: {format_bytes(kv_cache)}\n"
+                f"Total training estimate: {format_bytes(vram_bytes)}"
+            ),
+        )
+        self._update_architecture_advisor(estimate, model_config, training_config, train_tokens)
+
+    def _update_architecture_advisor(
+        self,
+        estimate: dict[str, Any],
+        model_config: Optional[ModelConfig],
+        training_config: Optional[TrainingConfig],
+        train_tokens: int,
+    ) -> None:
+        """Update the compact architecture advisor chip.
+
+        Args:
+            estimate: Estimate dictionary from the training planning service.
+            model_config: Model architecture used for the estimate.
+            training_config: Training options used for the estimate.
+            train_tokens: Number of available training tokens.
+        """
+
+        params = max(int(estimate.get("parameters", 0) or 0), 1)
+        tokens_per_param = float(train_tokens) / float(params) if train_tokens > 0 else 0.0
+        vram_bytes = float(estimate.get("vram_bytes", 0) or 0)
+        notes: list[str] = []
+        if tokens_per_param <= 0:
+            label = "Advisor: prepare data"
+            notes.append("Prepare a dataset to compare token budget against model size.")
+        elif tokens_per_param < 20:
+            label = "Advisor: data-light"
+            notes.append(
+                f"Token budget is about {tokens_per_param:.1f} tokens per parameter. More data or fewer epochs may reduce overfitting."
+            )
+        elif tokens_per_param > 150:
+            label = "Advisor: data-rich"
+            notes.append(
+                f"Token budget is about {tokens_per_param:.1f} tokens per parameter. The model may be small for this much data."
+            )
+        else:
+            label = "Advisor: balanced"
+            notes.append(f"Token budget is about {tokens_per_param:.1f} tokens per parameter.")
+        if model_config is not None:
+            if model_config.context_length >= 2048 and model_config.embedding_size <= 256:
+                notes.append("Long context with a small embedding can be memory-heavy without adding much capacity.")
+            if model_config.attention_type in {"grouped_query", "multi_query"}:
+                notes.append("Grouped/multi-query attention reduces KV memory and is useful for longer contexts.")
+            if model_config.mlp_type == "swiglu" and model_config.normalization == "rmsnorm":
+                notes.append("Llama-like blocks improve modern compatibility but must match checkpoints when resuming.")
+        if training_config is not None and training_config.device == "cuda" and vram_bytes > 3.5 * 1024**3:
+            notes.append("Estimated VRAM is high for 4 GB GPUs. Try lower batch, context, embedding, or layers.")
+            if label == "Advisor: balanced":
+                label = "Advisor: memory check"
+        self.architecture_advisor_metric.setText(label)
+        self._tip(self.architecture_advisor_metric, "\n".join(notes))
+
+    @staticmethod
+    def _compact_number(value: int) -> str:
+        """Format a large count for tight metric chips.
+
+        Args:
+            value: Count to format.
+
+        Returns:
+            Compact display string.
+        """
+
+        magnitude = abs(value)
+        if magnitude >= 1_000_000_000:
+            return f"{value / 1_000_000_000:.1f}B"
+        if magnitude >= 1_000_000:
+            return f"{value / 1_000_000:.1f}M"
+        if magnitude >= 1_000:
+            return f"{value / 1_000:.1f}K"
+        return str(value)
 
     def _current_model_config(self, vocab_size: int = 1) -> ModelConfig:
         """Build a model config from the current AI tab settings.
@@ -4775,7 +5208,7 @@ class MainWindow(QMainWindow):
             self.training_log.append(f"[WARN] Could not refresh dataset-based estimate: {exc}")
         estimate = estimate_training_resources(model_config, training_config, train_tokens)
         self.last_training_estimate = estimate
-        self._update_model_estimate_chips(estimate)
+        self._update_model_estimate_chips(estimate, model_config, training_config, train_tokens)
         self.history_metric.setText(f"Runs: {len(self._load_training_history())}")
         self.training_log.append(
             "Model estimate refreshed: "
@@ -4977,7 +5410,7 @@ class MainWindow(QMainWindow):
         output_dir.mkdir(parents=True, exist_ok=True)
         estimate = estimate_training_resources(model_config, training_config, train_tokens)
         self.last_training_estimate = estimate
-        self._update_model_estimate_chips(estimate)
+        self._update_model_estimate_chips(estimate, model_config, training_config, train_tokens)
         params = int(estimate["parameters"])
         checkpoint_bytes = float(estimate["checkpoint_bytes"])
         checkpoint_count = int(estimate["checkpoint_count"])
@@ -5150,6 +5583,8 @@ class MainWindow(QMainWindow):
         self.training_step_metric.setText("Step: -")
         self.training_loss_metric.setText("Train loss: -")
         self.training_val_metric.setText("Val loss: -")
+        self.training_health_metric.setText("Health: -")
+        self.training_health_points = []
         self.training_lr_metric.setText("LR: -")
         self.training_speed_metric.setText("Speed: -")
         self.training_grad_metric.setText("Grad: -")
@@ -5249,6 +5684,8 @@ class MainWindow(QMainWindow):
         self.training_step_metric.setText("Step: -")
         self.training_loss_metric.setText("Train loss: -")
         self.training_val_metric.setText("Val loss: -")
+        self.training_health_metric.setText("Health: -")
+        self.training_health_points = []
         self.training_lr_metric.setText("LR: -")
         self.training_speed_metric.setText("Speed: -")
         self.training_grad_metric.setText("Grad: -")
@@ -5676,7 +6113,7 @@ def main() -> None:
 
     log_file = setup_logging()
     qInstallMessageHandler(qt_message_handler)
-    LOGGER.info("Starting Micro LLM Creator. Log file: %s", log_file)
+    LOGGER.info("Starting %s. Log file: %s", APP_NAME, log_file)
     if sys.platform == "win32":
         try:
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(WINDOWS_APP_ID)
@@ -5684,7 +6121,7 @@ def main() -> None:
             LOGGER.exception("Could not set Windows app user model ID")
     app = QApplication(sys.argv)
     app.setFont(QFont("Arial", 10))
-    app.setWindowIcon(MainWindow._static_lightning_icon())
+    app.setWindowIcon(MainWindow._static_app_icon())
     window = MainWindow()
     window.show()
     QTimer.singleShot(0, window.apply_windows_taskbar_icon)

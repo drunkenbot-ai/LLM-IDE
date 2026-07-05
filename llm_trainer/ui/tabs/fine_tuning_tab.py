@@ -202,6 +202,7 @@ def build_fine_tuning_tab(window) -> QWidget:
 
     window.fine_tune_log = QTextEdit()
     window.fine_tune_log.setReadOnly(True)
+    window.fine_tune_log.document().setMaximumBlockCount(1500)
     window.fine_tune_log.setMinimumHeight(320)
     window.fine_tune_log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
     right_zone.addWidget(window._card("FINE-TUNE TELEMETRY", _single_widget_layout(window.fine_tune_log)), 1)

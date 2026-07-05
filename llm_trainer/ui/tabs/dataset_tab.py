@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (
 )
 
 from llm_trainer.conversation_datasets import CONVERSATION_DATASET_PRESETS
+from llm_trainer.ui.charts import DatasetBarChartWidget
 
 
 def build_dataset_tab(window) -> QWidget:
@@ -50,8 +51,9 @@ def build_dataset_tab(window) -> QWidget:
     title_row.setSpacing(10)
     title = window._page_title("Data Ingestion Matrix")
     title_row.addWidget(title, 0)
-    window.dataset_quality_samples = window._metric_chip("Samples: -", "Training samples after PDF/text/code expansion.")
+    window.dataset_quality_samples = window._metric_chip("Documents: -", "Prepared source documents before token sliding windows.")
     window.dataset_quality_tokens = window._metric_chip("Tokens: -", "Total encoded tokens available for training.")
+    window.dataset_quality_windows = window._metric_chip("Windows: -", "Sliding context windows the trainer can sample.")
     window.dataset_quality_vocab = window._metric_chip("Vocab: -", "Tokenizer vocabulary size used by the dataset.")
     window.dataset_quality_code = window._metric_chip("Code/prose: -", "Code and prose sample split.")
     window.dataset_quality_balance = window._metric_chip("Balance: -", "Code/prose balance detected during preview or preparation.")
@@ -63,6 +65,7 @@ def build_dataset_tab(window) -> QWidget:
     header_quality_items = [
         window.dataset_quality_samples,
         window.dataset_quality_tokens,
+        window.dataset_quality_windows,
         window.dataset_quality_vocab,
         window.dataset_quality_code,
         window.dataset_quality_readiness,
@@ -132,9 +135,12 @@ def build_dataset_tab(window) -> QWidget:
     window.tokenizer_path.setEnabled(False)
     window._tip(window.tokenizer_path, "Existing tokenizer.json to import. Use this when continuing a compatible tokenizer family.")
     window.tokenizer_strategy.currentTextChanged.connect(window._update_tokenizer_strategy_controls)
-    window.code_training_mode = QCheckBox("Code Training Mode")
+    window.code_training_mode = QCheckBox("Code-aware processing")
     window.code_training_mode.setChecked(True)
-    window._tip(window.code_training_mode, "Prepare a programming dataset by preserving source code, tagging code/prose, and extracting code-like blocks.")
+    window._tip(
+        window.code_training_mode,
+        "Use code-aware cleaning, category tags, and code/prose balancing. Keep this on for programming books, source folders, and technical datasets.",
+    )
     window.include_prose = QCheckBox("Include explanations")
     window.include_prose.setChecked(True)
     window._tip(window.include_prose, "Keep prose from PDFs/books. This helps the model learn programming concepts and explanations.")
@@ -143,7 +149,10 @@ def build_dataset_tab(window) -> QWidget:
     window._tip(window.include_source_code, "Include real code files such as .py, .js, .java, .cpp, .cs, .go, .rs, and similar.")
     window.extract_code_blocks = QCheckBox("Extract code blocks")
     window.extract_code_blocks.setChecked(True)
-    window._tip(window.extract_code_blocks, "Try to detect code-like blocks inside PDFs/text and train them as code samples.")
+    window._tip(
+        window.extract_code_blocks,
+        "Detect code snippets inside PDFs and plain text. If you train only from real source files, this can be turned off.",
+    )
     window.preserve_indentation = QCheckBox("Preserve indentation")
     window.preserve_indentation.setChecked(True)
     window._tip(window.preserve_indentation, "Keep line breaks and indentation for code. This is important for Python and readable generated code.")
@@ -207,6 +216,19 @@ def build_dataset_tab(window) -> QWidget:
     left_column.addWidget(source_card, 0)
     right_column.addWidget(tokenizer_card, 0)
 
+    window.dataset_mix_chart = DatasetBarChartWidget("Dataset Composition", "Percent")
+    window.dataset_sequence_chart = DatasetBarChartWidget("Token Distribution", "Tokens")
+    stats_grid = QGridLayout()
+    stats_grid.setHorizontalSpacing(8)
+    stats_grid.setVerticalSpacing(8)
+    stats_grid.addWidget(window.dataset_mix_chart, 0, 0)
+    stats_grid.addWidget(window.dataset_sequence_chart, 0, 1)
+    stats_grid.setColumnStretch(0, 1)
+    stats_grid.setColumnStretch(1, 1)
+    stats_card = window._card("DATASET STATISTICS", stats_grid)
+    stats_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+    right_column.addWidget(stats_card, 0)
+
     window.dataset_advisor = QTextEdit()
     window.dataset_advisor.setReadOnly(True)
     window.dataset_advisor.setMinimumHeight(210)
@@ -238,6 +260,7 @@ def build_dataset_tab(window) -> QWidget:
 
     window.dataset_log = QTextEdit()
     window.dataset_log.setReadOnly(True)
+    window.dataset_log.document().setMaximumBlockCount(1200)
     window.dataset_log.setMinimumHeight(260)
     window.dataset_log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
     log_layout = QVBoxLayout()

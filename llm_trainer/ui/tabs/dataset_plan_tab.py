@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -16,6 +17,8 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QSizePolicy,
     QTextEdit,
+    QTreeWidget,
+    QTreeWidgetItem,
     QVBoxLayout,
     QWidget,
     QWidgetAction,
@@ -102,6 +105,68 @@ DATASET_DOMAIN_LABELS: dict[str, str] = {
     "general_prose": "General prose",
 }
 
+GENERIC_DEFAULT_DATA_FOLDERS = {"base_training", "code_training"}
+
+CATEGORY_ALIASES: dict[str, str] = {
+    "story": "stories",
+    "stories": "stories",
+    "reason": "reasoning",
+    "reasoning": "reasoning",
+    "why": "reasoning",
+    "emotion": "social_emotional",
+    "emotions": "social_emotional",
+    "social": "social_emotional",
+    "conversation": "social_emotional",
+    "dialog": "social_emotional",
+    "dialogue": "social_emotional",
+    "geography": "factual_knowledge",
+    "science": "factual_knowledge",
+    "biology": "factual_knowledge",
+    "physics": "factual_knowledge",
+    "chemistry": "factual_knowledge",
+    "astronomy": "factual_knowledge",
+    "weather": "factual_knowledge",
+    "earth": "factual_knowledge",
+    "history": "factual_knowledge",
+    "facts": "factual_knowledge",
+    "knowledge": "factual_knowledge",
+    "math": "mathematics",
+    "mathematics": "mathematics",
+    "code": "code_technical",
+    "coding": "code_technical",
+    "computer": "code_technical",
+    "computers": "code_technical",
+    "cs": "code_technical",
+    "programming": "code_technical",
+    "technical": "code_technical",
+    "language": "language_basics",
+    "grammar": "language_basics",
+    "qa": "structured_qa",
+    "question": "structured_qa",
+    "answers": "structured_qa",
+    "instruction": "structured_qa",
+    "instructions": "structured_qa",
+    "fine": "structured_qa",
+    "safety": "safety_uncertainty",
+    "ethics": "safety_uncertainty",
+    "honesty": "safety_uncertainty",
+    "fairness": "safety_uncertainty",
+    "uncertainty": "safety_uncertainty",
+    "everyday": "general_prose",
+    "health": "general_prose",
+    "finance": "general_prose",
+    "jobs": "general_prose",
+    "prose": "general_prose",
+}
+
+DEFAULT_DATA_STAGE_FOLDERS: dict[str, str] = {
+    "fine_tune_conversation": "conversation",
+    "fine_tune_instruction": "instruction",
+}
+
+CODE_SUFFIXES = {".py", ".js", ".ts", ".tsx", ".jsx", ".java", ".c", ".cpp", ".h", ".hpp", ".cs", ".go", ".rs", ".sh", ".ps1"}
+SUPPORTED_DEFAULT_SUFFIXES = {".txt", ".md", ".text", ".jsonl", ".json", *CODE_SUFFIXES}
+
 
 def default_data_root() -> Path:
     """Return the bundled default data folder.
@@ -111,6 +176,50 @@ def default_data_root() -> Path:
     """
 
     return Path(__file__).resolve().parents[2] / "default_data"
+
+
+def _slugify_category(value: str) -> str:
+    """Convert folder/file text into a stable category key.
+
+    Args:
+        value: Folder name, file stem, or user-facing text.
+
+    Returns:
+        Lowercase underscore category key.
+    """
+
+    slug = re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")
+    return slug or "general_prose"
+
+
+def dataset_category_label(key: str) -> str:
+    """Return a readable label for a category key.
+
+    Args:
+        key: Dataset category key.
+
+    Returns:
+        User-facing label.
+    """
+
+    return DATASET_DOMAIN_LABELS.get(key, key.replace("_", " ").title())
+
+
+def _category_from_text(value: str) -> str | None:
+    """Infer a known category from free text.
+
+    Args:
+        value: Folder name or file stem.
+
+    Returns:
+        Canonical category key when known.
+    """
+
+    tokens = [token for token in re.split(r"[^a-z0-9]+", value.lower()) if token]
+    for token in tokens:
+        if token in CATEGORY_ALIASES:
+            return CATEGORY_ALIASES[token]
+    return None
 
 
 def default_data_category(path: Path) -> str:
@@ -123,20 +232,47 @@ def default_data_category(path: Path) -> str:
         Dataset category key used by the sampler.
     """
 
-    name = path.stem.lower()
-    if path.suffix.lower() in {".py", ".js", ".ts", ".tsx", ".jsx", ".java", ".c", ".cpp", ".h", ".hpp", ".cs", ".go", ".rs", ".sh", ".ps1"}:
+    root = default_data_root()
+    try:
+        relative = path.relative_to(root)
+    except ValueError:
+        relative = path
+    if path.suffix.lower() in CODE_SUFFIXES:
         return "code_technical"
-    if "story" in name:
-        return "stories"
-    if "reasoning" in name or name.startswith("why"):
-        return "reasoning"
-    if "emotion" in name or "conversation" in name:
-        return "social_emotional"
-    if "geography" in name or "science" in name or "history" in name:
-        return "factual_knowledge"
-    if "math" in name:
-        return "mathematics"
+    for parent in relative.parts[:-1]:
+        category = _category_from_text(parent)
+        if category:
+            return category
+    stem_category = _category_from_text(path.stem)
+    if stem_category:
+        return stem_category
+    for parent in relative.parts[:-1]:
+        slug = _slugify_category(parent)
+        if slug and slug not in GENERIC_DEFAULT_DATA_FOLDERS:
+            return slug
     return "general_prose"
+
+
+def default_data_stage(path: Path) -> str:
+    """Infer which training stage should use a bundled file.
+
+    Args:
+        path: Bundled source file.
+
+    Returns:
+        Stage key: base, instruction, conversation, or code.
+    """
+
+    root = default_data_root()
+    try:
+        relative = path.relative_to(root)
+    except ValueError:
+        relative = path
+    parts = set(relative.parts[:-1])
+    for folder, stage in DEFAULT_DATA_STAGE_FOLDERS.items():
+        if folder in parts:
+            return stage
+    return "base"
 
 
 def iter_default_data_files() -> list[tuple[Path, str]]:
@@ -149,12 +285,27 @@ def iter_default_data_files() -> list[tuple[Path, str]]:
     root = default_data_root()
     if not root.exists():
         return []
-    supported = {".txt", ".md", ".text", ".jsonl", ".json", ".py", ".js", ".ts", ".sh", ".ps1"}
     return [
         (path, default_data_category(path))
         for path in sorted(root.rglob("*"))
-        if path.is_file() and path.suffix.lower() in supported and path.stat().st_size > 0
+        if path.is_file() and path.suffix.lower() in SUPPORTED_DEFAULT_SUFFIXES and path.stat().st_size > 0
     ]
+
+
+def dataset_plan_defaults(default_files: list[tuple[Path, str]] | None = None) -> dict[str, float]:
+    """Return default blueprint weights plus discovered default-data categories.
+
+    Args:
+        default_files: Optional pre-discovered bundled file/category pairs.
+
+    Returns:
+        Default category weight mapping.
+    """
+
+    values = dict(DATASET_DOMAIN_DEFAULTS)
+    for _path, category in default_files or iter_default_data_files():
+        values.setdefault(category, 0.0)
+    return values
 
 
 def build_dataset_plan_tab(window) -> QWidget:
@@ -183,6 +334,9 @@ def build_dataset_plan_tab(window) -> QWidget:
     title_row = QHBoxLayout()
     title = QLabel("Dataset Blueprint")
     title.setObjectName("PageTitle")
+    default_files = iter_default_data_files()
+    plan_defaults = dataset_plan_defaults(default_files)
+
     window.dataset_plan_total_label = QLabel("Total: 100.0%")
     window.dataset_plan_total_label.setObjectName("Metric")
     title_row.addWidget(title)
@@ -214,8 +368,8 @@ def build_dataset_plan_tab(window) -> QWidget:
     domain_grid.setHorizontalSpacing(14)
     domain_grid.setVerticalSpacing(6)
     window.dataset_plan_spins = {}
-    for index, (key, label) in enumerate(DATASET_DOMAIN_LABELS.items()):
-        spin = window._double_spin(0.0, 100.0, DATASET_DOMAIN_DEFAULTS[key], 1.0, 1)
+    for index, (key, value) in enumerate(plan_defaults.items()):
+        spin = window._double_spin(0.0, 100.0, value, 1.0, 1)
         spin.setMinimumWidth(92)
         spin.setMaximumHeight(30)
         spin.valueChanged.connect(window._dataset_plan_mark_custom)
@@ -226,7 +380,7 @@ def build_dataset_plan_tab(window) -> QWidget:
         cell_layout = QHBoxLayout(cell)
         cell_layout.setContentsMargins(0, 0, 0, 0)
         cell_layout.setSpacing(8)
-        cell_label = QLabel(label)
+        cell_label = QLabel(dataset_category_label(key))
         cell_label.setMinimumWidth(112)
         cell_layout.addWidget(cell_label)
         cell_layout.addWidget(spin, 1)
@@ -292,21 +446,44 @@ def build_dataset_plan_tab(window) -> QWidget:
     conversation_card = window._card("ONLINE / STRUCTURED DATA", conversation_form)
     body_grid.addWidget(conversation_card, 1, 0)
 
-    default_grid = QGridLayout()
-    default_grid.setHorizontalSpacing(8)
-    default_grid.setVerticalSpacing(4)
+    window.default_data_tree_updating = False
+    window.default_data_tree = QTreeWidget()
+    window.default_data_tree.setHeaderLabels(["Category / file", "Size"])
+    window.default_data_tree.setRootIsDecorated(True)
+    window.default_data_tree.setAlternatingRowColors(False)
+    window.default_data_tree.setMinimumHeight(260)
+    window.default_data_tree.setColumnWidth(0, 420)
     window.default_data_actions = {}
-    for index, (path, category) in enumerate(iter_default_data_files()):
-        label = f"{path.name}  |  {DATASET_DOMAIN_LABELS.get(category, category)}"
-        checkbox = QCheckBox(label)
-        checkbox.setChecked(True)
-        checkbox.setToolTip(str(path))
-        checkbox.setMaximumHeight(24)
-        window.default_data_actions[str(path)] = checkbox
-        default_grid.addWidget(checkbox, index, 0)
+    window.default_data_category_items = {}
+    grouped_files: dict[str, list[Path]] = {}
+    for path, category in default_files:
+        grouped_files.setdefault(category, []).append(path)
+    for category in sorted(grouped_files, key=dataset_category_label):
+        category_item = QTreeWidgetItem([dataset_category_label(category), f"{len(grouped_files[category])} files"])
+        category_item.setData(0, Qt.UserRole, {"kind": "category", "category": category})
+        category_item.setFlags(category_item.flags() | Qt.ItemIsUserCheckable)
+        category_item.setCheckState(0, Qt.Checked)
+        window.default_data_tree.addTopLevelItem(category_item)
+        window.default_data_category_items[category] = category_item
+        for path in sorted(grouped_files[category], key=lambda item: item.name.lower()):
+            try:
+                size_text = f"{path.stat().st_size / 1024.0:.1f} KB"
+            except OSError:
+                size_text = ""
+            child = QTreeWidgetItem([path.name, size_text])
+            child.setToolTip(0, str(path))
+            child.setData(0, Qt.UserRole, {"kind": "file", "path": str(path), "category": category})
+            child.setFlags(child.flags() | Qt.ItemIsUserCheckable)
+            child.setCheckState(0, Qt.Checked)
+            category_item.addChild(child)
+            window.default_data_actions[str(path)] = child
+        category_item.setExpanded(True)
     if not window.default_data_actions:
-        default_grid.addWidget(QLabel("No bundled default data files were found."), 0, 0)
-    default_card = window._card("BUNDLED DEFAULT DATA", default_grid)
+        window.default_data_tree.addTopLevelItem(QTreeWidgetItem(["No bundled default data files were found.", ""]))
+    window.default_data_tree.itemChanged.connect(window._handle_default_data_tree_changed)
+    default_layout = QVBoxLayout()
+    default_layout.addWidget(window.default_data_tree)
+    default_card = window._card("BUNDLED DEFAULT DATA", default_layout)
     body_grid.addWidget(default_card, 1, 1)
     body_grid.setColumnStretch(0, 1)
     body_grid.setColumnStretch(1, 1)

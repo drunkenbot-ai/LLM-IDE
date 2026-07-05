@@ -297,6 +297,7 @@ def build_training_tab(window) -> QWidget:
     window.training_step_metric = window._metric_chip("Step: -", "Current optimizer step and total planned steps.")
     window.training_loss_metric = window._metric_chip("Train loss: -", "Latest training loss. Lower is usually better.")
     window.training_val_metric = window._metric_chip("Val loss: -", "Latest validation loss when validation is enabled.")
+    window.training_health_metric = window._metric_chip("Health: -", "Training diagnostic based on train and validation loss.")
     window.training_lr_metric = window._metric_chip("LR: -", "Current learning rate from the scheduler.")
     window.training_speed_metric = window._metric_chip("Speed: -", "Current training throughput.")
     window.training_grad_metric = window._metric_chip("Grad: -", "Current gradient norm.")
@@ -304,6 +305,18 @@ def build_training_tab(window) -> QWidget:
     window.training_eta_metric = window._metric_chip("ETA: -", "Estimated time remaining based on recent optimizer steps.")
     window.model_size_metric = window._metric_chip("Model: -", "Estimated model parameter count and checkpoint size.")
     window.vram_estimate_metric = window._metric_chip("VRAM est: -", "Rough training VRAM estimate for selected architecture and batch.")
+    window.parameter_breakdown_metric = window._metric_chip(
+        "Params: -",
+        "Estimated parameters by embedding, attention, MLP, and normalization components.",
+    )
+    window.memory_breakdown_metric = window._metric_chip(
+        "Memory: -",
+        "Estimated training memory by weights, optimizer state, activations, and KV cache.",
+    )
+    window.architecture_advisor_metric = window._metric_chip(
+        "Advisor: -",
+        "Architecture advisor based on model size, dataset tokens, context length, and memory estimate.",
+    )
     window.history_metric = window._metric_chip("Runs: -", "Training run history count in the current model folder.")
     for index, metric in enumerate((
         window.training_eta_metric,
@@ -311,6 +324,7 @@ def build_training_tab(window) -> QWidget:
         window.training_step_metric,
         window.training_loss_metric,
         window.training_val_metric,
+        window.training_health_metric,
         window.training_lr_metric,
         window.training_speed_metric,
         window.training_grad_metric,
@@ -327,12 +341,15 @@ def build_training_tab(window) -> QWidget:
     estimate_grid.setVerticalSpacing(8)
     estimate_grid.addWidget(window.model_size_metric, 0, 0)
     estimate_grid.addWidget(window.vram_estimate_metric, 0, 1)
-    estimate_grid.addWidget(window.history_metric, 1, 0)
+    estimate_grid.addWidget(window.parameter_breakdown_metric, 1, 0)
+    estimate_grid.addWidget(window.memory_breakdown_metric, 1, 1)
+    estimate_grid.addWidget(window.architecture_advisor_metric, 2, 0, 1, 2)
+    estimate_grid.addWidget(window.history_metric, 3, 0)
     window.refresh_estimate_button = QPushButton("Refresh Estimate")
     window.refresh_estimate_button.clicked.connect(window.refresh_model_estimate)
     window.refresh_estimate_button.setMaximumWidth(180)
     window._tip(window.refresh_estimate_button, "Refresh model size, rough VRAM, and training history estimates without starting training.")
-    estimate_grid.addWidget(window.refresh_estimate_button, 1, 1)
+    estimate_grid.addWidget(window.refresh_estimate_button, 3, 1)
     estimate_grid.setColumnStretch(0, 1)
     estimate_grid.setColumnStretch(1, 1)
     estimate_layout = QVBoxLayout()
@@ -351,7 +368,8 @@ def build_training_tab(window) -> QWidget:
 
     window.training_log = QTextEdit()
     window.training_log.setReadOnly(True)
-    window.training_log.setMinimumHeight(360)
+    window.training_log.document().setMaximumBlockCount(1500)
+    window.training_log.setMinimumHeight(306)
     window.training_log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
     telemetry_layout = QVBoxLayout()
     telemetry_layout.addWidget(window.training_log, 1)

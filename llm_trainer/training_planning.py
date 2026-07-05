@@ -16,6 +16,23 @@ def estimate_model_parameters(model_config: ModelConfig) -> int:
     vocab = model_config.vocab_size
     emb = model_config.embedding_size
     layers = model_config.layer_count
+    breakdown = estimate_parameter_breakdown(model_config)
+    return int(sum(breakdown.values()))
+
+
+def estimate_parameter_breakdown(model_config: ModelConfig) -> dict[str, int]:
+    """Estimate parameter groups for a MicroGPT architecture.
+
+    Args:
+        model_config: Model architecture configuration.
+
+    Returns:
+        Dictionary with parameter counts by major model component.
+    """
+
+    vocab = model_config.vocab_size
+    emb = model_config.embedding_size
+    layers = model_config.layer_count
     token_embedding = vocab * emb
     position_embedding = model_config.context_length * emb if model_config.position_encoding == "learned" else 0
     head_size = emb // max(model_config.head_count, 1)
@@ -32,7 +49,13 @@ def estimate_model_parameters(model_config: ModelConfig) -> int:
         if model_config.bias:
             mlp += 5 * emb
     norms = 4 * emb
-    return int(token_embedding + position_embedding + layers * (attention + mlp + norms) + (2 * emb))
+    return {
+        "token_embedding": int(token_embedding),
+        "position_embedding": int(position_embedding),
+        "attention": int(layers * attention),
+        "mlp": int(layers * mlp),
+        "norms": int(layers * norms + (2 * emb)),
+    }
 
 
 def estimate_training_resources(
@@ -51,7 +74,8 @@ def estimate_training_resources(
         Estimate dictionary.
     """
 
-    params = estimate_model_parameters(model_config)
+    parameter_breakdown = estimate_parameter_breakdown(model_config)
+    params = int(sum(parameter_breakdown.values()))
     mixed_precision = training_config.use_amp and training_config.device == "cuda" and training_config.precision in {"fp16", "bf16"}
     param_bytes = params * (2 if mixed_precision else 4)
     optimizer_bytes = params * 8
@@ -63,6 +87,15 @@ def estimate_training_resources(
         * 8
     )
     vram_bytes = param_bytes + optimizer_bytes + activation_bytes
+    kv_cache_bytes = (
+        training_config.batch_size
+        * model_config.context_length
+        * model_config.layer_count
+        * model_config.resolved_kv_head_count()
+        * (model_config.embedding_size // max(model_config.head_count, 1))
+        * 2
+        * (2 if mixed_precision else 4)
+    )
     checkpoint_bytes = params * 16
     steps_per_epoch = max(
         (train_tokens - model_config.context_length)
@@ -74,8 +107,15 @@ def estimate_training_resources(
     estimated_storage = checkpoint_bytes * checkpoint_count
     return {
         "parameters": params,
+        "parameter_breakdown": parameter_breakdown,
         "checkpoint_bytes": checkpoint_bytes,
         "vram_bytes": vram_bytes,
+        "memory_breakdown": {
+            "weights": int(param_bytes),
+            "optimizer": int(optimizer_bytes),
+            "activations": int(activation_bytes),
+            "kv_cache": int(kv_cache_bytes),
+        },
         "steps_per_epoch": steps_per_epoch,
         "total_steps": total_steps,
         "checkpoint_count": checkpoint_count,

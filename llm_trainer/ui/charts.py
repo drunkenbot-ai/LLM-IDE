@@ -9,6 +9,119 @@ from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QSizePolicy, QToolTip, QVBoxLayout, QWidget
 
 
+class DatasetBarChartWidget(QWidget):
+    """Compact bar chart for dataset composition and token statistics."""
+
+    def __init__(
+        self,
+        title: str,
+        y_label: str,
+        empty_text: str = "Dataset statistics will appear after preparation",
+    ) -> None:
+        """Create a dataset statistics chart.
+
+        Args:
+            title: Chart title.
+            y_label: Left-axis label.
+            empty_text: Empty-state text.
+        """
+
+        super().__init__()
+        self.setObjectName("DatasetStatsChart")
+        self.setMinimumHeight(160)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.labels: list[str] = []
+        self.values: list[float] = []
+        self.value_suffix = ""
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        pg.setConfigOptions(antialias=True)
+        self.plot = pg.PlotWidget()
+        self.plot.setBackground("#141414")
+        self.plot.setTitle(title, color="#eeeeee", size="10pt")
+        self.plot.setLabel("left", y_label, color="#d7d7d7")
+        self.plot.showGrid(x=False, y=True, alpha=0.24)
+        self.plot.setMenuEnabled(False)
+        self.plot.setMouseEnabled(x=False, y=False)
+        self.plot.getAxis("bottom").setPen(pg.mkPen("#6a6a6a"))
+        self.plot.getAxis("left").setPen(pg.mkPen("#6a6a6a"))
+        self.plot.getAxis("bottom").setTextPen(pg.mkPen("#cfcfcf"))
+        self.plot.getAxis("left").setTextPen(pg.mkPen("#cfcfcf"))
+        self.plot.getPlotItem().setContentsMargins(8, 8, 8, 8)
+        self.bar_item = pg.BarGraphItem(x=[], height=[], width=0.58, brush=pg.mkBrush("#f5b041"))
+        self.plot.addItem(self.bar_item)
+        self.empty_label = pg.TextItem(empty_text, color="#9a9a9a", anchor=(0.5, 0.5))
+        self.plot.addItem(self.empty_label)
+        self.plot.scene().sigMouseMoved.connect(self._on_mouse_moved)
+        layout.addWidget(self.plot)
+        self.clear()
+
+    def clear(self) -> None:
+        """Clear chart values."""
+
+        self.labels = []
+        self.values = []
+        self.bar_item.setOpts(x=[], height=[])
+        self.empty_label.setVisible(True)
+        self.empty_label.setPos(0.5, 0.5)
+        self.plot.setXRange(-0.5, 0.5, padding=0)
+        self.plot.setYRange(0, 1, padding=0)
+        self.plot.getAxis("bottom").setTicks([])
+
+    def set_values(self, labels: list[str], values: list[float], value_suffix: str = "") -> None:
+        """Set chart values.
+
+        Args:
+            labels: Bar labels.
+            values: Bar values.
+            value_suffix: Suffix for hover values, such as ``%``.
+        """
+
+        pairs = [
+            (label, float(value))
+            for label, value in zip(labels, values)
+            if label and math.isfinite(float(value)) and float(value) >= 0.0
+        ]
+        if not pairs:
+            self.clear()
+            return
+        self.labels = [label for label, _ in pairs]
+        self.values = [value for _, value in pairs]
+        self.value_suffix = value_suffix
+        x_values = list(range(len(self.values)))
+        brushes = [pg.mkBrush(color) for color in ("#f5b041", "#b6d77a", "#57c7ff", "#ff7f6e", "#c792ea", "#7ce38b")]
+        self.bar_item.setOpts(x=x_values, height=self.values, width=0.58, brushes=[brushes[i % len(brushes)] for i in x_values])
+        self.plot.getAxis("bottom").setTicks([[(i, self._short_label(label)) for i, label in enumerate(self.labels)]])
+        max_value = max(self.values) if self.values else 1.0
+        self.plot.setXRange(-0.6, len(self.values) - 0.4, padding=0)
+        self.plot.setYRange(0, max(max_value * 1.15, 1.0), padding=0)
+        self.empty_label.setVisible(False)
+
+    @staticmethod
+    def _short_label(label: str) -> str:
+        """Return a compact axis label."""
+
+        return label.replace(" / ", "\n").replace(" ", "\n")[:18]
+
+    def _on_mouse_moved(self, position: QPointF) -> None:
+        """Show bar values while hovering."""
+
+        if not self.values:
+            return
+        if not self.plot.sceneBoundingRect().contains(position):
+            return
+        point = self.plot.plotItem.vb.mapSceneToView(position)
+        index = int(round(point.x()))
+        if 0 <= index < len(self.values):
+            QToolTip.showText(
+                QCursor.pos(),
+                f"{self.labels[index]}: {self.values[index]:,.1f}{self.value_suffix}",
+                self,
+            )
+
+
 class LossChartWidget(QWidget):
     """Interactive training metric chart backed by pyqtgraph."""
 

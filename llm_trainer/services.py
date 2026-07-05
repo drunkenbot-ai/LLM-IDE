@@ -6,6 +6,7 @@ import logging
 import os
 import re
 import shutil
+import statistics
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Optional
@@ -74,6 +75,9 @@ class DatasetBuildResult:
         tokenizer_path: Path to tokenizer JSON.
         document_count: Number of loaded samples.
         token_count: Total encoded tokens.
+        train_window_count: Number of sliding training windows.
+        val_window_count: Number of sliding validation windows.
+        sequence_token_stats: Approximate min/avg/median/max source token lengths.
         vocab_size: Final tokenizer vocabulary size.
         character_count: Total corpus characters.
         suggested_vocab_size: Automatically estimated vocabulary size.
@@ -97,6 +101,9 @@ class DatasetBuildResult:
     vocab_size: int
     character_count: int
     suggested_vocab_size: int
+    train_window_count: int = 0
+    val_window_count: int = 0
+    sequence_token_stats: dict[str, float] = field(default_factory=dict)
     warning: Optional[str] = None
     code_sample_count: int = 0
     prose_sample_count: int = 0
@@ -253,7 +260,10 @@ def check_project_health(
         summary = read_json(dataset_dir / "dataset_summary.json", default={}) or {}
         tokens = int(summary.get("token_count", 0) or 0)
         vocab = int(summary.get("tokenizer_vocab_size", 0) or 0)
-        checks.append(_health_check("Dataset core", "ok", f"Prepared with {tokens:,} token(s), vocab {vocab:,}."))
+        train_windows = int(summary.get("train_window_count", 0) or 0)
+        val_windows = int(summary.get("val_window_count", 0) or 0)
+        window_text = f", {train_windows:,}/{val_windows:,} train/val window(s)" if train_windows or val_windows else ""
+        checks.append(_health_check("Dataset core", "ok", f"Prepared with {tokens:,} token(s), vocab {vocab:,}{window_text}."))
 
     _emit(progress, "Checking model artifacts...", 50)
     if not model_dir.exists():
@@ -1275,6 +1285,102 @@ MIXTURE_LABELS = {
 }
 
 
+GENERIC_DEFAULT_DATA_FOLDERS = {"base_training", "code_training"}
+
+CATEGORY_ALIASES = {
+    "story": "stories",
+    "stories": "stories",
+    "reason": "reasoning",
+    "reasoning": "reasoning",
+    "why": "reasoning",
+    "emotion": "social_emotional",
+    "emotions": "social_emotional",
+    "social": "social_emotional",
+    "conversation": "social_emotional",
+    "dialog": "social_emotional",
+    "dialogue": "social_emotional",
+    "geography": "factual_knowledge",
+    "science": "factual_knowledge",
+    "biology": "factual_knowledge",
+    "physics": "factual_knowledge",
+    "chemistry": "factual_knowledge",
+    "astronomy": "factual_knowledge",
+    "weather": "factual_knowledge",
+    "earth": "factual_knowledge",
+    "history": "factual_knowledge",
+    "facts": "factual_knowledge",
+    "knowledge": "factual_knowledge",
+    "math": "mathematics",
+    "mathematics": "mathematics",
+    "code": "code_technical",
+    "coding": "code_technical",
+    "computer": "code_technical",
+    "computers": "code_technical",
+    "cs": "code_technical",
+    "programming": "code_technical",
+    "technical": "code_technical",
+    "language": "language_basics",
+    "grammar": "language_basics",
+    "qa": "structured_qa",
+    "question": "structured_qa",
+    "answers": "structured_qa",
+    "safety": "safety_uncertainty",
+    "ethics": "safety_uncertainty",
+    "honesty": "safety_uncertainty",
+    "fairness": "safety_uncertainty",
+    "uncertainty": "safety_uncertainty",
+    "everyday": "general_prose",
+    "health": "general_prose",
+    "finance": "general_prose",
+    "jobs": "general_prose",
+    "prose": "general_prose",
+}
+
+
+def _slugify_category(value: str) -> str:
+    """Convert text into a stable dataset category key.
+
+    Args:
+        value: Folder or file text.
+
+    Returns:
+        Lowercase underscore category key.
+    """
+
+    slug = re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")
+    return slug or "general_prose"
+
+
+def _mixture_label(category: str) -> str:
+    """Return a human-readable mixture label.
+
+    Args:
+        category: Mixture category key.
+
+    Returns:
+        Display label.
+    """
+
+    return MIXTURE_LABELS.get(category, category.replace("_", " ").title())
+
+
+def _category_from_text(value: str) -> Optional[str]:
+    """Infer a known dataset category from text.
+
+    Args:
+        value: Folder name or file stem.
+
+    Returns:
+        Canonical category key when a known token is present.
+    """
+
+    tokens = [token for token in re.split(r"[^a-z0-9]+", value.lower()) if token]
+    for token in tokens:
+        if token in CATEGORY_ALIASES:
+            return CATEGORY_ALIASES[token]
+    return None
+
+
 def _default_data_category(path: Path) -> Optional[str]:
     """Infer the Dataset Blueprint category for a bundled data file.
 
@@ -1285,22 +1391,24 @@ def _default_data_category(path: Path) -> Optional[str]:
         Dataset category key when the path is recognized as bundled starter data.
     """
 
-    normalized_parts = {part.lower() for part in path.parts}
-    if "default_data" not in normalized_parts:
+    parts_lower = [part.lower() for part in path.parts]
+    if "default_data" not in parts_lower:
         return None
-    name = path.stem.lower()
-    if path.suffix.lower() in SUPPORTED_CODE_SUFFIXES or "code_training" in normalized_parts:
+    default_index = parts_lower.index("default_data")
+    relative_parts = path.parts[default_index + 1 :]
+    if path.suffix.lower() in SUPPORTED_CODE_SUFFIXES or "code_training" in parts_lower:
         return "code_technical"
-    if "story" in name:
-        return "stories"
-    if "reasoning" in name or name.startswith("why"):
-        return "reasoning"
-    if "emotion" in name or "conversation" in name:
-        return "social_emotional"
-    if "geography" in name or "science" in name or "history" in name:
-        return "factual_knowledge"
-    if "math" in name:
-        return "mathematics"
+    for parent in relative_parts[:-1]:
+        category = _category_from_text(parent)
+        if category:
+            return category
+    stem_category = _category_from_text(path.stem)
+    if stem_category:
+        return stem_category
+    for parent in relative_parts[:-1]:
+        slug = _slugify_category(parent)
+        if slug and slug not in GENERIC_DEFAULT_DATA_FOLDERS:
+            return slug
     return "general_prose"
 
 
@@ -1362,16 +1470,18 @@ def _empty_mixture_report(weights: dict[str, float], documents: list[Document], 
         Mixture report dictionary.
     """
 
-    by_family: dict[str, list[Document]] = {key: [] for key in MIXTURE_LABELS}
+    document_families = {_document_mixture_family(document) for document in documents}
+    families_to_report = sorted({*MIXTURE_LABELS, *weights, *document_families})
+    by_family: dict[str, list[Document]] = {key: [] for key in families_to_report}
     for document in documents:
         by_family.setdefault(_document_mixture_family(document), []).append(document)
     total_chars = sum(len(document.text) for document in documents)
     families = {}
-    for family, label in MIXTURE_LABELS.items():
+    for family in families_to_report:
         available = by_family.get(family, [])
         available_chars = sum(len(document.text) for document in available)
         families[family] = {
-            "label": label,
+            "label": _mixture_label(family),
             "requested_weight": float(weights.get(family, 0.0) or 0.0),
             "available_documents": len(available),
             "available_characters": available_chars,
@@ -1408,8 +1518,10 @@ def _apply_dataset_mixture(
         Selected documents and mixture report.
     """
 
+    document_families = {_document_mixture_family(document) for document in documents}
+    families_to_sample = sorted({*MIXTURE_LABELS, *weights, *document_families})
     clean_weights: dict[str, float] = {}
-    for family in MIXTURE_LABELS:
+    for family in families_to_sample:
         try:
             clean_weights[family] = max(0.0, float(weights.get(family, 0.0) or 0.0))
         except (TypeError, ValueError):
@@ -1418,7 +1530,7 @@ def _apply_dataset_mixture(
     if requested_total <= 0.0:
         return documents, _empty_mixture_report(clean_weights, documents, applied=False, reason="No positive mixture weights.")
 
-    grouped: dict[str, list[Document]] = {key: [] for key in MIXTURE_LABELS}
+    grouped: dict[str, list[Document]] = {key: [] for key in families_to_sample}
     for document in documents:
         grouped.setdefault(_document_mixture_family(document), []).append(document)
     available_families = {
@@ -1441,7 +1553,7 @@ def _apply_dataset_mixture(
         family: sorted(items, key=_stable_document_sort_key)
         for family, items in available_families.items()
     }
-    selected_by_family: dict[str, list[Document]] = {family: [] for family in MIXTURE_LABELS}
+    selected_by_family: dict[str, list[Document]] = {family: [] for family in families_to_sample}
     selected_ids: set[int] = set()
     remaining_budget = 0
 
@@ -1470,7 +1582,7 @@ def _apply_dataset_mixture(
 
     selected_documents = [
         document
-        for family in MIXTURE_LABELS
+        for family in families_to_sample
         for document in selected_by_family.get(family, [])
     ]
     selected_documents = sorted(selected_documents, key=lambda document: (str(document.path), document.kind, document.language or ""))
@@ -1484,13 +1596,13 @@ def _apply_dataset_mixture(
         "total_selected_characters": selected_total_chars,
         "families": {},
     }
-    for family, label in MIXTURE_LABELS.items():
+    for family in families_to_sample:
         available = grouped.get(family, [])
         selected = selected_by_family.get(family, [])
         available_chars = sum(len(document.text) for document in available)
         selected_chars = sum(len(document.text) for document in selected)
         report["families"][family] = {
-            "label": label,
+            "label": _mixture_label(family),
             "requested_weight": clean_weights.get(family, 0.0),
             "available_documents": len(available),
             "available_characters": available_chars,
@@ -1580,8 +1692,7 @@ def build_dataset(
         if mixture_text:
             _emit(progress, f"Dataset mixture plan: {mixture_text}.", 49)
     if mixture_report.get("applied"):
-        for family in MIXTURE_LABELS:
-            row = mixture_report.get("families", {}).get(family, {})
+        for family, row in mixture_report.get("families", {}).items():
             if int(row.get("selected_documents", 0) or 0) > 0 or float(row.get("requested_weight", 0.0) or 0.0) > 0.0:
                 _emit(
                     progress,
@@ -1628,8 +1739,33 @@ def build_dataset(
         raise RuntimeError("Dataset preparation stopped by user.")
     tokens = encode_text(tokenizer, corpus_text)
     _emit(progress, f"Encoded {len(tokens):,} tokens.", 86)
+    token_density = (len(tokens) / max(len(corpus_text), 1)) if corpus_text else 0.0
+    document_token_lengths = [max(1, int(round(len(doc.text) * token_density))) for doc in documents if doc.text]
+    if document_token_lengths:
+        sequence_stats = {
+            "min": min(document_token_lengths),
+            "average": sum(document_token_lengths) / len(document_token_lengths),
+            "median": statistics.median(document_token_lengths),
+            "max": max(document_token_lengths),
+        }
+    else:
+        sequence_stats = {"min": 0, "average": 0.0, "median": 0.0, "max": 0}
+    _emit(
+        progress,
+        (
+            "Token distribution: "
+            f"min {int(sequence_stats['min']):,}, "
+            f"avg {float(sequence_stats['average']):,.0f}, "
+            f"median {float(sequence_stats['median']):,.0f}, "
+            f"max {int(sequence_stats['max']):,}."
+        ),
+        88,
+    )
     train_tokens, val_tokens = split_tokens(tokens, config.validation_split)
+    train_window_count = max(0, len(train_tokens) - config.context_length)
+    val_window_count = max(0, len(val_tokens) - config.context_length)
     _emit(progress, f"Training tokens: {len(train_tokens):,}; validation tokens: {len(val_tokens):,}.", 92)
+    _emit(progress, f"Training windows: {train_window_count:,}; validation windows: {val_window_count:,}.", 92)
     (config.output_dir / "train_tokens.json").write_text(json.dumps(train_tokens), encoding="utf-8")
     (config.output_dir / "val_tokens.json").write_text(json.dumps(val_tokens), encoding="utf-8")
 
@@ -1640,6 +1776,10 @@ def build_dataset(
         "token_count": len(tokens),
         "train_token_count": len(train_tokens),
         "val_token_count": len(val_tokens),
+        "train_window_count": train_window_count,
+        "val_window_count": val_window_count,
+        "context_length": config.context_length,
+        "sequence_token_stats": sequence_stats,
         "code_sample_count": code_sample_count,
         "prose_sample_count": prose_sample_count,
         "conversation_sample_count": conversation_sample_count,
@@ -1683,6 +1823,9 @@ def build_dataset(
         tokenizer.get_vocab_size(),
         character_count,
         suggested_vocab_size,
+        train_window_count,
+        val_window_count,
+        sequence_stats,
         warning,
         code_sample_count,
         prose_sample_count,
