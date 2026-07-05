@@ -7,6 +7,7 @@ import os
 import re
 import shutil
 import statistics
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Optional
@@ -96,6 +97,11 @@ class DatasetBuildResult:
         quality_stars: Dataset quality rating from 0 to 5.
         quality_label: Human-readable dataset quality label.
         quality_reasons: Short reasons behind the quality score.
+        duplicate_block_count: Number of repeated blocks in the written corpus.
+        unique_block_count: Number of unique blocks in the written corpus.
+        corpus_block_count: Number of non-empty blocks inspected in the written corpus.
+        duplicate_block_ratio: Fraction of repeated text blocks in the written corpus.
+        unique_block_ratio: Fraction of unique text blocks in the written corpus.
     """
 
     output_dir: Path
@@ -123,6 +129,11 @@ class DatasetBuildResult:
     quality_stars: float = 0.0
     quality_label: str = "Not rated"
     quality_reasons: list[str] = field(default_factory=list)
+    duplicate_block_count: int = 0
+    unique_block_count: int = 0
+    corpus_block_count: int = 0
+    duplicate_block_ratio: float = 0.0
+    unique_block_ratio: float = 1.0
 
 
 @dataclass
@@ -1729,6 +1740,16 @@ def build_dataset(
         reasoning_sample_mode=config.reasoning_sample_mode,
     )
     corpus_text = corpus_path.read_text(encoding="utf-8")
+    duplicate_report = _text_block_duplicate_report(corpus_text)
+    _emit(
+        progress,
+        (
+            "Corpus diversity: "
+            f"{duplicate_report['unique_block_count']:,}/{duplicate_report['block_count']:,} unique blocks, "
+            f"{duplicate_report['duplicate_block_ratio'] * 100:.1f}% repeated."
+        ),
+        74,
+    )
     tokenizer_path = config.output_dir / "tokenizer.json"
     if should_stop and should_stop():
         raise RuntimeError("Dataset preparation stopped by user.")
@@ -1790,6 +1811,7 @@ def build_dataset(
         failed_file_count=failed_file_count,
         warning=warning,
         sequence_stats=sequence_stats,
+        duplicate_report=duplicate_report,
     )
     _emit(
         progress,
@@ -1842,6 +1864,13 @@ def build_dataset(
         "quality_label": quality_report["label"],
         "quality_reasons": quality_report["reasons"],
         "quality_components": quality_report["components"],
+        "duplicate_block_count": duplicate_report["duplicate_block_count"],
+        "unique_block_count": duplicate_report["unique_block_count"],
+        "corpus_block_count": duplicate_report["block_count"],
+        "duplicate_block_ratio": duplicate_report["duplicate_block_ratio"],
+        "unique_block_ratio": duplicate_report["unique_block_ratio"],
+        "most_repeated_block_count": duplicate_report["most_repeated_block_count"],
+        "top_repeated_blocks": duplicate_report["top_repeated_blocks"],
     }
     dataset_version = record_dataset_version(config.output_dir, summary, manifest)
     write_json(config.output_dir / "dataset_summary.json", summary)
@@ -1874,6 +1903,11 @@ def build_dataset(
         float(quality_report["stars"]),
         str(quality_report["label"]),
         list(quality_report["reasons"]),
+        int(duplicate_report["duplicate_block_count"]),
+        int(duplicate_report["unique_block_count"]),
+        int(duplicate_report["block_count"]),
+        float(duplicate_report["duplicate_block_ratio"]),
+        float(duplicate_report["unique_block_ratio"]),
     )
 
 
@@ -1893,6 +1927,80 @@ def _bounded_ratio(value: float, target: float) -> float:
     return max(0.0, min(1.0, float(value) / float(target)))
 
 
+def _canonical_corpus_block(text: str) -> str:
+    """Normalize a corpus block for repeated-content checks.
+
+    Args:
+        text: Raw block text.
+
+    Returns:
+        Whitespace-normalized lowercase text.
+    """
+
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+
+def _text_block_duplicate_report(corpus_text: str, max_blocks: int = 500_000) -> dict[str, Any]:
+    """Measure exact repeated blocks in the prepared corpus text.
+
+    Args:
+        corpus_text: Fully written corpus text.
+        max_blocks: Maximum number of non-empty blocks to inspect.
+
+    Returns:
+        Dictionary with block counts, ratios, and top repeated examples.
+    """
+
+    counts: Counter[str] = Counter()
+    examples: dict[str, str] = {}
+    total_blocks = 0
+    ignored_blocks = 0
+    start = 0
+    for match in re.finditer(r"\n\s*\n+", corpus_text):
+        if total_blocks >= max_blocks:
+            break
+        raw_block = corpus_text[start : match.start()]
+        start = match.end()
+        canonical = _canonical_corpus_block(raw_block)
+        if len(canonical) < 12:
+            ignored_blocks += 1
+            continue
+        digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        counts[digest] += 1
+        examples.setdefault(digest, canonical[:240])
+        total_blocks += 1
+    if total_blocks < max_blocks:
+        canonical = _canonical_corpus_block(corpus_text[start:])
+        if len(canonical) >= 12:
+            digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+            counts[digest] += 1
+            examples.setdefault(digest, canonical[:240])
+            total_blocks += 1
+        elif canonical:
+            ignored_blocks += 1
+
+    unique_blocks = len(counts)
+    duplicate_blocks = sum(count - 1 for count in counts.values() if count > 1)
+    duplicate_ratio = duplicate_blocks / max(total_blocks, 1)
+    unique_ratio = unique_blocks / max(total_blocks, 1)
+    repeated = [
+        {"count": count, "sample": examples[digest]}
+        for digest, count in counts.most_common(8)
+        if count > 1
+    ]
+    return {
+        "block_count": total_blocks,
+        "unique_block_count": unique_blocks,
+        "duplicate_block_count": duplicate_blocks,
+        "duplicate_block_ratio": duplicate_ratio,
+        "unique_block_ratio": unique_ratio,
+        "ignored_block_count": ignored_blocks,
+        "truncated": total_blocks >= max_blocks,
+        "most_repeated_block_count": repeated[0]["count"] if repeated else 1,
+        "top_repeated_blocks": repeated,
+    }
+
+
 def _dataset_quality_report(
     *,
     document_count: int,
@@ -1908,6 +2016,7 @@ def _dataset_quality_report(
     failed_file_count: int,
     warning: Optional[str],
     sequence_stats: dict[str, float],
+    duplicate_report: dict[str, Any],
 ) -> dict[str, Any]:
     """Rate a prepared dataset for small-LLM training readiness.
 
@@ -1925,6 +2034,7 @@ def _dataset_quality_report(
         failed_file_count: Source files that failed extraction.
         warning: Size/content warning string.
         sequence_stats: Approximate per-document token distribution.
+        duplicate_report: Repeated text-block report for the written corpus.
 
     Returns:
         Dataset quality dictionary with score, stars, label, and reasons.
@@ -1942,6 +2052,9 @@ def _dataset_quality_report(
     average_sequence = float(sequence_stats.get("average", 0.0) or 0.0)
     sequence_score = 5.0 * _bounded_ratio(average_sequence, 256)
     penalty = min(20.0, failed_file_count * 3.0 + skipped_file_count * 0.5)
+    duplicate_ratio = float(duplicate_report.get("duplicate_block_ratio", 0.0) or 0.0)
+    duplicate_penalty = min(35.0, duplicate_ratio * 70.0)
+    penalty += duplicate_penalty
     if warning and warning != "none":
         penalty += 5.0
     score = max(
@@ -1985,6 +2098,14 @@ def _dataset_quality_report(
         reasons.append("Dataset includes multiple content families.")
     if skipped_file_count or failed_file_count:
         reasons.append(f"Extraction skipped {skipped_file_count} file(s) and failed {failed_file_count} file(s).")
+    if duplicate_ratio >= 0.5:
+        reasons.append("Prepared corpus is heavily repeated; training may memorize instead of generalize.")
+    elif duplicate_ratio >= 0.2:
+        reasons.append("Prepared corpus has many repeated blocks; add more varied data or deduplicate.")
+    elif duplicate_ratio >= 0.05:
+        reasons.append("Prepared corpus has some repeated blocks.")
+    else:
+        reasons.append("Prepared corpus block diversity looks healthy.")
     if warning and warning != "none":
         reasons.append(str(warning))
     return {
@@ -2000,6 +2121,7 @@ def _dataset_quality_report(
             "validation": round(validation_score, 1),
             "diversity": round(diversity_score, 1),
             "sequence": round(sequence_score, 1),
+            "duplicate_penalty": round(duplicate_penalty, 1),
             "penalty": round(penalty, 1),
         },
     }
