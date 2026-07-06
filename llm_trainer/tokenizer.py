@@ -16,6 +16,8 @@ UNK_TOKEN = "<unk>"
 BOS_TOKEN = "<bos>"
 EOS_TOKEN = "<eos>"
 SPECIAL_TOKENS = [PAD_TOKEN, UNK_TOKEN, BOS_TOKEN, EOS_TOKEN]
+MAX_TOKENIZER_TRAINING_CHARS = 25_000_000
+MAX_TOKENIZER_LINE_CHARS = 8_192
 
 
 def train_tokenizer(
@@ -77,11 +79,22 @@ def _iter_corpus_lines(corpus_path: Path, should_stop: Optional[Callable[[], boo
         RuntimeError: If cancellation is requested.
     """
 
+    emitted_chars = 0
     with corpus_path.open("r", encoding="utf-8") as handle:
         for line in handle:
             if should_stop and should_stop():
                 raise RuntimeError("Dataset preparation stopped by user.")
-            yield line
+            for start in range(0, len(line), MAX_TOKENIZER_LINE_CHARS):
+                chunk = line[start : start + MAX_TOKENIZER_LINE_CHARS]
+                if not chunk:
+                    continue
+                remaining = MAX_TOKENIZER_TRAINING_CHARS - emitted_chars
+                if remaining <= 0:
+                    return
+                if len(chunk) > remaining:
+                    chunk = chunk[:remaining]
+                emitted_chars += len(chunk)
+                yield chunk
 
 
 def load_tokenizer(path: Path) -> Tokenizer:
@@ -161,4 +174,40 @@ def encode_text(tokenizer: Tokenizer, text: str) -> list[int]:
         List of token IDs.
     """
 
-    return tokenizer.encode(text).ids
+    token_ids: list[int] = []
+    for start in range(0, len(text), MAX_TOKENIZER_LINE_CHARS):
+        chunk = text[start : start + MAX_TOKENIZER_LINE_CHARS]
+        if chunk:
+            token_ids.extend(tokenizer.encode(chunk).ids)
+    return token_ids
+
+
+def encode_file(
+    tokenizer: Tokenizer,
+    corpus_path: Path,
+    should_stop: Optional[Callable[[], bool]] = None,
+) -> list[int]:
+    """Encode a corpus file into token IDs without loading it all at once.
+
+    Args:
+        tokenizer: Tokenizer used for encoding.
+        corpus_path: Text corpus path.
+        should_stop: Optional callback returning true when encoding should stop.
+
+    Returns:
+        Token IDs for the corpus.
+
+    Raises:
+        RuntimeError: If cancellation is requested.
+    """
+
+    token_ids: list[int] = []
+    with corpus_path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            if should_stop and should_stop():
+                raise RuntimeError("Dataset preparation stopped by user.")
+            for start in range(0, len(line), MAX_TOKENIZER_LINE_CHARS):
+                chunk = line[start : start + MAX_TOKENIZER_LINE_CHARS]
+                if chunk:
+                    token_ids.extend(tokenizer.encode(chunk).ids)
+    return token_ids
