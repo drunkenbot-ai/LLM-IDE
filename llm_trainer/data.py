@@ -784,4 +784,4 @@ def write_training_corpus(
                 )
             else:
                 file.write(doc.text)
-            file.write("\n")
+            file.write("\n\n")

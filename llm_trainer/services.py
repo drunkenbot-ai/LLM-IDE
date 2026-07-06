@@ -31,7 +31,15 @@ from .data import (
     write_training_corpus,
 )
 from .lineage import read_json, record_dataset_version, stable_json_hash, utc_timestamp, write_json
-from .tokenizer import PAD_TOKEN, encode_text, load_tokenizer, token_id, train_tokenizer, validate_training_tokenizer
+from .tokenizer import (
+    MAX_TOKENIZER_TRAINING_CHARS,
+    PAD_TOKEN,
+    encode_file,
+    load_tokenizer,
+    token_id,
+    train_tokenizer,
+    validate_training_tokenizer,
+)
 from .training import TrainingResult, latest_checkpoint, split_tokens, train_model
 
 
@@ -989,7 +997,12 @@ def _load_or_create_tokenizer(
             shutil.copy2(import_path, tokenizer_path)
         return load_tokenizer(tokenizer_path), False, True, str(import_path)
 
-    _emit(progress, "Training tokenizer. This may take a while for large PDF folders...", 62)
+    training_mb = min(corpus_path.stat().st_size, MAX_TOKENIZER_TRAINING_CHARS) / (1024 * 1024)
+    _emit(
+        progress,
+        f"Training tokenizer on a bounded {training_mb:.1f} MB corpus sample to keep memory stable...",
+        62,
+    )
     tokenizer = train_tokenizer(
         corpus_path,
         tokenizer_path,
@@ -1379,6 +1392,7 @@ DOMAIN_MIXTURE_FAMILIES = {
 }
 
 AGGREGATE_MIXTURE_FAMILIES = {"local_prose", "source_code", "online_base", "instruction", "conversation"}
+MIXTURE_CHUNK_CHARS = 25_000
 
 
 # Keep generated_curriculum as a legacy wrapper so older project-local copies
@@ -1602,8 +1616,68 @@ def _stable_document_sort_key(document: Document) -> str:
         Hex digest used to order documents deterministically.
     """
 
-    key = f"{document.path}|{document.kind}|{document.language or ''}|{len(document.text)}"
+    text_digest = hashlib.sha256(document.text[:4096].encode("utf-8", errors="ignore")).hexdigest()
+    key = f"{document.path}|{document.kind}|{document.language or ''}|{len(document.text)}|{text_digest}"
     return hashlib.sha256(key.encode("utf-8")).hexdigest()
+
+
+def _chunk_document_for_mixture(document: Document, chunk_chars: int = MIXTURE_CHUNK_CHARS) -> list[Document]:
+    """Split a large document into sampler-sized pieces.
+
+    Mixture percentages are meant to control corpus weight, not whole-file
+    presence. Generated code files can be many megabytes each, so selecting
+    whole documents makes a 5% code request become a 70%+ code corpus. Chunking
+    lets the sampler take only the amount needed from large categories.
+
+    Args:
+        document: Source document.
+        chunk_chars: Approximate maximum characters per chunk.
+
+    Returns:
+        One or more documents suitable for weighted sampling.
+    """
+
+    text = document.text
+    if len(text) <= chunk_chars:
+        return [document]
+    chunks: list[Document] = []
+    start = 0
+    while start < len(text):
+        end = min(len(text), start + chunk_chars)
+        if end < len(text):
+            boundary = text.rfind("\n\n", start, end)
+            if boundary <= start + int(chunk_chars * 0.5):
+                boundary = text.rfind("\n", start, end)
+            if boundary > start + int(chunk_chars * 0.5):
+                end = boundary
+        chunk_text = text[start:end].strip()
+        if chunk_text:
+            chunks.append(
+                Document(
+                    path=document.path,
+                    text=chunk_text,
+                    kind=document.kind,
+                    language=document.language,
+                )
+            )
+        start = max(end, start + 1)
+    return chunks or [document]
+
+
+def _chunk_documents_for_mixture(documents: list[Document]) -> list[Document]:
+    """Split large documents before applying mixture percentages.
+
+    Args:
+        documents: Loaded documents.
+
+    Returns:
+        Documents and chunks ready for weighted sampling.
+    """
+
+    chunks: list[Document] = []
+    for document in documents:
+        chunks.extend(_chunk_document_for_mixture(document))
+    return chunks
 
 
 def _empty_mixture_report(weights: dict[str, float], documents: list[Document], applied: bool, reason: str = "") -> dict[str, Any]:
@@ -1667,6 +1741,15 @@ def _apply_dataset_mixture(
         Selected documents and mixture report.
     """
 
+    original_document_count = len(documents)
+    documents = _chunk_documents_for_mixture(documents)
+    if len(documents) != original_document_count:
+        _emit(
+            progress,
+            f"Dataset mixture: split {original_document_count:,} source file(s) into "
+            f"{len(documents):,} sampling chunk(s) for accurate percentages.",
+            49,
+        )
     document_families = {_document_mixture_family(document) for document in documents}
     families_to_sample = sorted({*MIXTURE_LABELS, *weights, *document_families})
     clean_weights: dict[str, float] = {}
@@ -1703,18 +1786,47 @@ def _apply_dataset_mixture(
         )
 
     total_available_chars = sum(len(document.text) for document in documents)
-    total_budget = total_available_chars
     active_weight_total = sum(clean_weights[family] for family in available_families)
+    available_chars_by_family = {
+        family: sum(len(document.text) for document in items)
+        for family, items in available_families.items()
+    }
+    normalized_shares = {
+        family: clean_weights[family] / active_weight_total
+        for family in available_families
+        if clean_weights[family] > 0.0
+    }
+    limiting_family = min(
+        normalized_shares,
+        key=lambda family: available_chars_by_family[family] / normalized_shares[family],
+    )
+    strict_total_budget = int(
+        available_chars_by_family[limiting_family] / normalized_shares[limiting_family]
+    )
+    family_targets = {
+        family: max(1, int(strict_total_budget * share))
+        for family, share in normalized_shares.items()
+    }
+    if strict_total_budget < total_available_chars:
+        _emit(
+            progress,
+            (
+                "Dataset mixture: strict recipe limited by "
+                f"{_mixture_label(limiting_family)} availability "
+                f"({available_chars_by_family[limiting_family]:,} characters). "
+                "Add more data for that category or lower its percentage to use more of the corpus."
+            ),
+            49,
+        )
     sorted_groups = {
         family: sorted(items, key=_stable_document_sort_key)
         for family, items in available_families.items()
     }
     selected_by_family: dict[str, list[Document]] = {family: [] for family in families_to_sample}
     selected_ids: set[int] = set()
-    remaining_budget = 0
 
     for family, items in sorted_groups.items():
-        target_chars = int(total_budget * clean_weights[family] / active_weight_total)
+        target_chars = family_targets.get(family, 0)
         selected_chars = 0
         for document in items:
             if selected_chars >= target_chars and selected_by_family[family]:
@@ -1722,19 +1834,6 @@ def _apply_dataset_mixture(
             selected_by_family[family].append(document)
             selected_ids.add(id(document))
             selected_chars += len(document.text)
-        remaining_budget += max(0, target_chars - selected_chars)
-
-    if remaining_budget > 0:
-        weighted_families = sorted(sorted_groups, key=lambda family: clean_weights[family], reverse=True)
-        for family in weighted_families:
-            for document in sorted_groups[family]:
-                if remaining_budget <= 0:
-                    break
-                if id(document) in selected_ids:
-                    continue
-                selected_by_family[family].append(document)
-                selected_ids.add(id(document))
-                remaining_budget -= len(document.text)
 
     selected_documents = [
         document
@@ -1746,7 +1845,8 @@ def _apply_dataset_mixture(
     report = {
         "applied": True,
         "reason": "",
-        "total_available_documents": len(documents),
+        "total_available_documents": original_document_count,
+        "total_available_chunks": len(documents),
         "total_selected_documents": len(selected_documents),
         "total_available_characters": total_available_chars,
         "total_selected_characters": selected_total_chars,
@@ -1760,10 +1860,16 @@ def _apply_dataset_mixture(
         report["families"][family] = {
             "label": _mixture_label(family),
             "requested_weight": clean_weights.get(family, 0.0),
+            "effective_requested_percent": (
+                clean_weights.get(family, 0.0) * 100.0 / active_weight_total
+                if family in available_families and active_weight_total > 0.0
+                else 0.0
+            ),
             "available_documents": len(available),
             "available_characters": available_chars,
             "selected_documents": len(selected),
             "selected_characters": selected_chars,
+            "target_characters": family_targets.get(family, 0),
             "actual_percent": (selected_chars * 100.0 / selected_total_chars) if selected_total_chars else 0.0,
             "dropped_documents": max(0, len(available) - len(selected)),
             "dropped_characters": max(0, available_chars - selected_chars),
@@ -1771,7 +1877,7 @@ def _apply_dataset_mixture(
     if len(selected_documents) != len(documents):
         _emit(
             progress,
-            f"Weighted sampler selected {len(selected_documents):,}/{len(documents):,} samples "
+            f"Weighted sampler selected {len(selected_documents):,}/{len(documents):,} sampling chunks "
             f"({selected_total_chars:,}/{total_available_chars:,} characters).",
             49,
         )
@@ -1860,9 +1966,11 @@ def build_dataset(
                 _emit(
                     progress,
                     (
-                        f"Mixture {row.get('label', family)}: requested {float(row.get('requested_weight', 0.0) or 0.0):.1f}%, "
+                        f"Mixture {row.get('label', family)}: requested "
+                        f"{float(row.get('requested_weight', 0.0) or 0.0):.1f}% "
+                        f"(effective {float(row.get('effective_requested_percent', 0.0) or 0.0):.1f}%), "
                         f"selected {int(row.get('selected_documents', 0) or 0):,}/"
-                        f"{int(row.get('available_documents', 0) or 0):,} sample(s), "
+                        f"{int(row.get('available_documents', 0) or 0):,} chunk(s), "
                         f"actual {float(row.get('actual_percent', 0.0) or 0.0):.1f}%."
                     ),
                     49,
@@ -1910,7 +2018,7 @@ def build_dataset(
     _emit(progress, "Encoding corpus into token IDs...", 78)
     if should_stop and should_stop():
         raise RuntimeError("Dataset preparation stopped by user.")
-    tokens = encode_text(tokenizer, corpus_text)
+    tokens = encode_file(tokenizer, corpus_path, should_stop=should_stop)
     _emit(progress, f"Encoded {len(tokens):,} tokens.", 86)
     token_density = (len(tokens) / max(len(corpus_text), 1)) if corpus_text else 0.0
     document_token_lengths = [max(1, int(round(len(doc.text) * token_density))) for doc in documents if doc.text]
