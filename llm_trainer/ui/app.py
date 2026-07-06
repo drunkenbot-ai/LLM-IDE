@@ -3678,7 +3678,7 @@ class MainWindow(QMainWindow):
         """
 
         allowed_stage_files = []
-        root = blueprint_data_root(self)
+        root = self.blueprint_data_root
         for path in self._selected_default_data_paths():
             file_stage = default_data_stage(path, root)
             if file_stage == "base" or file_stage == stage:
