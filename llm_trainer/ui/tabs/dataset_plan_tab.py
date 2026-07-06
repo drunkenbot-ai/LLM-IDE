@@ -106,7 +106,9 @@ DATASET_DOMAIN_LABELS: dict[str, str] = {
     "general_prose": "General prose",
 }
 
-GENERIC_DEFAULT_DATA_FOLDERS = {"base_training", "code_training"}
+# Keep generated_curriculum as a legacy wrapper so older project-local copies
+# made before the default_data flattening still classify correctly.
+GENERIC_DEFAULT_DATA_FOLDERS = {"base_training", "code_training", "generated_curriculum"}
 
 CATEGORY_ALIASES: dict[str, str] = {
     "story": "stories",
@@ -163,6 +165,13 @@ CATEGORY_ALIASES: dict[str, str] = {
 DEFAULT_DATA_STAGE_FOLDERS: dict[str, str] = {
     "fine_tune_conversation": "conversation",
     "fine_tune_instruction": "instruction",
+    "fine_tune_code": "code",
+}
+
+DEFAULT_DATA_STAGE_CATEGORIES: dict[str, str] = {
+    "fine_tune_conversation": "conversation",
+    "fine_tune_instruction": "instruction",
+    "fine_tune_code": "code_technical",
 }
 
 CODE_SUFFIXES = {".py", ".js", ".ts", ".tsx", ".jsx", ".java", ".c", ".cpp", ".h", ".hpp", ".cs", ".go", ".rs", ".sh", ".ps1"}
@@ -256,16 +265,20 @@ def default_data_category(path: Path, root: Path | None = None) -> str:
         relative = path.relative_to(root)
     except ValueError:
         relative = path
+    relative_parts_lower = [part.lower() for part in relative.parts]
+    for folder, category in DEFAULT_DATA_STAGE_CATEGORIES.items():
+        if folder in relative_parts_lower[:-1]:
+            return category
     if path.suffix.lower() in CODE_SUFFIXES:
         return "code_technical"
-    for parent in relative.parts[:-1]:
+    for parent in reversed(relative.parts[:-1]):
         category = _category_from_text(parent)
         if category:
             return category
     stem_category = _category_from_text(path.stem)
     if stem_category:
         return stem_category
-    for parent in relative.parts[:-1]:
+    for parent in reversed(relative.parts[:-1]):
         slug = _slugify_category(parent)
         if slug and slug not in GENERIC_DEFAULT_DATA_FOLDERS:
             return slug
@@ -287,7 +300,7 @@ def default_data_stage(path: Path, root: Path | None = None) -> str:
         relative = path.relative_to(root)
     except ValueError:
         relative = path
-    parts = set(relative.parts[:-1])
+    parts = {part.lower() for part in relative.parts[:-1]}
     for folder, stage in DEFAULT_DATA_STAGE_FOLDERS.items():
         if folder in parts:
             return stage

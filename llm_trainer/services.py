@@ -1073,7 +1073,17 @@ def _load_documents_with_cache(
     force_reprocess = config.prepare_mode == "force_reprocess"
 
     local_structured_paths = _local_structured_dataset_paths(config)
-    if config.input_dir.exists():
+    selected_default_files = [
+        Path(path)
+        for path in config.default_data_paths
+        if Path(path).exists() and Path(path).is_file()
+    ]
+    input_dir_resolved = config.input_dir.resolve() if config.input_dir.exists() else None
+    default_files_under_input = bool(selected_default_files) and input_dir_resolved is not None and all(
+        input_dir_resolved in candidate.resolve().parents or candidate.resolve() == input_dir_resolved
+        for candidate in selected_default_files
+    )
+    if config.input_dir.exists() and not default_files_under_input:
         source_paths = supported_source_paths(
             config.input_dir,
             code_training_mode=config.code_training_mode,
@@ -1089,13 +1099,12 @@ def _load_documents_with_cache(
         )
     default_paths = []
     seen_source_paths = {path.resolve() for path in source_paths if path.exists()}
-    for path in config.default_data_paths:
-        candidate = Path(path)
+    for candidate in selected_default_files:
         if not candidate.exists() or not candidate.is_file():
             _emit(progress, f"Skipped bundled data file: {candidate}")
             continue
         suffix = candidate.suffix.lower()
-        if suffix not in SUPPORTED_TEXT_SUFFIXES and suffix not in SUPPORTED_CODE_SUFFIXES and suffix not in {".pdf", ".jsonl"}:
+        if suffix not in SUPPORTED_TEXT_SUFFIXES and suffix not in SUPPORTED_CODE_SUFFIXES and suffix not in {".pdf", ".json", ".jsonl"}:
             _emit(progress, f"Skipped unsupported bundled data file: {candidate.name}")
             continue
         resolved = candidate.resolve()
@@ -1135,6 +1144,34 @@ def _load_documents_with_cache(
                 document_from_dict(item)
                 for item in json.loads(cache_path.read_text(encoding="utf-8"))
             ]
+            cached_extraction_reasons = []
+            if path.suffix.lower() == ".pdf":
+                cached_text = "\n".join(document.text for document in cached_documents)
+                cached_extraction_reasons = _bad_extraction_reasons(
+                    path,
+                    {
+                        "path": str(path),
+                        "kind": cached_documents[0].kind if cached_documents else "prose",
+                        "language": cached_documents[0].language if cached_documents else "",
+                        "characters": str(len(cached_text)),
+                        "preview": cached_text[:1200],
+                    },
+                    stat.st_size,
+                )
+            if cached_extraction_reasons:
+                skipped_count += 1
+                reason_text = "; ".join(cached_extraction_reasons)
+                _emit(progress, f"Skipped cached {path.name}: suspicious PDF extraction ({reason_text}).", percent)
+                new_files[manifest_key] = {
+                    "path": str(path),
+                    "sha256": digest,
+                    "size": stat.st_size,
+                    "mtime_ns": stat.st_mtime_ns,
+                    "cache_key": key,
+                    "status": "skipped_bad_extraction",
+                    "reasons": cached_extraction_reasons,
+                }
+                continue
             documents.extend(cached_documents)
             cached_count += 1
             _emit(progress, f"Reused {path.name} from cache ({len(cached_documents)} sample(s)).", percent)
@@ -1169,6 +1206,31 @@ def _load_documents_with_cache(
                     "mtime_ns": stat.st_mtime_ns,
                     "cache_key": key,
                     "status": "skipped_empty",
+                }
+                continue
+            extraction_reasons = _bad_extraction_reasons(
+                path,
+                {
+                    "path": str(path),
+                    "kind": source_doc.kind,
+                    "language": source_doc.language or "",
+                    "characters": str(len(source_doc.text)),
+                    "preview": source_doc.text[:1200],
+                },
+                stat.st_size,
+            )
+            if path.suffix.lower() == ".pdf" and extraction_reasons:
+                skipped_count += 1
+                reason_text = "; ".join(extraction_reasons)
+                _emit(progress, f"Skipped {path.name}: suspicious PDF extraction ({reason_text}).", percent)
+                new_files[manifest_key] = {
+                    "path": str(path),
+                    "sha256": digest,
+                    "size": stat.st_size,
+                    "mtime_ns": stat.st_mtime_ns,
+                    "cache_key": key,
+                    "status": "skipped_bad_extraction",
+                    "reasons": extraction_reasons,
                 }
                 continue
             source_documents = [source_doc]
@@ -1303,8 +1365,31 @@ MIXTURE_LABELS = {
     "conversation": "Conversation",
 }
 
+DOMAIN_MIXTURE_FAMILIES = {
+    "stories",
+    "reasoning",
+    "social_emotional",
+    "factual_knowledge",
+    "mathematics",
+    "code_technical",
+    "language_basics",
+    "structured_qa",
+    "safety_uncertainty",
+    "general_prose",
+}
 
-GENERIC_DEFAULT_DATA_FOLDERS = {"base_training", "code_training"}
+AGGREGATE_MIXTURE_FAMILIES = {"local_prose", "source_code", "online_base", "instruction", "conversation"}
+
+
+# Keep generated_curriculum as a legacy wrapper so older project-local copies
+# made before the default_data flattening still classify correctly.
+GENERIC_DEFAULT_DATA_FOLDERS = {"base_training", "code_training", "generated_curriculum"}
+
+DEFAULT_STAGE_CATEGORY_FOLDERS = {
+    "fine_tune_instruction": "instruction",
+    "fine_tune_conversation": "conversation",
+    "fine_tune_code": "code_technical",
+}
 
 CATEGORY_ALIASES = {
     "story": "stories",
@@ -1411,24 +1496,69 @@ def _default_data_category(path: Path) -> Optional[str]:
     """
 
     parts_lower = [part.lower() for part in path.parts]
-    if "default_data" not in parts_lower:
+    data_roots = ("default_data", "training_data")
+    root_indices = [parts_lower.index(root) for root in data_roots if root in parts_lower]
+    if not root_indices:
         return None
-    default_index = parts_lower.index("default_data")
+    default_index = max(root_indices)
     relative_parts = path.parts[default_index + 1 :]
+    relative_lower = [part.lower() for part in relative_parts]
+    for folder, category in DEFAULT_STAGE_CATEGORY_FOLDERS.items():
+        if folder in relative_lower[:-1]:
+            return category
     if path.suffix.lower() in SUPPORTED_CODE_SUFFIXES or "code_training" in parts_lower:
         return "code_technical"
-    for parent in relative_parts[:-1]:
+    for parent in reversed(relative_parts[:-1]):
         category = _category_from_text(parent)
         if category:
             return category
     stem_category = _category_from_text(path.stem)
     if stem_category:
         return stem_category
-    for parent in relative_parts[:-1]:
+    for parent in reversed(relative_parts[:-1]):
         slug = _slugify_category(parent)
         if slug and slug not in GENERIC_DEFAULT_DATA_FOLDERS:
             return slug
     return "general_prose"
+
+
+def _deduplicate_documents(documents: list[Document]) -> tuple[list[Document], dict[str, Any]]:
+    """Remove exact duplicate extracted documents while preserving order.
+
+    Args:
+        documents: Loaded documents.
+
+    Returns:
+        Deduplicated documents and a small report.
+    """
+
+    unique_documents: list[Document] = []
+    seen: dict[str, Document] = {}
+    duplicates: list[dict[str, str]] = []
+    for document in documents:
+        canonical_text = _canonical_corpus_block(document.text)
+        if not canonical_text:
+            unique_documents.append(document)
+            continue
+        digest = hashlib.sha256(
+            f"{document.kind}\n{document.language or ''}\n{canonical_text}".encode("utf-8")
+        ).hexdigest()
+        original = seen.get(digest)
+        if original is not None:
+            duplicates.append(
+                {
+                    "path": str(document.path),
+                    "duplicate_of": str(original.path),
+                    "kind": document.kind,
+                }
+            )
+            continue
+        seen[digest] = document
+        unique_documents.append(document)
+    return unique_documents, {
+        "removed_documents": len(duplicates),
+        "duplicates": duplicates[:50],
+    }
 
 
 def _document_mixture_family(document: Document) -> str:
@@ -1545,6 +1675,13 @@ def _apply_dataset_mixture(
             clean_weights[family] = max(0.0, float(weights.get(family, 0.0) or 0.0))
         except (TypeError, ValueError):
             clean_weights[family] = 0.0
+    domain_weight_total = sum(clean_weights.get(family, 0.0) for family in DOMAIN_MIXTURE_FAMILIES)
+    aggregate_weight_total = sum(clean_weights.get(family, 0.0) for family in AGGREGATE_MIXTURE_FAMILIES)
+    has_domain_documents = bool(document_families & DOMAIN_MIXTURE_FAMILIES)
+    if has_domain_documents and domain_weight_total >= 99.0 and aggregate_weight_total > 0.0:
+        for family in AGGREGATE_MIXTURE_FAMILIES:
+            clean_weights[family] = 0.0
+        _emit(progress, "Dataset mixture: ignored legacy aggregate weights because a full domain recipe is active.", 49)
     requested_total = sum(clean_weights.values())
     if requested_total <= 0.0:
         return documents, _empty_mixture_report(clean_weights, documents, applied=False, reason="No positive mixture weights.")
@@ -1674,6 +1811,13 @@ def build_dataset(
         raise RuntimeError("Dataset preparation stopped by user.")
     if not documents:
         raise ValueError("No supported text, PDF, JSONL, or structured JSON documents were found.")
+    documents, exact_dedup_report = _deduplicate_documents(documents)
+    if exact_dedup_report["removed_documents"]:
+        _emit(
+            progress,
+            f"Removed {exact_dedup_report['removed_documents']:,} exact duplicate extracted document(s).",
+            44,
+        )
     documents, mixture_report = _apply_dataset_mixture(documents, config.mixture_weights, progress)
     if should_stop and should_stop():
         raise RuntimeError("Dataset preparation stopped by user.")
@@ -1843,6 +1987,8 @@ def build_dataset(
         "default_data_paths": [str(path) for path in config.default_data_paths],
         "mixture_weights": config.mixture_weights,
         "mixture_report": mixture_report,
+        "exact_duplicate_documents_removed": exact_dedup_report["removed_documents"],
+        "exact_duplicate_document_examples": exact_dedup_report["duplicates"],
         "suggested_vocab_size": suggested_vocab_size,
         "tokenizer_vocab_size": tokenizer.get_vocab_size(),
         "tokenizer_sha256": file_sha256(tokenizer_path),
