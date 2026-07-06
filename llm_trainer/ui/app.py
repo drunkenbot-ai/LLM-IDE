@@ -3678,8 +3678,9 @@ class MainWindow(QMainWindow):
         """
 
         allowed_stage_files = []
+        root = blueprint_data_root(self)
         for path in self._selected_default_data_paths():
-            file_stage = default_data_stage(path)
+            file_stage = default_data_stage(path, root)
             if file_stage == "base" or file_stage == stage:
                 allowed_stage_files.append(path)
         return allowed_stage_files
@@ -3806,17 +3807,21 @@ class MainWindow(QMainWindow):
             for group in result.duplicate_groups[:8]:
                 self.dataset_log.append(f"- {group.get('type')}: {group.get('count')} file(s)")
                 for path in group.get("files", [])[:4]:
-                    self.dataset_log.append(f"    {Path(path).name}")
+                    self.dataset_log.append(f"    {Path(path)}")
         if result.bad_extraction_files:
             self.dataset_log.append("")
             self.dataset_log.append("Suspicious extraction files:")
             for item in result.bad_extraction_files[:12]:
-                self.dataset_log.append(f"- {Path(item.get('path', '')).name}: {item.get('reasons')}")
+                self.dataset_log.append(f"- {Path(item.get('path', ''))}: {item.get('reasons')}")
         suggestions: list[str] = []
         if result.duplicate_groups:
-            suggestions.append("Remove or move duplicate files before preparing the final dataset.")
+            suggestions.append(
+                "Exact duplicate extracted documents are skipped during preparation; remove or move duplicate source files to keep the project tidy."
+            )
         if result.bad_extraction_files:
-            suggestions.append("Replace flagged PDFs with text/source versions, or remove files with bad extraction.")
+            suggestions.append(
+                "Unreadable files and suspicious PDFs are skipped during preparation; replace or remove them if you expected them to train."
+            )
         if result.balance_label == "Prose heavy" and self.code_training_mode.isChecked():
             suggestions.append("Add real source-code folders or enable source-file inclusion for a stronger coding model.")
         if result.balance_label == "Code heavy":
@@ -4427,26 +4432,11 @@ class MainWindow(QMainWindow):
         normalized = {key: value * 100.0 / total for key, value in plan.items()}
         mixture = {
             **normalized,
-            "local_prose": (
-                normalized.get("stories", 0.0)
-                + normalized.get("social_emotional", 0.0) * 0.25
-                + normalized.get("reasoning", 0.0) * 0.35
-                + normalized.get("general_prose", 0.0) * 0.50
-            ),
-            "source_code": normalized.get("code_technical", 0.0),
-            "online_base": (
-                normalized.get("factual_knowledge", 0.0)
-                + normalized.get("mathematics", 0.0) * 0.75
-                + normalized.get("language_basics", 0.0)
-                + normalized.get("general_prose", 0.0) * 0.50
-            ),
-            "instruction": (
-                normalized.get("reasoning", 0.0) * 0.65
-                + normalized.get("structured_qa", 0.0)
-                + normalized.get("safety_uncertainty", 0.0)
-                + normalized.get("mathematics", 0.0) * 0.25
-            ),
-            "conversation": normalized.get("social_emotional", 0.0) * 0.75,
+            "local_prose": 0.0,
+            "source_code": 0.0,
+            "online_base": 0.0,
+            "instruction": 0.0,
+            "conversation": 0.0,
         }
         self._set_mixture_weights(mixture)
         if hasattr(self, "dataset_log"):

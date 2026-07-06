@@ -45,7 +45,7 @@ class DatasetConfig:
     output_dir: Path
     vocab_size: Optional[int] = None
     min_frequency: int = 2
-    context_length: int = 128
+    context_length: int = 512
     validation_split: float = 0.1
     lowercase: bool = False
     max_workers: int = 4
@@ -93,10 +93,10 @@ class ModelConfig:
     """
 
     vocab_size: int
-    context_length: int = 128
+    context_length: int = 512
     embedding_size: int = 256
     head_count: int = 4
-    layer_count: int = 4
+    layer_count: int = 6
     dropout: float = 0.1
     bias: bool = True
     norm_type: str = "layernorm"
