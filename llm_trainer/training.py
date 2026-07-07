@@ -99,12 +99,13 @@ class Lion(torch.optim.Optimizer):
 class TokenDataset(Dataset):
     """Sliding-window token dataset for next-token prediction."""
 
-    def __init__(self, tokens: list[int], context_length: int) -> None:
+    def __init__(self, tokens: list[int], context_length: int, stride: int = 1) -> None:
         """Create a token dataset.
 
         Args:
             tokens: Complete token stream.
             context_length: Number of input tokens per sample.
+            stride: Token offset step between consecutive windows.
 
         Raises:
             ValueError: If there are not enough tokens.
@@ -112,8 +113,13 @@ class TokenDataset(Dataset):
 
         if len(tokens) <= context_length:
             raise ValueError("Not enough tokens for the selected context length")
+        if stride <= 0:
+            raise ValueError("stride must be greater than 0")
         self.tokens = torch.tensor(tokens, dtype=torch.long)
         self.context_length = context_length
+        self.stride = stride
+        available_windows = len(self.tokens) - self.context_length
+        self.sample_count = (available_windows + self.stride - 1) // self.stride
 
     def __len__(self) -> int:
         """Return the number of sliding windows available.
@@ -122,7 +128,7 @@ class TokenDataset(Dataset):
             Dataset length.
         """
 
-        return len(self.tokens) - self.context_length
+        return self.sample_count
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
         """Return one input/target token window.
@@ -134,7 +140,8 @@ class TokenDataset(Dataset):
             Pair of input tokens and next-token targets.
         """
 
-        chunk = self.tokens[index : index + self.context_length + 1]
+        start = index * self.stride
+        chunk = self.tokens[start : start + self.context_length + 1]
         return chunk[:-1], chunk[1:]
 
 
@@ -734,7 +741,7 @@ def train_model(
         "persistent_workers": loader_workers > 0,
     }
     train_loader = DataLoader(
-        TokenDataset(train_tokens, model_config.context_length),
+        TokenDataset(train_tokens, model_config.context_length, stride=training_config.sample_stride),
         batch_size=training_config.batch_size,
         shuffle=True,
         drop_last=True,
@@ -792,7 +799,7 @@ def train_model(
         )
 
     optimizer = make_optimizer(model, training_config)
-    steps_per_epoch = max(len(train_loader) // training_config.gradient_accumulation, 1)
+    steps_per_epoch = max(math.ceil(len(train_loader) / training_config.gradient_accumulation), 1)
     total_steps = max(steps_per_epoch * training_config.epochs, 1)
     scheduler = make_scheduler(optimizer, total_steps, training_config)
     use_autocast, use_scaler, autocast_dtype = amp_settings(training_config)
@@ -872,6 +879,7 @@ def train_model(
     step_time_window: list[float] = []
     for epoch in range(start_epoch, training_config.epochs):
         epoch_losses: list[float] = []
+        epoch_batch_count = len(train_loader)
         for batch_index, (x, y) in enumerate(train_loader):
             if should_stop and should_stop():
                 final_train_loss = sum(epoch_losses) / max(len(epoch_losses), 1) if epoch_losses else final_train_loss
@@ -915,7 +923,11 @@ def train_model(
                 loss = loss / training_config.gradient_accumulation
 
             scaler.scale(loss).backward()
-            if (batch_index + 1) % training_config.gradient_accumulation == 0:
+            should_step = (
+                (batch_index + 1) % training_config.gradient_accumulation == 0
+                or (batch_index + 1) == epoch_batch_count
+            )
+            if should_step:
                 scaler.unscale_(optimizer)
                 grad_norm_tensor = torch.nn.utils.clip_grad_norm_(model.parameters(), training_config.max_grad_norm)
                 grad_norm = float(grad_norm_tensor.item() if hasattr(grad_norm_tensor, "item") else grad_norm_tensor)

@@ -34,7 +34,7 @@ from llm_trainer.contracts import (
     WorkerCapabilities,
 )
 from llm_trainer.contracts.jobs import JobStatus, TrainingJobSpec
-from llm_trainer.services import train_from_dataset
+from llm_trainer.training_orchestrator import train_from_dataset
 
 try:
     import psutil
@@ -300,7 +300,8 @@ class RemoteWorkerClient:
             )
         except Exception as exc:
             self.fail_job(job.job_id, str(exc), retryable=False)
-            raise
+            print(f"Job {job.job_id} failed on worker {self.config.worker_id}: {exc}")
+            return
         status = JobStatus.CANCELLED if result.stopped else JobStatus.COMPLETED
         artifact_bundle_url = self.upload_result_artifacts(job)
         self.http.post(
