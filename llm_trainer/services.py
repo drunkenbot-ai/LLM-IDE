@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 
 import torch
+import numpy as np
 import PyPDF2
 
 from .config import DatasetConfig, ModelConfig, TrainingConfig, dataclass_to_jsonable
@@ -34,16 +35,47 @@ from .lineage import read_json, record_dataset_version, stable_json_hash, utc_ti
 from .tokenizer import (
     MAX_TOKENIZER_TRAINING_CHARS,
     PAD_TOKEN,
-    encode_file,
+    encode_file_to_bin,
+    load_token_memmap,
     load_tokenizer,
+    token_dtype_for_vocab,
     token_id,
     train_tokenizer,
     validate_training_tokenizer,
 )
-from .training import TrainingResult, latest_checkpoint, split_tokens, train_model
+from .training import TrainingResult, latest_checkpoint, write_split_token_bins, train_model
 
 
 LOGGER = logging.getLogger(__name__)
+
+
+def _missing_dataset_artifacts(dataset_dir: Path, require_summary: bool = False) -> list[str]:
+    """Return names of required prepared-dataset artifacts that are missing.
+
+    Accepts either the current memory-mapped ``.bin`` token format or the
+    legacy ``.json`` format (from datasets prepared before that switch), so
+    older prepared projects don't suddenly look "unprepared" right after an
+    upgrade.
+
+    Args:
+        dataset_dir: Dataset folder.
+        require_summary: Whether ``dataset_summary.json`` also counts as a
+            required artifact.
+
+    Returns:
+        Names of missing required files/formats. Empty if everything needed
+        is present.
+    """
+
+    missing: list[str] = []
+    if not (dataset_dir / "tokenizer.json").exists():
+        missing.append("tokenizer.json")
+    if require_summary and not (dataset_dir / "dataset_summary.json").exists():
+        missing.append("dataset_summary.json")
+    for stem in ("train_tokens", "val_tokens"):
+        if not (dataset_dir / f"{stem}.bin").exists() and not (dataset_dir / f"{stem}.json").exists():
+            missing.append(f"{stem}.bin")
+    return missing
 
 
 def _local_structured_dataset_paths(config: DatasetConfig) -> list[tuple[Path, str, str]]:
@@ -277,8 +309,7 @@ def check_project_health(
         checks.append(_health_check("Source vault", "warning", f"Folder not found: {input_dir}"))
 
     _emit(progress, "Checking prepared dataset artifacts...", 30)
-    required_dataset = ("tokenizer.json", "train_tokens.json", "val_tokens.json", "dataset_summary.json")
-    missing_dataset = [name for name in required_dataset if not (dataset_dir / name).exists()]
+    missing_dataset = _missing_dataset_artifacts(dataset_dir, require_summary=True)
     if not dataset_dir.exists():
         checks.append(_health_check("Dataset core", "warning", f"Dataset folder not found yet: {dataset_dir}"))
     elif missing_dataset:
@@ -719,7 +750,7 @@ def scan_dataset_preview(
                 pass
 
     summary = read_json(config.output_dir / "dataset_summary.json", default={}) or {}
-    prepared = all((config.output_dir / name).exists() for name in ("tokenizer.json", "train_tokens.json", "val_tokens.json"))
+    prepared = not _missing_dataset_artifacts(config.output_dir)
     issues: list[str] = []
     if not paths and not config.conversation_datasets and not local_structured_paths:
         issues.append("No supported source files found.")
@@ -2018,9 +2049,17 @@ def build_dataset(
     _emit(progress, "Encoding corpus into token IDs...", 78)
     if should_stop and should_stop():
         raise RuntimeError("Dataset preparation stopped by user.")
-    tokens = encode_file(tokenizer, corpus_path, should_stop=should_stop)
-    _emit(progress, f"Encoded {len(tokens):,} tokens.", 86)
-    token_density = (len(tokens) / max(len(corpus_text), 1)) if corpus_text else 0.0
+    # Token IDs are streamed straight to a flat binary file instead of being
+    # accumulated as one giant Python list -- see encode_file_to_bin. The
+    # dtype is picked from the vocab size (uint16 covers every vocab size
+    # this app uses in practice), so storage is ~4x smaller than the old
+    # JSON-array format and loading later is a near-instant memmap open
+    # instead of a full json.loads() over the whole corpus.
+    token_dtype = token_dtype_for_vocab(tokenizer.get_vocab_size())
+    full_tokens_path = config.output_dir / "tokens_full.bin"
+    token_count = encode_file_to_bin(tokenizer, corpus_path, full_tokens_path, token_dtype, should_stop=should_stop)
+    _emit(progress, f"Encoded {token_count:,} tokens.", 86)
+    token_density = (token_count / max(len(corpus_text), 1)) if corpus_text else 0.0
     document_token_lengths = [max(1, int(round(len(doc.text) * token_density))) for doc in documents if doc.text]
     if document_token_lengths:
         sequence_stats = {
@@ -2042,16 +2081,23 @@ def build_dataset(
         ),
         88,
     )
-    train_tokens, val_tokens = split_tokens(tokens, config.validation_split)
-    train_window_count = max(0, len(train_tokens) - config.context_length)
-    val_window_count = max(0, len(val_tokens) - config.context_length)
-    _emit(progress, f"Training tokens: {len(train_tokens):,}; validation tokens: {len(val_tokens):,}.", 92)
+    train_tokens_path = config.output_dir / "train_tokens.bin"
+    val_tokens_path = config.output_dir / "val_tokens.bin"
+    train_token_count, val_token_count = write_split_token_bins(
+        full_tokens_path,
+        token_dtype,
+        config.validation_split,
+        train_tokens_path,
+        val_tokens_path,
+    )
+    full_tokens_path.unlink(missing_ok=True)
+    train_window_count = max(0, train_token_count - config.context_length)
+    val_window_count = max(0, val_token_count - config.context_length)
+    _emit(progress, f"Training tokens: {train_token_count:,}; validation tokens: {val_token_count:,}.", 92)
     _emit(progress, f"Training windows: {train_window_count:,}; validation windows: {val_window_count:,}.", 92)
-    (config.output_dir / "train_tokens.json").write_text(json.dumps(train_tokens), encoding="utf-8")
-    (config.output_dir / "val_tokens.json").write_text(json.dumps(val_tokens), encoding="utf-8")
     quality_report = _dataset_quality_report(
         document_count=len(documents),
-        token_count=len(tokens),
+        token_count=token_count,
         vocab_size=tokenizer.get_vocab_size(),
         unique_words=unique_words,
         train_window_count=train_window_count,
@@ -2075,9 +2121,10 @@ def build_dataset(
         "dataset_config": dataclass_to_jsonable(config),
         "document_count": len(documents),
         "character_count": character_count,
-        "token_count": len(tokens),
-        "train_token_count": len(train_tokens),
-        "val_token_count": len(val_tokens),
+        "token_count": token_count,
+        "train_token_count": train_token_count,
+        "val_token_count": val_token_count,
+        "token_dtype": str(token_dtype),
         "train_window_count": train_window_count,
         "val_window_count": val_window_count,
         "context_length": config.context_length,
@@ -2135,7 +2182,7 @@ def build_dataset(
         config.output_dir,
         tokenizer_path,
         len(documents),
-        len(tokens),
+        token_count,
         tokenizer.get_vocab_size(),
         character_count,
         suggested_vocab_size,
@@ -2547,8 +2594,21 @@ def train_from_dataset(
     dataset_lineage = read_json(data_dir / "dataset_lineage.json", default={}) or {}
     tokenizer = load_tokenizer(tokenizer_path)
     validate_training_tokenizer(tokenizer)
-    train_tokens = json.loads((data_dir / "train_tokens.json").read_text(encoding="utf-8"))
-    val_tokens = json.loads((data_dir / "val_tokens.json").read_text(encoding="utf-8"))
+
+    train_bin_path = data_dir / "train_tokens.bin"
+    val_bin_path = data_dir / "val_tokens.bin"
+    if train_bin_path.exists() and val_bin_path.exists():
+        # Memory-mapped: opening costs almost no RAM regardless of corpus
+        # size, and windows are paged in from disk lazily during training.
+        dtype_name = dataset_summary.get("token_dtype") or str(token_dtype_for_vocab(tokenizer.get_vocab_size()))
+        token_dtype = np.dtype(dtype_name)
+        train_tokens = load_token_memmap(train_bin_path, token_dtype)
+        val_tokens = load_token_memmap(val_bin_path, token_dtype)
+    else:
+        # Backward compatibility with datasets prepared before the .bin
+        # format existed. Re-preparing the dataset will upgrade it.
+        train_tokens = json.loads((data_dir / "train_tokens.json").read_text(encoding="utf-8"))
+        val_tokens = json.loads((data_dir / "val_tokens.json").read_text(encoding="utf-8"))
 
     if model_config.vocab_size != tokenizer.get_vocab_size():
         model_config.vocab_size = tokenizer.get_vocab_size()

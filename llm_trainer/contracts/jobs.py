@@ -87,8 +87,8 @@ class DatasetSpec:
         return cls(
             dataset_dir=dataset_dir,
             tokenizer_path=dataset_dir / "tokenizer.json",
-            train_tokens_path=dataset_dir / "train_tokens.json",
-            val_tokens_path=dataset_dir / "val_tokens.json",
+            train_tokens_path=dataset_dir / "train_tokens.bin",
+            val_tokens_path=dataset_dir / "val_tokens.bin",
             summary_path=dataset_dir / "dataset_summary.json",
         )
 

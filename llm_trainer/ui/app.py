@@ -17,6 +17,7 @@ from threading import Event, Thread
 from typing import Any, Optional, Union
 
 import torch
+import numpy as np
 from PySide6.QtCore import QObject, QEvent, QPoint, Qt, QThread, QTimer, Slot, qInstallMessageHandler
 from PySide6.QtGui import QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap, QPolygon
 from PySide6.QtWidgets import (
@@ -68,6 +69,7 @@ from llm_trainer.runpod_cloud import (
 )
 from llm_trainer.services import build_dataset, check_project_health, scan_dataset_preview
 from llm_trainer.telemetry_store import initialize_store, insert_metric, latest_run, rows_until, telemetry_db_path
+from llm_trainer.tokenizer import token_count_in_bin, token_dtype_for_vocab
 from llm_trainer.training import check_resume_compatibility, latest_checkpoint
 from llm_trainer.training_planning import estimate_training_resources, format_bytes
 from llm_trainer.training_service import run_training_job
@@ -900,9 +902,9 @@ class MainWindow(QMainWindow):
         dataset_dir = Path(self.train_data_dir.text().strip())
         if not dataset_dir.exists():
             raise FileNotFoundError(f"Prepared dataset folder does not exist: {dataset_dir}")
-        for file_name in ("tokenizer.json", "train_tokens.json", "val_tokens.json"):
-            if not (dataset_dir / file_name).exists():
-                raise FileNotFoundError(f"Prepared dataset is missing {file_name}. Prepare the dataset first.")
+        missing = self._dataset_missing_artifacts(dataset_dir)
+        if missing:
+            raise FileNotFoundError(f"Prepared dataset is missing {', '.join(missing)}. Prepare the dataset first.")
         vocab_size = self._current_training_vocab_size(dataset_dir)
         if vocab_size <= 0:
             raise ValueError("Could not determine tokenizer vocabulary size from the prepared dataset.")
@@ -2904,6 +2906,31 @@ class MainWindow(QMainWindow):
             self.export_status.setText("Export: artifacts found")
 
     @staticmethod
+    def _dataset_missing_artifacts(dataset_dir: Path) -> list[str]:
+        """Return names of required prepared-dataset artifacts that are missing.
+
+        Accepts either the current memory-mapped ``.bin`` token format or the
+        legacy ``.json`` format (from datasets prepared before that switch),
+        so older prepared projects don't suddenly look "unprepared" right
+        after an upgrade.
+
+        Args:
+            dataset_dir: Dataset folder.
+
+        Returns:
+            Names of missing required files/formats. Empty if everything
+            needed is present.
+        """
+
+        missing: list[str] = []
+        if not (dataset_dir / "tokenizer.json").exists():
+            missing.append("tokenizer.json")
+        for stem in ("train_tokens", "val_tokens"):
+            if not (dataset_dir / f"{stem}.bin").exists() and not (dataset_dir / f"{stem}.json").exists():
+                missing.append(f"{stem}.bin")
+        return missing
+
+    @staticmethod
     def _dataset_artifacts_exist(dataset_dir: Path) -> bool:
         """Return whether a dataset folder has the required prepared files.
 
@@ -2914,8 +2941,7 @@ class MainWindow(QMainWindow):
             True if required dataset artifacts exist.
         """
 
-        required = ("tokenizer.json", "train_tokens.json", "val_tokens.json")
-        return dataset_dir.exists() and all((dataset_dir / name).exists() for name in required)
+        return dataset_dir.exists() and not MainWindow._dataset_missing_artifacts(dataset_dir)
 
     @staticmethod
     def _safe_project_name(project_name: str) -> str:
@@ -3770,32 +3796,21 @@ class MainWindow(QMainWindow):
         """
 
         self.dataset_progress.setValue(100)
-        suffix_text = ", ".join(f"{suffix}: {count}" for suffix, count in
-                                result.suffix_counts.items()) or "none"
+        suffix_text = ", ".join(f"{suffix}: {count}" for suffix, count in result.suffix_counts.items()) or "none"
         self.dataset_log.append("")
-        self.dataset_log.append(
-            f"Source files: {result.source_file_count:,}; size: {result.total_bytes / (1024 * 1024):.2f} MB")
+        self.dataset_log.append(f"Source files: {result.source_file_count:,}; size: {result.total_bytes / (1024 * 1024):.2f} MB")
         self.dataset_log.append(f"File types: {suffix_text}")
-        self.dataset_log.append(
-            f"Prepared dataset artifacts: {'found' if result.prepared else 'not complete'}")
-        self.dataset_log.append(
-            f"Duplicate scan: {result.duplicate_count:,} file entries in {len(result.duplicate_groups):,} likely group(s).")
-        self.dataset_log.append(
-            f"Bad extraction scan: {result.bad_extraction_count:,} suspicious file(s).")
-        self.dataset_log.append(
-            f"Code/prose balance: {result.balance_label} ({result.code_preview_count:,}/{result.prose_preview_count:,}).")
-        self.dataset_log.append(
-            f"Training readiness: {result.readiness_label} ({result.readiness_score}/100).")
+        self.dataset_log.append(f"Prepared dataset artifacts: {'found' if result.prepared else 'not complete'}")
+        self.dataset_log.append(f"Duplicate scan: {result.duplicate_count:,} file entries in {len(result.duplicate_groups):,} likely group(s).")
+        self.dataset_log.append(f"Bad extraction scan: {result.bad_extraction_count:,} suspicious file(s).")
+        self.dataset_log.append(f"Code/prose balance: {result.balance_label} ({result.code_preview_count:,}/{result.prose_preview_count:,}).")
+        self.dataset_log.append(f"Training readiness: {result.readiness_label} ({result.readiness_score}/100).")
         for reason in result.readiness_reasons[:8]:
             self.dataset_log.append(f"- {reason}")
-        self.dataset_quality_duplicates.setText(
-            f"Duplicates: {result.duplicate_count:,}")
-        self.dataset_quality_extraction.setText(
-            f"Extraction: {result.bad_extraction_count:,} flagged")
-        self.dataset_quality_balance.setText(
-            f"Balance: {result.balance_label}")
-        self.dataset_quality_readiness.setText(
-            f"Readiness: {result.readiness_label} {result.readiness_score}/100")
+        self.dataset_quality_duplicates.setText(f"Duplicates: {result.duplicate_count:,}")
+        self.dataset_quality_extraction.setText(f"Extraction: {result.bad_extraction_count:,} flagged")
+        self.dataset_quality_balance.setText(f"Balance: {result.balance_label}")
+        self.dataset_quality_readiness.setText(f"Readiness: {result.readiness_label} {result.readiness_score}/100")
         if result.summary:
             self._update_dataset_quality_report(result.summary)
             # dataset_quality_duplicates is intentionally left alone here:
@@ -3804,71 +3819,58 @@ class MainWindow(QMainWindow):
             # actionable metric). Re-setting it to result.duplicate_count (a
             # raw duplicate *file* count from the earlier preview scan) would
             # silently discard that and always show the old metric instead.
-            self.dataset_quality_extraction.setText(
-                f"Extraction: {result.bad_extraction_count:,} flagged")
-            self.dataset_quality_balance.setText(
-                f"Balance: {result.balance_label}")
-            self.dataset_quality_readiness.setText(
-                f"Readiness: {result.readiness_label} {result.readiness_score}/100")
+            self.dataset_quality_extraction.setText(f"Extraction: {result.bad_extraction_count:,} flagged")
+            self.dataset_quality_balance.setText(f"Balance: {result.balance_label}")
+            self.dataset_quality_readiness.setText(f"Readiness: {result.readiness_label} {result.readiness_score}/100")
             tokens = int(result.summary.get("token_count", 0) or 0)
             vocab = int(result.summary.get("tokenizer_vocab_size", 0) or 0)
-            self.dataset_log.append(
-                f"Prepared summary: {tokens:,} tokens, vocab {vocab:,}.")
+            self.dataset_log.append(f"Prepared summary: {tokens:,} tokens, vocab {vocab:,}.")
         else:
-            self.dataset_quality_samples.setText(
-                f"Preview: {len(result.sample_previews):,} shown")
+            self.dataset_quality_samples.setText(f"Preview: {len(result.sample_previews):,} shown")
             self.dataset_quality_tokens.setText("Tokens: not prepared")
             self.dataset_quality_windows.setText("Windows: not prepared")
             self.dataset_quality_vocab.setText("Vocab: not prepared")
-            self.dataset_quality_code.setText(
-                f"Code/prose: {result.code_preview_count:,}/{result.prose_preview_count:,}")
-            self.dataset_quality_cache.setText(
-                f"Files: {result.source_file_count:,} source")
+            self.dataset_quality_code.setText(f"Code/prose: {result.code_preview_count:,}/{result.prose_preview_count:,}")
+            self.dataset_quality_cache.setText(f"Files: {result.source_file_count:,} source")
         if result.duplicate_groups:
             self.dataset_log.append("")
             self.dataset_log.append("Likely duplicates:")
             for group in result.duplicate_groups[:8]:
-                self.dataset_log.append(
-                    f"- {group.get('type')}: {group.get('count')} file(s)")
+                self.dataset_log.append(f"- {group.get('type')}: {group.get('count')} file(s)")
                 for path in group.get("files", [])[:4]:
-                    self.dataset_log.append(f"    {Path(path).name}")
+                    self.dataset_log.append(f"    {Path(path)}")
         if result.bad_extraction_files:
             self.dataset_log.append("")
             self.dataset_log.append("Suspicious extraction files:")
             for item in result.bad_extraction_files[:12]:
-                self.dataset_log.append(
-                    f"- {Path(item.get('path', '')).name}: {item.get('reasons')}")
+                self.dataset_log.append(f"- {Path(item.get('path', ''))}: {item.get('reasons')}")
         suggestions: list[str] = []
         if result.duplicate_groups:
             suggestions.append(
-                "Remove or move duplicate files before preparing the final dataset.")
+                "Exact duplicate extracted documents are skipped during preparation; remove or move duplicate source files to keep the project tidy."
+            )
         if result.bad_extraction_files:
             suggestions.append(
-                "Replace flagged PDFs with text/source versions, or remove files with bad extraction.")
+                "Unreadable files and suspicious PDFs are skipped during preparation; replace or remove them if you expected them to train."
+            )
         if result.balance_label == "Prose heavy" and self.code_training_mode.isChecked():
-            suggestions.append(
-                "Add real source-code folders or enable source-file inclusion for a stronger coding model.")
+            suggestions.append("Add real source-code folders or enable source-file inclusion for a stronger coding model.")
         if result.balance_label == "Code heavy":
-            suggestions.append(
-                "Add README/tutorial/prose explanations if you want the model to explain code well.")
+            suggestions.append("Add README/tutorial/prose explanations if you want the model to explain code well.")
         if result.readiness_label in {"Needs cleanup", "Not ready"}:
-            suggestions.append(
-                "Run Preview Dataset again after cleanup and only train once readiness improves.")
+            suggestions.append("Run Preview Dataset again after cleanup and only train once readiness improves.")
         if hasattr(self, "dataset_advisor"):
             if suggestions:
-                self.dataset_advisor.setPlainText(
-                    "\n".join(f"- {suggestion}" for suggestion in suggestions))
+                self.dataset_advisor.setPlainText("\n".join(f"- {suggestion}" for suggestion in suggestions))
             else:
-                self.dataset_advisor.setPlainText(
-                    "No immediate cleanup suggestions. Dataset looks acceptable for the current preview.")
+                self.dataset_advisor.setPlainText("No immediate cleanup suggestions. Dataset looks acceptable for the current preview.")
         if suggestions:
             self.dataset_log.append("")
             self.dataset_log.append("Cleanup suggestions:")
             for suggestion in suggestions:
                 self.dataset_log.append(f"- {suggestion}")
         if result.issues:
-            self.dataset_quality_warning.setText(
-                f"Warnings: {len(result.issues)}")
+            self.dataset_quality_warning.setText(f"Warnings: {len(result.issues)}")
             self.dataset_log.append("")
             self.dataset_log.append("Quality notes:")
             for issue in result.issues[:12]:
@@ -3880,10 +3882,8 @@ class MainWindow(QMainWindow):
             self.dataset_log.append("Preview samples:")
             for index, sample in enumerate(result.sample_previews, start=1):
                 label = sample.get("language") or sample.get("kind") or "text"
-                self.dataset_log.append(
-                    f"\n[{index}] {Path(sample.get('path', '')).name} ({label}, {sample.get('characters')} chars)")
-                self.dataset_log.append(
-                    sample.get("preview", "").replace("\n", "\n    ")[:1400])
+                self.dataset_log.append(f"\n[{index}] {Path(sample.get('path', '')).name} ({label}, {sample.get('characters')} chars)")
+                self.dataset_log.append(sample.get("preview", "").replace("\n", "\n    ")[:1400])
         self.project_state.setText("Dataset previewed")
         self._clear_button_busy("Preview Dataset")
 
@@ -5692,8 +5692,7 @@ class MainWindow(QMainWindow):
         warnings: list[str] = []
         info: list[str] = []
         resettable_errors: list[str] = []
-        required = ("tokenizer.json", "train_tokens.json", "val_tokens.json")
-        missing = [name for name in required if not (data_dir / name).exists()]
+        missing = self._dataset_missing_artifacts(data_dir)
         if not data_dir.exists():
             errors.append(f"Dataset folder does not exist: {data_dir}")
         elif missing:
@@ -5715,9 +5714,16 @@ class MainWindow(QMainWindow):
                 vocab_size = len(tokenizer_data.get("model", {}).get("vocab", {}))
             train_tokens = int(summary.get("train_token_count", 0) or 0)
             val_tokens = int(summary.get("val_token_count", 0) or 0)
-            if train_tokens <= 0 and (data_dir / "train_tokens.json").exists():
+            token_dtype = np.dtype(summary.get("token_dtype") or token_dtype_for_vocab(vocab_size or 8000))
+            if train_tokens <= 0 and (data_dir / "train_tokens.bin").exists():
+                # Reads the file size, not the file contents -- no memmap or
+                # full parse needed just to get a count.
+                train_tokens = token_count_in_bin(data_dir / "train_tokens.bin", token_dtype)
+            elif train_tokens <= 0 and (data_dir / "train_tokens.json").exists():
                 train_tokens = len(json.loads((data_dir / "train_tokens.json").read_text(encoding="utf-8")))
-            if val_tokens <= 0 and (data_dir / "val_tokens.json").exists():
+            if val_tokens <= 0 and (data_dir / "val_tokens.bin").exists():
+                val_tokens = token_count_in_bin(data_dir / "val_tokens.bin", token_dtype)
+            elif val_tokens <= 0 and (data_dir / "val_tokens.json").exists():
                 val_tokens = len(json.loads((data_dir / "val_tokens.json").read_text(encoding="utf-8")))
         except Exception as exc:
             warnings.append(f"Could not fully inspect dataset metadata: {exc}")
@@ -6572,4 +6578,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
