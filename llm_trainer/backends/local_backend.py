@@ -5,7 +5,7 @@ from typing import Optional
 
 from llm_trainer.backends.base import ProgressCallback, StopCallback
 from llm_trainer.contracts import JobStatus, TrainingJobSpec
-from llm_trainer.services import train_from_dataset
+from llm_trainer.training_orchestrator import train_from_dataset
 from llm_trainer.training import TrainingResult
 
 

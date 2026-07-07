@@ -122,6 +122,37 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def file_fingerprint(path: Path, fast: bool = False, sample_bytes: int = 64 * 1024) -> str:
+    """Calculate a file fingerprint.
+
+    Args:
+        path: File path.
+        fast: When true, hash only sampled bytes and size metadata.
+        sample_bytes: Bytes read from file head/tail in fast mode.
+
+    Returns:
+        Fingerprint hex digest.
+    """
+
+    if not fast:
+        return file_sha256(path)
+    sample_bytes = max(0, int(sample_bytes))
+
+    stat = path.stat()
+    size = stat.st_size
+    digest = hashlib.blake2b(digest_size=20)
+    digest.update(str(size).encode("utf-8"))
+    if size <= 0:
+        return f"fast:{digest.hexdigest()}"
+    with path.open("rb") as file:
+        head = file.read(sample_bytes)
+        digest.update(head)
+        if size > sample_bytes:
+            file.seek(max(0, size - sample_bytes))
+            digest.update(file.read(sample_bytes))
+    return f"fast:{digest.hexdigest()}"
+
+
 def supported_source_paths(input_dir: Path, code_training_mode: bool = False, include_source_code: bool = True) -> list[Path]:
     """Return supported source paths.
 

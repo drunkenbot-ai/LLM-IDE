@@ -663,17 +663,20 @@ class MicroGPT(nn.Module):
             Token IDs including the original context and generated tokens.
         """
 
+        if max_new_tokens <= 0:
+            return idx
+
         past_kv: Optional[list[tuple[torch.Tensor, torch.Tensor]]] = None
-        for _ in range(max_new_tokens):
+        cached_logits: Optional[torch.Tensor] = None
+        if use_kv_cache:
             idx_cond = idx[:, -self.config.context_length :]
-            if use_kv_cache and past_kv is None:
-                logits, past_kv = self.forward_with_cache(idx_cond, start_pos=0)
-                logits = logits[:, -1, :] / max(temperature, 1e-5)
-            elif use_kv_cache and idx.size(1) < self.config.context_length:
-                logits, past_kv = self.forward_with_cache(idx[:, -1:], past_kv=past_kv, start_pos=idx.size(1) - 1)
-                logits = logits[:, -1, :] / max(temperature, 1e-5)
+            cached_logits, past_kv = self.forward_with_cache(idx_cond, start_pos=0)
+
+        for step in range(max_new_tokens):
+            if use_kv_cache and cached_logits is not None:
+                logits = cached_logits[:, -1, :] / max(temperature, 1e-5)
             else:
-                past_kv = None
+                idx_cond = idx[:, -self.config.context_length :]
                 logits = self(idx_cond)[:, -1, :] / max(temperature, 1e-5)
             if top_k is not None:
                 values, _ = torch.topk(logits, min(top_k, logits.size(-1)))
@@ -681,4 +684,16 @@ class MicroGPT(nn.Module):
             probs = F.softmax(logits, dim=-1)
             idx_next = torch.multinomial(probs, num_samples=1)
             idx = torch.cat((idx, idx_next), dim=1)
+            if use_kv_cache and step < max_new_tokens - 1:
+                if past_kv:
+                    cached_length = int(past_kv[0][0].size(-2))
+                    rolling_start = min(cached_length, self.config.context_length - 1)
+                    cached_logits, past_kv = self.forward_with_cache(
+                        idx[:, -1:],
+                        past_kv=past_kv,
+                        start_pos=rolling_start,
+                    )
+                else:
+                    idx_cond = idx[:, -self.config.context_length :]
+                    cached_logits, past_kv = self.forward_with_cache(idx_cond, start_pos=0)
         return idx

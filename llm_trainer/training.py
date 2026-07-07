@@ -15,7 +15,6 @@ from torch.amp import GradScaler, autocast
 from torch.utils.data import DataLoader, Dataset
 
 from .config import ModelConfig, TrainingConfig, dataclass_to_jsonable
-from .tokenizer import load_token_memmap
 from .model import (
     MicroGPT,
     apply_lora_adapters,
@@ -100,16 +99,13 @@ class Lion(torch.optim.Optimizer):
 class TokenDataset(Dataset):
     """Sliding-window token dataset for next-token prediction."""
 
-    def __init__(self, tokens: Any, context_length: int) -> None:
+    def __init__(self, tokens: list[int], context_length: int, stride: int = 1) -> None:
         """Create a token dataset.
 
         Args:
-            tokens: Complete token stream. Can be a plain list, a numpy
-                array, or (for large corpora) a read-only ``numpy.memmap`` --
-                in the memmap case the underlying file stays memory-mapped
-                and the OS pages in only the windows actually read, instead
-                of the whole corpus being copied into one big tensor upfront.
+            tokens: Complete token stream.
             context_length: Number of input tokens per sample.
+            stride: Token offset step between consecutive windows.
 
         Raises:
             ValueError: If there are not enough tokens.
@@ -117,8 +113,13 @@ class TokenDataset(Dataset):
 
         if len(tokens) <= context_length:
             raise ValueError("Not enough tokens for the selected context length")
-        self.tokens = tokens
+        if stride <= 0:
+            raise ValueError("stride must be greater than 0")
+        self.tokens = torch.tensor(tokens, dtype=torch.long)
         self.context_length = context_length
+        self.stride = stride
+        available_windows = len(self.tokens) - self.context_length
+        self.sample_count = (available_windows + self.stride - 1) // self.stride
 
     def __len__(self) -> int:
         """Return the number of sliding windows available.
@@ -127,14 +128,10 @@ class TokenDataset(Dataset):
             Dataset length.
         """
 
-        return len(self.tokens) - self.context_length
+        return self.sample_count
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
         """Return one input/target token window.
-
-        Only this small window (context_length + 1 tokens) is ever copied
-        out of the underlying array, regardless of whether ``self.tokens``
-        is a plain list, a numpy array, or a memory-mapped file.
 
         Args:
             index: Starting token index.
@@ -143,8 +140,8 @@ class TokenDataset(Dataset):
             Pair of input tokens and next-token targets.
         """
 
-        window = np.asarray(self.tokens[index : index + self.context_length + 1], dtype=np.int64)
-        chunk = torch.from_numpy(window)
+        start = index * self.stride
+        chunk = self.tokens[start : start + self.context_length + 1]
         return chunk[:-1], chunk[1:]
 
 
@@ -223,60 +220,19 @@ def set_seed(seed: int) -> None:
         torch.cuda.manual_seed_all(seed)
 
 
-def _plan_shuffled_chunk_split(
-    total_tokens: int,
-    validation_split: float,
-    chunk_size: int,
-    seed: int,
-) -> tuple[list[tuple[int, int]], set[int]]:
-    """Compute chunk ranges and which chunks go to validation.
-
-    Shared by both the in-memory (``split_tokens``) and file-to-file
-    (``write_split_token_bins``) splitters so the two can never drift apart
-    in how they assign chunks.
-
-    Args:
-        total_tokens: Total number of tokens in the stream.
-        validation_split: Fraction reserved for validation.
-        chunk_size: Number of tokens per shuffle unit.
-        seed: Fixed seed for reproducible train/validation assignment.
-
-    Returns:
-        Chunk ``(start, end)`` ranges in original order, and the set of
-        chunk indices assigned to validation.
-    """
-
-    chunk_size = max(1, chunk_size)
-    chunk_ranges = [
-        (start, min(start + chunk_size, total_tokens)) for start in range(0, total_tokens, chunk_size)
-    ]
-    if len(chunk_ranges) <= 1:
-        return chunk_ranges, set()
-
-    shuffled_indices = list(range(len(chunk_ranges)))
-    random.Random(seed).shuffle(shuffled_indices)
-    val_chunk_count = max(1, round(len(chunk_ranges) * validation_split))
-    val_chunk_count = min(val_chunk_count, len(chunk_ranges) - 1)
-    return chunk_ranges, set(shuffled_indices[:val_chunk_count])
-
-
 def split_tokens(
     tokens: list[int],
     validation_split: float,
     chunk_size: int = 2048,
     seed: int = 1337,
 ) -> tuple[list[int], list[int]]:
-    """Split an in-memory token list into train and validation streams.
+    """Split tokens into train and validation streams.
 
     The corpus is written to disk as one big concatenation of source
     documents, then tokenized into a single flat stream. A plain positional
     split would make validation depend on whichever source happened to be at
     the tail of the corpus. This chunks and deterministically shuffles the
     stream first, so validation samples are drawn from across the corpus.
-
-    Prefer ``write_split_token_bins`` for large corpora -- this variant holds
-    the full token stream (and both resulting splits) in memory at once,
-    which is fine for small/medium datasets but not for very large ones.
 
     Args:
         tokens: Full token stream.
@@ -294,11 +250,18 @@ def split_tokens(
     if validation_split >= 1:
         return [], list(tokens)
 
-    chunk_ranges, val_chunk_indices = _plan_shuffled_chunk_split(total, validation_split, chunk_size, seed)
+    chunk_size = max(1, chunk_size)
+    chunk_ranges = [(start, min(start + chunk_size, total)) for start in range(0, total, chunk_size)]
     if len(chunk_ranges) <= 1:
         split_at = int(total * (1.0 - validation_split))
         split_at = max(1, min(split_at, total - 1))
         return tokens[:split_at], tokens[split_at:]
+
+    shuffled_indices = list(range(len(chunk_ranges)))
+    random.Random(seed).shuffle(shuffled_indices)
+    val_chunk_count = max(1, round(len(chunk_ranges) * validation_split))
+    val_chunk_count = min(val_chunk_count, len(chunk_ranges) - 1)
+    val_chunk_indices = set(shuffled_indices[:val_chunk_count])
 
     train_tokens: list[int] = []
     val_tokens: list[int] = []
@@ -309,73 +272,6 @@ def split_tokens(
         else:
             train_tokens.extend(piece)
     return train_tokens, val_tokens
-
-
-def write_split_token_bins(
-    source_path: Path,
-    dtype: np.dtype,
-    validation_split: float,
-    train_path: Path,
-    val_path: Path,
-    chunk_size: int = 2048,
-    seed: int = 1337,
-) -> tuple[int, int]:
-    """Split a token ``.bin`` file into train/validation ``.bin`` files.
-
-    Uses the same shuffled-chunk assignment as ``split_tokens`` (so results
-    are consistent whichever path a project's data happens to take), but
-    the source is opened as a memory-mapped array and each chunk is written
-    straight through to whichever destination file it belongs to. At no
-    point is the full token stream, or either full split, held in memory --
-    RAM use stays roughly proportional to ``chunk_size``, not corpus size.
-
-    Args:
-        source_path: Path to the full encoded token ``.bin`` file.
-        dtype: Integer dtype tokens are stored as.
-        validation_split: Fraction reserved for validation.
-        train_path: Destination path for the training split.
-        val_path: Destination path for the validation split.
-        chunk_size: Number of tokens per shuffle unit.
-        seed: Fixed seed for reproducible train/validation assignment.
-
-    Returns:
-        Pair of ``(train_token_count, val_token_count)``.
-    """
-
-    source = load_token_memmap(source_path, dtype)
-    total = int(source.shape[0])
-    train_path.parent.mkdir(parents=True, exist_ok=True)
-    val_path.parent.mkdir(parents=True, exist_ok=True)
-
-    if total <= 1 or validation_split <= 0:
-        np.asarray(source, dtype=dtype).tofile(train_path)
-        val_path.write_bytes(b"")
-        return total, 0
-    if validation_split >= 1:
-        train_path.write_bytes(b"")
-        np.asarray(source, dtype=dtype).tofile(val_path)
-        return 0, total
-
-    chunk_ranges, val_chunk_indices = _plan_shuffled_chunk_split(total, validation_split, chunk_size, seed)
-    if len(chunk_ranges) <= 1:
-        split_at = int(total * (1.0 - validation_split))
-        split_at = max(1, min(split_at, total - 1))
-        np.asarray(source[:split_at], dtype=dtype).tofile(train_path)
-        np.asarray(source[split_at:], dtype=dtype).tofile(val_path)
-        return split_at, total - split_at
-
-    train_count = 0
-    val_count = 0
-    with train_path.open("wb") as train_sink, val_path.open("wb") as val_sink:
-        for chunk_index, (start, end) in enumerate(chunk_ranges):
-            piece = np.asarray(source[start:end], dtype=dtype)
-            if chunk_index in val_chunk_indices:
-                piece.tofile(val_sink)
-                val_count += len(piece)
-            else:
-                piece.tofile(train_sink)
-                train_count += len(piece)
-    return train_count, val_count
 
 
 def make_optimizer(model: MicroGPT, training_config: TrainingConfig) -> torch.optim.Optimizer:
@@ -804,8 +700,8 @@ def check_resume_compatibility(
 def train_model(
     model_config: ModelConfig,
     training_config: TrainingConfig,
-    train_tokens: Any,
-    val_tokens: Any,
+    train_tokens: list[int],
+    val_tokens: list[int],
     pad_token_id: int,
     progress: Optional[Callable[[Any], None]] = None,
     should_stop: Optional[Callable[[], bool]] = None,
@@ -816,8 +712,8 @@ def train_model(
     Args:
         model_config: Architecture settings.
         training_config: Optimizer, device, and checkpoint settings.
-        train_tokens: Training token stream (list, numpy array, or memmap).
-        val_tokens: Validation token stream (list, numpy array, or memmap).
+        train_tokens: Training token stream.
+        val_tokens: Validation token stream.
         pad_token_id: Token ID ignored by cross-entropy loss.
         progress: Optional callback receiving progress dictionaries.
         should_stop: Optional callback returning true when training should stop.
@@ -845,7 +741,7 @@ def train_model(
         "persistent_workers": loader_workers > 0,
     }
     train_loader = DataLoader(
-        TokenDataset(train_tokens, model_config.context_length),
+        TokenDataset(train_tokens, model_config.context_length, stride=training_config.sample_stride),
         batch_size=training_config.batch_size,
         shuffle=True,
         drop_last=True,
@@ -903,7 +799,7 @@ def train_model(
         )
 
     optimizer = make_optimizer(model, training_config)
-    steps_per_epoch = max(len(train_loader) // training_config.gradient_accumulation, 1)
+    steps_per_epoch = max(math.ceil(len(train_loader) / training_config.gradient_accumulation), 1)
     total_steps = max(steps_per_epoch * training_config.epochs, 1)
     scheduler = make_scheduler(optimizer, total_steps, training_config)
     use_autocast, use_scaler, autocast_dtype = amp_settings(training_config)
@@ -983,6 +879,7 @@ def train_model(
     step_time_window: list[float] = []
     for epoch in range(start_epoch, training_config.epochs):
         epoch_losses: list[float] = []
+        epoch_batch_count = len(train_loader)
         for batch_index, (x, y) in enumerate(train_loader):
             if should_stop and should_stop():
                 final_train_loss = sum(epoch_losses) / max(len(epoch_losses), 1) if epoch_losses else final_train_loss
@@ -1026,7 +923,11 @@ def train_model(
                 loss = loss / training_config.gradient_accumulation
 
             scaler.scale(loss).backward()
-            if (batch_index + 1) % training_config.gradient_accumulation == 0:
+            should_step = (
+                (batch_index + 1) % training_config.gradient_accumulation == 0
+                or (batch_index + 1) == epoch_batch_count
+            )
+            if should_step:
                 scaler.unscale_(optimizer)
                 grad_norm_tensor = torch.nn.utils.clip_grad_norm_(model.parameters(), training_config.max_grad_norm)
                 grad_norm = float(grad_norm_tensor.item() if hasattr(grad_norm_tensor, "item") else grad_norm_tensor)

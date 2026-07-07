@@ -25,6 +25,11 @@ Launch the desktop app:
 python3 run_app.py
 ```
 
+On startup, the IDE now runs a validation splash screen before the project
+chooser opens. It checks log/cache/projects folders, verifies core imports, and
+runs the repository unit tests. After all checks pass, you can choose to create
+a new project or open an existing `project.json`.
+
 On Linux/macOS, direct execution also needs:
 
 ```bash
@@ -49,6 +54,24 @@ Prepare programming PDFs plus source files in code-aware mode:
 python -m llm_trainer.cli prepare --input_dir .\examples\tiny_corpus --output_dir .\runs\code_data --context_length 128 --code_training_mode
 ```
 
+For large corpora, enable faster preview/build scanning:
+
+```powershell
+python -m llm_trainer.cli prepare --input_dir .\my_big_data --output_dir .\runs\big_data --fast_scan_mode
+```
+
+`--fast_scan_mode` uses cheaper file fingerprints and cached preview statistics,
+which is significantly faster on very large datasets.
+
+To reduce false duplicate matches in fast mode, add strict verification:
+
+```powershell
+python -m llm_trainer.cli prepare --input_dir .\my_big_data --output_dir .\runs\big_data --fast_scan_mode --strict_duplicate_verification --fast_scan_sample_bytes 65536
+```
+
+`--strict_duplicate_verification` only runs full SHA-256 hashing on suspected
+fast-scan collisions, keeping scans fast while improving duplicate accuracy.
+
 Code-aware mode keeps source-code files such as `.py`, `.js`, `.java`, `.cpp`,
 `.cs`, `.go`, and `.rs`, preserves indentation, tags code/prose samples, and
 tries to extract code-like blocks from PDFs/text.
@@ -63,6 +86,10 @@ Training saves checkpoints in the model folder and can resume from the latest
 checkpoint by default. The UI exposes model options such as `n_embd`, `n_head`,
 `n_layer`, context length, learning rate, batch size, warmup, checkpoint
 interval, AMP, resume, and FP16 checkpoint quantization.
+
+Prepared train/validation token arrays are now written as `train_tokens.npy` and
+`val_tokens.npy` for faster load times and lower disk overhead than giant JSON
+token lists. Existing `.json` token files are still supported as a fallback.
 
 The Chat tab can load a `.gguf` model through `llama-cpp-python` and keep it in
 memory for a ChatGPT-style local test chat with streamed, Markdown-rendered

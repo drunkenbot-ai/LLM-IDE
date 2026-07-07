@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Callable, Iterator, Optional
 
-import numpy as np
 from tokenizers import Tokenizer
 from tokenizers.decoders import ByteLevel as ByteLevelDecoder
 from tokenizers.models import BPE
@@ -19,10 +18,6 @@ EOS_TOKEN = "<eos>"
 SPECIAL_TOKENS = [PAD_TOKEN, UNK_TOKEN, BOS_TOKEN, EOS_TOKEN]
 MAX_TOKENIZER_TRAINING_CHARS = 25_000_000
 MAX_TOKENIZER_LINE_CHARS = 8_192
-# Tokens are streamed to disk in fixed-size batches rather than accumulated
-# into one giant Python list, so peak RAM during encoding stays roughly
-# constant regardless of corpus size.
-ENCODE_FLUSH_TOKEN_COUNT = 200_000
 
 
 def train_tokenizer(
@@ -216,103 +211,3 @@ def encode_file(
                 if chunk:
                     token_ids.extend(tokenizer.encode(chunk).ids)
     return token_ids
-
-
-def token_dtype_for_vocab(vocab_size: int) -> np.dtype:
-    """Pick the smallest unsigned integer dtype that can hold every token ID.
-
-    Args:
-        vocab_size: Tokenizer vocabulary size.
-
-    Returns:
-        ``uint16`` for the (overwhelmingly common) case of a vocab under
-        65,536, otherwise ``uint32``.
-    """
-
-    return np.dtype(np.uint16) if vocab_size <= 65_535 else np.dtype(np.uint32)
-
-
-def encode_file_to_bin(
-    tokenizer: Tokenizer,
-    corpus_path: Path,
-    output_path: Path,
-    dtype: np.dtype,
-    should_stop: Optional[Callable[[], bool]] = None,
-) -> int:
-    """Encode a corpus file straight to a flat binary token file.
-
-    Unlike ``encode_file``, this never accumulates the whole corpus as a
-    Python list of ints in memory. Token IDs are buffered in small batches
-    and flushed to disk as raw fixed-width integers (``dtype``), so peak RAM
-    stays roughly constant no matter how large the corpus is. The resulting
-    file can later be opened with ``numpy.memmap`` for near-instant, RAM-light
-    random access, instead of round-tripping the whole corpus through JSON.
-
-    Args:
-        tokenizer: Tokenizer used for encoding.
-        corpus_path: Text corpus path.
-        output_path: Destination ``.bin`` path for the encoded token stream.
-        dtype: Integer dtype to store each token ID as (see
-            ``token_dtype_for_vocab``).
-        should_stop: Optional callback returning true when encoding should stop.
-
-    Returns:
-        Total number of tokens written.
-
-    Raises:
-        RuntimeError: If cancellation is requested.
-    """
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    buffer: list[int] = []
-    total_tokens = 0
-    with corpus_path.open("r", encoding="utf-8") as source, output_path.open("wb") as sink:
-        for line in source:
-            if should_stop and should_stop():
-                raise RuntimeError("Dataset preparation stopped by user.")
-            for start in range(0, len(line), MAX_TOKENIZER_LINE_CHARS):
-                chunk = line[start : start + MAX_TOKENIZER_LINE_CHARS]
-                if not chunk:
-                    continue
-                buffer.extend(tokenizer.encode(chunk).ids)
-                if len(buffer) >= ENCODE_FLUSH_TOKEN_COUNT:
-                    np.asarray(buffer, dtype=dtype).tofile(sink)
-                    total_tokens += len(buffer)
-                    buffer.clear()
-        if buffer:
-            np.asarray(buffer, dtype=dtype).tofile(sink)
-            total_tokens += len(buffer)
-    return total_tokens
-
-
-def token_count_in_bin(path: Path, dtype: np.dtype) -> int:
-    """Return how many tokens a ``.bin`` file holds, without loading it.
-
-    Args:
-        path: Token ``.bin`` file path.
-        dtype: Integer dtype the tokens were stored as.
-
-    Returns:
-        Number of tokens in the file.
-    """
-
-    itemsize = np.dtype(dtype).itemsize
-    return path.stat().st_size // itemsize
-
-
-def load_token_memmap(path: Path, dtype: np.dtype) -> np.memmap:
-    """Open a token ``.bin`` file as a read-only memory-mapped array.
-
-    Slices taken from the returned array are paged in by the OS on demand,
-    so opening even a very large file costs almost no RAM upfront -- only
-    the windows actually touched during training are read from disk.
-
-    Args:
-        path: Token ``.bin`` file path.
-        dtype: Integer dtype the tokens were stored as.
-
-    Returns:
-        Read-only memory-mapped array of token IDs.
-    """
-
-    return np.memmap(path, dtype=dtype, mode="r")

@@ -14,7 +14,8 @@ from .contracts import BackendKind
 from .contracts.jobs import RuntimeSpec, TrainingJobSpec
 from .evaluation import evaluate_checkpoint, normalize_prompts
 from .export import export_hf_microgpt_package
-from .services import build_dataset, train_from_dataset
+from .dataset_build import build_dataset
+from .training_orchestrator import train_from_dataset
 from .tokenizer import load_tokenizer
 from .worker import WorkerClientConfig, run_worker_client
 
@@ -64,6 +65,9 @@ def prepare(args: argparse.Namespace) -> None:
         dataset_stage=args.dataset_stage,
         conversation_datasets=[item.strip() for item in args.conversation_datasets.split(",") if item.strip()],
         conversation_sample_limit=args.conversation_sample_limit,
+        fast_scan_mode=args.fast_scan_mode,
+        fast_scan_sample_bytes=args.fast_scan_sample_bytes,
+        strict_duplicate_verification=args.strict_duplicate_verification,
     )
     result = build_dataset(config, progress=print_progress)
     print(
@@ -101,6 +105,7 @@ def train(args: argparse.Namespace) -> None:
         batch_size=args.batch_size,
         learning_rate=args.learning_rate,
         gradient_accumulation=args.gradient_accumulation,
+        sample_stride=args.sample_stride,
         eval_interval=args.eval_interval,
         save_interval=args.save_interval,
         use_amp=args.use_amp,
@@ -184,14 +189,20 @@ def create_job_bundle(args: argparse.Namespace) -> None:
         epochs=args.epochs,
         batch_size=args.batch_size,
         learning_rate=args.learning_rate,
+        sample_stride=args.sample_stride,
         device=args.device,
     )
     job = TrainingJobSpec.local(Path(args.dataset_dir), model_config, training_config)
+    if args.tags is None:
+        default_tag = "gpu" if str(args.device).lower().startswith("cuda") else "cpu"
+        tags = [default_tag]
+    else:
+        tags = [item.strip() for item in args.tags.split(",") if item.strip()]
     job.runtime = RuntimeSpec(
         backend=BackendKind.REMOTE_CLIENT,
         device=args.device,
         min_vram_gb=args.min_vram_gb,
-        tags=[item.strip() for item in args.tags.split(",") if item.strip()],
+        tags=tags,
     )
     bundle = create_job_artifact_bundle(
         job,
@@ -279,6 +290,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="Comma-separated built-in online dataset IDs. TinyStories is for base; chat/instruction sets are for fine-tuning.",
     )
     prepare_parser.add_argument("--conversation_sample_limit", type=int, default=20000)
+    prepare_parser.add_argument(
+        "--fast_scan_mode",
+        action="store_true",
+        help="Use cheaper dataset fingerprints and cached preview stats for faster large-corpus scans.",
+    )
+    prepare_parser.add_argument(
+        "--fast_scan_sample_bytes",
+        type=int,
+        default=64 * 1024,
+        help="Bytes sampled from file head/tail for fast fingerprints.",
+    )
+    prepare_parser.add_argument(
+        "--strict_duplicate_verification",
+        action="store_true",
+        help="In fast scan mode, re-hash only suspected duplicate groups with full SHA-256.",
+    )
     prepare_parser.set_defaults(func=prepare)
 
     train_parser = subparsers.add_parser("train", help="Train a MicroGPT model")
@@ -297,6 +324,7 @@ def build_parser() -> argparse.ArgumentParser:
     train_parser.add_argument("--rope_theta", type=float, default=10000.0)
     train_parser.add_argument("--learning_rate", type=float, default=3e-4)
     train_parser.add_argument("--gradient_accumulation", type=int, default=1)
+    train_parser.add_argument("--sample_stride", type=int, default=1)
     train_parser.add_argument("--eval_interval", type=int, default=100)
     train_parser.add_argument("--save_interval", type=int, default=500)
     train_parser.add_argument("--use_amp", action="store_true")
@@ -342,9 +370,10 @@ def build_parser() -> argparse.ArgumentParser:
     bundle_parser.add_argument("--layer-count", type=int, default=4)
     bundle_parser.add_argument("--dropout", type=float, default=0.1)
     bundle_parser.add_argument("--learning-rate", type=float, default=3e-4)
+    bundle_parser.add_argument("--sample-stride", type=int, default=1)
     bundle_parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     bundle_parser.add_argument("--min-vram-gb", type=float, default=None)
-    bundle_parser.add_argument("--tags", default="gpu" if torch.cuda.is_available() else "cpu")
+    bundle_parser.add_argument("--tags", default=None)
     bundle_parser.set_defaults(func=create_job_bundle)
 
     worker_parser = subparsers.add_parser("worker-client", help="Run a remote training worker client")

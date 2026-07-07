@@ -84,11 +84,16 @@ class DatasetSpec:
         """
 
         dataset_dir = Path(dataset_dir)
+        train_tokens_path = dataset_dir / "train_tokens.npy"
+        val_tokens_path = dataset_dir / "val_tokens.npy"
+        if not train_tokens_path.exists() or not val_tokens_path.exists():
+            train_tokens_path = dataset_dir / "train_tokens.json"
+            val_tokens_path = dataset_dir / "val_tokens.json"
         return cls(
             dataset_dir=dataset_dir,
             tokenizer_path=dataset_dir / "tokenizer.json",
-            train_tokens_path=dataset_dir / "train_tokens.bin",
-            val_tokens_path=dataset_dir / "val_tokens.bin",
+            train_tokens_path=train_tokens_path,
+            val_tokens_path=val_tokens_path,
             summary_path=dataset_dir / "dataset_summary.json",
         )
 

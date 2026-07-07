@@ -181,14 +181,17 @@ class LlamaChatSession:
                 reply_parts.append(delta)
                 chunk_count += 1
                 elapsed = max(perf_counter() - started_at, 0.001)
+                streamed_text = "".join(reply_parts).strip()
+                token_count = self._count_tokens(streamed_text) if streamed_text else 0
                 if progress:
                     progress(
                         {
                             "type": "chat_delta",
                             "content": delta,
                             "elapsed_seconds": elapsed,
-                            "token_count": chunk_count,
-                            "tokens_per_second": chunk_count / elapsed,
+                            "chunk_count": chunk_count,
+                            "token_count": token_count,
+                            "tokens_per_second": token_count / elapsed if token_count else 0.0,
                         }
                     )
 

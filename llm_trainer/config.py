@@ -39,6 +39,9 @@ class DatasetConfig:
         instruction_dataset_paths: Local JSON/JSONL files or folders containing instruction samples.
         default_data_paths: Bundled starter data files selected from the Dataset Blueprint panel.
         mixture_weights: Planned dataset mixture percentages by source family.
+        fast_scan_mode: Uses sampled fingerprints for faster large-corpus scans.
+        fast_scan_sample_bytes: Head/tail bytes per file used for fast fingerprints.
+        strict_duplicate_verification: In fast mode, fully re-hashes only suspected duplicate groups.
     """
 
     input_dir: Path
@@ -68,6 +71,9 @@ class DatasetConfig:
     instruction_dataset_paths: list[Path] = field(default_factory=list)
     default_data_paths: list[Path] = field(default_factory=list)
     mixture_weights: dict[str, float] = field(default_factory=dict)
+    fast_scan_mode: bool = False
+    fast_scan_sample_bytes: int = 64 * 1024
+    strict_duplicate_verification: bool = False
 
 
 @dataclass
@@ -172,6 +178,7 @@ class TrainingConfig:
         scheduler_min_lr_ratio: Minimum learning-rate multiplier after decay.
         polynomial_power: Power used by polynomial decay.
         gradient_accumulation: Batches to accumulate before optimizer step.
+        sample_stride: Token offset step between consecutive training windows.
         warmup_steps: Steps used to ramp up learning rate.
         eval_interval: Steps between validation loss checks.
         max_eval_batches: Maximum validation batches per interval evaluation. Zero evaluates all validation batches.
@@ -204,6 +211,7 @@ class TrainingConfig:
     scheduler_min_lr_ratio: float = 0.1
     polynomial_power: float = 1.0
     gradient_accumulation: int = 1
+    sample_stride: int = 1
     warmup_steps: int = 100
     eval_interval: int = 100
     max_eval_batches: int = 50
@@ -257,6 +265,8 @@ class TrainingConfig:
             raise ValueError("scheduler_min_lr_ratio must be between 0 and 1")
         if self.polynomial_power <= 0.0:
             raise ValueError("polynomial_power must be greater than 0")
+        if self.sample_stride <= 0:
+            raise ValueError("sample_stride must be greater than 0")
 
 
 def dataclass_to_jsonable(value: Any) -> dict[str, Any]:
