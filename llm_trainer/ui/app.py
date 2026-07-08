@@ -5756,7 +5756,7 @@ class MainWindow(QMainWindow):
                 notes.append("Long context with a small embedding can be memory-heavy without adding much capacity.")
             if model_config.attention_type in {"grouped_query", "multi_query"}:
                 notes.append("Grouped/multi-query attention reduces KV memory and is useful for longer contexts.")
-            if model_config.mlp_type == "swiglu" and model_config.normalization == "rmsnorm":
+            if model_config.mlp_type == "swiglu" and model_config.norm_type == "rmsnorm":
                 notes.append("Llama-like blocks improve modern compatibility but must match checkpoints when resuming.")
         if training_config is not None and training_config.device == "cuda" and vram_bytes > 3.5 * 1024**3:
             notes.append("Estimated VRAM is high for 4 GB GPUs. Try lower batch, context, embedding, or layers.")
