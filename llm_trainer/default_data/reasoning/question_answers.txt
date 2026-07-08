@@ -1,0 +1,52 @@
+Yes.
+No.
+Maybe.
+I do not know.
+I think so.
+I do not think so.
+I am not sure.
+Try again later.
+I will check.
+I will look.
+I will call you.
+I will email you.
+I will come.
+I will leave.
+I will finish.
+I will start.
+I agree.
+I do not agree.
+That is fine.
+That is not fine.
+It works.
+It does not work.
+It is possible.
+It is impossible.
+I like it.
+I do not like it.
+I love it.
+I hate it.
+I need help.
+I can help.
+I will help.
+I am sorry.
+I forgive you.
+No worries.
+I am busy.
+I am free.
+I am late.
+I am early.
+I am home.
+I am away.
+I am done.
+I need food.
+I need water.
+I am cold.
+I am warm.
+I feel sick.
+I feel well.
+Let's go.
+Let's stop.
+Call me.
+Text me.
+Email me.
