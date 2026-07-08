@@ -138,7 +138,7 @@ class MicroGPTChatSession:
                         }
                     )
 
-            reply = "".join(reply_parts).strip()
+            reply = self.tokenizer.decode(generated_ids, skip_special_tokens=True).strip() if generated_ids else ""
             if reply:
                 self._messages.append({"role": "user", "content": prompt})
                 self._messages.append({"role": "assistant", "content": reply})
