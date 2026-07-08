@@ -355,17 +355,21 @@ def _apply_dataset_mixture(
         family: max(1, int(strict_total_budget * share))
         for family, share in normalized_shares.items()
     }
-    if strict_total_budget < total_available_chars:
-        _emit(
-            progress,
-            (
-                "Dataset mixture: strict recipe limited by "
-                f"{_mixture_label(limiting_family)} availability "
-                f"({available_chars_by_family[limiting_family]:,} characters). "
-                "Add more data for that category or lower its percentage to use more of the corpus."
-            ),
-            49,
-        )
+    if strict_total_budget >= total_available_chars:
+        # Every category can supply its proportional share — no trimming needed,
+        # include all documents so that 100%/100%/… means "use everything".
+        _emit(progress, "Dataset mixture: all categories fit within budget, using full corpus.", 49)
+        return documents, _empty_mixture_report(clean_weights, documents, applied=False, reason="All data fits within mixture budget.")
+    _emit(
+        progress,
+        (
+            "Dataset mixture: strict recipe limited by "
+            f"{_mixture_label(limiting_family)} availability "
+            f"({available_chars_by_family[limiting_family]:,} characters). "
+            "Add more data for that category or lower its percentage to use more of the corpus."
+        ),
+        49,
+    )
     sorted_groups = {
         family: sorted(items, key=_stable_document_sort_key)
         for family, items in available_families.items()
