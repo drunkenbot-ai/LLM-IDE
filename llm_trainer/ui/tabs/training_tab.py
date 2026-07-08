@@ -195,6 +195,12 @@ def build_training_tab(window) -> QWidget:
         window.resume_safety,
         "Before resuming, verify that the dataset tokenizer and model architecture match the checkpoint.",
     )
+    window.early_stopping = QCheckBox("Early stopping")
+    window.early_stopping.setChecked(True)
+    window._tip(
+        window.early_stopping,
+        "Automatically stop training when validation loss stops improving. Uncheck to train for all remaining epochs.",
+    )
     window.resume_checkpoint = QLineEdit()
     window._tip(window.resume_checkpoint, "Optional specific checkpoint file to resume from instead of the latest checkpoint.")
     window.resume_check_button = QPushButton("Check Resume")
@@ -235,6 +241,7 @@ def build_training_tab(window) -> QWidget:
     runtime.addRow("Precision", window.precision)
     runtime.addRow("", window.resume_training)
     runtime.addRow("", window.resume_safety)
+    runtime.addRow("", window.early_stopping)
     runtime.addRow("Checkpoint", window._path_row(window.resume_checkpoint, directory=False))
     runtime.addRow("", window.resume_check_button)
 

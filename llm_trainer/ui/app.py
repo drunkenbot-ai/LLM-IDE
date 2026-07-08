@@ -3160,6 +3160,7 @@ class MainWindow(QMainWindow):
                 "precision": self._precision_value(),
                 "resume": self.resume_training.isChecked(),
                 "require_compatible_resume": self.resume_safety.isChecked(),
+                "early_stopping": self.early_stopping.isChecked(),
                 "benchmark_prompts": self.benchmark_prompts.toPlainText(),
                 "benchmark_tokens": self.benchmark_tokens.value(),
                 "benchmark_temperature": self.benchmark_temperature.value(),
@@ -3360,6 +3361,7 @@ class MainWindow(QMainWindow):
         })
         self.resume_training.setChecked(bool(training.get("resume", self.resume_training.isChecked())))
         self.resume_safety.setChecked(bool(training.get("require_compatible_resume", True)))
+        self.early_stopping.setChecked(bool(training.get("early_stopping", True)))
         self.benchmark_prompts.setPlainText(str(training.get("benchmark_prompts", self.benchmark_prompts.toPlainText())))
         self.benchmark_tokens.setValue(int(training.get("benchmark_tokens", self.benchmark_tokens.value())))
         self.benchmark_temperature.setValue(float(training.get("benchmark_temperature", self.benchmark_temperature.value())))
@@ -5857,6 +5859,7 @@ class MainWindow(QMainWindow):
             resume=self.resume_training.isChecked(),
             resume_from_checkpoint=resume_path if self.resume_training.isChecked() else None,
             require_compatible_resume=self.resume_safety.isChecked(),
+            early_stopping=self.early_stopping.isChecked(),
         )
 
     def _current_training_vocab_size(self, data_dir: Path) -> int:

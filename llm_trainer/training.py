@@ -763,6 +763,8 @@ def train_model(
     final_val_loss: Optional[float] = None
     best_val_loss: Optional[float] = None
     best_checkpoint_path: Optional[Path] = None
+    early_stop_counter = 0
+    early_stopped = False
 
     resume_path = training_config.resume_from_checkpoint if training_config.resume else None
     if resume_path is None and training_config.resume:
@@ -1070,6 +1072,19 @@ def train_model(
                             best_val_loss=best_val_loss,
                             best_checkpoint_path=str(best_checkpoint_path),
                         )
+                        early_stop_counter = 0
+                    elif training_config.early_stopping and best_val_loss is not None:
+                        early_stop_counter += 1
+                        if early_stop_counter >= training_config.early_stopping_patience:
+                            reason = (
+                                f"Early stopping: validation loss has not improved for "
+                                f"{early_stop_counter} consecutive evaluation(s). "
+                                f"Best val loss: {best_val_loss:.4f}, current: {final_val_loss:.4f}. "
+                                f"Best checkpoint: {best_checkpoint_path}."
+                            )
+                            emit_progress(progress, reason, current_progress)
+                            early_stopped = True
+                            break
 
                 if training_config.save_interval > 0 and global_step % training_config.save_interval == 0:
                     save_checkpoint(
@@ -1089,6 +1104,8 @@ def train_model(
 
             epoch_losses.append(float(loss.item() * training_config.gradient_accumulation))
 
+        if early_stopped:
+            break
         final_train_loss = sum(epoch_losses) / max(len(epoch_losses), 1)
         if val_loader is not None:
             final_val_loss = evaluate(
@@ -1127,6 +1144,18 @@ def train_model(
                     best_val_loss=best_val_loss,
                     best_checkpoint_path=str(best_checkpoint_path),
                 )
+                early_stop_counter = 0
+            elif training_config.early_stopping and best_val_loss is not None:
+                early_stop_counter += 1
+                if early_stop_counter >= training_config.early_stopping_patience:
+                    reason = (
+                        f"Early stopping at epoch {epoch + 1}: validation loss has not improved for "
+                        f"{early_stop_counter} consecutive evaluation(s). "
+                        f"Best val loss: {best_val_loss:.4f}, current: {final_val_loss:.4f}. "
+                        f"Best checkpoint: {best_checkpoint_path}."
+                    )
+                    emit_progress(progress, reason, 8 + int(86 * (epoch + 1) / max(training_config.epochs, 1)))
+                    early_stopped = True
         print(f"epoch {epoch + 1}/{training_config.epochs}: train_loss={final_train_loss:.4f}")
         save_checkpoint(
             checkpoints_dir / f"checkpoint_epoch_{epoch + 1}.pt",
@@ -1154,6 +1183,8 @@ def train_model(
             system_cpu_percent=system_cpu_percent(),
             system_ram_percent=system_ram_percent(),
         )
+        if early_stopped:
+            break
 
     if training_config.peft_method == "lora":
         adapter_path = training_config.output_dir / "final_adapter.pt"
@@ -1198,11 +1229,12 @@ def train_model(
         "total_steps": global_step,
         "parameters": sum(p.numel() for p in model.parameters()),
         "adapter_checkpoint": str(training_config.output_dir / "final_adapter.pt") if training_config.peft_method == "lora" else None,
+        "early_stopped": early_stopped,
     }
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     emit_progress(
         progress,
-        "Training complete.",
+        "Training stopped early — validation loss converged." if early_stopped else "Training complete.",
         100,
         epoch=training_config.epochs,
         total_epochs=training_config.epochs,
