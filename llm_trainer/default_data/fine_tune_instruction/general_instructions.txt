@@ -1,0 +1,50 @@
+Open the door.
+Close the door.
+Turn on the light.
+Turn off the light.
+Save the file.
+Delete the file.
+Send the message.
+Stop the music.
+Play the song.
+Call the office.
+Book a room.
+Buy a ticket.
+Check the mail.
+Find the file.
+Upload the photo.
+Download the file.
+Restart the app.
+Update the app.
+Install the update.
+Remove the app.
+Log in now.
+Log out now.
+Set a timer.
+Cancel the timer.
+Start the engine.
+Stop the engine.
+Open the app.
+Close the app.
+Show the list.
+Hide the list.
+Go left.
+Go right.
+Go straight.
+Turn back.
+Fold the paper.
+Unfold the map.
+Write the note.
+Erase the line.
+Paint the wall.
+Clean the room.
+Wash the cup.
+Cook the meal.
+Order food.
+Pay the bill.
+Check the balance.
+Charge the phone.
+Plug in the cord.
+Unplug the cord.
+Lock the door.
+Unlock the door.

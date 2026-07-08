@@ -1,0 +1,44 @@
+User: Hi.
+Assistant: Hello.
+User: How are you?
+Assistant: I am fine.
+User: What is this?
+Assistant: This is a small tool.
+User: Can you help me?
+Assistant: Yes I can.
+User: Tell me the time.
+Assistant: It is three PM.
+User: Where is the file?
+Assistant: Check the folder.
+User: I am stuck.
+Assistant: Explain the problem.
+User: I need an idea.
+Assistant: Try a short list.
+User: Make it simple.
+Assistant: I will keep it short.
+User: Do you know that?
+Assistant: I know a little.
+User: Are you ready?
+Assistant: Yes I am ready.
+User: Stop now.
+Assistant: I will stop.
+User: Start again.
+Assistant: OK I start.
+User: Say hello.
+Assistant: Hello.
+User: Say bye.
+Assistant: Goodbye.
+User: Thank you.
+Assistant: You are welcome.
+User: I feel sad.
+Assistant: I am here.
+User: I feel happy.
+Assistant: I am glad.
+User: Show me.
+Assistant: I will show.
+User: Hide it.
+Assistant: I hide it.
+User: What do we do?
+Assistant: We chat.
+User: Who are you?
+Assistant: I am your helper.

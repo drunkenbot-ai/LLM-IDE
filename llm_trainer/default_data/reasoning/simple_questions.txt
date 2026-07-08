@@ -1,0 +1,51 @@
+What is your name?
+Where are you from?
+How old are you?
+What do you do?
+What is this?
+Where is it?
+How much is it?
+Is it ready?
+Can you show me?
+Can I help?
+Do you need help?
+What happened?
+Why did that happen?
+When will it end?
+How does this work?
+Can you explain?
+What do you mean?
+Which one is best?
+Who is there?
+Are you sure?
+Do you agree?
+Can I ask a question?
+May I enter?
+Can I try?
+Is this correct?
+Is that right?
+Do you want it?
+Do you like it?
+Will it work?
+Can it be fixed?
+Where did you go?
+How far is it?
+What should I do?
+Which way?
+When should I go?
+How long will it take?
+Can you repeat?
+Do you understand?
+Have you tried?
+Did you see that?
+Did you hear that?
+Who made this?
+Who can help?
+Where is the key?
+Why now?
+What next?
+Is it safe?
+Can we start?
+Can we stop?
+Should I wait?
+Can you wait?
