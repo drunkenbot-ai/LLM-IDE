@@ -199,6 +199,8 @@ class TrainingConfig:
         resume: Whether to resume from checkpoints.
         resume_from_checkpoint: Optional exact checkpoint path to resume from.
         require_compatible_resume: Validate tokenizer/model compatibility before resuming.
+        early_stopping: Stop training when validation loss stops improving.
+        early_stopping_patience: Consecutive evaluations without improvement before stopping.
     """
 
     output_dir: Path
@@ -232,6 +234,8 @@ class TrainingConfig:
     resume: bool = True
     resume_from_checkpoint: Optional[Path] = None
     require_compatible_resume: bool = True
+    early_stopping: bool = True
+    early_stopping_patience: int = 3
 
     def validate(self) -> None:
         """Validate optimizer and schedule settings.
