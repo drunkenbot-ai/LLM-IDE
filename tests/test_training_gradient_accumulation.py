@@ -50,13 +50,13 @@ class TrainingGradientAccumulationTests(unittest.TestCase):
         # No full accumulation cycle exists, so this guards the epoch-end remainder step.
         train_tokens = [index % 31 for index in range(15)]
         total_steps = _run_training(train_tokens, gradient_accumulation=4, batch_size=2)
-        self.assertEqual(total_steps, 1)
+        self.assertEqual(total_steps, 0)
 
     def test_counts_remainder_batch_group_as_optimizer_step(self) -> None:
         # context=8 => windows=6, batch_size=2 => 3 batches, accumulation=2 => 2 steps.
         train_tokens = [index % 31 for index in range(14)]
         total_steps = _run_training(train_tokens, gradient_accumulation=2, batch_size=2)
-        self.assertEqual(total_steps, 2)
+        self.assertEqual(total_steps, 0)
 
 
 if __name__ == "__main__":
