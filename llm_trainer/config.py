@@ -213,7 +213,7 @@ class TrainingConfig:
     scheduler_min_lr_ratio: float = 0.1
     polynomial_power: float = 1.0
     gradient_accumulation: int = 1
-    sample_stride: int = 1
+    sample_stride: int = 128 #1
     warmup_steps: int = 100
     eval_interval: int = 100
     max_eval_batches: int = 50

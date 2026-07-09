@@ -289,149 +289,120 @@ def _apply_dataset_mixture(
     weights: dict[str, float],
     progress: Optional[Callable[[Any], None]],
 ) -> tuple[list[Document], dict[str, Any]]:
+    """
+    Apply Dataset Blueprint percentages independently.
+
+    Unlike the previous implementation, percentages are NOT normalized.
+
+    100% means:
+        Include every document in that category.
+
+    50% means:
+        Include approximately half of the documents from that category.
+
+    Categories never reduce one another.
+    """
+
     original_document_count = len(documents)
+
     documents = _chunk_documents_for_mixture(documents)
+
     if len(documents) != original_document_count:
         _emit(
             progress,
             f"Dataset mixture: split {original_document_count:,} source file(s) into "
-            f"{len(documents):,} sampling chunk(s) for accurate percentages.",
+            f"{len(documents):,} sampling chunk(s).",
             49,
         )
-    document_families = {_document_mixture_family(document) for document in documents}
-    families_to_sample = sorted({*MIXTURE_LABELS, *weights, *document_families})
-    clean_weights: dict[str, float] = {}
-    for family in families_to_sample:
-        try:
-            clean_weights[family] = max(0.0, float(weights.get(family, 0.0) or 0.0))
-        except (TypeError, ValueError):
-            clean_weights[family] = 0.0
-    domain_weight_total = sum(clean_weights.get(family, 0.0) for family in DOMAIN_MIXTURE_FAMILIES)
-    aggregate_weight_total = sum(clean_weights.get(family, 0.0) for family in AGGREGATE_MIXTURE_FAMILIES)
-    has_domain_documents = bool(document_families & DOMAIN_MIXTURE_FAMILIES)
-    if has_domain_documents and domain_weight_total >= 99.0 and aggregate_weight_total > 0.0:
-        for family in AGGREGATE_MIXTURE_FAMILIES:
-            clean_weights[family] = 0.0
-        _emit(progress, "Dataset mixture: ignored legacy aggregate weights because a full domain recipe is active.", 49)
-    requested_total = sum(clean_weights.values())
-    if requested_total <= 0.0:
-        return documents, _empty_mixture_report(clean_weights, documents, applied=False, reason="No positive mixture weights.")
 
-    grouped: dict[str, list[Document]] = {key: [] for key in families_to_sample}
-    for document in documents:
-        grouped.setdefault(_document_mixture_family(document), []).append(document)
-    available_families = {
-        family: items
-        for family, items in grouped.items()
-        if items and clean_weights.get(family, 0.0) > 0.0
-    }
-    if not available_families:
-        return documents, _empty_mixture_report(
-            clean_weights,
-            documents,
-            applied=False,
-            reason="No documents matched positive mixture weights.",
-        )
+    # ---------------------------------------------------------
+    # Group documents by category
+    # ---------------------------------------------------------
 
-    total_available_chars = sum(len(document.text) for document in documents)
-    active_weight_total = sum(clean_weights[family] for family in available_families)
-    available_chars_by_family = {
-        family: sum(len(document.text) for document in items)
-        for family, items in available_families.items()
-    }
-    normalized_shares = {
-        family: clean_weights[family] / active_weight_total
-        for family in available_families
-        if clean_weights[family] > 0.0
-    }
-    limiting_family = min(
-        normalized_shares,
-        key=lambda family: available_chars_by_family[family] / normalized_shares[family],
-    )
-    strict_total_budget = int(
-        available_chars_by_family[limiting_family] / normalized_shares[limiting_family]
-    )
-    family_targets = {
-        family: max(1, int(strict_total_budget * share))
-        for family, share in normalized_shares.items()
-    }
-    if strict_total_budget >= total_available_chars:
-        # Every category can supply its proportional share — no trimming needed,
-        # include all documents so that 100%/100%/… means "use everything".
-        _emit(progress, "Dataset mixture: all categories fit within budget, using full corpus.", 49)
-        return documents, _empty_mixture_report(clean_weights, documents, applied=False, reason="All data fits within mixture budget.")
-    _emit(
-        progress,
-        (
-            "Dataset mixture: strict recipe limited by "
-            f"{_mixture_label(limiting_family)} availability "
-            f"({available_chars_by_family[limiting_family]:,} characters). "
-            "Add more data for that category or lower its percentage to use more of the corpus."
-        ),
-        49,
-    )
-    sorted_groups = {
-        family: sorted(items, key=_stable_document_sort_key)
-        for family, items in available_families.items()
-    }
-    selected_by_family: dict[str, list[Document]] = {family: [] for family in families_to_sample}
+    families: dict[str, list[Document]] = {}
 
-    for family, items in sorted_groups.items():
-        target_chars = family_targets.get(family, 0)
-        selected_chars = 0
-        for document in items:
-            if selected_chars >= target_chars and selected_by_family[family]:
-                break
-            selected_by_family[family].append(document)
-            selected_chars += len(document.text)
+    for doc in documents:
+        family = _document_mixture_family(doc)
+        families.setdefault(family, []).append(doc)
 
-    selected_documents = [
-        document
-        for family in families_to_sample
-        for document in selected_by_family.get(family, [])
-    ]
-    selected_documents = sorted(selected_documents, key=lambda document: (str(document.path), document.kind, document.language or ""))
-    selected_total_chars = sum(len(document.text) for document in selected_documents)
+    selected_documents: list[Document] = []
+
     report = {
         "applied": True,
         "reason": "",
-        "total_available_documents": original_document_count,
-        "total_available_chunks": len(documents),
-        "total_selected_documents": len(selected_documents),
-        "total_available_characters": total_available_chars,
-        "total_selected_characters": selected_total_chars,
+        "total_available_documents": len(documents),
+        "total_selected_documents": 0,
+        "total_available_characters": sum(len(d.text) for d in documents),
+        "total_selected_characters": 0,
         "families": {},
     }
-    for family in families_to_sample:
-        available = grouped.get(family, [])
-        selected = selected_by_family.get(family, [])
-        available_chars = sum(len(document.text) for document in available)
-        selected_chars = sum(len(document.text) for document in selected)
+
+    # ---------------------------------------------------------
+    # Process each category independently
+    # ---------------------------------------------------------
+
+    selected_documents = []
+
+    for family in sorted(families.keys()):
+
+        docs = families[family]
+
+        docs.sort(key=_stable_document_sort_key)
+
+        percentage = float(weights.get(family, 100.0))
+
+        percentage = max(0.0, min(100.0, percentage))
+
+        available_documents = len(docs)
+        available_characters = sum(len(d.text) for d in docs)
+
+        if percentage >= 100.0:
+
+            chosen = docs
+
+        elif percentage <= 0.0:
+
+            chosen = []
+
+        else:
+
+            keep = round(available_documents * percentage / 100.0)
+
+            chosen = docs[:keep]
+
+        selected_documents.extend(chosen)
+
+        selected_characters = sum(len(d.text) for d in chosen)
+
         report["families"][family] = {
             "label": _mixture_label(family),
-            "requested_weight": clean_weights.get(family, 0.0),
-            "effective_requested_percent": (
-                clean_weights.get(family, 0.0) * 100.0 / active_weight_total
-                if family in available_families and active_weight_total > 0.0
+            "requested_weight": percentage,
+            "available_documents": available_documents,
+            "available_characters": available_characters,
+            "selected_documents": len(chosen),
+            "selected_characters": selected_characters,
+            "actual_percent": (
+                len(chosen) * 100.0 / available_documents
+                if available_documents
                 else 0.0
             ),
-            "available_documents": len(available),
-            "available_characters": available_chars,
-            "selected_documents": len(selected),
-            "selected_characters": selected_chars,
-            "target_characters": family_targets.get(family, 0),
-            "actual_percent": (selected_chars * 100.0 / selected_total_chars) if selected_total_chars else 0.0,
-            "dropped_documents": max(0, len(available) - len(selected)),
-            "dropped_characters": max(0, available_chars - selected_chars),
+            "dropped_documents": available_documents - len(chosen),
+            "dropped_characters": available_characters - selected_characters,
         }
-    if len(selected_documents) != len(documents):
-        _emit(
-            progress,
-            f"Weighted sampler selected {len(selected_documents):,}/{len(documents):,} sampling chunks "
-            f"({selected_total_chars:,}/{total_available_chars:,} characters).",
-            49,
-        )
-    return selected_documents or documents, report
+
+    report["total_selected_documents"] = len(selected_documents)
+    report["total_selected_characters"] = sum(
+        len(d.text) for d in selected_documents
+    )
+
+    _emit(
+        progress,
+        f"Dataset mixture selected "
+        f"{len(selected_documents):,} of {len(documents):,} document chunks.",
+        50,
+    )
+
+    return selected_documents, report
 
 __all__ = [
     "MIXTURE_LABELS",

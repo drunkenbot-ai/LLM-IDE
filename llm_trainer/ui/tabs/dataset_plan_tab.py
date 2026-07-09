@@ -567,7 +567,7 @@ def build_dataset_plan_tab(window) -> QWidget:
             child.setCheckState(0, Qt.Checked)
             category_item.addChild(child)
             window.default_data_actions[str(path)] = child
-        category_item.setExpanded(True)
+        category_item.setExpanded(False)
     if not window.default_data_actions:
         window.default_data_tree.addTopLevelItem(QTreeWidgetItem(["No project/default data files were found.", ""]))
     window.default_data_tree.itemChanged.connect(window._handle_default_data_tree_changed)
