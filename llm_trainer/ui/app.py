@@ -5835,6 +5835,7 @@ class MainWindow(QMainWindow):
             scheduler_min_lr_ratio=self.min_lr_ratio.value(),
             polynomial_power=self.polynomial_power.value(),
             gradient_accumulation=self.gradient_accumulation.value(),
+            sample_stride=self.sample_stride.value(),
             warmup_steps=self.warmup_steps.value(),
             eval_interval=self.eval_interval.value(),
             max_eval_batches=self.max_eval_batches.value(),
