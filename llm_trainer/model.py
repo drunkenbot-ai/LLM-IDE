@@ -354,7 +354,7 @@ class CausalSelfAttention(nn.Module):
         )
         self.register_buffer(
             "mask",
-            torch.tril(torch.ones(config.context_length, config.context_length)).view(
+            torch.tril(torch.ones(config.context_length, config.context_length, dtype=torch.bool)).view(
                 1, 1, config.context_length, config.context_length
             ),
         )
@@ -412,14 +412,30 @@ class CausalSelfAttention(nn.Module):
             mask = mask & window_mask.view(1, 1, token_count, key_count)
 
         if self.attention_backend == "sdpa" and hasattr(F, "scaled_dot_product_attention"):
-            attn_mask = mask[:, :, :, :].bool()
-            y = F.scaled_dot_product_attention(
-                query,
-                expanded_key,
-                expanded_val,
-                attn_mask=attn_mask,
-                dropout_p=self.attn_dropout.p if self.training else 0.0,
-            )
+            if self.attention_window <= 0 and past_kv is None:
+                # Plain full-sequence causal attention (the common training
+                # case): the mask built above is mathematically identical to
+                # is_causal=True. Passing an explicit attn_mask tensor here
+                # instead can prevent PyTorch from dispatching to the fused
+                # FlashAttention kernel on supported hardware, falling back
+                # to the slower/more memory-hungry "efficient" or "math"
+                # backends even when the SDPA/Flash backend is selected.
+                y = F.scaled_dot_product_attention(
+                    query,
+                    expanded_key,
+                    expanded_val,
+                    is_causal=True,
+                    dropout_p=self.attn_dropout.p if self.training else 0.0,
+                )
+            else:
+                attn_mask = mask[:, :, :, :].bool()
+                y = F.scaled_dot_product_attention(
+                    query,
+                    expanded_key,
+                    expanded_val,
+                    attn_mask=attn_mask,
+                    dropout_p=self.attn_dropout.p if self.training else 0.0,
+                )
         else:
             attention = (query @ expanded_key.transpose(-2, -1)) * (1.0 / math.sqrt(expanded_key.size(-1)))
             attention = attention.masked_fill(mask == 0, float("-inf"))
