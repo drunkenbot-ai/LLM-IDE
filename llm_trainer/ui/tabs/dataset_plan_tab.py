@@ -323,7 +323,14 @@ def iter_default_data_files(root: Path | None = None) -> list[tuple[Path, str]]:
     return [
         (path, default_data_category(path, root))
         for path in sorted(root.rglob("*"))
-        if path.is_file() and path.suffix.lower() in SUPPORTED_DEFAULT_SUFFIXES and path.stat().st_size > 0
+        if (
+            path.is_file()
+            and path.suffix.lower() in SUPPORTED_DEFAULT_SUFFIXES
+            and path.stat().st_size > 0
+            # Chat/instruction supervision belongs in the explicit external
+            # data controls, not the generic bundled pretraining picker.
+            and default_data_stage(path, root) not in {"conversation", "instruction"}
+        )
     ]
 
 
@@ -520,16 +527,6 @@ def build_dataset_plan_tab(window) -> QWidget:
         window.conversation_dataset_actions[dataset_id] = checkbox
         window.conversation_dataset_widget_actions[dataset_id] = widget_action
     conversation_form.addRow("Online sets", window.conversation_dataset_button)
-    window.local_conversation_dataset = QLineEdit()
-    window.local_instruction_dataset = QLineEdit()
-    conversation_form.addRow(
-        "Conversation JSON",
-        window._multi_file_path_row(window.local_conversation_dataset, file_filter="JSON datasets (*.json *.jsonl);;All files (*)"),
-    )
-    conversation_form.addRow(
-        "Instruction JSON",
-        window._multi_file_path_row(window.local_instruction_dataset, file_filter="JSON datasets (*.json *.jsonl);;All files (*)"),
-    )
     window.conversation_sample_limit = window._spin(0, 2_000_000, 20000)
     window.conversation_sample_limit.setMaximumHeight(30)
     window.conversation_sample_limit.setEnabled(False)
@@ -537,7 +534,7 @@ def build_dataset_plan_tab(window) -> QWidget:
     window.include_conversation_datasets.toggled.connect(window._update_online_dataset_stage_controls)
     window.dataset_stage.currentTextChanged.connect(window._update_online_dataset_stage_controls)
     conversation_form.addRow("Rows / set", window.conversation_sample_limit)
-    conversation_card = window._card("ONLINE / STRUCTURED DATA", conversation_form)
+    conversation_card = window._card("OPTIONAL EXTERNAL / STRUCTURED DATA", conversation_form)
     body_grid.addWidget(conversation_card, 1, 0)
 
     window.default_data_tree_updating = False

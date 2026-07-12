@@ -168,6 +168,11 @@ def build_training_tab(window) -> QWidget:
     )
     window.max_grad_norm = window._double_spin(0.1, 100.0, 1.0, 0.1, 3)
     window._tip(window.max_grad_norm, "Gradient clipping limit. Helps prevent exploding gradients during training.")
+    window.activation_checkpointing = QCheckBox("Activation checkpointing")
+    window._tip(
+        window.activation_checkpointing,
+        "Recompute transformer activations during backpropagation to lower VRAM use. Training becomes slower, but this is useful when memory is the constraint.",
+    )
     window.seed = window._spin(1, 2_147_483_647, 1337)
     window._tip(window.seed, "Random seed for reproducible initialization and sampling order.")
     window.device = QComboBox()
@@ -227,6 +232,7 @@ def build_training_tab(window) -> QWidget:
     right.addRow("Save every", window.save_interval)
     right.addRow("CPU workers", window.data_loader_workers)
     right.addRow("Max grad", window.max_grad_norm)
+    right.addRow("VRAM saver", window.activation_checkpointing)
     right.addRow("Seed", window.seed)
     runtime = QFormLayout()
     window._configure_form(runtime)

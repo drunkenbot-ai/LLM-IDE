@@ -1,0 +1,2998 @@
+# Python Programming Knowledge Base
+
+This document is a single, large educational reference covering core Python
+syntax, programming concepts, and commonly used standard library modules.
+It is written in original language, intended to teach a small model the
+patterns of Python usage through clear explanation and runnable examples.
+
+---
+
+# Variables
+
+## Overview
+
+A variable is a name that refers to a value stored in memory. Python
+variables do not need a declared type; the type is determined by the value
+assigned to them at runtime.
+
+## Key Concepts
+
+Python uses dynamic typing, meaning the same variable name can point to
+different types of values over its lifetime. A variable is really just a
+label attached to an object; assignment does not copy the object, it binds
+the name to it.
+
+## Syntax
+
+```python
+name = "Alice"
+age = 30
+height = 5.6
+is_student = False
+```
+
+Explanation: each line creates a name on the left and binds it to the value
+produced by the expression on the right.
+
+## Examples
+
+### Example 1
+
+```python
+x = 10
+x = x + 5
+print(x)
+```
+
+The variable `x` starts as 10, then is reassigned to 15. Printing shows 15.
+
+### Example 2
+
+```python
+a = b = c = 0
+print(a, b, c)
+```
+
+Python allows chained assignment, giving all three names the same value.
+
+### Example 3
+
+```python
+first, second = 1, 2
+first, second = second, first
+print(first, second)
+```
+
+Tuple unpacking lets you swap values without a temporary variable.
+
+## Common Mistakes
+
+```python
+print(count)
+count = 5
+```
+
+This raises `NameError` because `count` is used before it is assigned.
+Python executes top to bottom, so a name must exist before it is read.
+
+## Best Practices
+
+Use descriptive lowercase names with underscores (`snake_case`). Avoid
+single-letter names except for short-lived loop counters. Do not reuse a
+variable name for two unrelated purposes in the same function.
+
+## Related Topics
+
+Data Types, Operators, Expressions, Scope
+
+---
+
+# Data Types and Numbers
+
+## Overview
+
+Python has several built-in data types for representing values: integers,
+floating-point numbers, complex numbers, strings, booleans, and various
+collection types. Numbers specifically come in three built-in flavors.
+
+## Key Concepts
+
+`int` represents whole numbers of arbitrary size (Python automatically
+handles very large integers). `float` represents decimal numbers using
+double precision. `complex` represents numbers with a real and imaginary
+part, written as `3 + 4j`.
+
+## Syntax
+
+```python
+whole = 42
+decimal = 3.14
+imaginary = 2 + 3j
+big = 10 ** 20
+```
+
+## Examples
+
+### Example 1
+
+```python
+price = 19.99
+quantity = 3
+total = price * quantity
+print(round(total, 2))
+```
+
+Floating-point arithmetic can introduce tiny rounding errors, so `round` is
+used to present a clean result.
+
+### Example 2
+
+```python
+value = 7
+print(type(value))
+value = value / 2
+print(type(value))
+```
+
+Division with `/` always produces a `float`, even if the inputs are `int`.
+
+### Example 3
+
+```python
+print(17 // 5)
+print(17 % 5)
+```
+
+Floor division `//` gives the whole number of times 5 fits into 17, and `%`
+gives the remainder.
+
+## Common Mistakes
+
+```python
+result = 0.1 + 0.2
+print(result == 0.3)
+```
+
+This prints `False` because binary floating-point cannot represent 0.1 and
+0.2 exactly. Compare floats using a small tolerance instead, for example
+`abs(result - 0.3) < 1e-9`.
+
+## Best Practices
+
+Use `int` for counting and indexing. Use `float` only when fractional
+values are meaningful. For financial calculations, consider the `decimal`
+module instead of `float` to avoid rounding surprises.
+
+## Related Topics
+
+Operators, decimal module, fractions module
+
+---
+
+# Strings
+
+## Overview
+
+A string is an immutable sequence of characters, used to represent text.
+Python strings support a large set of built-in methods for searching,
+transforming, and formatting text.
+
+## Key Concepts
+
+Strings can be created with single quotes, double quotes, or triple quotes
+for multi-line text. Because strings are immutable, every string method
+that "changes" a string actually returns a new string.
+
+## Syntax
+
+```python
+greeting = "Hello"
+name = 'World'
+message = f"{greeting}, {name}!"
+```
+
+## Parameters
+
+Common string methods and what they need:
+
+- `str.split(sep=None)`: splits on `sep`, or any whitespace if omitted.
+- `str.join(iterable)`: joins the items of `iterable` using the string as
+  the separator.
+- `str.strip(chars=None)`: removes leading and trailing characters, or
+  whitespace if `chars` is omitted.
+
+## Examples
+
+### Example 1
+
+```python
+text = "  Python is fun  "
+print(text.strip())
+print(text.strip().upper())
+```
+
+`strip()` removes the surrounding whitespace, and `upper()` returns an
+all-uppercase copy.
+
+### Example 2
+
+```python
+csv_line = "apple,banana,cherry"
+fruits = csv_line.split(",")
+print(fruits)
+print(", ".join(fruits))
+```
+
+`split` turns a string into a list; `join` does the reverse.
+
+### Example 3
+
+```python
+name = "Ada"
+score = 97.5
+print(f"{name} scored {score:.1f} points")
+```
+
+An f-string embeds expressions directly inside `{}`, and `:.1f` formats the
+number with one decimal place.
+
+## Common Mistakes
+
+```python
+text = "hello"
+text[0] = "H"
+```
+
+This raises `TypeError` because strings are immutable. To change one
+character, build a new string, for example `"H" + text[1:]`.
+
+## Best Practices
+
+Prefer f-strings for formatting over string concatenation with `+`, since
+they are more readable and usually faster. Use `str.join` instead of
+concatenating strings inside a loop, because repeated concatenation
+creates many intermediate string objects.
+
+## Related Topics
+
+Lists, re module, string formatting
+
+---
+
+# Booleans
+
+## Overview
+
+The `bool` type represents one of two values: `True` or `False`. Booleans
+are used to control program flow through conditions.
+
+## Key Concepts
+
+In Python, `bool` is actually a subtype of `int`, where `True` behaves like
+1 and `False` behaves like 0. Many other values are also treated as "falsy"
+in a boolean context, including `0`, `0.0`, `""`, `[]`, `{}`, and `None`.
+Everything else is "truthy" by default.
+
+## Syntax
+
+```python
+is_ready = True
+has_errors = False
+result = 5 > 3
+```
+
+## Examples
+
+### Example 1
+
+```python
+items = []
+if items:
+    print("List has items")
+else:
+    print("List is empty")
+```
+
+An empty list is falsy, so the `else` branch runs.
+
+### Example 2
+
+```python
+age = 20
+is_adult = age >= 18
+print(is_adult)
+```
+
+Comparison operators produce boolean results directly.
+
+### Example 3
+
+```python
+print(bool(0), bool(1), bool(""), bool("no"))
+```
+
+This shows how `bool()` converts different values into `True` or `False`.
+
+## Common Mistakes
+
+```python
+flag = "False"
+if flag:
+    print("This runs")
+```
+
+The string `"False"` is non-empty, so it is truthy, and the branch runs
+even though the text looks like it means "false". Use a real `bool` value
+instead of a string when representing true/false state.
+
+## Best Practices
+
+Rely on truthiness for simple emptiness checks (`if items:` instead of
+`if len(items) > 0:`), but be explicit when comparing to `None` using
+`is None` rather than a bare truthiness check.
+
+## Related Topics
+
+Operators, Control Flow, Comparisons
+
+---
+
+# Lists
+
+## Overview
+
+A list is an ordered, mutable collection of items. Lists can hold items of
+different types and can grow or shrink after creation.
+
+## Key Concepts
+
+Lists are indexed starting at 0. Negative indices count from the end.
+Lists support slicing to extract sub-sequences, and many built-in methods
+for adding, removing, and reordering items.
+
+## Syntax
+
+```python
+numbers = [1, 2, 3]
+mixed = [1, "two", 3.0, True]
+empty = []
+```
+
+## Parameters
+
+Key list methods:
+
+- `list.append(item)`: adds one item to the end.
+- `list.extend(iterable)`: adds every item from `iterable` to the end.
+- `list.insert(index, item)`: inserts `item` before position `index`.
+- `list.pop(index=-1)`: removes and returns the item at `index`.
+
+## Examples
+
+### Example 1
+
+```python
+fruits = ["apple", "banana"]
+fruits.append("cherry")
+print(fruits)
+```
+
+`append` adds a single item to the end of the list.
+
+### Example 2
+
+```python
+numbers = [5, 3, 8, 1]
+numbers.sort()
+print(numbers)
+print(sorted(numbers, reverse=True))
+```
+
+`sort()` changes the list in place; `sorted()` returns a new list, leaving
+the original list untouched.
+
+### Example 3
+
+```python
+matrix = [[1, 2], [3, 4]]
+squares = [n * n for n in range(5)]
+print(matrix)
+print(squares)
+```
+
+List comprehensions build new lists concisely from an iterable.
+
+## Common Mistakes
+
+```python
+def add_item(item, bucket=[]):
+    bucket.append(item)
+    return bucket
+
+print(add_item(1))
+print(add_item(2))
+```
+
+The default list is created only once, and shared across calls, so the
+second call unexpectedly starts with the first item still inside. Use
+`bucket=None` and create a new list inside the function instead.
+
+## Best Practices
+
+Use list comprehensions for simple transformations instead of manual
+loops with `append`. Prefer `in` for membership tests on small lists, but
+use a `set` instead if you need many repeated membership checks.
+
+## Related Topics
+
+Tuples, Sets, itertools module
+
+---
+
+# Tuples
+
+## Overview
+
+A tuple is an ordered, immutable collection of items. Tuples are often used
+to group related values together, such as coordinates or database rows.
+
+## Key Concepts
+
+Because tuples cannot be changed after creation, they are hashable (as long
+as their contents are hashable) and can be used as dictionary keys or set
+members, unlike lists.
+
+## Syntax
+
+```python
+point = (3, 4)
+single = (5,)
+no_parens = 1, 2, 3
+```
+
+A single-item tuple needs a trailing comma, otherwise the parentheses are
+just grouping, not creating a tuple.
+
+## Examples
+
+### Example 1
+
+```python
+point = (3, 4)
+x, y = point
+print(x, y)
+```
+
+Tuple unpacking assigns each element to a separate variable.
+
+### Example 2
+
+```python
+def min_max(values):
+    return min(values), max(values)
+
+low, high = min_max([4, 8, 1, 9])
+print(low, high)
+```
+
+Returning multiple values from a function actually returns a single tuple.
+
+### Example 3
+
+```python
+locations = {(0, 0): "origin", (1, 1): "corner"}
+print(locations[(0, 0)])
+```
+
+Tuples can be dictionary keys because they are immutable and hashable.
+
+## Common Mistakes
+
+```python
+coordinates = (1, 2)
+coordinates[0] = 5
+```
+
+This raises `TypeError` because tuples do not support item assignment. If
+you need a mutable sequence, use a list instead.
+
+## Best Practices
+
+Use tuples for fixed-size groups of related values, and lists for
+variable-length collections of similar items. Prefer `collections.namedtuple`
+or a `dataclass` when the meaning of each position needs a name.
+
+## Related Topics
+
+Lists, Dictionaries, collections module
+
+---
+
+# Sets
+
+## Overview
+
+A set is an unordered collection of unique items. Sets are optimized for
+fast membership testing and for mathematical operations like union and
+intersection.
+
+## Key Concepts
+
+Duplicate items are automatically removed. Sets are mutable, but their
+items must be hashable, so a set cannot contain lists or other sets.
+
+## Syntax
+
+```python
+colors = {"red", "green", "blue"}
+empty_set = set()
+```
+
+Note that `{}` creates an empty dictionary, not an empty set; `set()` must
+be used for an empty set.
+
+## Examples
+
+### Example 1
+
+```python
+a = {1, 2, 3}
+b = {2, 3, 4}
+print(a | b)
+print(a & b)
+print(a - b)
+```
+
+`|` is union, `&` is intersection, and `-` is difference.
+
+### Example 2
+
+```python
+seen = set()
+numbers = [1, 2, 2, 3, 1, 4]
+unique = []
+for n in numbers:
+    if n not in seen:
+        seen.add(n)
+        unique.append(n)
+print(unique)
+```
+
+A set gives constant-time membership checks, which makes de-duplication
+efficient even for large lists.
+
+### Example 3
+
+```python
+tags = {"python", "code"}
+tags.add("tutorial")
+tags.discard("missing")
+print(tags)
+```
+
+`discard` removes an item if present, and does nothing if it is not,
+unlike `remove`, which raises an error if the item is missing.
+
+## Common Mistakes
+
+```python
+values = {1, 2, 3}
+print(values[0])
+```
+
+This raises `TypeError` because sets are unordered and do not support
+indexing. Convert to a list first if you need positional access.
+
+## Best Practices
+
+Use a set whenever you need to test membership repeatedly or remove
+duplicates, since these operations are much faster than the equivalent
+operations on a list.
+
+## Related Topics
+
+Lists, Dictionaries, frozenset
+
+---
+
+# Dictionaries
+
+## Overview
+
+A dictionary stores key-value pairs, allowing fast lookup of a value given
+its key. Since Python 3.7, dictionaries preserve insertion order.
+
+## Key Concepts
+
+Keys must be hashable (strings, numbers, and tuples of hashable items all
+work). Values can be any type. Looking up a key that does not exist raises
+`KeyError` unless you use a method that provides a default.
+
+## Syntax
+
+```python
+person = {"name": "Alice", "age": 30}
+empty = {}
+```
+
+## Parameters
+
+Key dictionary methods:
+
+- `dict.get(key, default=None)`: returns the value for `key`, or `default`
+  if the key is missing, without raising an error.
+- `dict.setdefault(key, default)`: returns the existing value, or inserts
+  and returns `default` if the key is missing.
+- `dict.items()`, `dict.keys()`, `dict.values()`: views over the pairs,
+  keys, or values.
+
+## Examples
+
+### Example 1
+
+```python
+person = {"name": "Alice", "age": 30}
+print(person["name"])
+person["age"] = 31
+print(person)
+```
+
+Square brackets both read and write values for a given key.
+
+### Example 2
+
+```python
+counts = {}
+words = ["cat", "dog", "cat", "bird", "dog", "cat"]
+for word in words:
+    counts[word] = counts.get(word, 0) + 1
+print(counts)
+```
+
+`get` with a default of 0 makes counting occurrences simple without
+checking for the key's existence first.
+
+### Example 3
+
+```python
+person = {"name": "Alice", "age": 30}
+for key, value in person.items():
+    print(key, "->", value)
+```
+
+`items()` lets you loop over both the key and value together.
+
+## Common Mistakes
+
+```python
+data = {"name": "Bob"}
+print(data["age"])
+```
+
+This raises `KeyError` because `"age"` is not in the dictionary. Use
+`data.get("age")` or check `"age" in data` first if the key might be
+missing.
+
+## Best Practices
+
+Use `dict.get` or `collections.defaultdict` instead of manually checking
+for key existence before every access. Use dictionary comprehensions for
+concise construction, such as `{k: v * 2 for k, v in data.items()}`.
+
+## Related Topics
+
+Sets, collections module, JSON
+
+---
+
+# Operators
+
+## Overview
+
+Operators are symbols that perform computations on values, such as
+arithmetic, comparison, and logical operations.
+
+## Key Concepts
+
+Python groups operators into categories: arithmetic (`+ - * / // % **`),
+comparison (`== != < > <= >=`), logical (`and or not`), and assignment
+(`= += -= *=` and so on). Operators have a defined precedence, similar to
+mathematics, and parentheses can override that order.
+
+## Syntax
+
+```python
+result = 2 + 3 * 4
+combined = (2 + 3) * 4
+is_valid = True and not False
+```
+
+## Examples
+
+### Example 1
+
+```python
+a, b = 10, 3
+print(a + b, a - b, a * b, a / b, a // b, a % b, a ** b)
+```
+
+This shows every basic arithmetic operator applied to the same two values.
+
+### Example 2
+
+```python
+x = 5
+x += 3
+x *= 2
+print(x)
+```
+
+Augmented assignment operators combine an operation with assignment in one
+step.
+
+### Example 3
+
+```python
+age = 25
+has_id = True
+can_enter = age >= 18 and has_id
+print(can_enter)
+```
+
+Logical operators combine boolean expressions into a single result.
+
+## Common Mistakes
+
+```python
+value = 5
+if value = 5:
+    print("Match")
+```
+
+This is a syntax error because `=` is assignment, not comparison; the
+comparison operator is `==`. Python does not allow assignment inside an
+`if` condition using a single `=`.
+
+## Best Practices
+
+Use parentheses to make operator precedence explicit when an expression
+might otherwise be confusing to read, even if they are not strictly
+required.
+
+## Related Topics
+
+Booleans, Expressions, Control Flow
+
+---
+
+# Input and Output
+
+## Overview
+
+Python programs commonly need to read input from the user and display
+output. The built-in `input()` and `print()` functions handle the most
+common cases.
+
+## Key Concepts
+
+`input()` always returns a string, even if the user types a number, so
+conversion with `int()` or `float()` is often needed. `print()` accepts
+multiple values and several keyword arguments controlling formatting.
+
+## Syntax
+
+```python
+name = input("Enter your name: ")
+print("Hello,", name)
+```
+
+## Parameters
+
+`print(*values, sep=' ', end='\n')`:
+
+- `values`: any number of items to display, converted to strings.
+- `sep`: string placed between values, space by default.
+- `end`: string placed after all values, newline by default.
+
+## Examples
+
+### Example 1
+
+```python
+age_text = input("Enter your age: ")
+age = int(age_text)
+print("Next year you will be", age + 1)
+```
+
+Converting the input string to `int` allows arithmetic to be performed.
+
+### Example 2
+
+```python
+print("a", "b", "c", sep="-")
+print("Loading", end="")
+print("...")
+```
+
+Custom `sep` and `end` values change how output is joined and terminated.
+
+### Example 3
+
+```python
+values = [1, 2, 3]
+print(*values)
+```
+
+The `*` unpacks the list so each item is passed as a separate argument to
+`print`.
+
+## Common Mistakes
+
+```python
+age = input("Enter your age: ")
+print(age + 1)
+```
+
+This raises `TypeError` because `age` is a string and cannot be added to
+an integer directly. Convert with `int(age)` first.
+
+## Best Practices
+
+Always validate or convert user input before using it in calculations, and
+consider wrapping conversions in a `try/except` block to handle invalid
+input gracefully.
+
+## Related Topics
+
+Strings, Error Handling, argparse module
+
+---
+
+# Control Flow: if, elif, else, match
+
+## Overview
+
+Conditional statements let a program choose between different paths of
+execution based on whether conditions are true or false.
+
+## Key Concepts
+
+Python evaluates conditions top to bottom, running the first branch whose
+condition is true, and skipping the rest. `match` (introduced in Python
+3.10) offers pattern-based branching as an alternative to long `elif`
+chains.
+
+## Syntax
+
+```python
+if condition1:
+    ...
+elif condition2:
+    ...
+else:
+    ...
+```
+
+```python
+match value:
+    case 1:
+        ...
+    case 2 | 3:
+        ...
+    case _:
+        ...
+```
+
+## Examples
+
+### Example 1
+
+```python
+score = 82
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+elif score >= 70:
+    grade = "C"
+else:
+    grade = "F"
+print(grade)
+```
+
+Only the first matching branch runs; here, `score >= 80` is true so `grade`
+becomes `"B"` and the remaining branches are skipped.
+
+### Example 2
+
+```python
+def describe(day):
+    match day:
+        case "Sat" | "Sun":
+            return "Weekend"
+        case "Mon" | "Tue" | "Wed" | "Thu" | "Fri":
+            return "Weekday"
+        case _:
+            return "Unknown"
+
+print(describe("Sun"))
+```
+
+`match` compares `day` against each `case` pattern in order, with `_`
+acting as a catch-all default.
+
+### Example 3
+
+```python
+point = (0, 5)
+match point:
+    case (0, 0):
+        print("Origin")
+    case (0, y):
+        print(f"On the y-axis at {y}")
+    case (x, 0):
+        print(f"On the x-axis at {x}")
+    case _:
+        print("Somewhere else")
+```
+
+`match` can destructure tuples, binding parts of the pattern to names like
+`y` when they do not need an exact value.
+
+## Common Mistakes
+
+```python
+x = 5
+if x = 10:
+    print("ten")
+```
+
+Using `=` instead of `==` inside a condition is a syntax error in Python,
+unlike some other languages where it silently assigns and evaluates.
+
+## Best Practices
+
+Keep conditions simple and readable; extract complex boolean expressions
+into a well-named variable or helper function. Use `match` when comparing
+one value against many discrete patterns, and `if/elif` for general
+boolean logic.
+
+## Related Topics
+
+Booleans, Operators, Loops
+
+---
+
+# Loops: for, while, break, continue, pass
+
+## Overview
+
+Loops let a program repeat a block of code multiple times, either over
+each item in a sequence (`for`) or while a condition remains true
+(`while`).
+
+## Key Concepts
+
+`break` exits a loop immediately. `continue` skips to the next iteration
+without finishing the current one. `pass` does nothing, and is used as a
+placeholder where a statement is syntactically required.
+
+## Syntax
+
+```python
+for item in iterable:
+    ...
+
+while condition:
+    ...
+```
+
+## Examples
+
+### Example 1
+
+```python
+for number in range(5):
+    print(number)
+```
+
+`range(5)` produces the numbers 0 through 4, and the loop prints each one.
+
+### Example 2
+
+```python
+count = 0
+while count < 3:
+    print("Counting:", count)
+    count += 1
+```
+
+The loop repeats as long as `count < 3` is true, and must update `count`
+inside the loop or it would run forever.
+
+### Example 3
+
+```python
+for number in range(10):
+    if number == 5:
+        break
+    if number % 2 == 0:
+        continue
+    print(number)
+```
+
+`continue` skips even numbers, and `break` stops the loop entirely once
+`number` reaches 5, so only odd numbers less than 5 are printed.
+
+## Common Mistakes
+
+```python
+count = 0
+while count < 5:
+    print(count)
+```
+
+This is an infinite loop because `count` is never changed inside the loop
+body, so the condition `count < 5` stays true forever.
+
+## Best Practices
+
+Prefer `for` loops when iterating over a known collection or range, and
+`while` loops when the number of iterations depends on a condition that
+changes during the loop. Avoid deeply nested loops when a helper function
+or itertools utility would be clearer.
+
+## Related Topics
+
+range, itertools module, Recursion
+
+---
+
+# Functions
+
+## Overview
+
+A function is a reusable, named block of code that can accept input values
+and optionally return a result. Functions help organize code and avoid
+repetition.
+
+## Key Concepts
+
+Parameters are the names listed in a function's definition; arguments are
+the actual values passed when calling it. Functions can have default
+parameter values, and can accept a variable number of arguments using
+`*args` and `**kwargs`.
+
+## Syntax
+
+```python
+def greet(name, greeting="Hello"):
+    return f"{greeting}, {name}!"
+```
+
+## Parameters
+
+- Positional parameters: matched to arguments by order.
+- Keyword parameters: matched to arguments by name, and may have defaults.
+- `*args`: collects extra positional arguments into a tuple.
+- `**kwargs`: collects extra keyword arguments into a dictionary.
+
+## Return Value
+
+A function returns `None` implicitly if it has no `return` statement, or
+if `return` is used without a value. Otherwise it returns whatever
+expression follows `return`.
+
+## Examples
+
+### Example 1
+
+```python
+def add(a, b):
+    return a + b
+
+print(add(3, 4))
+```
+
+A simple function taking two parameters and returning their sum.
+
+### Example 2
+
+```python
+def total(*numbers):
+    return sum(numbers)
+
+print(total(1, 2, 3, 4))
+```
+
+`*numbers` gathers any number of positional arguments into a tuple that
+`sum()` can add together.
+
+### Example 3
+
+```python
+def build_profile(name, **details):
+    profile = {"name": name}
+    profile.update(details)
+    return profile
+
+print(build_profile("Ada", age=28, city="London"))
+```
+
+`**details` gathers extra keyword arguments into a dictionary, useful when
+a function should accept flexible, optional information.
+
+## Common Mistakes
+
+```python
+def multiply(a, b):
+    result = a * b
+
+print(multiply(3, 4))
+```
+
+This prints `None` because the function computes `result` but never
+returns it. A function without an explicit `return` always produces
+`None`.
+
+## Best Practices
+
+Keep functions focused on a single task. Use default parameter values for
+optional behavior rather than overloading a function with many unrelated
+flags. Add type hints for parameters and return values to make the
+function's contract clear.
+
+## Related Topics
+
+Lambda, Recursion, Annotations
+
+---
+
+# Lambda and Recursion
+
+## Overview
+
+A lambda is a small, unnamed function written as a single expression.
+Recursion is when a function calls itself to solve a smaller version of
+the same problem.
+
+## Key Concepts
+
+Lambdas can only contain a single expression, not statements, and are most
+useful as short throwaway functions passed to other functions like `sorted`
+or `map`. A recursive function needs a base case that stops the recursion,
+or it will call itself indefinitely.
+
+## Syntax
+
+```python
+square = lambda x: x * x
+
+def factorial(n):
+    if n <= 1:
+        return 1
+    return n * factorial(n - 1)
+```
+
+## Examples
+
+### Example 1
+
+```python
+people = [("Ada", 28), ("Bob", 35), ("Cy", 22)]
+people.sort(key=lambda person: person[1])
+print(people)
+```
+
+The lambda extracts the age from each tuple, telling `sort` how to order
+the list.
+
+### Example 2
+
+```python
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+print([fibonacci(i) for i in range(8)])
+```
+
+Each call to `fibonacci` calls itself twice with smaller arguments, until
+it reaches the base cases `n <= 1`.
+
+### Example 3
+
+```python
+numbers = [1, 2, 3, 4, 5]
+doubled = list(map(lambda x: x * 2, numbers))
+evens = list(filter(lambda x: x % 2 == 0, numbers))
+print(doubled, evens)
+```
+
+`map` applies the lambda to every item, and `filter` keeps only the items
+where the lambda returns a truthy value.
+
+## Common Mistakes
+
+```python
+def count_down(n):
+    print(n)
+    count_down(n - 1)
+
+count_down(5)
+```
+
+This has no base case, so it recurses forever until Python raises
+`RecursionError`. Every recursive function needs a condition that stops
+the recursive calls.
+
+## Best Practices
+
+Use lambdas only for short, simple expressions; define a full function
+with `def` if the logic needs more than one line or a docstring. Prefer an
+iterative loop over recursion for problems that could involve very deep
+recursion, since Python has a limited recursion depth.
+
+## Related Topics
+
+Functions, itertools module, functools module
+
+---
+
+# Object-Oriented Programming
+
+## Overview
+
+Object-oriented programming organizes code around classes, which act as
+blueprints for creating objects that bundle together data and behavior.
+
+## Key Concepts
+
+A class defines attributes (data) and methods (functions attached to the
+class). An object, or instance, is created from a class and has its own
+copy of the instance attributes. Inheritance lets one class reuse and
+extend the behavior of another.
+
+## Syntax
+
+```python
+class Dog:
+    def __init__(self, name):
+        self.name = name
+
+    def bark(self):
+        return f"{self.name} says woof!"
+```
+
+## Examples
+
+### Example 1
+
+```python
+class Dog:
+    def __init__(self, name):
+        self.name = name
+
+    def bark(self):
+        return f"{self.name} says woof!"
+
+my_dog = Dog("Rex")
+print(my_dog.bark())
+```
+
+`__init__` runs automatically when `Dog("Rex")` creates a new object,
+setting up `self.name`.
+
+### Example 2
+
+```python
+class Animal:
+    def speak(self):
+        return "..."
+
+class Cat(Animal):
+    def speak(self):
+        return "Meow"
+
+animals = [Animal(), Cat()]
+for creature in animals:
+    print(creature.speak())
+```
+
+`Cat` inherits from `Animal` and overrides `speak`, demonstrating
+polymorphism: the same method call produces different results depending on
+the object's actual class.
+
+### Example 3
+
+```python
+class Counter:
+    def __init__(self):
+        self._count = 0
+
+    def increment(self):
+        self._count += 1
+
+    def __str__(self):
+        return f"Counter({self._count})"
+
+c = Counter()
+c.increment()
+c.increment()
+print(c)
+```
+
+The leading underscore in `_count` signals that it is intended as internal
+state (encapsulation), and `__str__` is a magic method controlling how
+`print` displays the object.
+
+## Common Mistakes
+
+```python
+class Point:
+    def __init__(x, y):
+        self.x = x
+        self.y = y
+```
+
+This forgets the `self` parameter, so the first positional argument
+(`x`) is mistakenly treated as the instance itself, causing errors later.
+Every instance method needs `self` as its first parameter.
+
+## Best Practices
+
+Keep classes focused on one responsibility. Use `@dataclass` for simple
+classes that mostly just hold data, since it automatically generates
+`__init__`, `__repr__`, and `__eq__`. Prefer composition (one class holding
+an instance of another) over deep inheritance hierarchies when possible.
+
+## Related Topics
+
+Dataclasses, Magic Methods, Encapsulation
+
+---
+
+# Dataclasses and Magic Methods
+
+## Overview
+
+The `dataclasses` module reduces boilerplate for classes that primarily
+store data. Magic methods (also called dunder methods) let a custom class
+integrate with built-in Python behavior like printing, equality, and
+arithmetic.
+
+## Key Concepts
+
+`@dataclass` automatically generates `__init__`, `__repr__`, and `__eq__`
+based on the class's annotated fields. Common magic methods include
+`__init__` (construction), `__str__` and `__repr__` (text representation),
+`__eq__` (equality), and `__len__` (used by `len()`).
+
+## Syntax
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Point:
+    x: int
+    y: int
+```
+
+## Examples
+
+### Example 1
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Point:
+    x: int
+    y: int
+
+p1 = Point(1, 2)
+p2 = Point(1, 2)
+print(p1)
+print(p1 == p2)
+```
+
+`@dataclass` generates a readable `__repr__` automatically, and `__eq__`
+compares field values, so `p1 == p2` is `True` even though they are
+different objects.
+
+### Example 2
+
+```python
+class Money:
+    def __init__(self, amount):
+        self.amount = amount
+
+    def __add__(self, other):
+        return Money(self.amount + other.amount)
+
+    def __repr__(self):
+        return f"Money({self.amount})"
+
+total = Money(10) + Money(5)
+print(total)
+```
+
+Defining `__add__` lets instances of `Money` be combined using the `+`
+operator directly.
+
+### Example 3
+
+```python
+class Playlist:
+    def __init__(self, songs):
+        self.songs = songs
+
+    def __len__(self):
+        return len(self.songs)
+
+playlist = Playlist(["a", "b", "c"])
+print(len(playlist))
+```
+
+Defining `__len__` allows the built-in `len()` function to work on a
+custom object.
+
+## Common Mistakes
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Point:
+    x: int
+    y: int
+
+print(Point(1, 2))
+```
+
+A beginner might expect this to print something like `<Point object at
+0x...>`, but `@dataclass` overrides `__repr__`, so it actually prints
+`Point(x=1, y=2)`; forgetting this can cause confusion when comparing
+output to a plain class without `@dataclass`.
+
+## Best Practices
+
+Use `@dataclass` for simple data containers instead of writing `__init__`
+by hand. Implement `__repr__` on regular classes so debugging output is
+readable, and only implement `__eq__` if two objects with the same data
+should be considered equal.
+
+## Related Topics
+
+Object-Oriented Programming, typing module, collections module
+
+---
+
+# Error Handling
+
+## Overview
+
+Error handling lets a program respond to unexpected situations, such as
+invalid input or missing files, without crashing entirely.
+
+## Key Concepts
+
+An exception is raised when an error occurs during execution. `try`
+contains code that might fail, `except` handles a specific error type,
+`else` runs only if no exception occurred, and `finally` always runs,
+whether or not an exception occurred.
+
+## Syntax
+
+```python
+try:
+    risky_operation()
+except ValueError as error:
+    handle_error(error)
+else:
+    print("No errors occurred")
+finally:
+    cleanup()
+```
+
+## Examples
+
+### Example 1
+
+```python
+try:
+    number = int(input("Enter a number: "))
+    print(100 / number)
+except ValueError:
+    print("That was not a valid number")
+except ZeroDivisionError:
+    print("Cannot divide by zero")
+```
+
+Separate `except` blocks handle different error types with specific
+messages.
+
+### Example 2
+
+```python
+class InsufficientFundsError(Exception):
+    pass
+
+def withdraw(balance, amount):
+    if amount > balance:
+        raise InsufficientFundsError("Not enough funds")
+    return balance - amount
+
+try:
+    withdraw(50, 100)
+except InsufficientFundsError as error:
+    print("Withdrawal failed:", error)
+```
+
+Custom exception classes make error handling specific to the application's
+own rules, in addition to Python's built-in error types.
+
+### Example 3
+
+```python
+def read_config(path):
+    try:
+        with open(path) as file:
+            return file.read()
+    except FileNotFoundError:
+        return "default config"
+    finally:
+        print("Finished attempting to read config")
+```
+
+`finally` runs whether the file was found or not, making it useful for
+cleanup actions like logging or closing resources.
+
+## Common Mistakes
+
+```python
+try:
+    value = int("abc")
+except:
+    print("Something went wrong")
+```
+
+A bare `except:` catches every exception, including ones you did not
+anticipate, such as `KeyboardInterrupt`, which can hide real bugs. Catch
+the specific exception type instead, such as `except ValueError:`.
+
+## Best Practices
+
+Catch the most specific exception type possible. Avoid using exceptions
+for ordinary control flow when a simple condition would do. Always clean
+up resources, preferably using a `with` statement instead of manual
+`finally` blocks when working with files or connections.
+
+## Related Topics
+
+Custom Exceptions, File Handling, logging module
+
+---
+
+# Modules and Packages
+
+## Overview
+
+A module is a single Python file containing reusable code. A package is a
+directory of related modules. The `import` statement makes code from
+another module available in the current file.
+
+## Key Concepts
+
+When a module is imported, Python runs its top-level code once and caches
+the result, so later imports of the same module reuse that cached version.
+A package is recognized by containing an `__init__.py` file (though this
+became optional for simple "namespace packages" in modern Python).
+
+## Syntax
+
+```python
+import math
+from collections import Counter
+from mypackage.mymodule import my_function
+import numpy as np
+```
+
+## Examples
+
+### Example 1
+
+```python
+import math
+
+print(math.sqrt(16))
+print(math.pi)
+```
+
+`import math` makes every name inside the `math` module accessible through
+the `math.` prefix.
+
+### Example 2
+
+```python
+from collections import Counter
+
+votes = ["red", "blue", "red", "green", "blue", "red"]
+tally = Counter(votes)
+print(tally.most_common(1))
+```
+
+`from module import name` brings a specific name directly into the current
+namespace, avoiding the need for a prefix.
+
+### Example 3
+
+```python
+# file: shapes.py
+def area_of_circle(radius):
+    return 3.14159 * radius ** 2
+
+# file: main.py
+from shapes import area_of_circle
+print(area_of_circle(3))
+```
+
+A project can split related functions into their own file (`shapes.py`)
+and import them wherever they are needed.
+
+## Common Mistakes
+
+```python
+import random as math
+print(math.pi)
+```
+
+Aliasing a module to a name that shadows another common module name (like
+`math`) causes confusing errors, since `random` does not define `pi`.
+Choose aliases that clearly reflect the actual module.
+
+## Best Practices
+
+Import only what is needed, and group imports at the top of the file:
+standard library imports first, then third-party packages, then local
+modules. Avoid `from module import *`, since it makes it unclear where a
+name came from.
+
+## Related Topics
+
+Virtual Environments, sys module, Packages
+
+---
+
+# File Handling and pathlib
+
+## Overview
+
+Python can read from and write to files on disk using the built-in `open`
+function, or using the more modern, object-oriented `pathlib` module for
+working with file paths.
+
+## Key Concepts
+
+Files should always be closed after use to release system resources; the
+`with` statement handles this automatically, even if an error occurs.
+Files can be opened in different modes: `"r"` for reading, `"w"` for
+writing (overwriting existing content), `"a"` for appending, and `"rb"` or
+`"wb"` for binary data.
+
+## Syntax
+
+```python
+with open("data.txt", "r") as file:
+    contents = file.read()
+
+from pathlib import Path
+path = Path("data.txt")
+```
+
+## Parameters
+
+`open(file, mode="r", encoding=None)`:
+
+- `file`: path to the file to open.
+- `mode`: how the file will be used, such as `"r"`, `"w"`, `"a"`, `"rb"`.
+- `encoding`: text encoding to use, such as `"utf-8"`, for text mode.
+
+## Examples
+
+### Example 1
+
+```python
+with open("notes.txt", "w", encoding="utf-8") as file:
+    file.write("First line\n")
+    file.write("Second line\n")
+
+with open("notes.txt", "r", encoding="utf-8") as file:
+    print(file.read())
+```
+
+Writing and then reading the same file demonstrates the full round trip;
+the `with` block closes the file automatically at the end.
+
+### Example 2
+
+```python
+from pathlib import Path
+
+folder = Path("project")
+folder.mkdir(exist_ok=True)
+file_path = folder / "notes.txt"
+file_path.write_text("Hello from pathlib\n")
+print(file_path.read_text())
+```
+
+`pathlib` uses the `/` operator to join path parts, and provides
+convenience methods like `write_text` and `read_text` that avoid manually
+opening and closing a file.
+
+### Example 3
+
+```python
+from pathlib import Path
+
+for file_path in Path(".").glob("*.txt"):
+    print(file_path.name, file_path.stat().st_size)
+```
+
+`glob` finds files matching a pattern, and `stat()` provides metadata such
+as file size.
+
+## Common Mistakes
+
+```python
+file = open("data.txt", "r")
+contents = file.read()
+```
+
+Forgetting to close the file (or better, forgetting to use `with`) can
+leave the file locked or lose unwritten data if the program crashes before
+`file.close()` is called.
+
+## Best Practices
+
+Always use `with open(...)` instead of manually calling `open` and
+`close`. Prefer `pathlib.Path` over string concatenation for building file
+paths, since it works correctly across different operating systems.
+
+## Related Topics
+
+os module, pathlib module, Error Handling
+
+---
+
+# os module
+
+## Overview
+
+The `os` module provides functions for interacting with the operating
+system, including working with directories, environment variables, and
+processes.
+
+## Key Concepts
+
+`os` functions are lower-level than `pathlib`, often working with plain
+strings for paths. `os.environ` gives access to environment variables, and
+`os.path` contains many path-manipulation helper functions.
+
+## Syntax
+
+```python
+import os
+
+current_dir = os.getcwd()
+files = os.listdir(".")
+```
+
+## Examples
+
+### Example 1
+
+```python
+import os
+
+print(os.getcwd())
+os.makedirs("new_folder", exist_ok=True)
+print(os.listdir("."))
+```
+
+`makedirs` creates a directory (and any missing parent directories), and
+`exist_ok=True` prevents an error if it already exists.
+
+### Example 2
+
+```python
+import os
+
+path = os.path.join("data", "2024", "report.csv")
+print(path)
+print(os.path.exists(path))
+```
+
+`os.path.join` builds a path using the correct separator for the current
+operating system.
+
+### Example 3
+
+```python
+import os
+
+api_key = os.environ.get("API_KEY", "not set")
+print(api_key)
+```
+
+`os.environ.get` reads an environment variable safely, returning a default
+if it has not been set.
+
+## Common Mistakes
+
+```python
+import os
+
+path = "data" + "/" + "file.txt"
+```
+
+Hardcoding `/` as the separator can break on Windows, which uses `\`.
+`os.path.join` or `pathlib.Path` avoids this problem automatically.
+
+## Best Practices
+
+Prefer `pathlib` for new code involving file paths, but use `os` for
+process and environment-related tasks, such as reading environment
+variables or spawning subprocesses through `os.system` alternatives like
+the `subprocess` module.
+
+## Related Topics
+
+pathlib module, sys module, subprocess module
+
+---
+
+# sys module
+
+## Overview
+
+The `sys` module exposes variables and functions that interact directly
+with the Python interpreter, such as command-line arguments and the
+module search path.
+
+## Key Concepts
+
+`sys.argv` is a list of command-line arguments passed to the script, where
+`sys.argv[0]` is the script name itself. `sys.exit()` stops the program
+with an optional exit code.
+
+## Syntax
+
+```python
+import sys
+
+print(sys.argv)
+sys.exit(1)
+```
+
+## Examples
+
+### Example 1
+
+```python
+import sys
+
+if len(sys.argv) < 2:
+    print("Usage: script.py <name>")
+    sys.exit(1)
+
+print("Hello,", sys.argv[1])
+```
+
+This checks that a command-line argument was provided before using it,
+exiting early with an error message otherwise.
+
+### Example 2
+
+```python
+import sys
+
+print(sys.version)
+print(sys.platform)
+```
+
+`sys.version` reports the Python interpreter version, and `sys.platform`
+identifies the operating system, such as `"win32"` or `"linux"`.
+
+### Example 3
+
+```python
+import sys
+
+print("Normal output")
+print("Error output", file=sys.stderr)
+```
+
+Passing `file=sys.stderr` sends output to the standard error stream
+instead of standard output, which is useful for error messages.
+
+## Common Mistakes
+
+```python
+import sys
+
+name = sys.argv[1]
+```
+
+If the script is run without any extra arguments, `sys.argv` has only one
+element, so `sys.argv[1]` raises `IndexError`. Always check the length of
+`sys.argv` first.
+
+## Best Practices
+
+For anything beyond very simple scripts, prefer the `argparse` module over
+manually parsing `sys.argv`, since it handles help text, type conversion,
+and error messages automatically.
+
+## Related Topics
+
+argparse module, os module
+
+---
+
+# math module
+
+## Overview
+
+The `math` module provides mathematical functions and constants that go
+beyond the basic arithmetic operators, such as trigonometry, logarithms,
+and rounding utilities.
+
+## Key Concepts
+
+`math` functions operate on and return `float` values. Constants like
+`math.pi` and `math.e` are provided for precision beyond what a programmer
+would typically type by hand.
+
+## Syntax
+
+```python
+import math
+
+print(math.sqrt(25))
+print(math.floor(4.7))
+```
+
+## Examples
+
+### Example 1
+
+```python
+import math
+
+print(math.sqrt(2))
+print(math.pow(2, 10))
+```
+
+`math.sqrt` computes a square root, and `math.pow` raises a number to a
+power, both always returning a `float`.
+
+### Example 2
+
+```python
+import math
+
+print(math.ceil(4.1))
+print(math.floor(4.9))
+print(round(4.5))
+```
+
+`ceil` rounds up, `floor` rounds down, and the built-in `round` rounds to
+the nearest value using banker's rounding for ties.
+
+### Example 3
+
+```python
+import math
+
+def distance(x1, y1, x2, y2):
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+print(distance(0, 0, 3, 4))
+```
+
+This combines `math.sqrt` with the standard distance formula to compute
+the distance between two points.
+
+## Common Mistakes
+
+```python
+import math
+
+print(math.sqrt(-4))
+```
+
+This raises `ValueError` because `math.sqrt` does not support negative
+numbers; use the `cmath` module if complex results are needed.
+
+## Best Practices
+
+Use `math` functions instead of manually implementing common formulas, and
+use `math.isclose()` instead of `==` when comparing floating-point results
+that might have small rounding differences.
+
+## Related Topics
+
+Numbers, decimal module, statistics module
+
+---
+
+# random module
+
+## Overview
+
+The `random` module generates pseudo-random numbers and performs random
+selections, useful for simulations, games, and sampling data.
+
+## Key Concepts
+
+`random` uses a deterministic algorithm seeded from the system clock by
+default, so calling `random.seed(value)` with a fixed value makes the
+sequence of "random" results reproducible, which is useful for testing.
+
+## Syntax
+
+```python
+import random
+
+value = random.randint(1, 10)
+```
+
+## Examples
+
+### Example 1
+
+```python
+import random
+
+for _ in range(3):
+    print(random.randint(1, 6))
+```
+
+`randint(a, b)` returns a random integer between `a` and `b`, inclusive on
+both ends.
+
+### Example 2
+
+```python
+import random
+
+names = ["Alice", "Bob", "Cy", "Dee"]
+print(random.choice(names))
+random.shuffle(names)
+print(names)
+```
+
+`choice` picks one random item, and `shuffle` reorders a list randomly in
+place.
+
+### Example 3
+
+```python
+import random
+
+random.seed(42)
+print(random.random())
+random.seed(42)
+print(random.random())
+```
+
+Seeding with the same value produces the same sequence of results both
+times, which is useful for reproducible tests.
+
+## Common Mistakes
+
+```python
+import random
+
+password_part = random.random()
+```
+
+Using `random` for anything security-sensitive, like generating passwords
+or tokens, is a mistake, because it is not cryptographically secure. Use
+the `secrets` module instead for that purpose.
+
+## Best Practices
+
+Use `random` for games, simulations, and sampling, but always use
+`secrets` for anything security related, such as tokens or passwords.
+
+## Related Topics
+
+secrets module, statistics module
+
+---
+
+# datetime module
+
+## Overview
+
+The `datetime` module provides classes for working with dates, times, and
+the intervals between them.
+
+## Key Concepts
+
+`datetime.date` represents a calendar date, `datetime.time` represents a
+time of day, and `datetime.datetime` combines both. `timedelta` represents
+a duration, and can be added to or subtracted from dates and times.
+
+## Syntax
+
+```python
+from datetime import datetime, timedelta
+
+now = datetime.now()
+```
+
+## Examples
+
+### Example 1
+
+```python
+from datetime import datetime
+
+now = datetime.now()
+print(now)
+print(now.year, now.month, now.day)
+```
+
+`datetime.now()` returns the current local date and time, with individual
+components available as attributes.
+
+### Example 2
+
+```python
+from datetime import datetime, timedelta
+
+today = datetime.now()
+next_week = today + timedelta(days=7)
+print(next_week)
+```
+
+Adding a `timedelta` to a `datetime` produces a new `datetime` shifted by
+that duration.
+
+### Example 3
+
+```python
+from datetime import datetime
+
+event = datetime(2024, 12, 25, 9, 0)
+formatted = event.strftime("%B %d, %Y at %I:%M %p")
+print(formatted)
+```
+
+`strftime` formats a `datetime` into a readable string using format codes
+like `%B` for full month name.
+
+## Common Mistakes
+
+```python
+from datetime import datetime
+
+difference = "2024-01-01" - "2023-01-01"
+```
+
+This raises `TypeError` because plain strings cannot be subtracted;
+convert them to `datetime` objects with `datetime.strptime` first, then
+subtract those.
+
+## Best Practices
+
+Store and pass around `datetime` objects rather than formatted strings
+until the moment you need to display them, since parsing and formatting
+repeatedly is error-prone and wastes effort.
+
+## Related Topics
+
+time module, calendar module
+
+---
+
+# re module
+
+## Overview
+
+The `re` module provides support for regular expressions, a compact
+pattern language for matching and manipulating text.
+
+## Key Concepts
+
+A pattern describes a shape of text to search for. Common building blocks
+include `\d` (digit), `\w` (word character), `+` (one or more), `*` (zero
+or more), and `()` for grouping and capturing parts of a match.
+
+## Syntax
+
+```python
+import re
+
+match = re.search(r"\d+", "Room 42")
+```
+
+## Parameters
+
+- `re.search(pattern, string)`: finds the first match anywhere in the
+  string, or `None`.
+- `re.findall(pattern, string)`: returns a list of all non-overlapping
+  matches.
+- `re.sub(pattern, replacement, string)`: replaces every match with
+  `replacement`.
+
+## Examples
+
+### Example 1
+
+```python
+import re
+
+text = "Call 555-1234 or 555-5678"
+numbers = re.findall(r"\d{3}-\d{4}", text)
+print(numbers)
+```
+
+The pattern matches exactly three digits, a hyphen, and four digits,
+finding every phone number in the text.
+
+### Example 2
+
+```python
+import re
+
+match = re.search(r"(\w+)@(\w+)\.com", "Contact: ada@example.com")
+if match:
+    print(match.group(0))
+    print(match.group(1))
+    print(match.group(2))
+```
+
+Parentheses create capture groups; `group(0)` is the whole match, while
+`group(1)` and `group(2)` are the individual captured parts.
+
+### Example 3
+
+```python
+import re
+
+text = "Hello   World,   Python"
+cleaned = re.sub(r"\s+", " ", text)
+print(cleaned)
+```
+
+`re.sub` replaces every run of one or more whitespace characters with a
+single space.
+
+## Common Mistakes
+
+```python
+import re
+
+pattern = "1.5"
+if re.search(pattern, "cost is 105 dollars"):
+    print("matched")
+```
+
+The `.` in a regular expression means "any character," not a literal dot,
+so this pattern unexpectedly matches `"105"` too. Escape it as `r"1\.5"`
+to match a literal period.
+
+## Best Practices
+
+Use raw strings (`r"..."`) for regular expression patterns so backslashes
+are not interpreted as string escape sequences. For simple text
+operations, prefer plain string methods like `split` or `replace`, and
+reserve `re` for patterns that truly need it.
+
+## Related Topics
+
+Strings, fnmatch module
+
+---
+
+# json module
+
+## Overview
+
+The `json` module converts Python objects to and from JSON (JavaScript
+Object Notation) text, a widely used format for data exchange.
+
+## Key Concepts
+
+`json.dumps` serializes a Python object into a JSON string, and
+`json.loads` parses a JSON string back into Python objects. `json.dump`
+and `json.load` do the same, but work directly with file objects.
+
+## Syntax
+
+```python
+import json
+
+text = json.dumps({"name": "Ada"})
+data = json.loads(text)
+```
+
+## Examples
+
+### Example 1
+
+```python
+import json
+
+person = {"name": "Ada", "age": 28, "active": True}
+text = json.dumps(person, indent=2)
+print(text)
+```
+
+`indent=2` produces nicely formatted, human-readable JSON text instead of
+one dense line.
+
+### Example 2
+
+```python
+import json
+
+text = '{"name": "Bob", "scores": [90, 85, 88]}'
+data = json.loads(text)
+print(data["name"], data["scores"])
+```
+
+`json.loads` converts a JSON object into a Python dictionary, and a JSON
+array into a Python list.
+
+### Example 3
+
+```python
+import json
+
+data = {"city": "London", "population": 9000000}
+with open("city.json", "w") as file:
+    json.dump(data, file)
+
+with open("city.json", "r") as file:
+    loaded = json.load(file)
+print(loaded)
+```
+
+`json.dump` writes directly to an open file, avoiding the intermediate
+string step.
+
+## Common Mistakes
+
+```python
+import json
+
+data = {"created": datetime.now()}
+json.dumps(data)
+```
+
+This raises `TypeError` because `json` does not know how to serialize a
+`datetime` object by default. Convert it to a string, such as with
+`.isoformat()`, before serializing.
+
+## Best Practices
+
+Validate and handle `json.JSONDecodeError` when parsing data from an
+untrusted or external source, since malformed JSON will raise this
+exception rather than silently producing wrong data.
+
+## Related Topics
+
+Dictionaries, Error Handling, csv module
+
+---
+
+# collections module
+
+## Overview
+
+The `collections` module provides specialized container types that extend
+the built-in `list`, `dict`, and `tuple`, solving common problems more
+directly.
+
+## Key Concepts
+
+`Counter` counts hashable items. `defaultdict` supplies a default value
+automatically for missing keys. `namedtuple` creates simple, immutable
+classes with named fields. `deque` is a double-ended queue optimized for
+fast appends and pops from both ends.
+
+## Syntax
+
+```python
+from collections import Counter, defaultdict, namedtuple, deque
+```
+
+## Examples
+
+### Example 1
+
+```python
+from collections import Counter
+
+words = ["cat", "dog", "cat", "bird", "cat", "dog"]
+counts = Counter(words)
+print(counts)
+print(counts.most_common(2))
+```
+
+`Counter` automatically tallies occurrences, and `most_common` returns the
+most frequent items in order.
+
+### Example 2
+
+```python
+from collections import defaultdict
+
+groups = defaultdict(list)
+pairs = [("fruit", "apple"), ("veg", "carrot"), ("fruit", "banana")]
+for category, item in pairs:
+    groups[category].append(item)
+print(dict(groups))
+```
+
+`defaultdict(list)` automatically creates an empty list the first time a
+new key is used, avoiding manual existence checks.
+
+### Example 3
+
+```python
+from collections import namedtuple
+
+Point = namedtuple("Point", ["x", "y"])
+p = Point(3, 4)
+print(p.x, p.y)
+print(p)
+```
+
+`namedtuple` creates a lightweight, immutable class where fields can be
+accessed by name instead of only by position.
+
+## Common Mistakes
+
+```python
+from collections import defaultdict
+
+counts = defaultdict(int)
+print(counts["missing"])
+print(len(counts))
+```
+
+Simply reading `counts["missing"]` actually inserts that key with the
+default value into the dictionary, so `len(counts)` becomes 1 even though
+nothing was explicitly added; use `dict.get` instead if you want to check
+without inserting.
+
+## Best Practices
+
+Reach for `Counter` instead of manually building a counting dictionary,
+and `defaultdict` instead of repeatedly checking `if key not in dict`.
+Use `namedtuple` or a `dataclass` instead of plain tuples when fields need
+clear names.
+
+## Related Topics
+
+Dictionaries, Tuples, itertools module
+
+---
+
+# itertools module
+
+## Overview
+
+The `itertools` module provides fast, memory-efficient tools for working
+with iterators, such as combining, filtering, and generating sequences.
+
+## Key Concepts
+
+Functions in `itertools` return iterators, not lists, so they compute
+values lazily, one at a time, which is efficient for large or infinite
+sequences. Wrap the result in `list()` to see all values at once.
+
+## Syntax
+
+```python
+import itertools
+
+pairs = itertools.product([1, 2], ["a", "b"])
+```
+
+## Examples
+
+### Example 1
+
+```python
+import itertools
+
+letters = ["a", "b", "c"]
+numbers = [1, 2]
+combined = list(itertools.product(letters, numbers))
+print(combined)
+```
+
+`product` generates every combination of one item from each input,
+similar to a nested loop.
+
+### Example 2
+
+```python
+import itertools
+
+values = [1, 1, 2, 2, 2, 3, 1]
+grouped = [(key, list(group)) for key, group in itertools.groupby(values)]
+print(grouped)
+```
+
+`groupby` groups consecutive equal items together; note that it only
+groups adjacent runs, so a repeated non-adjacent value starts a new group.
+
+### Example 3
+
+```python
+import itertools
+
+counter = itertools.count(start=10, step=5)
+first_three = list(itertools.islice(counter, 3))
+print(first_three)
+```
+
+`itertools.count` produces an infinite sequence, and `islice` safely takes
+only the first few values instead of running forever.
+
+## Common Mistakes
+
+```python
+import itertools
+
+result = itertools.count(1)
+print(result[5])
+```
+
+This raises `TypeError` because iterators from `itertools` do not support
+indexing; use `itertools.islice` or convert a bounded portion to a list
+first.
+
+## Best Practices
+
+Use `itertools` functions instead of writing manual nested loops for
+combinations, permutations, or grouping, since they are typically faster
+and use less memory.
+
+## Related Topics
+
+Loops, functools module, Generators
+
+---
+
+# functools module
+
+## Overview
+
+The `functools` module provides higher-order functions that operate on or
+return other functions, such as caching results and building partially
+applied functions.
+
+## Key Concepts
+
+`functools.lru_cache` automatically caches a function's return values
+based on its arguments, avoiding repeated expensive computation.
+`functools.partial` creates a new function with some arguments already
+fixed. `functools.reduce` combines all items of an iterable into a single
+value using a two-argument function.
+
+## Syntax
+
+```python
+from functools import lru_cache, partial, reduce
+```
+
+## Examples
+
+### Example 1
+
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+print(fibonacci(30))
+```
+
+`lru_cache` remembers previously computed results, turning an otherwise
+slow recursive Fibonacci implementation into a fast one.
+
+### Example 2
+
+```python
+from functools import partial
+
+def power(base, exponent):
+    return base ** exponent
+
+square = partial(power, exponent=2)
+print(square(5))
+```
+
+`partial` fixes the `exponent` argument, producing a new function that
+only needs `base` to be supplied.
+
+### Example 3
+
+```python
+from functools import reduce
+
+numbers = [1, 2, 3, 4, 5]
+product = reduce(lambda acc, n: acc * n, numbers)
+print(product)
+```
+
+`reduce` repeatedly applies the lambda, carrying an accumulator forward,
+to combine the whole list into a single product.
+
+## Common Mistakes
+
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def process(data_list):
+    return sum(data_list)
+
+process([1, 2, 3])
+```
+
+This raises `TypeError` because `lru_cache` requires all arguments to be
+hashable, and a `list` is not hashable. Use a tuple instead if caching is
+needed with sequence-like arguments.
+
+## Best Practices
+
+Use `lru_cache` for pure functions (same input always gives same output)
+that are called repeatedly with the same arguments. Prefer a simple loop
+over `reduce` when the loop version would be clearer to read.
+
+## Related Topics
+
+Lambda and Recursion, itertools module, Recursion
+
+---
+
+# typing module
+
+## Overview
+
+The `typing` module provides tools for adding type hints to Python code,
+helping tools and readers understand what types of values are expected,
+without changing runtime behavior.
+
+## Key Concepts
+
+Type hints are optional annotations; Python does not enforce them at
+runtime by itself, but editors and tools like `mypy` can use them to catch
+mistakes before the program runs. Common typing tools include `List`,
+`Dict`, `Optional`, and `Union` (though modern Python often allows using
+built-in `list` and `dict` directly, plus `|` instead of `Union`).
+
+## Syntax
+
+```python
+from typing import Optional
+
+def greet(name: str, times: int = 1) -> str:
+    return (name + " ") * times
+```
+
+## Examples
+
+### Example 1
+
+```python
+def add(a: int, b: int) -> int:
+    return a + b
+
+print(add(2, 3))
+```
+
+The hints `a: int`, `b: int`, and `-> int` document the expected argument
+and return types, improving editor auto-completion and readability.
+
+### Example 2
+
+```python
+from typing import Optional
+
+def find_user(user_id: int, users: dict) -> Optional[str]:
+    return users.get(user_id)
+
+users = {1: "Ada", 2: "Bob"}
+print(find_user(1, users))
+print(find_user(99, users))
+```
+
+`Optional[str]` communicates that the function may return either a `str`
+or `None`, which callers should handle explicitly.
+
+### Example 3
+
+```python
+from typing import List
+
+def average(values: List[float]) -> float:
+    return sum(values) / len(values)
+
+print(average([1.0, 2.0, 3.0]))
+```
+
+`List[float]` documents that the function expects a list containing
+floating-point numbers specifically.
+
+## Common Mistakes
+
+```python
+def add(a: int, b: int) -> int:
+    return a + b
+
+print(add("2", "3"))
+```
+
+Python does not raise an error here at runtime, because type hints are not
+enforced automatically; this call actually returns the string `"23"`
+through string concatenation, silently doing something unintended. A
+type-checking tool like `mypy` would flag this, but plain Python will not.
+
+## Best Practices
+
+Add type hints to public functions and methods, especially in larger
+codebases, since they act as documentation and catch bugs early when used
+with a type checker. Do not rely on type hints alone to validate input at
+runtime; use explicit checks or a library like `pydantic` if runtime
+validation is required.
+
+## Related Topics
+
+Functions, Dataclasses, Annotations
+
+---
+
+# enum module
+
+## Overview
+
+The `enum` module lets you define a fixed set of named constant values,
+making code that represents a small set of choices clearer and safer than
+using plain strings or numbers.
+
+## Key Concepts
+
+An `Enum` class groups related constants together under one name. Each
+member has both a name and a value, and members are compared by identity,
+which prevents typos that plain strings would allow to pass silently.
+
+## Syntax
+
+```python
+from enum import Enum
+
+class Color(Enum):
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+```
+
+## Examples
+
+### Example 1
+
+```python
+from enum import Enum
+
+class Status(Enum):
+    PENDING = "pending"
+    ACTIVE = "active"
+    CLOSED = "closed"
+
+order_status = Status.ACTIVE
+print(order_status)
+print(order_status.value)
+```
+
+`Status.ACTIVE` is a distinct, named constant, and `.value` accesses the
+underlying value assigned to it.
+
+### Example 2
+
+```python
+from enum import Enum
+
+class Direction(Enum):
+    NORTH = 1
+    SOUTH = 2
+    EAST = 3
+    WEST = 4
+
+def move(direction):
+    if direction == Direction.NORTH:
+        return "Moving up"
+    return "Moving elsewhere"
+
+print(move(Direction.NORTH))
+```
+
+Comparing against enum members instead of raw strings or numbers avoids
+typos like `"noth"` silently failing to match.
+
+### Example 3
+
+```python
+from enum import Enum
+
+class Status(Enum):
+    PENDING = "pending"
+    ACTIVE = "active"
+    CLOSED = "closed"
+
+for status in Status:
+    print(status.name, status.value)
+```
+
+Iterating over an `Enum` class visits every member in definition order.
+
+## Common Mistakes
+
+```python
+from enum import Enum
+
+class Status(Enum):
+    PENDING = "pending"
+    ACTIVE = "active"
+
+if Status.ACTIVE == "active":
+    print("Match")
+```
+
+This prints nothing because an enum member is not equal to its raw value
+by default; compare with `Status.ACTIVE == Status.ACTIVE` or check
+`Status.ACTIVE.value == "active"` instead.
+
+## Best Practices
+
+Use `Enum` instead of plain strings or integers whenever a variable should
+only take on a small, fixed set of meaningful values, such as a status or
+a category, since it prevents invalid values and typos.
+
+## Related Topics
+
+Classes, Constants, match statement
+
+---
+
+# logging module
+
+## Overview
+
+The `logging` module provides a flexible system for recording messages
+about a program's execution, more suitable for real applications than
+scattering `print` statements throughout the code.
+
+## Key Concepts
+
+Log messages have a severity level: `DEBUG`, `INFO`, `WARNING`, `ERROR`,
+and `CRITICAL`, in increasing order of importance. A logger's configured
+level determines which messages are actually shown; messages below that
+level are ignored.
+
+## Syntax
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.info("Application started")
+```
+
+## Examples
+
+### Example 1
+
+```python
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format="%(levelname)s: %(message)s")
+logging.debug("Debugging details")
+logging.info("General information")
+logging.warning("Something looks off")
+logging.error("Something failed")
+```
+
+Setting `level=logging.DEBUG` shows every message, including the most
+detailed `debug` level ones.
+
+### Example 2
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
+def divide(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        logger.error("Attempted division by zero: %s / %s", a, b)
+        return None
+
+divide(10, 0)
+```
+
+Using a module-level logger (`getLogger(__name__)`) instead of the root
+logger makes it clear which part of a larger application produced a given
+message.
+
+### Example 3
+
+```python
+import logging
+
+logging.basicConfig(
+    filename="app.log",
+    level=logging.WARNING,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+logging.warning("Low disk space")
+```
+
+Configuring a `filename` sends log output to a file instead of the
+console, with a timestamp included in each line.
+
+## Common Mistakes
+
+```python
+import logging
+
+logging.debug("This will not print")
+```
+
+Without calling `logging.basicConfig` first, the default logging level is
+`WARNING`, so `debug` and `info` messages are silently ignored. Configure
+the logging level explicitly before relying on lower-severity messages.
+
+## Best Practices
+
+Use `logging` instead of `print` for anything beyond a quick script,
+since it supports severity levels, timestamps, and can be redirected to
+files without changing the calling code. Avoid logging sensitive
+information, such as passwords, even at the `debug` level.
+
+## Related Topics
+
+Error Handling, traceback module, warnings module
+
+---
+
+# Summary
+
+This document covered Python's core building blocks, from variables and
+data types through control flow, functions, and object-oriented
+programming, followed by error handling, modules, file I/O, and a set of
+commonly used standard library modules: os, sys, math, random, datetime,
+re, json, collections, itertools, functools, typing, enum, and logging.
+Each topic followed a consistent structure of overview, key concepts,
+syntax, examples, common mistakes, and best practices, intended to give a
+small language model many clear, correct patterns of real Python usage to
+learn from.

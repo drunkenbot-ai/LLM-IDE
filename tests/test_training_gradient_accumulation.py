@@ -3,10 +3,12 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+import torch
 from pathlib import Path
 
 from llm_trainer.config import ModelConfig, TrainingConfig
 from llm_trainer.training import train_model
+from llm_trainer.model import MicroGPT
 
 
 def _run_training(train_tokens: list[int], gradient_accumulation: int, batch_size: int) -> int:
@@ -45,6 +47,14 @@ def _run_training(train_tokens: list[int], gradient_accumulation: int, batch_siz
 
 
 class TrainingGradientAccumulationTests(unittest.TestCase):
+    def test_activation_checkpointing_preserves_forward_shape(self) -> None:
+        config = ModelConfig(vocab_size=32, context_length=8, embedding_size=32, head_count=4, layer_count=2)
+        model = MicroGPT(config)
+        model.train()
+        model.enable_gradient_checkpointing(True)
+        logits = model(torch.ones((2, 8), dtype=torch.long))
+        self.assertEqual(tuple(logits.shape), (2, 8, 32))
+
     def test_applies_final_partial_accumulation_step(self) -> None:
         # context=8 => dataset windows=7, batch_size=2 => 3 batches, accumulation=4.
         # No full accumulation cycle exists, so this guards the epoch-end remainder step.

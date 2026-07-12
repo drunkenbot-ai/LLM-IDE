@@ -739,6 +739,30 @@ def _release_cuda_cache() -> None:
         torch.cuda.empty_cache()
 
 
+def _estimated_training_vram_bytes(model: MicroGPT, model_config: ModelConfig, training_config: TrainingConfig) -> int:
+    """Return a conservative, explainable training-memory estimate.
+
+    Parameters, gradients, and Adam-style optimizer states are generally
+    fp32.  Activations vary by kernel, therefore the estimate intentionally
+    includes headroom rather than pretending to be exact.
+    """
+
+    parameter_count = sum(parameter.numel() for parameter in model.parameters())
+    parameter_and_optimizer = parameter_count * 16  # fp32 weights, grads, m/v
+    activation_bytes_per_value = 2 if training_config.use_amp and training_config.precision != "fp32" else 4
+    activation_multiplier = 3 if training_config.activation_checkpointing else 10
+    activations = (
+        training_config.batch_size
+        * model_config.context_length
+        * model_config.embedding_size
+        * model_config.layer_count
+        * activation_bytes_per_value
+        * activation_multiplier
+    )
+    logits = training_config.batch_size * model_config.context_length * model_config.vocab_size * activation_bytes_per_value
+    return int((parameter_and_optimizer + activations + logits) * 1.15)
+
+
 def train_model(
     model_config: ModelConfig,
     training_config: TrainingConfig,
@@ -779,6 +803,26 @@ def train_model(
 
     emit_progress(progress, "Building model...", 2)
     model = MicroGPT(model_config).to(training_config.device)
+    model.enable_gradient_checkpointing(training_config.activation_checkpointing)
+    if training_config.device.startswith("cuda") and torch.cuda.is_available():
+        free_vram, total_vram = torch.cuda.mem_get_info()
+        estimate = _estimated_training_vram_bytes(model, model_config, training_config)
+        emit_progress(
+            progress,
+            (
+                f"VRAM preflight: estimated {estimate / (1024 ** 3):.2f} GB; "
+                f"currently free {free_vram / (1024 ** 3):.2f} GB of {total_vram / (1024 ** 3):.2f} GB."
+            ),
+            3,
+            estimated_vram_gb=estimate / (1024 ** 3),
+            free_vram_gb=free_vram / (1024 ** 3),
+        )
+        if estimate > free_vram * 0.85:
+            emit_progress(
+                progress,
+                "[WARN] Estimated training memory is close to available VRAM. Reduce micro-batch size, enable activation checkpointing, or use gradient accumulation.",
+                3,
+            )
     _release_cuda_cache()
     emit_progress(progress, "Preparing token batches...", 4)
     loader_workers = max(0, int(training_config.data_loader_workers))
@@ -822,7 +866,7 @@ def train_model(
     if training_config.peft_method == "lora":
         base_path = training_config.fine_tune_from_checkpoint
         if resume_path and Path(resume_path).exists():
-            resume_checkpoint = torch.load(resume_path, map_location=training_config.device)
+            resume_checkpoint = torch.load(resume_path, map_location="cpu")
             checkpoint_base = resume_checkpoint.get("fine_tune_base_checkpoint")
             if checkpoint_base:
                 base_path = Path(checkpoint_base)
@@ -832,7 +876,7 @@ def train_model(
         if not base_path.exists():
             raise FileNotFoundError(f"LoRA base checkpoint not found: {base_path}")
         emit_progress(progress, f"Loading LoRA base checkpoint: {base_path}", 5)
-        base_checkpoint = torch.load(base_path, map_location=training_config.device)
+        base_checkpoint = torch.load(base_path, map_location="cpu")
         model.load_state_dict(base_checkpoint["model_state_dict"])
         wrapped = apply_lora_adapters(
             model,
@@ -881,7 +925,7 @@ def train_model(
                 f"- {line}" for line in strict_resume_errors
             )
             raise ValueError(message)
-        checkpoint = resume_checkpoint or torch.load(resume_path, map_location=training_config.device)
+        checkpoint = resume_checkpoint or torch.load(resume_path, map_location="cpu")
         if training_config.peft_method == "lora" and "adapter_state_dict" in checkpoint:
             load_lora_state_dict(model, checkpoint["adapter_state_dict"])
         else:
@@ -925,7 +969,7 @@ def train_model(
                     f"- {line}" for line in compatibility.errors
                 )
                 raise ValueError(message)
-            checkpoint = torch.load(base_path, map_location=training_config.device)
+            checkpoint = torch.load(base_path, map_location="cpu")
             model.load_state_dict(checkpoint["model_state_dict"])
             emit_progress(progress, "Base model weights loaded. Starting fresh fine-tune optimizer state.", 8)
         else:
@@ -969,8 +1013,8 @@ def train_model(
                 }
                 summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
                 return TrainingResult(stopped_path, summary_path, final_train_loss, final_val_loss, stopped=True)
-            x = x.to(training_config.device)
-            y = y.to(training_config.device)
+            x = x.to(training_config.device, non_blocking=pin_memory)
+            y = y.to(training_config.device, non_blocking=pin_memory)
             with autocast("cuda", enabled=use_autocast, dtype=autocast_dtype):
                 logits = model(x)
                 loss = F.cross_entropy(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Callable, Iterator, Optional
 
@@ -18,6 +19,7 @@ UNK_TOKEN = "<unk>"
 BOS_TOKEN = "<bos>"
 EOS_TOKEN = "<eos>"
 SPECIAL_TOKENS = [PAD_TOKEN, UNK_TOKEN, BOS_TOKEN, EOS_TOKEN]
+DEFAULT_CHAT_TEMPLATE = """{% for message in messages %}{{ '<bos>' if loop.first else '' }}{{ message['role'] | capitalize }}: {{ message['content'] }}{{ '<eos>' if loop.last else '\\n' }}{% endfor %}{% if add_generation_prompt %}{{ '\\nAssistant:' }}{% endif %}"""
 MAX_TOKENIZER_TRAINING_CHARS = 25_000_000
 MAX_TOKENIZER_LINE_CHARS = 8_192
 # Tokens are streamed to disk in fixed-size batches rather than accumulated
@@ -71,7 +73,40 @@ def train_tokenizer(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     tokenizer.save(str(output_path))
+    save_tokenizer_package(tokenizer, output_path)
     return tokenizer
+
+
+def save_tokenizer_package(
+    tokenizer: Tokenizer,
+    tokenizer_path: Path,
+    model_max_length: Optional[int] = None,
+) -> None:
+    """Write standard tokenizer metadata beside the native tokenizer JSON."""
+
+    tokenizer_path = Path(tokenizer_path)
+    tokens = {
+        "bos_token": BOS_TOKEN,
+        "eos_token": EOS_TOKEN,
+        "unk_token": UNK_TOKEN,
+        "pad_token": PAD_TOKEN,
+    }
+    (tokenizer_path.parent / "special_tokens_map.json").write_text(
+        json.dumps(tokens, indent=2) + "\n", encoding="utf-8"
+    )
+    config = {
+        "tokenizer_class": "PreTrainedTokenizerFast",
+        "tokenizer_file": tokenizer_path.name,
+        "model_max_length": int(model_max_length) if model_max_length else 1_000_000_000_000_000_000_000_000_000_000,
+        "clean_up_tokenization_spaces": False,
+        "add_bos_token": True,
+        "add_eos_token": True,
+        "chat_template": DEFAULT_CHAT_TEMPLATE,
+        **tokens,
+    }
+    (tokenizer_path.parent / "tokenizer_config.json").write_text(
+        json.dumps(config, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def _iter_corpus_lines(corpus_path: Path, should_stop: Optional[Callable[[], bool]]) -> Iterator[str]:

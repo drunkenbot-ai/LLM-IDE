@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 from uuid import uuid4
+
+from .manifest_store import ManifestStore
 
 
 def utc_timestamp() -> str:
@@ -145,13 +148,13 @@ def ensure_dataset_lineage(output_dir: Path) -> dict[str, Any]:
     }
 
 
-def record_dataset_version(output_dir: Path, summary: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any]:
+def record_dataset_version(output_dir: Path, summary: dict[str, Any], manifest_store: ManifestStore) -> dict[str, Any]:
     """Record a new dataset version and snapshot its metadata.
 
     Args:
         output_dir: Dataset output folder.
         summary: Dataset summary dictionary.
-        manifest: Dataset manifest dictionary.
+        manifest_store: Open manifest store tracking every source file.
 
     Returns:
         Version metadata appended to lineage.
@@ -161,23 +164,20 @@ def record_dataset_version(output_dir: Path, summary: dict[str, Any], manifest: 
     version_number = next_version_number(lineage)
 
     # ------------------------------------------------------------------
-    # Build a memory-efficient fingerprint instead of hashing the entire
-    # manifest JSON.
+    # Build a memory-efficient fingerprint by streaming rows straight from
+    # SQLite (already returned in manifest_key order) instead of loading
+    # every file's metadata into one big dict or JSON string first. This
+    # keeps fingerprinting cheap in RAM no matter how many source files a
+    # project has.
     # ------------------------------------------------------------------
 
     digest = hashlib.sha256()
 
-    files = manifest.get("files", {})
-
-    for path, info in sorted(files.items()):
-        digest.update(path.encode("utf-8"))
-
-        if isinstance(info, dict):
-            digest.update(str(info.get("sha256", "")).encode("utf-8"))
-            digest.update(str(info.get("size", "")).encode("utf-8"))
-            digest.update(str(info.get("mtime_ns", "")).encode("utf-8"))
-        else:
-            digest.update(str(info).encode("utf-8"))
+    for manifest_key, info in manifest_store.iter_files():
+        digest.update(manifest_key.encode("utf-8"))
+        digest.update(str(info.get("sha256", "")).encode("utf-8"))
+        digest.update(str(info.get("size", "")).encode("utf-8"))
+        digest.update(str(info.get("mtime_ns", "")).encode("utf-8"))
 
     digest.update(
         json.dumps(
@@ -213,8 +213,9 @@ def record_dataset_version(output_dir: Path, summary: dict[str, Any], manifest: 
         "prepare_mode": summary.get("prepare_mode"),
         "tokenizer_strategy": summary.get("tokenizer_strategy"),
         "summary_path": "dataset_summary.json",
-        "manifest_path": "dataset_manifest.json",
+        "manifest_path": "dataset_manifest.sqlite3",
         "snapshot_dir": f"versions/{version_id}",
+        "file_count": manifest_store.count(),
     }
 
     lineage["updated_at"] = utc_timestamp()
@@ -223,13 +224,21 @@ def record_dataset_version(output_dir: Path, summary: dict[str, Any], manifest: 
     summary["dataset_id"] = lineage["dataset_id"]
     summary["dataset_version"] = version
 
-    manifest["dataset_id"] = lineage["dataset_id"]
-    manifest["dataset_version"] = version
+    manifest_store.set_meta("dataset_id", lineage["dataset_id"])
+    manifest_store.set_meta("dataset_version", version)
 
     snapshot_dir = output_dir / "versions" / version_id
+    snapshot_dir.mkdir(parents=True, exist_ok=True)
 
     write_json(snapshot_dir / "dataset_summary.json", summary)
-    write_json(snapshot_dir / "dataset_manifest.json", manifest)
+    # The manifest snapshot is a plain file copy of the SQLite database,
+    # not a JSON export -- for a very large file count, serializing every
+    # row to JSON here would hit exactly the same MemoryError this was
+    # built to avoid. A copy is fast regardless of size and needs no
+    # in-memory reconstruction of the data at all.
+    manifest_store.commit()
+    if manifest_store.db_path is not None and manifest_store.db_path.exists():
+        shutil.copy2(manifest_store.db_path, snapshot_dir / "dataset_manifest.sqlite3")
     write_json(output_dir / "dataset_lineage.json", lineage)
 
     return version

@@ -59,7 +59,7 @@ from llm_trainer.contracts import BackendKind
 from llm_trainer.contracts.jobs import RuntimeSpec, TrainingJobSpec
 from llm_trainer.coordinator import CoordinatorApiServer, JobManager, create_job_artifact_bundle
 from llm_trainer.evaluation import DEFAULT_BENCHMARK_PROMPTS, evaluate_checkpoint, normalize_prompts
-from llm_trainer.export import export_gguf_with_llama_cpp, export_hf_microgpt_package, export_project_bundle, quantize_checkpoint
+from llm_trainer.export import export_gguf_with_llama_cpp, export_hf_microgpt_package, export_llama_adapter_package, export_project_bundle, quantize_checkpoint
 from llm_trainer.fine_tuning_service import run_fine_tuning_job
 from llm_trainer.llama_chat import LlamaChatSession, load_llama_chat_session, stream_chat_reply
 from llm_trainer.lineage import read_json
@@ -2928,6 +2928,7 @@ class MainWindow(QMainWindow):
                 "save_interval": 500,
                 "data_loader_workers": 0,
                 "max_grad_norm": 1.0,
+                "activation_checkpointing": False,
                 "seed": 1337,
                 "device": self.device.currentText(),
                 "use_amp": self.use_amp_default,
@@ -3099,8 +3100,6 @@ class MainWindow(QMainWindow):
                 "dataset_stage": self._dataset_stage_value(),
                 "conversation_datasets": self._selected_conversation_datasets(),
                 "conversation_sample_limit": self.conversation_sample_limit.value(),
-                "conversation_dataset_path": self.local_conversation_dataset.text(),
-                "instruction_dataset_path": self.local_instruction_dataset.text(),
                 "mixture_weights": self._mixture_weights_from_ui(),
                 "min_frequency": self.min_frequency.value(),
                 "context_length": self.context_length.value(),
@@ -3154,6 +3153,7 @@ class MainWindow(QMainWindow):
                 "save_interval": self.save_interval.value(),
                 "data_loader_workers": self.data_loader_workers.value(),
                 "max_grad_norm": self.max_grad_norm.value(),
+                "activation_checkpointing": self.activation_checkpointing.isChecked(),
                 "seed": self.seed.value(),
                 "device": self.device.currentText(),
                 "use_amp": self.use_amp.isChecked(),
@@ -3238,8 +3238,6 @@ class MainWindow(QMainWindow):
         self.include_conversation_datasets.setChecked(include_conversation)
         self._set_selected_conversation_datasets(list(dataset.get("conversation_datasets", [])))
         self.conversation_sample_limit.setValue(int(dataset.get("conversation_sample_limit", self.conversation_sample_limit.value())))
-        self.local_conversation_dataset.setText(str(dataset.get("conversation_dataset_path", "")))
-        self.local_instruction_dataset.setText(str(dataset.get("instruction_dataset_path", "")))
         self._set_mixture_weights(dict(dataset.get("mixture_weights", {})))
         self.min_frequency.setValue(int(dataset.get("min_frequency", self.min_frequency.value())))
         self.context_length.setValue(int(dataset.get("context_length", self.context_length.value())))
@@ -3351,6 +3349,7 @@ class MainWindow(QMainWindow):
         self.save_interval.setValue(int(training.get("save_interval", self.save_interval.value())))
         self.data_loader_workers.setValue(int(training.get("data_loader_workers", self.data_loader_workers.value())))
         self.max_grad_norm.setValue(float(training.get("max_grad_norm", self.max_grad_norm.value())))
+        self.activation_checkpointing.setChecked(bool(training.get("activation_checkpointing", False)))
         self.seed.setValue(int(training.get("seed", self.seed.value())))
         self._set_combo_text(self.device, str(training.get("device", self.device.currentText())))
         self.use_amp.setChecked(bool(training.get("use_amp", self.use_amp.isChecked())))
@@ -3615,6 +3614,12 @@ class MainWindow(QMainWindow):
             self.active_log.append("Stop requested. Finishing the current safe point...")
         if self.active_stop_button is not None:
             self.active_stop_button.setEnabled(False)
+        if torch.cuda.is_available():
+            try:
+                torch.cuda.empty_cache()
+            except Exception:
+                LOGGER.exception(
+                    "Failed to empty CUDA cache in _thread_finished")
 
     @Slot()
     def request_shutdown_from_signal(self) -> None:
@@ -4182,8 +4187,8 @@ class MainWindow(QMainWindow):
             Dataset preparation configuration.
         """
 
-        conversation_paths = self._split_path_list(self.local_conversation_dataset.text())
-        instruction_paths = self._split_path_list(self.local_instruction_dataset.text())
+        conversation_paths: list[Path] = []
+        instruction_paths: list[Path] = []
         dataset_stage = self._dataset_stage_value()
         return DatasetConfig(
             input_dir=Path(self.input_dir.text()),
@@ -5597,6 +5602,7 @@ class MainWindow(QMainWindow):
             self._set_combo_text(self.precision, "BF16" if torch.cuda.is_available() else "FP32")
             self._set_combo_text(self.attention_type, "Grouped-query")
             self.kv_head_count.setValue(max(1, self.n_head.value() // 2))
+            self.activation_checkpointing.setChecked(True)
         elif profile == "Code fine-tune":
             self._set_combo_text(self.optimizer_name, "AdamW")
             self._set_combo_text(self.scheduler_name, "Cosine decay")
@@ -5842,6 +5848,7 @@ class MainWindow(QMainWindow):
             save_interval=self.save_interval.value(),
             data_loader_workers=self.data_loader_workers.value(),
             max_grad_norm=self.max_grad_norm.value(),
+            activation_checkpointing=self.activation_checkpointing.isChecked(),
             device=self.device.currentText(),
             use_amp=self.use_amp.isChecked(),
             precision=self._precision_value(),
@@ -7029,6 +7036,21 @@ class MainWindow(QMainWindow):
         self.export_log.append(f"HF package created: {result}")
         self.export_log.append("Note: this package is MicroGPT model_type, not a llama.cpp-supported Llama model.")
         self.export_status.setText("Export: HF package ready")
+
+    def export_llama_adapter(self) -> None:
+        """Create a directly loadable Llama-family package when compatible."""
+
+        self.export_log.append("Creating Llama-compatible adapter package...")
+        self.export_progress.setValue(20)
+        try:
+            result = export_llama_adapter_package(Path(self.export_model_dir.text()))
+        except Exception as exc:
+            self.export_log.append(f"Error: {exc}")
+            self.export_progress.setValue(0)
+            return
+        self.export_progress.setValue(100)
+        self.export_log.append(f"Llama adapter package created: {result}")
+        self.export_status.setText("Export: Llama adapter ready")
 
     def convert_hf_to_gguf(self) -> None:
         """Convert an HF-compatible model folder to GGUF through llama.cpp."""

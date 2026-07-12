@@ -6,6 +6,7 @@ from typing import Optional
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.checkpoint import checkpoint
 
 from .config import ModelConfig
 
@@ -581,8 +582,14 @@ class MicroGPT(nn.Module):
         self.blocks = nn.Sequential(*[Block(config) for _ in range(config.layer_count)])
         self.ln_f = make_norm(config)
         self.lm_head = nn.Linear(config.embedding_size, config.vocab_size, bias=False)
+        self.gradient_checkpointing = False
         self.token_embedding.weight = self.lm_head.weight
         self.apply(self._init_weights)
+
+    def enable_gradient_checkpointing(self, enabled: bool = True) -> None:
+        """Trade extra compute for substantially lower activation memory."""
+
+        self.gradient_checkpointing = bool(enabled)
 
     def _init_weights(self, module: nn.Module) -> None:
         """Initialize module weights.
@@ -619,7 +626,11 @@ class MicroGPT(nn.Module):
             positions = torch.arange(0, token_count, dtype=torch.long, device=idx.device)
             value = value + self.position_embedding(positions)
         value = self.drop(value)
-        value = self.blocks(value)
+        for block in self.blocks:
+            if self.gradient_checkpointing and self.training:
+                value = checkpoint(block, value, use_reentrant=False)
+            else:
+                value = block(value)
         value = self.ln_f(value)
         return self.lm_head(value)
 
