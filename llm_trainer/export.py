@@ -8,6 +8,8 @@ from typing import Optional
 
 import torch
 
+from .tokenizer import DEFAULT_CHAT_TEMPLATE
+
 
 class ExportError(RuntimeError):
     """Raised when model export or quantization cannot be completed."""
@@ -35,6 +37,10 @@ def export_project_bundle(project_dir: Path, output_dir: Path) -> Path:
         if not source.exists():
             raise ExportError(f"Missing required file for export: {source}")
         shutil.copy2(source, output_dir / name)
+    for metadata_name in ("tokenizer_config.json", "special_tokens_map.json"):
+        source = project_dir / metadata_name
+        if source.exists():
+            shutil.copy2(source, output_dir / metadata_name)
     optional_files = ["model_lineage.json", "dataset_summary.json"]
     for name in optional_files:
         source = project_dir / name
@@ -178,18 +184,108 @@ def export_hf_microgpt_package(project_dir: Path, output_dir: Optional[Path] = N
     (output_dir / "tokenizer_config.json").write_text(
         json.dumps(
             {
+                "tokenizer_class": "PreTrainedTokenizerFast",
                 "tokenizer_file": "tokenizer.json",
                 "bos_token": "<bos>",
                 "eos_token": "<eos>",
                 "unk_token": "<unk>",
                 "pad_token": "<pad>",
                 "model_max_length": model_config.get("context_length"),
+                "chat_template": DEFAULT_CHAT_TEMPLATE,
             },
             indent=2,
         ),
         encoding="utf-8",
     )
     (output_dir / "README.md").write_text(_hf_readme(config), encoding="utf-8")
+    return output_dir
+
+
+def export_llama_adapter_package(project_dir: Path, output_dir: Optional[Path] = None) -> Path:
+    """Export a Llama-compatible state dict when the trained architecture matches Llama.
+
+    This is a real tensor-name/layout adapter, not a relabelled MicroGPT
+    checkpoint.  Classic-GPT models are rejected because their learned
+    positions, LayerNorm, or GELU MLP cannot be represented faithfully by
+    Llama/Qwen/Mistral loaders.
+    """
+
+    project_dir = Path(project_dir)
+    output_dir = Path(output_dir) if output_dir else project_dir / "llama_model"
+    checkpoint_path = project_dir / "final_model.pt"
+    tokenizer_path = project_dir / "tokenizer.json"
+    if not checkpoint_path.exists() or not tokenizer_path.exists():
+        raise ExportError("Llama export requires final_model.pt and tokenizer.json.")
+    checkpoint = torch.load(checkpoint_path, map_location="cpu")
+    config = checkpoint.get("model_config")
+    state = checkpoint.get("model_state_dict")
+    if not isinstance(config, dict) or not isinstance(state, dict):
+        raise ExportError("Checkpoint must contain model_config and model_state_dict.")
+    required = {"norm_type": "rmsnorm", "position_encoding": "rope", "mlp_type": "swiglu"}
+    incompatible = [f"{key}={config.get(key)!r}" for key, expected in required.items() if config.get(key) != expected]
+    if config.get("bias", True):
+        incompatible.append("bias=True")
+    if int(config.get("attention_window", 0) or 0) != 0:
+        incompatible.append("attention_window is enabled")
+    if incompatible:
+        raise ExportError(
+            "Llama adapter requires the Llama-like architecture (RoPE, RMSNorm, SwiGLU, no bias, full attention). "
+            "This checkpoint is incompatible: " + ", ".join(incompatible)
+        )
+    hidden = int(config["embedding_size"])
+    heads = int(config["head_count"])
+    kv_heads = int(config.get("kv_head_count") or heads)
+    if config.get("attention_type") == "mqa":
+        kv_heads = 1
+    elif config.get("attention_type") == "gqa" and not config.get("kv_head_count"):
+        kv_heads = max(1, heads // 2)
+    head_dim = hidden // heads
+    kv_hidden = kv_heads * head_dim
+    adapted: dict[str, torch.Tensor] = {
+        "model.embed_tokens.weight": state["token_embedding.weight"],
+        "model.norm.weight": state["ln_f.weight"],
+        "lm_head.weight": state["lm_head.weight"],
+    }
+    for layer in range(int(config["layer_count"])):
+        source = f"blocks.{layer}"
+        target = f"model.layers.{layer}"
+        qkv = state[f"{source}.attn.c_attn.weight"]
+        q, k, v = qkv.split((hidden, kv_hidden, kv_hidden), dim=0)
+        adapted.update({
+            f"{target}.input_layernorm.weight": state[f"{source}.ln_1.weight"],
+            f"{target}.self_attn.q_proj.weight": q,
+            f"{target}.self_attn.k_proj.weight": k,
+            f"{target}.self_attn.v_proj.weight": v,
+            f"{target}.self_attn.o_proj.weight": state[f"{source}.attn.c_proj.weight"],
+            f"{target}.post_attention_layernorm.weight": state[f"{source}.ln_2.weight"],
+            f"{target}.mlp.gate_proj.weight": state[f"{source}.mlp.w1.weight"],
+            f"{target}.mlp.down_proj.weight": state[f"{source}.mlp.w2.weight"],
+            f"{target}.mlp.up_proj.weight": state[f"{source}.mlp.w3.weight"],
+        })
+    output_dir.mkdir(parents=True, exist_ok=True)
+    torch.save(adapted, output_dir / "pytorch_model.bin")
+    shutil.copy2(tokenizer_path, output_dir / "tokenizer.json")
+    for name in ("tokenizer_config.json", "special_tokens_map.json"):
+        source = project_dir / name
+        if source.exists():
+            shutil.copy2(source, output_dir / name)
+    llama_config = {
+        "model_type": "llama", "architectures": ["LlamaForCausalLM"],
+        "vocab_size": int(config["vocab_size"]), "hidden_size": hidden,
+        "intermediate_size": hidden * 4, "num_hidden_layers": int(config["layer_count"]),
+        "num_attention_heads": heads, "num_key_value_heads": kv_heads,
+        "max_position_embeddings": int(config["context_length"]),
+        "rope_theta": float(config.get("rope_theta", 10000.0)),
+        "rms_norm_eps": 1e-5, "hidden_act": "silu", "tie_word_embeddings": True,
+        "bos_token_id": 2, "eos_token_id": 3, "pad_token_id": 0,
+    }
+    (output_dir / "config.json").write_text(json.dumps(llama_config, indent=2), encoding="utf-8")
+    (output_dir / "README.md").write_text(
+        "# Llama-compatible MicroGPT export\n\n"
+        "Weights were structurally adapted from a RoPE/RMSNorm/SwiGLU MicroGPT checkpoint. "
+        "Load with Transformers `LlamaForCausalLM` or compatible Llama harnesses.\n",
+        encoding="utf-8",
+    )
     return output_dir
 
 

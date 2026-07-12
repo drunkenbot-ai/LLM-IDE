@@ -44,6 +44,12 @@ DOMAIN_MIXTURE_FAMILIES = {
 
 AGGREGATE_MIXTURE_FAMILIES = {"local_prose", "source_code", "online_base", "instruction", "conversation"}
 MIXTURE_CHUNK_CHARS = 25_000
+# A default corpus must not gain apparent scale by repeating a tiny template.
+# This threshold is deliberately conservative: it only applies once a document
+# has enough independently meaningful units to make the measurement useful.
+MAX_REPETITIVE_UNIT_RATIO = 0.35
+MIN_REPETITION_CHECK_UNITS = 20
+MIN_REPETITION_CHECK_CHARS = 2_000
 
 GENERIC_DEFAULT_DATA_FOLDERS = {"base_training", "code_training", "generated_curriculum"}
 
@@ -185,6 +191,66 @@ def _deduplicate_documents(documents: list[Document]) -> tuple[list[Document], d
     return unique_documents, {
         "removed_documents": len(duplicates),
         "duplicates": duplicates[:50],
+    }
+
+
+def _content_units_for_diversity(document: Document) -> list[str]:
+    """Return comparable content units for a repetition-quality check.
+
+    Prose sources are often whitespace-normalised during ingestion, so using
+    source lines would miss repeated sentences.  Code remains line-oriented;
+    prose and chat are instead split at sentence and turn boundaries.
+    """
+
+    text = document.text.replace("\r\n", "\n").replace("\r", "\n")
+    if document.kind == "code":
+        raw_units = text.split("\n")
+    else:
+        raw_units = re.split(r"(?<=[.!?])\s+|\n+(?=(?:User|Assistant|System|Instruction|Response):)", text)
+    return [
+        _canonical_corpus_block(unit)
+        for unit in raw_units
+        if len(_canonical_corpus_block(unit)) >= 24
+    ]
+
+
+def _filter_repetitive_documents(documents: list[Document]) -> tuple[list[Document], dict[str, Any]]:
+    """Remove documents dominated by exact repeated content units.
+
+    This is a quality gate, not a substitute for semantic deduplication.  It
+    catches generated padding such as the old bundled curriculum files before
+    it can dominate token counts and make a small corpus look large.
+    """
+
+    accepted: list[Document] = []
+    rejected: list[dict[str, Any]] = []
+    for document in documents:
+        units = _content_units_for_diversity(document)
+        if len(document.text) < MIN_REPETITION_CHECK_CHARS or len(units) < MIN_REPETITION_CHECK_UNITS:
+            accepted.append(document)
+            continue
+        duplicate_ratio = 1.0 - (len(set(units)) / len(units))
+        if duplicate_ratio > MAX_REPETITIVE_UNIT_RATIO:
+            rejected.append(
+                {
+                    "path": str(document.path),
+                    "kind": document.kind,
+                    "unit_count": len(units),
+                    "duplicate_unit_ratio": round(duplicate_ratio, 4),
+                }
+            )
+            continue
+        accepted.append(document)
+    rejected_paths = {item["path"] for item in rejected}
+    return accepted, {
+        "removed_documents": len(rejected),
+        "removed_characters": sum(
+            len(document.text)
+            for document in documents
+            if str(document.path) in rejected_paths
+        ),
+        "threshold": MAX_REPETITIVE_UNIT_RATIO,
+        "examples": rejected[:50],
     }
 
 
@@ -381,6 +447,7 @@ def _apply_dataset_mixture(
             "available_characters": available_characters,
             "selected_documents": len(chosen),
             "selected_characters": selected_characters,
+            "effective_requested_percent": percentage,
             "actual_percent": (
                 len(chosen) * 100.0 / available_documents
                 if available_documents
@@ -413,4 +480,6 @@ __all__ = [
     "DEFAULT_STAGE_CATEGORY_FOLDERS",
     "CATEGORY_ALIASES",
     "_apply_dataset_mixture",
+    "_filter_repetitive_documents",
+    "MAX_REPETITIVE_UNIT_RATIO",
 ]

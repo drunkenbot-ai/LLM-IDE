@@ -14,7 +14,8 @@ from typing import Any, Callable, Optional
 import numpy as np
 
 from .config import DatasetConfig, dataclass_to_jsonable
-from .conversation_datasets import CONVERSATION_DATASET_PRESETS, dataset_ids_for_stage, load_conversation_documents
+from .conversation_datasets import CONVERSATION_DATASET_PRESETS, \
+    dataset_ids_for_stage, load_conversation_documents
 from .data import (
     Document,
     SUPPORTED_CODE_SUFFIXES,
@@ -30,20 +31,22 @@ from .data import (
     write_training_corpus,
 )
 from .lineage import read_json, record_dataset_version, write_json
+from .manifest_store import ManifestStore
 from .tokenizer import (
     MAX_TOKENIZER_TRAINING_CHARS,
     encode_file,
     load_tokenizer,
+    save_tokenizer_package,
     train_tokenizer,
     validate_training_tokenizer,
 )
 from .training import split_tokens
 
-
 LOGGER = logging.getLogger(__name__)
 
 
-def _local_structured_dataset_paths(config: DatasetConfig) -> list[tuple[Path, str, str]]:
+def _local_structured_dataset_paths(config: DatasetConfig) -> list[
+    tuple[Path, str, str]]:
     """Return configured local structured dataset paths.
 
     Args:
@@ -55,14 +58,16 @@ def _local_structured_dataset_paths(config: DatasetConfig) -> list[tuple[Path, s
 
     items: list[tuple[Path, str, str]] = []
     seen: set[tuple[str, str]] = set()
-    for path in [config.conversation_dataset_path, *config.conversation_dataset_paths]:
+    for path in [config.conversation_dataset_path,
+                 *config.conversation_dataset_paths]:
         if path is None or not str(path).strip():
             continue
         key = ("conversation", str(Path(path)))
         if key not in seen:
             seen.add(key)
             items.append((Path(path), "conversation", "local conversation"))
-    for path in [config.instruction_dataset_path, *config.instruction_dataset_paths]:
+    for path in [config.instruction_dataset_path,
+                 *config.instruction_dataset_paths]:
         if path is None or not str(path).strip():
             continue
         key = ("instruction", str(Path(path)))
@@ -141,7 +146,8 @@ class DatasetBuildResult:
     unique_block_ratio: float = 1.0
 
 
-def _emit(progress: Optional[Callable[[Any], None]], message: str, percent: Optional[int] = None) -> None:
+def _emit(progress: Optional[Callable[[Any], None]], message: str,
+          percent: Optional[int] = None) -> None:
     """Emit a progress event if a callback is available.
 
     Args:
@@ -198,7 +204,8 @@ def content_warning(character_count: int) -> Optional[str]:
     return None
 
 
-def _resolve_tokenizer_strategy(config: DatasetConfig, tokenizer_path: Path) -> tuple[str, bool]:
+def _resolve_tokenizer_strategy(config: DatasetConfig, tokenizer_path: Path) -> \
+tuple[str, bool]:
     """Resolve tokenizer strategy into an executable mode.
 
     Args:
@@ -224,12 +231,12 @@ def _resolve_tokenizer_strategy(config: DatasetConfig, tokenizer_path: Path) -> 
 
 
 def _load_or_create_tokenizer(
-    config: DatasetConfig,
-    corpus_path: Path,
-    tokenizer_path: Path,
-    selected_vocab_size: int,
-    progress: Optional[Callable[[Any], None]],
-    should_stop: Optional[Callable[[], bool]],
+        config: DatasetConfig,
+        corpus_path: Path,
+        tokenizer_path: Path,
+        selected_vocab_size: int,
+        progress: Optional[Callable[[Any], None]],
+        should_stop: Optional[Callable[[], bool]],
 ) -> tuple[Any, bool, bool, Optional[str]]:
     """Load, import, or train a tokenizer for the prepared corpus.
 
@@ -245,7 +252,8 @@ def _load_or_create_tokenizer(
         Tokenizer, reused flag, imported flag, and optional source path.
     """
 
-    strategy, reuse_tokenizer = _resolve_tokenizer_strategy(config, tokenizer_path)
+    strategy, reuse_tokenizer = _resolve_tokenizer_strategy(config,
+                                                            tokenizer_path)
     imported = False
     source_path: Optional[str] = None
 
@@ -255,17 +263,20 @@ def _load_or_create_tokenizer(
 
     if strategy == "import_tokenizer":
         if config.tokenizer_path is None:
-            raise ValueError("Choose a tokenizer.json file when tokenizer strategy is Import tokenizer.json.")
+            raise ValueError(
+                "Choose a tokenizer.json file when tokenizer strategy is Import tokenizer.json.")
         import_path = Path(config.tokenizer_path)
         if not import_path.exists():
-            raise FileNotFoundError(f"Tokenizer import file not found: {import_path}")
+            raise FileNotFoundError(
+                f"Tokenizer import file not found: {import_path}")
         _emit(progress, f"Importing tokenizer from {import_path}...", 62)
         tokenizer_path.parent.mkdir(parents=True, exist_ok=True)
         if import_path.resolve() != tokenizer_path.resolve():
             shutil.copy2(import_path, tokenizer_path)
         return load_tokenizer(tokenizer_path), False, True, str(import_path)
 
-    training_mb = min(corpus_path.stat().st_size, MAX_TOKENIZER_TRAINING_CHARS) / (1024 * 1024)
+    training_mb = min(corpus_path.stat().st_size,
+                      MAX_TOKENIZER_TRAINING_CHARS) / (1024 * 1024)
     _emit(
         progress,
         f"Training tokenizer on a bounded {training_mb:.1f} MB corpus sample to keep memory stable...",
@@ -304,32 +315,23 @@ def _cache_key(config: DatasetConfig) -> str:
             "dataset_stage": config.dataset_stage,
             "conversation_datasets": config.conversation_datasets,
             "conversation_sample_limit": config.conversation_sample_limit,
-            "conversation_dataset_path": str(config.conversation_dataset_path or ""),
-            "instruction_dataset_path": str(config.instruction_dataset_path or ""),
-            "conversation_dataset_paths": [str(path) for path in config.conversation_dataset_paths],
-            "instruction_dataset_paths": [str(path) for path in config.instruction_dataset_paths],
-            "default_data_paths": [str(path) for path in config.default_data_paths],
+            "conversation_dataset_path": str(
+                config.conversation_dataset_path or ""),
+            "instruction_dataset_path": str(
+                config.instruction_dataset_path or ""),
+            "conversation_dataset_paths": [str(path) for path in
+                                           config.conversation_dataset_paths],
+            "instruction_dataset_paths": [str(path) for path in
+                                          config.instruction_dataset_paths],
+            "default_data_paths": [str(path) for path in
+                                   config.default_data_paths],
         },
         sort_keys=True,
     )
 
 
-def _read_manifest(path: Path) -> dict[str, Any]:
-    """Read a dataset manifest.
-
-    Args:
-        path: Manifest path.
-
-    Returns:
-        Manifest dictionary.
-    """
-
-    if not path.exists():
-        return {"version": 1, "files": {}}
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-def _bad_extraction_reasons(path: Path, preview: Optional[dict[str, str]], size: int) -> list[str]:
+def _bad_extraction_reasons(path: Path, preview: Optional[dict[str, str]],
+                            size: int) -> list[str]:
     """Return quality reasons when extracted preview text looks suspicious."""
 
     suffix = path.suffix.lower()
@@ -346,7 +348,8 @@ def _bad_extraction_reasons(path: Path, preview: Optional[dict[str, str]], size:
         reasons.append("large PDF produced very little readable text")
     if visible:
         alpha_ratio = sum(char.isalpha() for char in visible) / len(visible)
-        symbol_ratio = sum(not char.isalnum() for char in visible) / len(visible)
+        symbol_ratio = sum(not char.isalnum() for char in visible) / len(
+            visible)
         if alpha_ratio < 0.25 and str(preview.get("kind")) != "code":
             reasons.append("low alphabetic text ratio")
         if symbol_ratio > 0.45:
@@ -356,15 +359,16 @@ def _bad_extraction_reasons(path: Path, preview: Optional[dict[str, str]], size:
     if text.count("\ufffd") >= 3 or "Ã" in text[:500]:
         reasons.append("encoding artifacts detected")
     words = re.findall(r"[A-Za-z]{2,}", text)
-    if suffix in {".pdf", ".txt", ".md", ".text"} and len(set(words)) < 8 and len(text) > 200:
+    if suffix in {".pdf", ".txt", ".md", ".text"} and len(
+            set(words)) < 8 and len(text) > 200:
         reasons.append("very low word variety")
     return reasons
 
 
 def _load_documents_with_cache(
-    config: DatasetConfig,
-    progress: Optional[Callable[[Any], None]],
-    should_stop: Optional[Callable[[], bool]],
+        config: DatasetConfig,
+        progress: Optional[Callable[[Any], None]],
+        should_stop: Optional[Callable[[], bool]],
 ) -> tuple[list[Any], dict[str, Any], int, int, int, int]:
     """Load documents using an extraction cache.
 
@@ -377,11 +381,12 @@ def _load_documents_with_cache(
         Documents, manifest, cached, processed, skipped, and failed file counts.
     """
 
-    manifest_path = config.output_dir / "dataset_manifest.json"
+    manifest_db_path = config.output_dir / "dataset_manifest.sqlite3"
+    legacy_manifest_path = config.output_dir / "dataset_manifest.json"
     cache_dir = config.output_dir / "cache" / "documents"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    manifest = _read_manifest(manifest_path)
-    manifest.setdefault("files", {})
+    manifest = ManifestStore.open(manifest_db_path,
+                                  legacy_json_path=legacy_manifest_path)
     key = _cache_key(config)
     force_reprocess = config.prepare_mode == "force_reprocess"
 
@@ -392,7 +397,8 @@ def _load_documents_with_cache(
         if Path(path).exists() and Path(path).is_file()
     ]
     input_dir_resolved = config.input_dir.resolve() if config.input_dir.exists() else None
-    default_files_under_input = bool(selected_default_files) and input_dir_resolved is not None and all(
+    default_files_under_input = bool(
+        selected_default_files) and input_dir_resolved is not None and all(
         input_dir_resolved in candidate.resolve().parents or candidate.resolve() == input_dir_resolved
         for candidate in selected_default_files
     )
@@ -411,14 +417,17 @@ def _load_documents_with_cache(
             include_source_code=config.include_source_code,
         )
     default_paths = []
-    seen_source_paths = {path.resolve() for path in source_paths if path.exists()}
+    seen_source_paths = {path.resolve() for path in source_paths if
+                         path.exists()}
     for candidate in selected_default_files:
         if not candidate.exists() or not candidate.is_file():
             _emit(progress, f"Skipped bundled data file: {candidate}")
             continue
         suffix = candidate.suffix.lower()
-        if suffix not in SUPPORTED_TEXT_SUFFIXES and suffix not in SUPPORTED_CODE_SUFFIXES and suffix not in {".pdf", ".json", ".jsonl"}:
-            _emit(progress, f"Skipped unsupported bundled data file: {candidate.name}")
+        if suffix not in SUPPORTED_TEXT_SUFFIXES and suffix not in SUPPORTED_CODE_SUFFIXES and suffix not in {
+            ".pdf", ".json", ".jsonl"}:
+            _emit(progress,
+                  f"Skipped unsupported bundled data file: {candidate.name}")
             continue
         resolved = candidate.resolve()
         if resolved in seen_source_paths:
@@ -428,29 +437,33 @@ def _load_documents_with_cache(
     if default_paths:
         source_paths.extend(default_paths)
         source_paths = sorted(source_paths)
-        _emit(progress, f"Bundled starter data enabled: {len(default_paths)} file(s).", 8)
-    _emit(progress, f"Found {len(source_paths)} supported files in {config.input_dir}.", 8)
+        _emit(progress,
+              f"Bundled starter data enabled: {len(default_paths)} file(s).",
+              8)
+    _emit(progress,
+          f"Found {len(source_paths)} supported files in {config.input_dir}.",
+          8)
     documents: list[Any] = []
     cached_count = 0
     processed_count = 0
     skipped_count = 0
     failed_count = 0
-    new_files: dict[str, Any] = {}
 
     for index, path in enumerate(source_paths, start=1):
         if should_stop and should_stop():
             raise RuntimeError("Dataset preparation stopped by user.")
         percent = 10 + int(32 * index / max(len(source_paths), 1))
         stat = path.stat()
-        digest = file_fingerprint(path, fast=config.fast_scan_mode, sample_bytes=config.fast_scan_sample_bytes)
+        digest = file_fingerprint(path, fast=config.fast_scan_mode,
+                                  sample_bytes=config.fast_scan_sample_bytes)
         cache_path = cache_dir / f"{digest}.json"
         manifest_key = str(path.resolve())
-        previous = manifest.get("files", {}).get(manifest_key, {})
+        previous = manifest.get(manifest_key) or {}
         can_use_cache = (
-            not force_reprocess
-            and previous.get("sha256") == digest
-            and previous.get("cache_key") == key
-            and cache_path.exists()
+                not force_reprocess
+                and previous.get("sha256") == digest
+                and previous.get("cache_key") == key
+                and cache_path.exists()
         )
         if can_use_cache:
             cached_documents = [
@@ -459,13 +472,16 @@ def _load_documents_with_cache(
             ]
             cached_extraction_reasons = []
             if path.suffix.lower() == ".pdf":
-                cached_text = "\n".join(document.text for document in cached_documents)
+                cached_text = "\n".join(
+                    document.text for document in cached_documents)
                 cached_extraction_reasons = _bad_extraction_reasons(
                     path,
                     {
                         "path": str(path),
-                        "kind": cached_documents[0].kind if cached_documents else "prose",
-                        "language": cached_documents[0].language if cached_documents else "",
+                        "kind": cached_documents[
+                            0].kind if cached_documents else "prose",
+                        "language": cached_documents[
+                            0].language if cached_documents else "",
                         "characters": str(len(cached_text)),
                         "preview": cached_text[:1200],
                     },
@@ -474,20 +490,28 @@ def _load_documents_with_cache(
             if cached_extraction_reasons:
                 skipped_count += 1
                 reason_text = "; ".join(cached_extraction_reasons)
-                _emit(progress, f"Skipped cached {path.name}: suspicious PDF extraction ({reason_text}).", percent)
-                new_files[manifest_key] = {
-                    "path": str(path),
-                    "sha256": digest,
-                    "size": stat.st_size,
-                    "mtime_ns": stat.st_mtime_ns,
-                    "cache_key": key,
-                    "status": "skipped_bad_extraction",
-                    "reasons": cached_extraction_reasons,
-                }
+                _emit(progress,
+                      f"Skipped cached {path.name}: suspicious PDF extraction ({reason_text}).",
+                      percent)
+                manifest.upsert(
+                    manifest_key,
+                    {
+                        "path": str(path),
+                        "sha256": digest,
+                        "size": stat.st_size,
+                        "mtime_ns": stat.st_mtime_ns,
+                        "cache_key": key,
+                        "status": "skipped_bad_extraction",
+                        "reasons": cached_extraction_reasons,
+                    },
+                    commit=False,
+                )
                 continue
             documents.extend(cached_documents)
             cached_count += 1
-            _emit(progress, f"Reused {path.name} from cache ({len(cached_documents)} sample(s)).", percent)
+            _emit(progress,
+                  f"Reused {path.name} from cache ({len(cached_documents)} sample(s)).",
+                  percent)
         else:
             try:
                 source_doc = read_supported_document(
@@ -499,27 +523,36 @@ def _load_documents_with_cache(
             except Exception as exc:
                 failed_count += 1
                 _emit(progress, f"Failed {path.name}: {exc}", percent)
-                new_files[manifest_key] = {
-                    "path": str(path),
-                    "sha256": digest,
-                    "size": stat.st_size,
-                    "mtime_ns": stat.st_mtime_ns,
-                    "cache_key": key,
-                    "status": "failed",
-                    "error": str(exc),
-                }
+                manifest.upsert(
+                    manifest_key,
+                    {
+                        "path": str(path),
+                        "sha256": digest,
+                        "size": stat.st_size,
+                        "mtime_ns": stat.st_mtime_ns,
+                        "cache_key": key,
+                        "status": "failed",
+                        "error": str(exc),
+                    },
+                    commit=False,
+                )
                 continue
             if source_doc is None:
                 skipped_count += 1
-                _emit(progress, f"Skipped {path.name}: no readable text found.", percent)
-                new_files[manifest_key] = {
-                    "path": str(path),
-                    "sha256": digest,
-                    "size": stat.st_size,
-                    "mtime_ns": stat.st_mtime_ns,
-                    "cache_key": key,
-                    "status": "skipped_empty",
-                }
+                _emit(progress,
+                      f"Skipped {path.name}: no readable text found.", percent)
+                manifest.upsert(
+                    manifest_key,
+                    {
+                        "path": str(path),
+                        "sha256": digest,
+                        "size": stat.st_size,
+                        "mtime_ns": stat.st_mtime_ns,
+                        "cache_key": key,
+                        "status": "skipped_empty",
+                    },
+                    commit=False,
+                )
                 continue
             extraction_reasons = _bad_extraction_reasons(
                 path,
@@ -535,16 +568,22 @@ def _load_documents_with_cache(
             if path.suffix.lower() == ".pdf" and extraction_reasons:
                 skipped_count += 1
                 reason_text = "; ".join(extraction_reasons)
-                _emit(progress, f"Skipped {path.name}: suspicious PDF extraction ({reason_text}).", percent)
-                new_files[manifest_key] = {
-                    "path": str(path),
-                    "sha256": digest,
-                    "size": stat.st_size,
-                    "mtime_ns": stat.st_mtime_ns,
-                    "cache_key": key,
-                    "status": "skipped_bad_extraction",
-                    "reasons": extraction_reasons,
-                }
+                _emit(progress,
+                      f"Skipped {path.name}: suspicious PDF extraction ({reason_text}).",
+                      percent)
+                manifest.upsert(
+                    manifest_key,
+                    {
+                        "path": str(path),
+                        "sha256": digest,
+                        "size": stat.st_size,
+                        "mtime_ns": stat.st_mtime_ns,
+                        "cache_key": key,
+                        "status": "skipped_bad_extraction",
+                        "reasons": extraction_reasons,
+                    },
+                    commit=False,
+                )
                 continue
             source_documents = [source_doc]
             if config.code_training_mode:
@@ -556,60 +595,83 @@ def _load_documents_with_cache(
                     should_stop=should_stop,
                 )
             cache_path.write_text(
-                json.dumps([document_to_dict(doc) for doc in source_documents], ensure_ascii=False),
+                json.dumps([document_to_dict(doc) for doc in source_documents],
+                           ensure_ascii=False),
                 encoding="utf-8",
             )
             documents.extend(source_documents)
             processed_count += 1
-            _emit(progress, f"Processed {path.name}: {len(source_documents)} sample(s).", percent)
+            _emit(progress,
+                  f"Processed {path.name}: {len(source_documents)} sample(s).",
+                  percent)
 
-        new_files[manifest_key] = {
-            "path": str(path),
-            "sha256": digest,
-            "size": stat.st_size,
-            "mtime_ns": stat.st_mtime_ns,
-            "cache_key": key,
-            "cache_file": str(cache_path.relative_to(config.output_dir)),
-            "status": "cached" if can_use_cache else "processed",
-        }
+        manifest.upsert(
+            manifest_key,
+            {
+                "path": str(path),
+                "sha256": digest,
+                "size": stat.st_size,
+                "mtime_ns": stat.st_mtime_ns,
+                "cache_key": key,
+                "cache_file": str(cache_path.relative_to(config.output_dir)),
+                "status": "cached" if can_use_cache else "processed",
+            },
+            commit=False,
+        )
 
     for local_path, kind, label in local_structured_paths:
         if should_stop and should_stop():
             raise RuntimeError("Dataset preparation stopped by user.")
         local_path = Path(local_path)
-        _emit(progress, f"Loading {label} JSON/JSONL dataset: {local_path}", 42)
-        local_documents = load_structured_json_documents(local_path, kind=kind, lowercase=config.lowercase)
+        _emit(progress, f"Loading {label} JSON/JSONL dataset: {local_path}",
+              42)
+        local_documents = load_structured_json_documents(local_path, kind=kind,
+                                                         lowercase=config.lowercase)
         documents.extend(local_documents)
         processed_count += 1
         manifest_key = f"local-{kind}://{local_path.resolve()}"
-        new_files[manifest_key] = {
-            "path": str(local_path),
-            "kind": kind,
-            "sample_count": len(local_documents),
-            "cache_key": key,
-            "status": "processed",
-        }
-        _emit(progress, f"Loaded {len(local_documents):,} {kind} sample(s) from {local_path.name}.", 43)
+        manifest.upsert(
+            manifest_key,
+            {
+                "path": str(local_path),
+                "kind": kind,
+                "sample_count": len(local_documents),
+                "cache_key": key,
+                "status": "processed",
+            },
+            commit=False,
+        )
+        _emit(progress,
+              f"Loaded {len(local_documents):,} {kind} sample(s) from {local_path.name}.",
+              43)
 
     if config.conversation_datasets:
         allowed_dataset_ids = set(dataset_ids_for_stage(config.dataset_stage))
-        skipped_stage_ids = [dataset_id for dataset_id in config.conversation_datasets if dataset_id not in allowed_dataset_ids]
-        selected_dataset_ids = [dataset_id for dataset_id in config.conversation_datasets if dataset_id in allowed_dataset_ids]
+        skipped_stage_ids = [dataset_id for dataset_id in
+                             config.conversation_datasets if
+                             dataset_id not in allowed_dataset_ids]
+        selected_dataset_ids = [dataset_id for dataset_id in
+                                config.conversation_datasets if
+                                dataset_id in allowed_dataset_ids]
         if skipped_stage_ids:
             skipped_labels = [
                 CONVERSATION_DATASET_PRESETS[item].label
                 for item in skipped_stage_ids
                 if item in CONVERSATION_DATASET_PRESETS
             ]
-            _emit(progress, f"Skipping dataset(s) not recommended for {config.dataset_stage}: {', '.join(skipped_labels)}.")
+            _emit(progress,
+                  f"Skipping dataset(s) not recommended for {config.dataset_stage}: {', '.join(skipped_labels)}.")
         if not selected_dataset_ids:
-            _emit(progress, f"No online datasets selected for {config.dataset_stage}; continuing with local sources only.")
+            _emit(progress,
+                  f"No online datasets selected for {config.dataset_stage}; continuing with local sources only.")
             config.conversation_datasets = []
-            manifest["files"] = new_files
-            manifest["dataset_config"] = dataclass_to_jsonable(config)
-            manifest["cache_key"] = key
+            manifest.set_meta("dataset_config", dataclass_to_jsonable(config),
+                              commit=False)
+            manifest.set_meta("cache_key", key, commit=False)
+            manifest.commit()
             return (
-                sorted(documents, key=lambda document: (str(document.path), document.kind, document.language or "")),
+                sorted(documents, key=lambda document: (
+                str(document.path), document.kind, document.language or "")),
                 manifest,
                 cached_count,
                 processed_count,
@@ -622,8 +684,10 @@ def _load_documents_with_cache(
             for item in selected_dataset_ids
             if item in CONVERSATION_DATASET_PRESETS
         ]
-        _emit(progress, f"Online training datasets enabled: {', '.join(labels)}.", 8)
-        _emit(progress, f"Online training datasets will be cached in: {hf_cache_dir}", 8)
+        _emit(progress,
+              f"Online training datasets enabled: {', '.join(labels)}.", 8)
+        _emit(progress,
+              f"Online training datasets will be cached in: {hf_cache_dir}", 8)
         hf_documents = load_conversation_documents(
             selected_dataset_ids,
             config.conversation_sample_limit,
@@ -636,22 +700,28 @@ def _load_documents_with_cache(
         config.conversation_datasets = selected_dataset_ids
         for dataset_id in selected_dataset_ids:
             preset = CONVERSATION_DATASET_PRESETS.get(dataset_id)
-            new_files[f"hf://{dataset_id}"] = {
-                "path": f"hf://{dataset_id}",
-                "dataset": preset.hf_path if preset else dataset_id,
-                "config_name": preset.config_name if preset else "",
-                "split": preset.split if preset else "",
-                "sample_limit": config.conversation_sample_limit,
-                "cache_key": key,
-                "status": "processed",
-            }
+            manifest.upsert(
+                f"hf://{dataset_id}",
+                {
+                    "path": f"hf://{dataset_id}",
+                    "dataset": preset.hf_path if preset else dataset_id,
+                    "config_name": preset.config_name if preset else "",
+                    "split": preset.split if preset else "",
+                    "sample_limit": config.conversation_sample_limit,
+                    "cache_key": key,
+                    "status": "processed",
+                },
+                commit=False,
+            )
         processed_count += len(selected_dataset_ids)
 
-    manifest["files"] = new_files
-    manifest["dataset_config"] = dataclass_to_jsonable(config)
-    manifest["cache_key"] = key
+    manifest.set_meta("dataset_config", dataclass_to_jsonable(config),
+                      commit=False)
+    manifest.set_meta("cache_key", key, commit=False)
+    manifest.commit()
     return (
-        sorted(documents, key=lambda document: (str(document.path), document.kind, document.language or "")),
+        sorted(documents, key=lambda document: (
+        str(document.path), document.kind, document.language or "")),
         manifest,
         cached_count,
         processed_count,
@@ -660,13 +730,17 @@ def _load_documents_with_cache(
     )
 
 
-from .dataset_mixture import _apply_dataset_mixture, _deduplicate_documents
+from .dataset_mixture import (
+    _apply_dataset_mixture,
+    _deduplicate_documents,
+    _filter_repetitive_documents,
+)
 
 
 def build_dataset(
-    config: DatasetConfig,
-    progress: Optional[Callable[[Any], None]] = None,
-    should_stop: Optional[Callable[[], bool]] = None,
+        config: DatasetConfig,
+        progress: Optional[Callable[[Any], None]] = None,
+        should_stop: Optional[Callable[[], bool]] = None,
 ) -> DatasetBuildResult:
     """Build a tokenizer-ready dataset project.
 
@@ -695,7 +769,8 @@ def build_dataset(
     if should_stop and should_stop():
         raise RuntimeError("Dataset preparation stopped by user.")
     if not documents:
-        raise ValueError("No supported text, PDF, JSONL, or structured JSON documents were found.")
+        raise ValueError(
+            "No supported text, PDF, JSONL, or structured JSON documents were found.")
     documents, exact_dedup_report = _deduplicate_documents(documents)
     if exact_dedup_report["removed_documents"]:
         _emit(
@@ -703,11 +778,26 @@ def build_dataset(
             f"Removed {exact_dedup_report['removed_documents']:,} exact duplicate extracted document(s).",
             44,
         )
-    documents, mixture_report = _apply_dataset_mixture(documents, config.mixture_weights, progress)
+    documents, repetition_filter_report = _filter_repetitive_documents(documents)
+    if repetition_filter_report["removed_documents"]:
+        _emit(
+            progress,
+            (
+                "Excluded "
+                f"{repetition_filter_report['removed_documents']:,} low-diversity document(s) "
+                f"({repetition_filter_report['removed_characters']:,} characters) "
+                "instead of padding the corpus with repeated templates."
+            ),
+            45,
+        )
+    documents, mixture_report = _apply_dataset_mixture(documents,
+                                                       config.mixture_weights,
+                                                       progress)
     if should_stop and should_stop():
         raise RuntimeError("Dataset preparation stopped by user.")
     if not documents:
-        raise ValueError("Dataset mixture selected no documents. Adjust mixture weights and try again.")
+        raise ValueError(
+            "Dataset mixture selected no documents. Adjust mixture weights and try again.")
 
     all_text = "\n".join(doc.text for doc in documents)
     character_count = len(all_text)
@@ -715,18 +805,38 @@ def build_dataset(
     suggested_vocab_size = estimate_vocab_size(character_count, unique_words)
     selected_vocab_size = config.vocab_size or suggested_vocab_size
     warning = content_warning(character_count)
+    if character_count < 1_000_000:
+        low_corpus_message = (
+            "Prepared corpus is below 1M characters after quality filtering. "
+            "Add licensed, provenance-tracked sources or select an approved online dataset; "
+            "the app will not pad training data with synthetic repetition."
+        )
+        warning = f"{warning} {low_corpus_message}" if warning else low_corpus_message
     code_sample_count = sum(1 for doc in documents if doc.kind == "code")
-    conversation_sample_count = sum(1 for doc in documents if doc.kind in {"conversation", "instruction"})
-    prose_sample_count = sum(1 for doc in documents if doc.kind not in {"code", "conversation", "instruction"})
-    _emit(progress, f"Content size: {character_count:,} characters across {len(documents)} files.", 45)
+    conversation_sample_count = sum(
+        1 for doc in documents if doc.kind in {"conversation", "instruction"})
+    prose_sample_count = sum(1 for doc in documents if
+                             doc.kind not in {"code", "conversation",
+                                              "instruction"})
+    _emit(progress,
+          f"Content size: {character_count:,} characters across {len(documents)} files.",
+          45)
     if config.code_training_mode:
-        _emit(progress, f"Code mode: {code_sample_count:,} code samples, {prose_sample_count:,} prose samples.", 46)
+        _emit(progress,
+              f"Code mode: {code_sample_count:,} code samples, {prose_sample_count:,} prose samples.",
+              46)
     if conversation_sample_count:
-        _emit(progress, f"Conversation data: {conversation_sample_count:,} dialogue/instruction samples.", 46)
+        _emit(progress,
+              f"Conversation data: {conversation_sample_count:,} dialogue/instruction samples.",
+              46)
     if cached_file_count or processed_file_count:
-        _emit(progress, f"Cache: reused {cached_file_count:,} file(s), processed {processed_file_count:,} file(s).", 47)
+        _emit(progress,
+              f"Cache: reused {cached_file_count:,} file(s), processed {processed_file_count:,} file(s).",
+              47)
     if skipped_file_count or failed_file_count:
-        _emit(progress, f"Quality: skipped {skipped_file_count:,} empty file(s), failed {failed_file_count:,} file(s).", 48)
+        _emit(progress,
+              f"Quality: skipped {skipped_file_count:,} empty file(s), failed {failed_file_count:,} file(s).",
+              48)
     if config.mixture_weights:
         mixture_parts = []
         for key, value in config.mixture_weights.items():
@@ -735,13 +845,15 @@ def build_dataset(
             except (TypeError, ValueError):
                 numeric_value = 0.0
             if numeric_value > 0.0:
-                mixture_parts.append(f"{key.replace('_', ' ')} {numeric_value:.1f}%")
+                mixture_parts.append(
+                    f"{key.replace('_', ' ')} {numeric_value:.1f}%")
         mixture_text = ", ".join(mixture_parts)
         if mixture_text:
             _emit(progress, f"Dataset mixture plan: {mixture_text}.", 49)
     if mixture_report.get("applied"):
         for family, row in mixture_report.get("families", {}).items():
-            if int(row.get("selected_documents", 0) or 0) > 0 or float(row.get("requested_weight", 0.0) or 0.0) > 0.0:
+            if int(row.get("selected_documents", 0) or 0) > 0 or float(
+                    row.get("requested_weight", 0.0) or 0.0) > 0.0:
                 _emit(
                     progress,
                     (
@@ -793,18 +905,23 @@ def build_dataset(
         should_stop,
     )
     validate_training_tokenizer(tokenizer)
+    save_tokenizer_package(tokenizer, tokenizer_path,
+                           model_max_length=config.context_length)
 
     _emit(progress, "Encoding corpus into token IDs...", 78)
     if should_stop and should_stop():
         raise RuntimeError("Dataset preparation stopped by user.")
     tokens = encode_file(tokenizer, corpus_path, should_stop=should_stop)
     _emit(progress, f"Encoded {len(tokens):,} tokens.", 86)
-    token_density = (len(tokens) / max(len(corpus_text), 1)) if corpus_text else 0.0
-    document_token_lengths = [max(1, int(round(len(doc.text) * token_density))) for doc in documents if doc.text]
+    token_density = (
+                len(tokens) / max(len(corpus_text), 1)) if corpus_text else 0.0
+    document_token_lengths = [max(1, int(round(len(doc.text) * token_density)))
+                              for doc in documents if doc.text]
     if document_token_lengths:
         sequence_stats = {
             "min": min(document_token_lengths),
-            "average": sum(document_token_lengths) / len(document_token_lengths),
+            "average": sum(document_token_lengths) / len(
+                document_token_lengths),
             "median": statistics.median(document_token_lengths),
             "max": max(document_token_lengths),
         }
@@ -824,10 +941,16 @@ def build_dataset(
     train_tokens, val_tokens = split_tokens(tokens, config.validation_split)
     train_window_count = max(0, len(train_tokens) - config.context_length)
     val_window_count = max(0, len(val_tokens) - config.context_length)
-    _emit(progress, f"Training tokens: {len(train_tokens):,}; validation tokens: {len(val_tokens):,}.", 92)
-    _emit(progress, f"Training windows: {train_window_count:,}; validation windows: {val_window_count:,}.", 92)
-    np.save(config.output_dir / "train_tokens.npy", np.asarray(train_tokens, dtype=np.int32))
-    np.save(config.output_dir / "val_tokens.npy", np.asarray(val_tokens, dtype=np.int32))
+    _emit(progress,
+          f"Training tokens: {len(train_tokens):,}; validation tokens: {len(val_tokens):,}.",
+          92)
+    _emit(progress,
+          f"Training windows: {train_window_count:,}; validation windows: {val_window_count:,}.",
+          92)
+    np.save(config.output_dir / "train_tokens.npy",
+            np.asarray(train_tokens, dtype=np.int32))
+    np.save(config.output_dir / "val_tokens.npy",
+            np.asarray(val_tokens, dtype=np.int32))
     quality_report = _dataset_quality_report(
         document_count=len(documents),
         token_count=len(tokens),
@@ -870,25 +993,35 @@ def build_dataset(
         "dataset_stage": config.dataset_stage,
         "conversation_datasets": config.conversation_datasets,
         "conversation_sample_limit": config.conversation_sample_limit,
-        "conversation_dataset_path": str(config.conversation_dataset_path or ""),
+        "conversation_dataset_path": str(
+            config.conversation_dataset_path or ""),
         "instruction_dataset_path": str(config.instruction_dataset_path or ""),
-        "conversation_dataset_paths": [str(path) for path in config.conversation_dataset_paths],
-        "instruction_dataset_paths": [str(path) for path in config.instruction_dataset_paths],
-        "default_data_paths": [str(path) for path in config.default_data_paths],
+        "conversation_dataset_paths": [str(path) for path in
+                                       config.conversation_dataset_paths],
+        "instruction_dataset_paths": [str(path) for path in
+                                      config.instruction_dataset_paths],
+        "default_data_paths": [str(path) for path in
+                               config.default_data_paths],
         "mixture_weights": config.mixture_weights,
         "mixture_report": mixture_report,
-        "exact_duplicate_documents_removed": exact_dedup_report["removed_documents"],
+        "exact_duplicate_documents_removed": exact_dedup_report[
+            "removed_documents"],
         "exact_duplicate_document_examples": exact_dedup_report["duplicates"],
+        "low_diversity_documents_removed": repetition_filter_report["removed_documents"],
+        "low_diversity_characters_removed": repetition_filter_report["removed_characters"],
+        "low_diversity_duplicate_unit_threshold": repetition_filter_report["threshold"],
+        "low_diversity_document_examples": repetition_filter_report["examples"],
         "suggested_vocab_size": suggested_vocab_size,
         "tokenizer_vocab_size": tokenizer.get_vocab_size(),
         "tokenizer_sha256": file_sha256(tokenizer_path),
         "warning": warning,
-        "source_files": [str(doc.path) for doc in documents],
+        "source_files": [str(doc.path) for doc in documents[:1000]],
+        "source_files_truncated": len(documents) > 1000,
         "cached_file_count": cached_file_count,
         "processed_file_count": processed_file_count,
         "skipped_file_count": skipped_file_count,
         "failed_file_count": failed_file_count,
-        "source_file_count": len(manifest.get("files", {})),
+        "source_file_count": manifest.count(),
         "prepare_mode": config.prepare_mode,
         "tokenizer_strategy": config.tokenizer_strategy,
         "reasoning_sample_mode": config.reasoning_sample_mode,
@@ -905,13 +1038,16 @@ def build_dataset(
         "corpus_block_count": duplicate_report["block_count"],
         "duplicate_block_ratio": duplicate_report["duplicate_block_ratio"],
         "unique_block_ratio": duplicate_report["unique_block_ratio"],
-        "most_repeated_block_count": duplicate_report["most_repeated_block_count"],
+        "most_repeated_block_count": duplicate_report[
+            "most_repeated_block_count"],
         "top_repeated_blocks": duplicate_report["top_repeated_blocks"],
     }
-    dataset_version = record_dataset_version(config.output_dir, summary, manifest)
+    dataset_version = record_dataset_version(config.output_dir, summary,
+                                             manifest)
     write_json(config.output_dir / "dataset_summary.json", summary)
-    write_json(config.output_dir / "dataset_manifest.json", manifest)
-    _emit(progress, f"Dataset version recorded: {dataset_version['version_id']}.", 98)
+    manifest.close()
+    _emit(progress,
+          f"Dataset version recorded: {dataset_version['version_id']}.", 98)
     _emit(progress, f"Dataset ready: {config.output_dir}", 100)
     return DatasetBuildResult(
         config.output_dir,
@@ -976,7 +1112,8 @@ def _canonical_corpus_block(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip().lower()
 
 
-def _text_block_duplicate_report(corpus_text: str, max_blocks: int = 500_000) -> dict[str, Any]:
+def _text_block_duplicate_report(corpus_text: str,
+                                 max_blocks: int = 500_000) -> dict[str, Any]:
     """Measure exact repeated blocks in the prepared corpus text.
 
     Args:
@@ -995,7 +1132,7 @@ def _text_block_duplicate_report(corpus_text: str, max_blocks: int = 500_000) ->
     for match in re.finditer(r"\n\s*\n+", corpus_text):
         if total_blocks >= max_blocks:
             break
-        raw_block = corpus_text[start : match.start()]
+        raw_block = corpus_text[start: match.start()]
         start = match.end()
         canonical = _canonical_corpus_block(raw_block)
         if len(canonical) < 12:
@@ -1038,21 +1175,21 @@ def _text_block_duplicate_report(corpus_text: str, max_blocks: int = 500_000) ->
 
 
 def _dataset_quality_report(
-    *,
-    document_count: int,
-    token_count: int,
-    vocab_size: int,
-    unique_words: int,
-    train_window_count: int,
-    val_window_count: int,
-    code_sample_count: int,
-    prose_sample_count: int,
-    conversation_sample_count: int,
-    skipped_file_count: int,
-    failed_file_count: int,
-    warning: Optional[str],
-    sequence_stats: dict[str, float],
-    duplicate_report: dict[str, Any],
+        *,
+        document_count: int,
+        token_count: int,
+        vocab_size: int,
+        unique_words: int,
+        train_window_count: int,
+        val_window_count: int,
+        code_sample_count: int,
+        prose_sample_count: int,
+        conversation_sample_count: int,
+        skipped_file_count: int,
+        failed_file_count: int,
+        warning: Optional[str],
+        sequence_stats: dict[str, float],
+        duplicate_report: dict[str, Any],
 ) -> dict[str, Any]:
     """Rate a prepared dataset for small-LLM training readiness.
 
@@ -1083,12 +1220,15 @@ def _dataset_quality_report(
     vocab_score = 18.0 * _bounded_ratio(vocab_size, vocab_target)
     document_score = 12.0 * _bounded_ratio(document_count, 1_000)
     validation_score = 8.0 * _bounded_ratio(val_window_count, 2_000)
-    families = sum(1 for count in (code_sample_count, prose_sample_count, conversation_sample_count) if count > 0)
+    families = sum(1 for count in (
+    code_sample_count, prose_sample_count, conversation_sample_count) if
+                   count > 0)
     diversity_score = 7.0 * _bounded_ratio(families, 3)
     average_sequence = float(sequence_stats.get("average", 0.0) or 0.0)
     sequence_score = 5.0 * _bounded_ratio(average_sequence, 256)
     penalty = min(20.0, failed_file_count * 3.0 + skipped_file_count * 0.5)
-    duplicate_ratio = float(duplicate_report.get("duplicate_block_ratio", 0.0) or 0.0)
+    duplicate_ratio = float(
+        duplicate_report.get("duplicate_block_ratio", 0.0) or 0.0)
     duplicate_penalty = min(35.0, duplicate_ratio * 70.0)
     penalty += duplicate_penalty
     if warning and warning != "none":
@@ -1125,19 +1265,24 @@ def _dataset_quality_report(
     if train_window_count < 5_000:
         reasons.append("Few training windows; model may memorize quickly.")
     if vocab_size < 4_000:
-        reasons.append("Vocabulary is small; language coverage may be limited.")
+        reasons.append(
+            "Vocabulary is small; language coverage may be limited.")
     elif vocab_size > 50_000:
-        reasons.append("Vocabulary is large; tiny models may spend capacity on tokens.")
+        reasons.append(
+            "Vocabulary is large; tiny models may spend capacity on tokens.")
     else:
         reasons.append("Vocabulary size is in a reasonable small-model range.")
     if families >= 2:
         reasons.append("Dataset includes multiple content families.")
     if skipped_file_count or failed_file_count:
-        reasons.append(f"Extraction skipped {skipped_file_count} file(s) and failed {failed_file_count} file(s).")
+        reasons.append(
+            f"Extraction skipped {skipped_file_count} file(s) and failed {failed_file_count} file(s).")
     if duplicate_ratio >= 0.5:
-        reasons.append("Prepared corpus is heavily repeated; training may memorize instead of generalize.")
+        reasons.append(
+            "Prepared corpus is heavily repeated; training may memorize instead of generalize.")
     elif duplicate_ratio >= 0.2:
-        reasons.append("Prepared corpus has many repeated blocks; add more varied data or deduplicate.")
+        reasons.append(
+            "Prepared corpus has many repeated blocks; add more varied data or deduplicate.")
     elif duplicate_ratio >= 0.05:
         reasons.append("Prepared corpus has some repeated blocks.")
     else:
@@ -1161,6 +1306,7 @@ def _dataset_quality_report(
             "penalty": round(penalty, 1),
         },
     }
+
 
 __all__ = [
     "DatasetBuildResult",

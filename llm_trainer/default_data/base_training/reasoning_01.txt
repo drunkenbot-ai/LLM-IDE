@@ -1,618 +1,512 @@
-# Cause and Effect
 
 The sidewalk is shiny.
 It rained this morning.
 Why is the sidewalk shiny?
 Because rain made it wet.
 
----
 Ben left his ice cream in the sun.
 The ice cream melted.
 Why did it melt?
 Because the sun is hot.
 
----
 The dog is barking at the door.
 Someone is outside.
 Why is the dog barking?
 Because it hears a noise.
 
----
 Mom turned on the fan.
 The room feels cooler.
 Why is the room cooler?
 Because the fan moves the air.
 
----
 The car stopped at the red light.
 The light turned green.
 The car started moving.
 Why did the car move?
 Because the light turned green.
 
----
 Ella washed her hands with soap.
 Her hands are clean.
 Why are her hands clean?
 Because soap removes dirt.
 
----
 The candle burned down.
 It became shorter.
 Why did it get shorter?
 Because fire burns the wax.
 
----
 Dad put water in the kettle.
 He turned on the stove.
 The water got hot.
 Why did the water get hot?
 Because the stove made heat.
 
----
 The baby cried.
 Mom picked her up.
 The baby stopped crying.
 Why did she stop?
 Because she wanted to be held.
 
----
 The window is open.
 The curtain moves.
 Why does the curtain move?
 Because wind blows through.
 
----
 Sam ate too much candy.
 His tummy hurt.
 Why did his tummy hurt?
 Because he ate too much sugar.
 
----
 The alarm clock rang.
 Lily woke up.
 Why did she wake up?
 Because the noise was loud.
 
----
 The pencil rolled off the desk.
 It fell to the floor.
 Why did it fall?
 Because it rolled off the edge.
 
----
 Grandma baked a pie.
 The house smells sweet.
 Why does it smell sweet?
 Because the pie is cooking.
 
----
 The boy ran fast.
 He got tired.
 Why did he get tired?
 Because running uses energy.
 
----
 It is winter.
 The lake is frozen.
 Why is the lake frozen?
 Because winter is cold.
 
----
 The battery died.
 The toy stopped moving.
 Why did it stop?
 Because the toy needs power.
 
----
 She put on her coat.
 She felt warm.
 Why did she feel warm?
 Because the coat holds heat.
 
----
 The milk was left on the counter.
 It turned sour.
 Why did it turn sour?
 Because milk spoils without cold.
 
----
 He jumped into the pool.
 He got wet.
 Why did he get wet?
 Because water covers skin.
 
----
 The tree lost its leaves.
 It is autumn.
 Why did the leaves fall?
 Because autumn makes leaves dry.
 
----
 She pressed the button.
 The elevator came.
 Why did it come?
 Because the button signals the elevator.
 
----
 The cat saw a mouse.
 The cat chased it.
 Why did the cat chase?
 Because cats hunt mice.
 
----
 The bread was in the toaster.
 It popped up brown.
 Why is it brown?
 Because the toaster heats it.
 
----
 He put his hand on the stove.
 He pulled it back fast.
 Why did he pull back?
 Because the stove was hot.
 
----
 The river flows downhill.
 Water goes to the sea.
 Why does it flow?
 Because water moves down.
 
----
 She blew on the soup.
 It cooled down.
 Why did it cool?
 Because air cools hot food.
 
----
 The balloon touched the pin.
 It popped.
 Why did it pop?
 Because the pin is sharp.
 
----
 He locked the door.
 No one can enter.
 Why can no one enter?
 Because the lock keeps it shut.
 
----
 The plant grew tall.
 It got sunlight every day.
 Why did it grow?
 Because sunlight helps plants.
 
----
 She put her shoes on.
 She could walk outside.
 Why did she put shoes on?
 To protect her feet.
 
----
 The kettle whistled.
 The water was boiling.
 Why did it whistle?
 Because steam pushed out.
 
----
 He closed the window.
 The noise stopped.
 Why did the noise stop?
 Because the window blocked the sound.
 
----
 The cookies were in the oven.
 They turned golden.
 Why did they turn golden?
 Because the oven bakes them.
 
----
 She dropped the egg.
 It cracked.
 Why did it crack?
 Because eggs are fragile.
 
----
 The fire burned wood.
 It made ash.
 Why did it make ash?
 Because wood turns to ash.
 
----
 The baby drank milk.
 She fell asleep.
 Why did she sleep?
 Because milk made her full.
 
----
 He put gas in the car.
 The car ran again.
 Why did it run?
 Because gas fuels the engine.
 
----
 The sun set.
 The sky turned dark.
 Why did it get dark?
 Because the sun went down.
 
----
 She washed her dress.
 It became clean.
 Why did it become clean?
 Because water and soap remove stains.
 
----
 The dog dug a hole.
 It buried a bone.
 Why did it dig?
 Because dogs hide bones.
 
----
 He opened the fridge.
 Cold air came out.
 Why was it cold?
 Because fridges keep food cool.
 
----
 The child drew on the wall.
 Mom wiped it off.
 Why did she wipe it?
 Because walls should stay clean.
 
----
 The fire truck came.
 The house had smoke.
 Why did the fire truck come?
 Because there was a fire.
 
----
 She put salt on the sidewalk.
 The ice melted.
 Why did the ice melt?
 Because salt makes ice melt.
 
----
 The rooster crowed.
 The sun came up.
 Why did the rooster crow?
 Because roosters crow at dawn.
 
----
 He planted seeds in dirt.
 Flowers grew later.
 Why did flowers grow?
 Because seeds grow in soil.
 
----
 The boat has a sail.
 The wind pushes it.
 Why does the boat move?
 Because wind fills the sail.
 
----
 She turned off the light.
 The room went dark.
 Why was it dark?
 Because no light was on.
 
----
 The child was thirsty.
 She drank water.
 Why did she drink?
 Because thirst needs water.
 
----
-
-# Compare
 
 A truck is bigger than a bike.
 Which is bigger?
 The truck.
 
----
 
 A mouse is smaller than a rabbit.
 Which is smaller?
 The mouse.
 
----
 
 A skyscraper is taller than a house.
 Which is taller?
 The skyscraper.
 
----
 
 A feather is lighter than a rock.
 Which is lighter?
 The feather.
 
----
 
 The ocean is deeper than a lake.
 Which is deeper?
 The ocean.
 
----
 
 A cheetah runs faster than a person.
 Which is faster?
 The cheetah.
 
----
 
 An airplane is faster than a train.
 Which is faster?
 The airplane.
 
----
 
 A diamond is harder than a chalk.
 Which is harder?
 The diamond.
 
----
 
 A river is wider than a creek.
 Which is wider?
 The river.
 
----
 
 A mountain is higher than a hill.
 Which is higher?
 The mountain.
 
----
 
 A whale is heavier than an elephant.
 Which is heavier?
 The whale.
 
----
 
 A grape is smaller than an orange.
 Which is smaller?
 The grape.
 
----
 
 A castle is older than a cottage.
 Which is older?
 The castle.
 
----
 
 The sun is hotter than a fire.
 Which is hotter?
 The sun.
 
----
 
 A highway is longer than a street.
 Which is longer?
 The highway.
 
----
 
 A lion is stronger than a house cat.
 Which is stronger?
 The lion.
 
----
 
 A winter day is colder than a summer day.
 Which is colder?
 The winter day.
 
----
 
 A baby is younger than a grandparent.
 Which is younger?
 The baby.
 
----
 
 A teaspoon holds less than a cup.
 Which holds less?
 The teaspoon.
 
----
 
 A barn is larger than a shed.
 Which is larger?
 The barn.
 
----
 
 A kite flies higher than a balloon.
 Which flies higher?
 The kite.
 
----
 
 A car is cheaper than a jet.
 Which is cheaper?
 The car.
 
----
 
 A candle is dimmer than a lamp.
 Which is dimmer?
 The candle.
 
----
 
 A snail moves slower than a turtle.
 Which is slower?
 The snail.
 
----
 
 A piece of paper is thinner than a book.
 Which is thinner?
 The paper.
 
----
 
 A pond is shallower than a sea.
 Which is shallower?
 The pond.
 
----
 
 A child runs faster than a baby crawls.
 Which is faster?
 The child.
 
----
 
 A hammer is heavier than a nail.
 Which is heavier?
 The hammer.
 
----
 
 A piano is louder than a whistle.
 Which is louder?
 The piano.
 
----
 
 A biscuit is softer than a cracker.
 Which is softer?
 The biscuit.
 
----
 
 A rose smells sweeter than a rock.
 Which is sweeter?
 The rose.
 
----
 
 A minute is shorter than an hour.
 Which is shorter?
 The minute.
 
----
 
 A dime is smaller than a quarter.
 Which is smaller?
 The dime.
 
----
 
 A puppy is more playful than an old dog.
 Which is more playful?
 The puppy.
 
----
 
 A bicycle is cheaper than a motorcycle.
 Which is cheaper?
 The bicycle.
 
----
 
 A feather floats better than a stone.
 Which floats better?
 The feather.
 
----
 
 A mirror is more reflective than a wall.
 Which is more reflective?
 The mirror.
 
----
 
 A grapefruit is bigger than a lemon.
 Which is bigger?
 The grapefruit.
 
----
 
 A blanket is warmer than a sheet.
 Which is warmer?
 The blanket.
 
----
 
 A storm is more dangerous than a breeze.
 Which is more dangerous?
 The storm.
 
----
 
 A sponge soaks more water than a cloth.
 Which soaks more?
 The sponge.
 
----
 
 A snowflake is lighter than a raindrop.
 Which is lighter?
 The snowflake.
 
----
 
 A giraffe has a longer neck than a horse.
 Which has a longer neck?
 The giraffe.
 
----
 
 A peanut is smaller than an almond.
 Which is smaller?
 The peanut.
 
----
 
 A city is bigger than a village.
 Which is bigger?
 The city.
 
----
 
 A leather shoe is stronger than a cloth shoe.
 Which is stronger?
 The leather shoe.
 
----
 
 A diamond is more rare than a glass bead.
 Which is more rare?
 The diamond.
 
----
 
 A helicopter flies slower than a jet.
 Which flies slower?
 The helicopter.
 
----
 
 A puddle is shallower than a lake.
 Which is shallower?
 The puddle.
 
----
 
 A whisper is quieter than a shout.
 Which is quieter?
 The whisper.
 
----
 
 A chair is softer than a bench.
 Which is softer?
 The chair.
 
----
-
-# Multi-step Reasoning
 
 Tom has 5 apples.
 He buys 3 more apples.
@@ -620,7 +514,6 @@ He gives 2 to his sister.
 How many apples does Tom have?
 Tom has 6 apples.
 
----
 
 Emma has 8 crayons.
 She loses 2 crayons.
@@ -628,7 +521,6 @@ She finds 4 crayons.
 How many crayons does she have?
 Emma has 10 crayons.
 
----
 
 There are 6 birds on a fence.
 3 birds fly away.
@@ -636,7 +528,6 @@ There are 6 birds on a fence.
 How many birds are on the fence?
 There are 5 birds.
 
----
 
 Dad bakes 10 cookies.
 Mom eats 2 cookies.
@@ -644,7 +535,6 @@ The children eat 4 cookies.
 How many cookies are left?
 There are 4 cookies.
 
----
 
 Ben has 7 toy cars.
 He gets 3 new cars for his birthday.
@@ -652,7 +542,6 @@ He gives 1 car to his friend.
 How many cars does Ben have?
 Ben has 9 cars.
 
----
 
 A box has 12 pencils.
 The teacher takes 4 pencils.
@@ -660,7 +549,6 @@ The students take 5 pencils.
 How many pencils are left?
 There are 3 pencils.
 
----
 
 Lily picks 6 flowers from the garden.
 She picks 4 more flowers.
@@ -668,7 +556,6 @@ She puts 3 flowers in a vase.
 How many flowers does she have left?
 Lily has 7 flowers.
 
----
 
 A farmer has 9 sheep.
 He buys 5 more sheep.
@@ -676,7 +563,6 @@ He buys 5 more sheep.
 How many sheep does the farmer have?
 The farmer has 12 sheep.
 
----
 
 Sara has 4 dolls.
 She gets 2 dolls from her grandma.
@@ -684,7 +570,6 @@ She gives 1 doll to her cousin.
 How many dolls does Sara have?
 Sara has 5 dolls.
 
----
 
 There are 10 fish in a pond.
 The fisherman catches 3 fish.
@@ -692,7 +577,6 @@ He puts back 1 fish.
 How many fish are still in the pond?
 There are 8 fish.
 
----
 
 Mason has 6 marbles.
 He finds 3 marbles on the ground.
@@ -700,7 +584,6 @@ He loses 2 marbles.
 How many marbles does Mason have?
 Mason has 7 marbles.
 
----
 
 A cake is cut into 8 slices.
 The family eats 5 slices.
@@ -708,7 +591,6 @@ The guests eat 2 slices.
 How many slices are left?
 There is 1 slice left.
 
----
 
 Ella has 11 stickers.
 She gives 4 stickers to her friend.
@@ -716,7 +598,6 @@ She buys 3 more stickers.
 How many stickers does Ella have?
 Ella has 10 stickers.
 
----
 
 A bus has 14 passengers.
 6 passengers get off.
@@ -724,14 +605,12 @@ A bus has 14 passengers.
 How many passengers are on the bus?
 There are 12 passengers.
 
----
 
 Tom has 9 red blocks and 4 blue blocks.
 He gives 3 red blocks away.
 How many blocks does Tom have total?
 Tom has 10 blocks.
 
----
 
 Mia has 8 storybooks.
 She borrows 2 books from the library.
@@ -739,7 +618,6 @@ She lends 1 book to her brother.
 How many books does Mia have now?
 Mia has 9 books.
 
----
 
 There are 15 eggs in a basket.
 Mom uses 6 eggs to bake a cake.
@@ -747,7 +625,6 @@ Dad uses 3 eggs for breakfast.
 How many eggs are left?
 There are 6 eggs.
 
----
 
 Jack has 5 toy soldiers.
 He gets 7 more from his uncle.
@@ -755,7 +632,6 @@ He drops 2 and they break.
 How many does he have left?
 Jack has 10 toy soldiers.
 
----
 
 A store has 20 apples.
 The first customer buys 7 apples.
@@ -763,14 +639,12 @@ The second buys 5 apples.
 How many apples are left?
 There are 8 apples.
 
----
 
 Lucy has 4 pink bows and 3 blue bows.
 She wears 2 pink bows in her hair.
 How many bows does she have total?
 Lucy has 7 bows.
 
----
 
 A tank has 16 liters of water.
 The farmer uses 9 liters to water plants.
@@ -778,7 +652,6 @@ He adds 5 liters back.
 How much water is in the tank?
 There are 12 liters.
 
----
 
 Tom has 10 dollars.
 He spends 4 dollars on a toy.
@@ -786,7 +659,6 @@ He earns 3 dollars for chores.
 How many dollars does Tom have?
 Tom has 9 dollars.
 
----
 
 There are 18 chairs in a room.
 The teacher arranges 6 chairs for the kids.
@@ -794,7 +666,6 @@ She arranges 5 chairs for the parents.
 How many chairs are not arranged?
 There are 7 chairs.
 
----
 
 Emma has 7 hair clips.
 She finds 2 clips in her drawer.
@@ -802,7 +673,6 @@ She loses 3 clips at school.
 How many clips does she have?
 Emma has 6 clips.
 
----
 
 A basket has 12 oranges.
 The family eats 4 oranges.
@@ -810,7 +680,6 @@ They give 3 oranges to a neighbor.
 How many oranges are left?
 There are 5 oranges.
 
----
 
 Ben has 9 pencils.
 He gets 5 new pencils.
@@ -818,7 +687,6 @@ He gives 2 pencils to his teacher.
 How many pencils does Ben have?
 Ben has 12 pencils.
 
----
 
 There are 24 cookies on a tray.
 The kids eat 8 cookies.
@@ -826,7 +694,6 @@ The parents eat 6 cookies.
 How many cookies are left?
 There are 10 cookies.
 
----
 
 Sally has 6 dolls.
 She buys 3 more dolls at a fair.
@@ -834,7 +701,6 @@ She gives 1 doll to her sister.
 How many dolls does Sally have?
 Sally has 8 dolls.
 
----
 
 A van carries 10 people.
 It picks up 4 more people.
@@ -842,7 +708,6 @@ It drops off 3 people.
 How many people are in the van?
 There are 11 people.
 
----
 
 Peter has 5 cats.
 He adopts 2 more cats.
@@ -850,7 +715,6 @@ He adopts 2 more cats.
 How many cats does Peter have?
 Peter has 6 cats.
 
----
 
 There are 30 flowers in the garden.
 The gardener picks 12 flowers.
@@ -858,7 +722,6 @@ He plants 8 new flowers.
 How many flowers are in the garden?
 There are 26 flowers.
 
----
 
 Amy has 8 bracelets.
 She makes 3 bracelets.
@@ -866,7 +729,6 @@ She gives 2 bracelets to her mom.
 How many bracelets does Amy have?
 Amy has 9 bracelets.
 
----
 
 A box has 28 crayons.
 The child breaks 4 crayons.
@@ -875,7 +737,6 @@ He adds 6 new crayons.
 How many crayons are in the box?
 There are 27 crayons.
 
----
 
 James has 6 toy cars.
 His friend gives him 4 cars.
@@ -883,7 +744,6 @@ He loses 2 cars at the park.
 How many cars does James have?
 James has 8 cars.
 
----
 
 There are 22 students in a class.
 5 students go home sick.
@@ -891,7 +751,6 @@ There are 22 students in a class.
 How many students are in the class?
 There are 20 students.
 
----
 
 Lily has 9 hair ties.
 She buys 6 hair ties.
@@ -899,7 +758,6 @@ She uses 4 hair ties for her hair.
 How many hair ties does she have left?
 Lily has 11 hair ties.
 
----
 
 A farmer has 14 chickens.
 He sells 5 chickens.
@@ -907,14 +765,12 @@ He buys 7 chickens.
 How many chickens does he have?
 The farmer has 16 chickens.
 
----
 
 Tom has 5 toy trucks and 6 toy trains.
 He gives 2 trucks to his cousin.
 How many toys does Tom have total?
 Tom has 9 toys.
 
----
 
 There are 26 apples on a tree.
 The wind knocks down 8 apples.
@@ -922,7 +778,6 @@ The farmer picks 9 apples.
 How many apples are still on the tree?
 There are 9 apples.
 
----
 
 Emma has 10 stickers.
 She gives 3 stickers to Paul.
@@ -930,7 +785,6 @@ She gets 2 stickers from Ben.
 How many stickers does Emma have?
 Emma has 9 stickers.
 
----
 
 A bridge has 16 cars on it.
 4 cars drive off.
@@ -938,7 +792,6 @@ A bridge has 16 cars on it.
 How many cars are on the bridge?
 There are 18 cars.
 
----
 
 Sam has 8 toy dinosaurs.
 He finds 3 more in his room.
@@ -946,7 +799,6 @@ He gives 1 to his sister.
 How many does he have left?
 Sam has 10 toy dinosaurs.
 
----
 
 There are 40 books on a shelf.
 The librarian takes 15 books away.
@@ -954,7 +806,6 @@ She puts 10 books back.
 How many books are on the shelf?
 There are 35 books.
 
----
 
 Molly has 12 candies.
 She eats 4 candies.
@@ -962,7 +813,6 @@ She gets 5 candies from her dad.
 How many candies does Molly have?
 Molly has 13 candies.
 
----
 
 A train has 50 seats.
 25 seats are full.
@@ -970,14 +820,12 @@ A train has 50 seats.
 How many seats are empty?
 There are 15 empty seats.
 
----
 
 Ben has 7 green balls and 5 red balls.
 He throws 3 green balls to the dog.
 How many balls does Ben have total?
 Ben has 9 balls.
 
----
 
 There are 18 eggs in the fridge.
 Mom uses 6 eggs for an omelet.
@@ -985,7 +833,6 @@ Dad uses 4 eggs for a cake.
 How many eggs are left?
 There are 8 eggs.
 
----
 
 Sara has 11 drawings.
 She gives 4 drawings to her teacher.
@@ -993,7 +840,6 @@ She draws 3 new drawings.
 How many drawings does Sara have?
 Sara has 10 drawings.
 
----
 
 A bowl has 16 cherries.
 The kids eat 7 cherries.
@@ -1001,14 +847,12 @@ The mom eats 3 cherries.
 How many cherries are left?
 There are 6 cherries.
 
----
 
 Tom has 5 yellow balloons and 4 red balloons.
 He pops 2 yellow balloons.
 How many balloons does Tom have?
 Tom has 7 balloons.
 
----
 
 There are 35 pebbles on the path.
 The boy picks up 12 pebbles.
@@ -1016,1367 +860,1156 @@ He throws 5 pebbles into the pond.
 How many pebbles are left on the path?
 There are 18 pebbles.
 
----
-
-# Location Reasoning
 
 The spoon is on the table.
 The table is in the kitchen.
 Where is the spoon?
 In the kitchen.
 
----
 
 The cat sleeps under the bed.
 The bed is in the bedroom.
 Where is the cat?
 In the bedroom.
 
----
 
 The keys are in the drawer.
 The drawer is in the desk.
 Where are the keys?
 In the desk.
 
----
 
 The toy is on the shelf.
 The shelf is in the playroom.
 Where is the toy?
 In the playroom.
 
----
 
 The towel is on the rack.
 The rack is in the bathroom.
 Where is the towel?
 In the bathroom.
 
----
 
 The ball is under the chair.
 The chair is in the dining room.
 Where is the ball?
 In the dining room.
 
----
 
 The book is on the couch.
 The couch is in the living room.
 Where is the book?
 In the living room.
 
----
 
 The milk is in the fridge.
 The fridge is in the kitchen.
 Where is the milk?
 In the kitchen.
 
----
 
 The hat is on the hook.
 The hook is by the door.
 Where is the hat?
 By the door.
 
----
 
 The shoes are on the mat.
 The mat is by the front door.
 Where are the shoes?
 By the front door.
 
----
 
 The dog is under the porch.
 The porch is outside the house.
 Where is the dog?
 Outside the house.
 
----
 
 The picture is on the wall.
 The wall is in the hallway.
 Where is the picture?
 In the hallway.
 
----
 
 The apple is in the bowl.
 The bowl is on the counter.
 Where is the apple?
 On the counter.
 
----
 
 The broom is behind the door.
 The door is in the kitchen.
 Where is the broom?
 In the kitchen.
 
----
 
 The radio is on the table.
 The table is on the patio.
 Where is the radio?
 On the patio.
 
----
 
 The pencil is in the cup.
 The cup is on the desk.
 Where is the pencil?
 On the desk.
 
----
 
 The bird is on the roof.
 The roof is on the house.
 Where is the bird?
 On the house.
 
----
 
 The scissors are in the drawer.
 The drawer is in the office.
 Where are the scissors?
 In the office.
 
----
 
 The blanket is on the bed.
 The bed is in the guest room.
 Where is the blanket?
 In the guest room.
 
----
 
 The cup is on the saucer.
 The saucer is on the tray.
 Where is the cup?
 On the tray.
 
----
 
 The flowers are in the vase.
 The vase is on the windowsill.
 Where are the flowers?
 On the windowsill.
 
----
 
 The ball is behind the couch.
 The couch is in the den.
 Where is the ball?
 In the den.
 
----
 
 The pan is on the stove.
 The stove is in the kitchen.
 Where is the pan?
 In the kitchen.
 
----
 
 The shoes are under the bed.
 The bed is in the bedroom.
 Where are the shoes?
 In the bedroom.
 
----
 
 The leaf is on the ground.
 The ground is in the yard.
 Where is the leaf?
 In the yard.
 
----
 
 The chalk is on the board.
 The board is in the classroom.
 Where is the chalk?
 In the classroom.
 
----
 
 The umbrella is in the stand.
 The stand is near the entrance.
 Where is the umbrella?
 Near the entrance.
 
----
 
 The pillow is on the sofa.
 The sofa is in the living room.
 Where is the pillow?
 In the living room.
 
----
 
 The newspaper is on the porch.
 The porch is in front of the house.
 Where is the newspaper?
 In front of the house.
 
----
 
 The hammer is in the toolbox.
 The toolbox is in the garage.
 Where is the hammer?
 In the garage.
 
----
 
 The toy train is on the track.
 The track is on the floor.
 Where is the toy train?
 On the floor.
 
----
 
 The juice is in the pitcher.
 The pitcher is in the refrigerator.
 Where is the juice?
 In the refrigerator.
 
----
 
 The coat is on the chair.
 The chair is near the window.
 Where is the coat?
 Near the window.
 
----
 
 The paintbrush is in the cup.
 The cup is on the shelf.
 Where is the paintbrush?
 On the shelf.
 
----
 
 The ball is on the grass.
 The grass is in the park.
 Where is the ball?
 In the park.
 
----
 
 The comb is in the bag.
 The bag is on the counter.
 Where is the comb?
 On the counter.
 
----
 
 The ring is in the box.
 The box is on the dresser.
 Where is the ring?
 On the dresser.
 
----
 
 The soap is in the holder.
 The holder is by the sink.
 Where is the soap?
 By the sink.
 
----
 
 The kite is in the tree.
 The tree is in the backyard.
 Where is the kite?
 In the backyard.
 
----
 
 The letter is on the desk.
 The desk is in the study.
 Where is the letter?
 In the study.
 
----
 
 The plate is on the tablecloth.
 The tablecloth is on the table.
 Where is the plate?
 On the table.
 
----
 
 The mouse is behind the wall.
 The wall is in the cellar.
 Where is the mouse?
 In the cellar.
 
----
 
 The bucket is under the tap.
 The tap is outside the house.
 Where is the bucket?
 Outside the house.
 
----
 
 The ruler is in the pencil case.
 The pencil case is in the backpack.
 Where is the ruler?
 In the backpack.
 
----
 
 The blanket is on the floor.
 The floor is in the nursery.
 Where is the blanket?
 In the nursery.
 
----
 
 The candle is on the cake.
 The cake is on the platter.
 Where is the candle?
 On the platter.
 
----
 
 The key is under the mat.
 The mat is on the doorstep.
 Where is the key?
 On the doorstep.
 
----
 
 The glass is on the coaster.
 The coaster is on the table.
 Where is the glass?
 On the table.
 
----
 
 The toy is in the box.
 The box is in the closet.
 Where is the toy?
 In the closet.
 
----
 
 The sun shines through the window.
 The window is in the living room.
 Where is the sun?
 In the living room.
 
----
-
-# Family Reasoning
 
 Tom is Mary's son.
 Mary is John's daughter.
 Who is John's grandson?
 Tom.
 
----
 
 Anna is Ben's mother.
 Ben is Claire's father.
 Who is Claire's grandmother?
 Anna.
 
----
 
 David is Lisa's brother.
 Lisa is Sam's mother.
 Who is David to Sam?
 Uncle.
 
----
 
 Paul is Emma's grandfather.
 Emma is Roy's cousin.
 Who is Paul to Roy?
 Grandfather.
 
----
 
 Sally is Pete's sister.
 Pete is Ann's son.
 Who is Sally to Ann?
 Daughter.
 
----
 
 Robert is Diane's father.
 Diane is Kevin's aunt.
 Who is Robert to Kevin?
 Grandfather.
 
----
 
 Jill is Mike's wife.
 Mike is Tom's brother.
 Who is Jill to Tom?
 Sister-in-law.
 
----
 
 Helen is Frank's mother.
 Frank is Lily's uncle.
 Who is Helen to Lily?
 Grandmother.
 
----
 
 Carl is Sue's husband.
 Sue is Beth's sister.
 Who is Carl to Beth?
 Brother-in-law.
 
----
 
 Megan is Adam's daughter.
 Adam is Grace's brother.
 Who is Megan to Grace?
 Niece.
 
----
 
 Nancy is Bob's mother-in-law.
 Bob is Carrie's husband.
 Who is Nancy to Carrie?
 Mother-in-law.
 
----
 
 Oscar is Maria's cousin.
 Maria is Jose's sister.
 Who is Oscar to Jose?
 Cousin.
 
----
 
 Ruth is Alan's aunt.
 Alan is Peter's father.
 Who is Ruth to Peter?
 Great-aunt.
 
----
 
 Kate is George's mother.
 George is Helen's father.
 Who is Kate to Helen?
 Grandmother.
 
----
 
 Steven is Emily's son.
 Emily is Mark's sister.
 Who is Steven to Mark?
 Nephew.
 
----
 
 Joy is Ray's daughter-in-law.
 Ray is Brian's father.
 Who is Joy to Brian?
 Sister-in-law.
 
----
 
 Alice is Tom's grandmother.
 Tom is Lily's cousin.
 Who is Alice to Lily?
 Grandmother.
 
----
 
 Henry is Nora's father.
 Nora is Paul's grandmother.
 Who is Henry to Paul?
 Great-grandfather.
 
----
 
 Tina is Sam's wife.
 Sam is Dan's son.
 Who is Tina to Dan?
 Daughter-in-law.
 
----
 
 Leo is Mia's grandfather.
 Mia is Zoe's aunt.
 Who is Leo to Zoe?
 Great-grandfather.
 
----
 
 Ann is Ed's sister.
 Ed is Cal's uncle.
 Who is Ann to Cal?
 Aunt.
 
----
 
 Fred is Laura's brother.
 Laura is Tim's mother.
 Who is Fred to Tim?
 Uncle.
 
----
 
 Rose is Tony's grandmother.
 Tony is Sara's cousin.
 Who is Rose to Sara?
 Grandmother.
 
----
 
 Gene is Pia's son-in-law.
 Pia is Mona's mother.
 Who is Gene to Mona?
 Brother-in-law.
 
----
 
 Lynn is Rick's daughter.
 Rick is Sue's brother.
 Who is Lynn to Sue?
 Niece.
 
----
 
 Dave is Amy's father.
 Amy is Lou's wife.
 Who is Dave to Lou?
 Father-in-law.
 
----
 
 Cindy is Paul's sister.
 Paul is Jane's husband.
 Who is Cindy to Jane?
 Sister-in-law.
 
----
 
 Mark is Carla's nephew.
 Carla is Tim's mother.
 Who is Mark to Tim?
 Cousin.
 
----
 
 Sheila is Don's mother-in-law.
 Don is Pat's brother.
 Who is Sheila to Pat?
 Mother.
 
----
 
 Glen is Rita's grandfather.
 Rita is Kim's cousin.
 Who is Glen to Kim?
 Grandfather.
 
----
 
 Brenda is Tom's daughter.
 Tom is Sara's uncle.
 Who is Brenda to Sara?
 Cousin.
 
----
 
 Hector is Maya's brother.
 Maya is Jose's wife.
 Who is Hector to Jose?
 Brother-in-law.
 
----
 
 Olga is Ivan's mother.
 Ivan is Nina's uncle.
 Who is Olga to Nina?
 Grandmother.
 
----
 
 Pam is Neil's aunt.
 Neil is Rose's father.
 Who is Pam to Rose?
 Great-aunt.
 
----
 
 Rex is Dora's father-in-law.
 Dora is Kyle's mother.
 Who is Rex to Kyle?
 Grandfather.
 
----
 
 Vera is Lou's sister.
 Lou is Ann's brother.
 Who is Vera to Ann?
 Sister-in-law.
 
----
 
 Walt is June's grandfather.
 June is Ray's niece.
 Who is Walt to Ray?
 Grandfather.
 
----
 
 Yvonne is Carl's daughter.
 Carl is Beth's uncle.
 Who is Yvonne to Beth?
 Cousin.
 
----
 
 Zane is Opal's son.
 Opal is Ned's grandmother.
 Who is Zane to Ned?
 Father.
 
----
 
 Bruce is Linda's father.
 Linda is Gary's aunt.
 Who is Bruce to Gary?
 Grandfather.
 
----
 
 Edna is Frank's mother.
 Frank is Lola's husband.
 Who is Edna to Lola?
 Mother-in-law.
 
----
 
 Gus is Pearl's brother.
 Pearl is John's mother.
 Who is Gus to John?
 Uncle.
 
----
 
 Hilda is Otto's grandmother.
 Otto is Mina's father.
 Who is Hilda to Mina?
 Great-grandmother.
 
----
 
 Ira is Tess's son-in-law.
 Tess is Adam's mother.
 Who is Ira to Adam?
 Brother-in-law.
 
----
 
 Jan is Kurt's aunt.
 Kurt is Sara's father.
 Who is Jan to Sara?
 Great-aunt.
 
----
 
 Keith is Nora's nephew.
 Nora is Paul's sister.
 Who is Keith to Paul?
 Nephew.
 
----
 
 Lola is Sam's wife.
 Sam is Tina's brother.
 Who is Lola to Tina?
 Sister-in-law.
 
----
 
 Moe is Ida's grandfather.
 Ida is Roy's cousin.
 Who is Moe to Roy?
 Grandfather.
 
----
 
 Ned is Fay's father.
 Fay is Len's wife.
 Who is Ned to Len?
 Father-in-law.
 
----
 
 Otis is Myra's son.
 Myra is Glen's aunt.
 Who is Otis to Glen?
 Cousin.
 
----
-
-# Simple Logic
 
 All dogs have tails.
 A beagle is a dog.
 Does a beagle have a tail?
 Yes.
 
----
 
 All fish have fins.
 A salmon is a fish.
 Does a salmon have fins?
 Yes.
 
----
 
 All flowers need water.
 A rose is a flower.
 Does a rose need water?
 Yes.
 
----
 
 All birds lay eggs.
 A parrot is a bird.
 Does a parrot lay eggs?
 Yes.
 
----
 
 All cats have whiskers.
 A tiger is a cat.
 Does a tiger have whiskers?
 Yes.
 
----
 
 All trees have bark.
 An oak is a tree.
 Does an oak have bark?
 Yes.
 
----
 
 All spiders make webs.
 A black widow is a spider.
 Does it make webs?
 Yes.
 
----
 
 All chairs have legs.
 A rocking chair is a chair.
 Does it have legs?
 Yes.
 
----
 
 All books have pages.
 A dictionary is a book.
 Does it have pages?
 Yes.
 
----
 
 All shoes have soles.
 A sandal is a shoe.
 Does it have soles?
 Yes.
 
----
 
 All cars have wheels.
 A van is a car.
 Does a van have wheels?
 Yes.
 
----
 
 All clocks have hands.
 A wristwatch is a clock.
 Does it have hands?
 Yes.
 
----
 
 All cups hold liquid.
 A mug is a cup.
 Does a mug hold liquid?
 Yes.
 
----
 
 All shirts have sleeves.
 A T-shirt is a shirt.
 Does it have sleeves?
 Yes.
 
----
 
 All houses have doors.
 A cottage is a house.
 Does it have doors?
 Yes.
 
----
 
 All buses have seats.
 A school bus is a bus.
 Does it have seats?
 Yes.
 
----
 
 All beds have mattresses.
 A bunk bed is a bed.
 Does it have a mattress?
 Yes.
 
----
 
 All knives are sharp.
 A butter knife is a knife.
 Is it sharp?
 Yes.
 
----
 
 All balls are round.
 A soccer ball is a ball.
 Is it round?
 Yes.
 
----
 
 All spoons have handles.
 A wooden spoon is a spoon.
 Does it have a handle?
 Yes.
 
----
 
 All oceans have water.
 The Pacific is an ocean.
 Does it have water?
 Yes.
 
----
 
 All buildings have walls.
 A skyscraper is a building.
 Does it have walls?
 Yes.
 
----
 
 All rain is wet.
 A drizzle is rain.
 Is it wet?
 Yes.
 
----
 
 All snow is cold.
 A snowflake is snow.
 Is it cold?
 Yes.
 
----
 
 All fire is hot.
 A campfire is fire.
 Is it hot?
 Yes.
 
----
 
 All paper can be folded.
 A napkin is paper.
 Can it be folded?
 Yes.
 
----
 
 All stairs go up or down.
 A ladder is stairs.
 Does it go up or down?
 Yes.
 
----
 
 All windows are made of glass.
 A car window is a window.
 Is it glass?
 Yes.
 
----
 
 All pants have two legs.
 Jeans are pants.
 Do they have two legs?
 Yes.
 
----
 
 All bread is baked.
 A baguette is bread.
 Is it baked?
 Yes.
 
----
 
 All rivers flow to the sea.
 The Nile is a river.
 Does it flow to the sea?
 Yes.
 
----
 
 All stars are in the sky.
 The sun is a star.
 Is it in the sky?
 Yes.
 
----
 
 All deserts are dry.
 The Sahara is a desert.
 Is it dry?
 Yes.
 
----
 
 All islands are surrounded by water.
 Hawaii is an island.
 Is it surrounded by water?
 Yes.
 
----
 
 All pillows are soft.
 A throw pillow is a pillow.
 Is it soft?
 Yes.
 
----
 
 All apples have seeds.
 A Granny Smith is an apple.
 Does it have seeds?
 Yes.
 
----
 
 All carrots are orange.
 A baby carrot is a carrot.
 Is it orange?
 Yes.
 
----
 
 All cubes have six sides.
 A dice is a cube.
 Does it have six sides?
 Yes.
 
----
 
 All squares have four corners.
 A tile is a square.
 Does it have four corners?
 Yes.
 
----
 
 All circles are round.
 A coin is a circle.
 Is it round?
 Yes.
 
----
 
 All triangles have three sides.
 A warning sign is a triangle.
 Does it have three sides?
 Yes.
 
----
 
 All kangaroos hop.
 A joey is a kangaroo.
 Does it hop?
 Yes.
 
----
 
 All parrots can talk.
 A macaw is a parrot.
 Can it talk?
 Yes.
 
----
 
 All roses have thorns.
 A wild rose is a rose.
 Does it have thorns?
 Yes.
 
----
 
 All bees make honey.
 A bumblebee is a bee.
 Does it make honey?
 Yes.
 
----
 
 All eagles have feathers.
 A bald eagle is an eagle.
 Does it have feathers?
 Yes.
 
----
 
 All diamonds are hard.
 A diamond ring has diamonds.
 Are they hard?
 Yes.
 
----
 
 All magnets attract metal.
 A fridge magnet is a magnet.
 Does it attract metal?
 Yes.
 
----
 
 All mirrors reflect light.
 A bathroom mirror is a mirror.
 Does it reflect light?
 Yes.
 
----
 
 All clocks tell time.
 A grandfather clock is a clock.
 Does it tell time?
 Yes.
 
----
-
-# True / False
 
 Cats can fly.
 True or false?
 False.
 
----
 
 Water is wet.
 True or false?
 True.
 
----
 
 The moon is bigger than the sun.
 True or false?
 False.
 
----
 
 Trees need sunlight.
 True or false?
 True.
 
----
 
 Fish can walk on land.
 True or false?
 False.
 
----
 
 Milk comes from cows.
 True or false?
 True.
 
----
 
 The earth is flat.
 True or false?
 False.
 
----
 
 Birds have fur.
 True or false?
 False.
 
----
 
 Snow is hot.
 True or false?
 False.
 
----
 
 Roses are flowers.
 True or false?
 True.
 
----
 
 The sky is green.
 True or false?
 False.
 
----
 
 Bears hibernate in winter.
 True or false?
 True.
 
----
 
 Pencils have erasers.
 True or false?
 True.
 
----
 
 Fire is cold.
 True or false?
 False.
 
----
 
 Humans have four legs.
 True or false?
 False.
 
----
 
 The ocean is salty.
 True or false?
 True.
 
----
 
 A square has five sides.
 True or false?
 False.
 
----
 
 Butter is made from milk.
 True or false?
 True.
 
----
 
 Nighttime is dark.
 True or false?
 True.
 
----
 
 Cars can swim.
 True or false?
 False.
 
----
 
 Chickens lay eggs.
 True or false?
 True.
 
----
 
 The sun is cold.
 True or false?
 False.
 
----
 
 Horses can fly.
 True or false?
 False.
 
----
 
 Ice is solid water.
 True or false?
 True.
 
----
 
 Trees have leaves.
 True or false?
 True.
 
----
 
 A triangle has four corners.
 True or false?
 False.
 
----
 
 Silk comes from worms.
 True or false?
 True.
 
----
 
 Mountains are flat.
 True or false?
 False.
 
----
 
 Rain falls from clouds.
 True or false?
 True.
 
----
 
 Eagles are birds.
 True or false?
 True.
 
----
 
 A bicycle has four wheels.
 True or false?
 False.
 
----
 
 Stars shine at night.
 True or false?
 True.
 
----
 
 Ants are insects.
 True or false?
 True.
 
----
 
 The moon is made of green cheese.
 True or false?
 False.
 
----
 
 Coffee is a fruit.
 True or false?
 False.
 
----
 
 Penguins can fly.
 True or false?
 False.
 
----
 
 Sugar tastes sweet.
 True or false?
 True.
 
----
 
 The desert is very cold.
 True or false?
 False.
 
----
 
 Flowers have roots.
 True or false?
 True.
 
----
 
 Glass is soft.
 True or false?
 False.
 
----
 
 Knives are sharp.
 True or false?
 True.
 
----
 
 The earth is round.
 True or false?
 True.
 
----
 
 Frogs are reptiles.
 True or false?
 False.
 
----
 
 Paper is made from trees.
 True or false?
 True.
 
----
 
 A clock has no hands.
 True or false?
 False.
 
----
 
 Fire gives light.
 True or false?
 True.
 
----
 
 Penguins live in the Arctic.
 True or false?
 False.
 
----
 
 Apples are blue.
 True or false?
 False.
 
----
 
 Babies can talk at birth.
 True or false?
 False.
 
----
 
 Air is invisible.
 True or false?
 True.
 
----
-
-# If-Then
 
 If it snows,
 people wear warm coats.
@@ -2384,7 +2017,6 @@ It is snowing.
 What should people wear?
 Warm coats.
 
----
 
 If the sun is out,
 you need sunscreen.
@@ -2392,7 +2024,6 @@ The sun is out.
 What do you need?
 Sunscreen.
 
----
 
 If the light is red,
 cars stop.
@@ -2400,7 +2031,6 @@ The light is red.
 What do cars do?
 Stop.
 
----
 
 If your hands are dirty,
 you wash them.
@@ -2408,7 +2038,6 @@ Your hands are dirty.
 What do you do?
 Wash them.
 
----
 
 If the floor is wet,
 you walk carefully.
@@ -2416,7 +2045,6 @@ The floor is wet.
 How do you walk?
 Carefully.
 
----
 
 If you feel sleepy,
 you go to bed.
@@ -2424,7 +2052,6 @@ You feel sleepy.
 What do you do?
 Go to bed.
 
----
 
 If the door is locked,
 you need a key.
@@ -2432,7 +2059,6 @@ The door is locked.
 What do you need?
 A key.
 
----
 
 If you are hungry,
 you eat food.
@@ -2440,7 +2066,6 @@ You are hungry.
 What do you do?
 Eat food.
 
----
 
 If it is dark,
 you turn on a light.
@@ -2448,7 +2073,6 @@ It is dark.
 What do you do?
 Turn on a light.
 
----
 
 If the phone rings,
 you answer it.
@@ -2456,7 +2080,6 @@ The phone rings.
 What do you do?
 Answer it.
 
----
 
 If you have a fever,
 you see a doctor.
@@ -2464,7 +2087,6 @@ You have a fever.
 What do you do?
 See a doctor.
 
----
 
 If the baby cries,
 you hold it.
@@ -2472,7 +2094,6 @@ The baby cries.
 What do you do?
 Hold it.
 
----
 
 If the toast is done,
 it pops up.
@@ -2480,7 +2101,6 @@ The toast is done.
 What does it do?
 Pop up.
 
----
 
 If you spill milk,
 you clean it up.
@@ -2488,7 +2108,6 @@ You spill milk.
 What do you do?
 Clean it up.
 
----
 
 If you need help,
 you ask for it.
@@ -2496,7 +2115,6 @@ You need help.
 What do you do?
 Ask for it.
 
----
 
 If the fire alarm sounds,
 you leave the building.
@@ -2504,7 +2122,6 @@ The fire alarm sounds.
 What do you do?
 Leave the building.
 
----
 
 If the food is hot,
 you blow on it.
@@ -2512,7 +2129,6 @@ The food is hot.
 What do you do?
 Blow on it.
 
----
 
 If you finish your homework,
 you can play.
@@ -2520,7 +2136,6 @@ You finish your homework.
 What can you do?
 Play.
 
----
 
 If the grass is tall,
 you mow it.
@@ -2528,7 +2143,6 @@ The grass is tall.
 What do you do?
 Mow it.
 
----
 
 If the car has no gas,
 it stops.
@@ -2536,7 +2150,6 @@ The car has no gas.
 What does it do?
 Stop.
 
----
 
 If you are lost,
 you ask for directions.
@@ -2544,7 +2157,6 @@ You are lost.
 What do you do?
 Ask for directions.
 
----
 
 If the bath is full,
 you turn off the tap.
@@ -2552,7 +2164,6 @@ The bath is full.
 What do you do?
 Turn off the tap.
 
----
 
 If you cut your finger,
 you put on a bandage.
@@ -2560,7 +2171,6 @@ You cut your finger.
 What do you put on?
 A bandage.
 
----
 
 If the plant is dry,
 you water it.
@@ -2568,7 +2178,6 @@ The plant is dry.
 What do you do?
 Water it.
 
----
 
 If you hear a knock,
 you open the door.
@@ -2576,7 +2185,6 @@ You hear a knock.
 What do you do?
 Open the door.
 
----
 
 If the bread is stale,
 you make toast.
@@ -2584,7 +2192,6 @@ The bread is stale.
 What do you make?
 Toast.
 
----
 
 If you see smoke,
 you call for help.
@@ -2592,7 +2199,6 @@ You see smoke.
 What do you do?
 Call for help.
 
----
 
 If the shoes are untied,
 you tie them.
@@ -2600,7 +2206,6 @@ The shoes are untied.
 What do you do?
 Tie them.
 
----
 
 If the game is over,
 you put away the toys.
@@ -2608,7 +2213,6 @@ The game is over.
 What do you do?
 Put away the toys.
 
----
 
 If you want to draw,
 you need paper.
@@ -2616,7 +2220,6 @@ You want to draw.
 What do you need?
 Paper.
 
----
 
 If you are cold,
 you put on a sweater.
@@ -2624,7 +2227,6 @@ You are cold.
 What do you put on?
 A sweater.
 
----
 
 If the light is too bright,
 you close the curtains.
@@ -2632,7 +2234,6 @@ The light is too bright.
 What do you do?
 Close the curtains.
 
----
 
 If you have a question,
 you raise your hand.
@@ -2640,7 +2241,6 @@ You have a question.
 What do you do?
 Raise your hand.
 
----
 
 If the paint is wet,
 you do not touch it.
@@ -2648,7 +2248,6 @@ The paint is wet.
 What do you do?
 Do not touch it.
 
----
 
 If you are tired,
 you sit down.
@@ -2656,7 +2255,6 @@ You are tired.
 What do you do?
 Sit down.
 
----
 
 If the dog wants out,
 it scratches the door.
@@ -2664,7 +2262,6 @@ The dog scratches the door.
 What does it want?
 Out.
 
----
 
 If the cake is ready,
 you take it out of the oven.
@@ -2672,7 +2269,6 @@ The cake is ready.
 What do you do?
 Take it out.
 
----
 
 If your shoelace breaks,
 you replace it.
@@ -2680,7 +2276,6 @@ Your shoelace breaks.
 What do you do?
 Replace it.
 
----
 
 If the bell rings,
 school is over.
@@ -2688,7 +2283,6 @@ The bell rings.
 What happens?
 School is over.
 
----
 
 If you have a gift,
 you unwrap it.
@@ -2696,7 +2290,6 @@ You have a gift.
 What do you do?
 Unwrap it.
 
----
 
 If the ice is thin,
 you do not walk on it.
@@ -2704,7 +2297,6 @@ The ice is thin.
 What do you do?
 Do not walk on it.
 
----
 
 If you find a lost item,
 you return it.
@@ -2712,7 +2304,6 @@ You find a lost item.
 What do you do?
 Return it.
 
----
 
 If you are thirsty,
 you drink water.
@@ -2720,7 +2311,6 @@ You are thirsty.
 What do you drink?
 Water.
 
----
 
 If you hear thunder,
 you go inside.
@@ -2728,7 +2318,6 @@ You hear thunder.
 What do you do?
 Go inside.
 
----
 
 If you break a toy,
 you try to fix it.
@@ -2736,7 +2325,6 @@ You break a toy.
 What do you do?
 Try to fix it.
 
----
 
 If the bed is unmade,
 you make it.
@@ -2744,7 +2332,6 @@ The bed is unmade.
 What do you do?
 Make it.
 
----
 
 If you see a bee,
 you stay still.
@@ -2752,7 +2339,6 @@ You see a bee.
 What do you do?
 Stay still.
 
----
 
 If the garbage is full,
 you take it out.
@@ -2760,7 +2346,6 @@ The garbage is full.
 What do you do?
 Take it out.
 
----
 
 If you get dirty,
 you take a shower.
@@ -2768,7 +2353,6 @@ You get dirty.
 What do you do?
 Take a shower.
 
----
 
 If the computer freezes,
 you restart it.
@@ -2776,1667 +2360,1396 @@ The computer freezes.
 What do you do?
 Restart it.
 
----
-
-# Sequence Order
 
 First, you wake up.
 Then, you brush your teeth.
 What do you do first?
 Wake up.
 
----
 
 First, you put on socks.
 Then, you put on shoes.
 What do you do after socks?
 Put on shoes.
 
----
 
 First, you cut the bread.
 Then, you put butter on it.
 What do you do first?
 Cut the bread.
 
----
 
 First, you fill the pot with water.
 Then, you boil the water.
 What do you do after filling?
 Boil the water.
 
----
 
 First, you plant a seed.
 Then, you water the seed.
 What do you do after planting?
 Water the seed.
 
----
 
 First, you take off your coat.
 Then, you hang it up.
 What do you do first?
 Take off your coat.
 
----
 
 First, you open the book.
 Then, you read the pages.
 What do you do after opening?
 Read the pages.
 
----
 
 First, you buy a ticket.
 Then, you board the train.
 What do you do before boarding?
 Buy a ticket.
 
----
 
 First, you wash your hands.
 Then, you eat your meal.
 What do you do before eating?
 Wash your hands.
 
----
 
 First, you peel the banana.
 Then, you eat the banana.
 What do you do first?
 Peel the banana.
 
----
 
 First, you light the candle.
 Then, you put it on the cake.
 What do you do after lighting?
 Put it on the cake.
 
----
 
 First, you turn on the radio.
 Then, you listen to music.
 What do you do before listening?
 Turn on the radio.
 
----
 
 First, you fill the cup.
 Then, you drink from the cup.
 What do you do after filling?
 Drink from the cup.
 
----
 
 First, you draw the outline.
 Then, you color it in.
 What do you do after the outline?
 Color it in.
 
----
 
 First, you put the kettle on.
 Then, you wait for it to boil.
 What do you do before boiling?
 Put the kettle on.
 
----
 
 First, you pick up the toy.
 Then, you put it in the box.
 What do you do after picking up?
 Put it in the box.
 
----
 
 First, you mix the flour.
 Then, you add eggs.
 What do you do before eggs?
 Mix the flour.
 
----
 
 First, you open the window.
 Then, the fresh air comes in.
 What do you do first?
 Open the window.
 
----
 
 First, you tie your laces.
 Then, you stand up.
 What do you do before standing?
 Tie your laces.
 
----
 
 First, you pour the cereal.
 Then, you add milk.
 What do you do after pouring?
 Add milk.
 
----
 
 First, you take the book from the shelf.
 Then, you sit down to read.
 What do you do first?
 Take the book from the shelf.
 
----
 
 First, you cut the paper.
 Then, you glue the pieces.
 What do you do before gluing?
 Cut the paper.
 
----
 
 First, you dig a hole.
 Then, you place the plant in.
 What do you do after digging?
 Place the plant in.
 
----
 
 First, you turn on the shower.
 Then, you step in.
 What do you do before stepping?
 Turn on the shower.
 
----
 
 First, you dry the dishes.
 Then, you put them away.
 What do you do after drying?
 Put them away.
 
----
 
 First, you pack the suitcase.
 Then, you close it.
 What do you do before closing?
 Pack the suitcase.
 
----
 
 First, you gather the leaves.
 Then, you put them in a bag.
 What do you do after gathering?
 Put them in a bag.
 
----
 
 First, you roll the dough.
 Then, you cut it into shapes.
 What do you do before cutting?
 Roll the dough.
 
----
 
 First, you sweep the floor.
 Then, you mop the floor.
 What do you do after sweeping?
 Mop the floor.
 
----
 
 First, you write the letter.
 Then, you stamp it.
 What do you do after writing?
 Stamp it.
 
----
 
 First, you fill the bathtub.
 Then, you get in.
 What do you do before getting in?
 Fill the bathtub.
 
----
 
 First, you put the key in the lock.
 Then, you turn the key.
 What do you do after inserting?
 Turn the key.
 
----
 
 First, you plug in the lamp.
 Then, you turn it on.
 What do you do after plugging?
 Turn it on.
 
----
 
 First, you slice the cheese.
 Then, you put it on bread.
 What do you do before putting?
 Slice the cheese.
 
----
 
 First, you get the mail.
 Then, you open the letters.
 What do you do after getting?
 Open the letters.
 
----
 
 First, you start the engine.
 Then, you drive the car.
 What do you do before driving?
 Start the engine.
 
----
 
 First, you hang the picture.
 Then, you step back to look.
 What do you do after hanging?
 Step back to look.
 
----
 
 First, you measure the cloth.
 Then, you cut it.
 What do you do before cutting?
 Measure the cloth.
 
----
 
 First, you fold the napkin.
 Then, you put it on the table.
 What do you do after folding?
 Put it on the table.
 
----
 
 First, you ice the cake.
 Then, you add sprinkles.
 What do you do after icing?
 Add sprinkles.
 
----
 
 First, you select a song.
 Then, you play it.
 What do you do before playing?
 Select a song.
 
----
 
 First, you load the dishwasher.
 Then, you run it.
 What do you do after loading?
 Run it.
 
----
 
 First, you put on your gloves.
 Then, you go outside.
 What do you do before going?
 Put on your gloves.
 
----
 
 First, you wash the car.
 Then, you dry it.
 What do you do after washing?
 Dry it.
 
----
 
 First, you prepare the dough.
 Then, you bake it.
 What do you do before baking?
 Prepare the dough.
 
----
 
 First, you take the medicine.
 Then, you drink water.
 What do you do after medicine?
 Drink water.
 
----
 
 First, you climb the ladder.
 Then, you paint the ceiling.
 What do you do after climbing?
 Paint the ceiling.
 
----
 
 First, you pack the lunchbox.
 Then, you put it in your bag.
 What do you do before putting?
 Pack the lunchbox.
 
----
 
 First, you press the button.
 Then, the elevator arrives.
 What do you do first?
 Press the button.
 
----
 
 First, you tie the rope.
 Then, you pull it tight.
 What do you do after tying?
 Pull it tight.
 
----
-
-# Object Attributes
 
 A coin is round and metal.
 What shape is a coin?
 Round.
 
----
 
 An orange is round and orange.
 What color is an orange?
 Orange.
 
----
 
 A pencil is long and thin.
 What shape is a pencil?
 Long and thin.
 
----
 
 A ball is round and bounces.
 Does a ball bounce?
 Yes.
 
----
 
 A sponge is soft and absorbs water.
 Is a sponge soft?
 Yes.
 
----
 
 A rock is hard and heavy.
 Is a rock soft?
 No.
 
----
 
 Glass is transparent and breaks.
 Can you see through glass?
 Yes.
 
----
 
 Wood is brown and floats on water.
 Does wood float?
 Yes.
 
----
 
 A knife is sharp and cuts.
 Is a knife dull?
 No.
 
----
 
 A feather is light and soft.
 Is a feather heavy?
 No.
 
----
 
 A door is rectangular and swings.
 What shape is a door?
 Rectangular.
 
----
 
 A book has pages and a cover.
 Does a book have pages?
 Yes.
 
----
 
 A chair has legs and a seat.
 What does a chair have?
 Legs and a seat.
 
----
 
 A clock has numbers and hands.
 What does a clock have?
 Numbers and hands.
 
----
 
 A flower has petals and a stem.
 What does a flower have?
 Petals and a stem.
 
----
 
 A window is glass and lets light in.
 Does a window let light in?
 Yes.
 
----
 
 A shoe covers your foot and laces.
 What does a shoe cover?
 Your foot.
 
----
 
 A shirt covers your torso and has sleeves.
 Does a shirt have sleeves?
 Yes.
 
----
 
 A hat covers your head and shades your eyes.
 What does a hat cover?
 Your head.
 
----
 
 A tree has a trunk and branches.
 What does a tree have?
 A trunk and branches.
 
----
 
 A car has wheels and a steering wheel.
 Does a car have wheels?
 Yes.
 
----
 
 A train runs on tracks and carries people.
 Where does a train run?
 On tracks.
 
----
 
 A boat floats on water and has oars.
 Does a boat float?
 Yes.
 
----
 
 A plane flies in the air and has wings.
 Where does a plane fly?
 In the air.
 
----
 
 A fish lives in water and has scales.
 Where does a fish live?
 In water.
 
----
 
 A bird has wings and feathers.
 Does a bird have feathers?
 Yes.
 
----
 
 A spider has eight legs and spins webs.
 How many legs does a spider have?
 Eight.
 
----
 
 A cat has whiskers and a tail.
 Does a cat have a tail?
 Yes.
 
----
 
 A dog has four legs and a nose.
 How many legs does a dog have?
 Four.
 
----
 
 A cow gives milk and eats grass.
 What does a cow give?
 Milk.
 
----
 
 A chicken lays eggs and has a beak.
 Does a chicken lay eggs?
 Yes.
 
----
 
 A sheep has wool and bleats.
 What does a sheep have?
 Wool.
 
----
 
 A pig has a snout and a curly tail.
 Does a pig have a curly tail?
 Yes.
 
----
 
 A horse has a mane and runs fast.
 Does a horse run fast?
 Yes.
 
----
 
 A duck swims in water and has webbed feet.
 Where does a duck swim?
 In water.
 
----
 
 A rabbit hops and has long ears.
 Does a rabbit hop?
 Yes.
 
----
 
 A squirrel has a bushy tail and climbs trees.
 Does a squirrel climb?
 Yes.
 
----
 
 A bee has wings and makes honey.
 Does a bee make honey?
 Yes.
 
----
 
 An ant is small and lives in a colony.
 Is an ant big?
 No.
 
----
 
 A snail has a shell and moves slowly.
 Does a snail move fast?
 No.
 
----
 
 A turtle has a shell and lives in water or land.
 What does a turtle have?
 A shell.
 
----
 
 A frog jumps and is green.
 What color is a frog?
 Green.
 
----
 
 A butterfly has wings and is colorful.
 Does a butterfly have wings?
 Yes.
 
----
 
 A worm is long and lives in soil.
 Where does a worm live?
 In soil.
 
----
 
 A sun is hot and gives light.
 Is the sun hot?
 Yes.
 
----
 
 The moon is cold and reflects light.
 Does the moon give its own light?
 No.
 
----
 
 A cloud is white and holds rain.
 Does a cloud hold rain?
 Yes.
 
----
 
 A star is small and twinkles.
 Does a star twinkle?
 Yes.
 
----
 
 A river is long and flows.
 Does a river flow?
 Yes.
 
----
 
 A mountain is high and rocky.
 Is a mountain high?
 Yes.
 
----
-
-# Categorization
 
 A dog, a cat, and a bird are animals.
 Which one is not a plant?
 All are animals.
 
----
 
 A car, a bus, and a train are vehicles.
 What category do they belong to?
 Vehicles.
 
----
 
 A hammer, a screwdriver, and a wrench are tools.
 What are they?
 Tools.
 
----
 
 A rose, a tulip, and a daisy are flowers.
 What are they?
 Flowers.
 
----
 
 A piano, a guitar, and a drum are instruments.
 What are they?
 Instruments.
 
----
 
 A shirt, a dress, and a jacket are clothes.
 What are they?
 Clothes.
 
----
 
 A plate, a bowl, and a cup are dishes.
 What are they?
 Dishes.
 
----
 
 A table, a chair, and a bed are furniture.
 What are they?
 Furniture.
 
----
 
 A pencil, a pen, and a marker are writing tools.
 What are they?
 Writing tools.
 
----
 
 A carrot, a lettuce, and a potato are vegetables.
 What are they?
 Vegetables.
 
----
 
 An apple, a banana, and an orange are fruits.
 What are they?
 Fruits.
 
----
 
 A cow, a pig, and a sheep are farm animals.
 What are they?
 Farm animals.
 
----
 
 A crow, a sparrow, and a seagull are birds.
 What are they?
 Birds.
 
----
 
 A shark, a goldfish, and a salmon are fish.
 What are they?
 Fish.
 
----
 
 A beetle, a bee, and an ant are insects.
 What are they?
 Insects.
 
----
 
 A chair, a sofa, and a stool are seating.
 What are they?
 Seating.
 
----
 
 A spoon, a fork, and a knife are utensils.
 What are they?
 Utensils.
 
----
 
 A blanket, a pillow, and a sheet are bedding.
 What are they?
 Bedding.
 
----
 
 A cloud, rain, and snow are weather.
 What are they?
 Weather.
 
----
 
 A circle, a square, and a triangle are shapes.
 What are they?
 Shapes.
 
----
 
 A red, blue, and green are colors.
 What are they?
 Colors.
 
----
 
 A sofa, a table, and a lamp are household items.
 What are they?
 Household items.
 
----
 
 A boot, a sneaker, and a sandal are footwear.
 What are they?
 Footwear.
 
----
 
 A necklace, a ring, and a bracelet are jewelry.
 What are they?
 Jewelry.
 
----
 
 A chair, a desk, and a shelf are office furniture.
 What are they?
 Office furniture.
 
----
 
 A dog, a cat, and a hamster are pets.
 What are they?
 Pets.
 
----
 
 A star, a planet, and a moon are celestial bodies.
 What are they?
 Celestial bodies.
 
----
 
 A truck, a van, and a sedan are automobiles.
 What are they?
 Automobiles.
 
----
 
 A violin, a cello, and a bass are string instruments.
 What are they?
 String instruments.
 
----
 
 A trumpet, a trombone, and a tuba are brass instruments.
 What are they?
 Brass instruments.
 
----
 
 A flute, a clarinet, and a saxophone are woodwinds.
 What are they?
 Woodwinds.
 
----
 
 A drum, a cymbal, and a tambourine are percussion.
 What are they?
 Percussion.
 
----
 
 A sweater, a hoodie, and a cardigan are upper garments.
 What are they?
 Upper garments.
 
----
 
 A jean, a khaki, and a short are lower garments.
 What are they?
 Lower garments.
 
----
 
 A backpack, a purse, and a briefcase are bags.
 What are they?
 Bags.
 
----
 
 A knife, a fork, and a spatula are kitchen tools.
 What are they?
 Kitchen tools.
 
----
 
 A pan, a pot, and a skillet are cookware.
 What are they?
 Cookware.
 
----
 
 A cup, a mug, and a glass are drinkware.
 What are they?
 Drinkware.
 
----
 
 A plate, a saucer, and a platter are tableware.
 What are they?
 Tableware.
 
----
 
 A blanket, a comforter, and a quilt are coverings.
 What are they?
 Coverings.
 
----
 
 A pillow, a bolster, and a cushion are soft furnishing.
 What are they?
 Soft furnishing.
 
----
 
 A clock, a watch, and a timer are timepieces.
 What are they?
 Timepieces.
 
----
 
 A compass, a ruler, and a protractor are geometry tools.
 What are they?
 Geometry tools.
 
----
 
 A bike, a scooter, and a skateboard are personal transport.
 What are they?
 Personal transport.
 
----
 
 A helicopter, a glider, and a jet are aircraft.
 What are they?
 Aircraft.
 
----
 
 A submarine, a cruiser, and a raft are watercraft.
 What are they?
 Watercraft.
 
----
 
 A castle, a palace, and a cabin are buildings.
 What are they?
 Buildings.
 
----
 
 A desert, a forest, and a grassland are biomes.
 What are they?
 Biomes.
 
----
 
 A crow, a robin, and a blue jay are songbirds.
 What are they?
 Songbirds.
 
----
 
 A lizard, a snake, and a turtle are reptiles.
 What are they?
 Reptiles.
 
----
-
-# Quantitative Reasoning
 
 Tom has 4 apples. He gives 2 to Ben.
 How many apples does Tom have?
 2 apples.
 
----
 
 There are 10 birds. 3 fly away.
 How many are left?
 7 birds.
 
----
 
 A baker has 15 cookies. He sells 8.
 How many does he have left?
 7 cookies.
 
----
 
 Sara has 6 dolls. She buys 3 more.
 How many dolls does she have?
 9 dolls.
 
----
 
 A classroom has 12 chairs. 5 are empty.
 How many chairs are occupied?
 7 chairs.
 
----
 
 There are 20 eggs. 6 are used. 4 are broken.
 How many eggs are left?
 10 eggs.
 
----
 
 Tom has 9 stamps. He uses 3 stamps.
 How many stamps does he have?
 6 stamps.
 
----
 
 A pail has 17 marbles. Mike takes 8 marbles.
 How many are left?
 9 marbles.
 
----
 
 Mom has 11 cookies. She eats 2. She gives 3 to dad.
 How many does she have?
 6 cookies.
 
----
 
 There are 14 students. 6 are girls.
 How many are boys?
 8 boys.
 
----
 
 A shelf has 16 books. 7 are taken.
 How many are on the shelf?
 9 books.
 
----
 
 Ben has 5 green apples and 4 red apples.
 How many apples total?
 9 apples.
 
----
 
 A bag has 24 candies. 9 are eaten.
 How many candies remain?
 15 candies.
 
----
 
 A park has 18 benches. 6 are occupied.
 How many benches are free?
 12 benches.
 
----
 
 Emma reads 8 pages in the morning and 5 in the afternoon.
 How many pages does she read?
 13 pages.
 
----
 
 A basket has 22 oranges. 7 are given to friends.
 How many oranges are left?
 15 oranges.
 
----
 
 There are 30 birds. 12 fly to the south. 8 fly to the north.
 How many birds stay?
 10 birds.
 
----
 
 A box has 19 crayons. 6 are lost. 3 are found.
 How many crayons now?
 16 crayons.
 
----
 
 A theater has 25 seats. 10 are full. 5 are empty.
 How many seats are not accounted for?
 10 seats.
 
----
 
 Mia has 8 bracelets. She makes 4 more. She gives 2 away.
 How many bracelets?
 10 bracelets.
 
----
 
 There are 40 apples on a tree. The farmer picks 15.
 How many apples are left?
 25 apples.
 
----
 
 A jar has 36 coins. Tom adds 7 coins.
 How many coins now?
 43 coins.
 
----
 
 A cake is cut into 16 pieces. The family eats 9 pieces.
 How many pieces are left?
 7 pieces.
 
----
 
 There are 28 children. 12 are playing soccer. 8 are playing tag.
 How many are not playing?
 8 children.
 
----
 
 A ribbon is 20 inches long. You cut 9 inches.
 How long is the ribbon?
 11 inches.
 
----
 
 A store has 55 bottles. They sell 28 bottles.
 How many bottles remain?
 27 bottles.
 
----
 
 A pond has 31 fish. 15 are caught. 7 are put back.
 How many fish in the pond?
 23 fish.
 
----
 
 A sandwich is cut into 12 pieces. You eat 5 pieces.
 How many pieces are left?
 7 pieces.
 
----
 
 There are 60 seats on a bus. 24 are taken.
 How many seats are empty?
 36 seats.
 
----
 
 A group has 45 people. 18 leave. 10 join.
 How many people now?
 37 people.
 
----
 
 A tank has 50 liters. 22 liters are used.
 How much is left?
 28 liters.
 
----
 
 A pizza has 8 slices. You eat 3 slices. Your friend eats 2 slices.
 How many slices are left?
 3 slices.
 
----
 
 A bag has 42 candies. You give 15 to your brother. You eat 7.
 How many candies left?
 20 candies.
 
----
 
 There are 33 flowers in the garden. 12 are red. 9 are yellow.
 How many are other colors?
 12 flowers.
 
----
 
 A box has 27 pencils. The teacher takes 8. The students take 6.
 How many pencils left?
 13 pencils.
 
----
 
 A farmer has 52 chickens. He sells 23 chickens.
 How many chickens does he have?
 29 chickens.
 
----
 
 There are 48 oranges in a crate. 16 are eaten.
 How many oranges remain?
 32 oranges.
 
----
 
 A book has 100 pages. You read 34 pages.
 How many pages are left?
 66 pages.
 
----
 
 A pool has 75 liters of water. 38 liters are removed.
 How much water is left?
 37 liters.
 
----
 
 A classroom has 39 students. 21 are boys.
 How many are girls?
 18 girls.
 
----
 
 A shelf holds 64 cans. 29 cans are taken away.
 How many cans are on the shelf?
 35 cans.
 
----
 
 A toy store has 88 dolls. They sell 37 dolls.
 How many dolls are left?
 51 dolls.
 
----
 
 A dog eats 6 bones on Monday and 4 on Tuesday.
 How many bones total?
 10 bones.
 
----
 
 A bowl has 56 grapes. You eat 29 grapes.
 How many grapes are left?
 27 grapes.
 
----
 
 A map has 72 stars on it. You color 34 stars.
 How many stars are not colored?
 38 stars.
 
----
 
 A truck carries 84 boxes. It delivers 41 boxes.
 How many boxes are still on the truck?
 43 boxes.
 
----
 
 A garden has 91 seeds. You plant 55 seeds.
 How many seeds are not planted?
 36 seeds.
 
----
 
 A crate has 67 eggs. 29 eggs are cracked. 11 are thrown away.
 How many eggs are good?
 27 eggs.
 
----
 
 A train has 120 seats. 44 seats are empty.
 How many seats are taken?
 76 seats.
 
----
 
 A factory makes 95 toys. They ship 62 toys.
 How many toys are left?
 33 toys.
 
----
 
 A school has 150 students. 73 go home early.
 How many students stay?
 77 students.
 
----
-
-# Concept Application
 
 You see a wet umbrella on the floor.
 It must have rained.
 Why is the umbrella wet?
 Because it rained.
 
----
 
 The streetlights are on.
 It must be dark outside.
 Why are the streetlights on?
 Because it is dark.
 
----
 
 You hear a dog barking and scratching the door.
 The dog wants to go outside.
 Why is the dog scratching?
 Because it wants to go out.
 
----
 
 The grass is covered with dew.
 It must be early morning.
 Why is there dew?
 Because it is early morning.
 
----
 
 You see smoke coming from a chimney.
 Someone is burning wood inside.
 Why is there smoke?
 Because wood is burning.
 
----
 
 The child is wearing a hat and sunglasses.
 It must be sunny.
 Why is the child wearing sunglasses?
 Because it is sunny.
 
----
 
 You see a ladder leaning against a tree.
 Someone is picking fruit.
 Why is the ladder there?
 Because someone is picking fruit.
 
----
 
 The floor is wet and there is a mop nearby.
 Someone just mopped the floor.
 Why is the floor wet?
 Because someone mopped it.
 
----
 
 You smell bread baking.
 Someone is in the kitchen.
 Why do you smell bread?
 Because someone is baking.
 
----
 
 The cat is sitting by an empty bowl.
 The cat is hungry.
 Why is the cat sitting there?
 Because it is hungry.
 
----
 
 You see footprints in the sand.
 Someone walked there.
 Why are there footprints?
 Because someone walked.
 
----
 
 The window is open and the curtain is blowing.
 There is a breeze outside.
 Why is the curtain blowing?
 Because of the breeze.
 
----
 
 You see a pile of leaves in the yard.
 Someone raked the leaves.
 Why are the leaves piled?
 Because someone raked them.
 
----
 
 The TV is on with no sound.
 Someone muted the TV.
 Why is there no sound?
 Because it is muted.
 
----
 
 You see a half-eaten sandwich on the plate.
 Someone was eating.
 Why is the sandwich half eaten?
 Because someone ate part of it.
 
----
 
 A chair is moved close to the counter.
 A child needed to reach something.
 Why is the chair there?
 Because a child needed to reach.
 
----
 
 The water faucet is dripping.
 It needs to be fixed.
 Why is it dripping?
 Because it is broken.
 
----
 
 You find a key on the table.
 It belongs to a lock.
 Why is the key there?
 Because it belongs to a lock.
 
----
 
 The car headlights are on.
 It is getting dark.
 Why are the headlights on?
 Because it is getting dark.
 
----
 
 You see a kite in a tree.
 The wind blew it there.
 Why is the kite in the tree?
 Because the wind blew it.
 
----
 
 There is a bandage on a child's knee.
 The child fell and scraped it.
 Why is there a bandage?
 Because the child fell.
 
----
 
 The trash can is full and overflowing.
 No one emptied it.
 Why is it overflowing?
 Because no one emptied it.
 
----
 
 You see a jacket on the back of a chair.
 Someone took it off.
 Why is the jacket there?
 Because someone took it off.
 
----
 
 The dog is wagging its tail and jumping.
 The dog is happy.
 Why is the dog wagging its tail?
 Because it is happy.
 
----
 
 The milk carton is empty in the fridge.
 Someone finished the milk.
 Why is it empty?
 Because someone finished it.
 
----
 
 You see a footprint in the mud.
 A person stepped there.
 Why is there a footprint?
 Because a person stepped there.
 
----
 
 The door is open and the lights are off.
 No one is home.
 Why are the lights off?
 Because no one is home.
 
----
 
 The baby is yawning and rubbing her eyes.
 The baby is tired.
 Why is she yawning?
 Because she is tired.
 
----
 
 You see a broom in the middle of the floor.
 Someone was sweeping and stopped.
 Why is the broom there?
 Because someone was sweeping.
 
----
 
 The sidewalk has chalk drawings.
 Children were playing outside.
 Why are there drawings?
 Because children were playing.
 
----
 
 A plate is in the sink with food on it.
 Someone finished eating.
 Why is the plate in the sink?
 Because someone finished eating.
 
----
 
 You see a note on the fridge with a magnet.
 Someone left a message.
 Why is the note there?
 Because someone left a message.
 
----
 
 The light bulb is burned out in the lamp.
 The room is dim.
 Why is the room dim?
 Because the bulb is burned out.
 
----
 
 You see a pile of books on the floor.
 Someone was reading.
 Why are the books there?
 Because someone was reading.
 
----
 
 The flower petals are drooping.
 The flower needs water.
 Why are they drooping?
 Because it needs water.
 
----
 
 You see a suitcase by the door.
 Someone is leaving or arriving.
 Why is the suitcase there?
 Because someone is traveling.
 
----
 
 The dog is panting after a run.
 The dog is hot and tired.
 Why is the dog panting?
 Because it is hot.
 
----
 
 You hear a baby crying in the next room.
 The baby needs attention.
 Why is the baby crying?
 Because it needs attention.
 
----
 
 The floor has crumbs on it.
 Someone ate crackers there.
 Why are there crumbs?
 Because someone ate crackers.
 
----
 
 You see a glove on the bench.
 Someone left it behind.
 Why is the glove there?
 Because someone left it.
 
----
 
 The sky is dark and the wind is strong.
 A storm is coming.
 Why is the sky dark?
 Because a storm is coming.
 
----
 
 You see a pair of scissors on the desk.
 Someone was cutting paper.
 Why are the scissors there?
 Because someone was cutting.
 
----
 
 The bike is lying on its side.
 It fell over.
 Why is the bike on its side?
 Because it fell.
 
----
 
 You see a cup with a tea bag string hanging out.
 Someone was making tea.
 Why is the string there?
 Because someone was making tea.
 
----
 
 The pillow is on the floor.
 It fell off the bed.
 Why is it on the floor?
 Because it fell.
 
----
 
 You see a dirty plate and a glass on the table.
 Someone ate and drank there.
 Why are they there?
 Because someone ate and drank.
 
----
 
 The tree branch is broken and on the ground.
 The wind or a storm broke it.
 Why is the branch down?
 Because the wind broke it.
 
----
 
 You see a towel on the bathroom floor.
 Someone took a shower.
 Why is the towel there?
 Because someone took a shower.
 
----
 
 The clock shows 8:00 in the morning.
 It is time for school or work.
 What time is it?
 8:00 in the morning.
 
----
 
 You see a full trash bag tied and set out.
 It is garbage collection day.
 Why is the bag outside?
 Because it is garbage day.
 
----
-
-# Exclusion Reasoning
 
 A dog, a cat, and a car.
 Which one is not an animal?
 The car.
 
----
 
 A rose, a table, and a daisy.
 Which one is not a flower?
 The table.
 
----
 
 A truck, a bus, and a bird.
 Which one is not a vehicle?
 The bird.
 
----
 
 A book, a pencil, and a cow.
 Which one is not a school item?
 The cow.
 
----
 
 A plate, a spoon, and a tree.
 Which one is not a kitchen item?
 The tree.
 
----
 
 A shirt, a sock, and a house.
 Which one is not clothing?
 The house.
 
----
 
 A carrot, a potato, and a toy.
 Which one is not a vegetable?
 The toy.
 
----
 
 A bed, a sofa, and a lamp.
 Which one is not furniture?
@@ -4445,621 +3758,516 @@ A bed, a sofa, and a apple.
 Which one is not furniture?
 The apple.
 
----
 
 A hammer, a nail, and a flower.
 Which one is not a tool?
 The flower.
 
----
 
 A circle, a square, and a cloud.
 Which one is not a shape?
 The cloud.
 
----
 
 A red, blue, and happy.
 Which one is not a color?
 Happy.
 
----
 
 A lion, a tiger, and a kite.
 Which one is not an animal?
 The kite.
 
----
 
 A pear, an apple, and a chair.
 Which one is not a fruit?
 The chair.
 
----
 
 A fork, a spoon, and a shoe.
 Which one is not a utensil?
 The shoe.
 
----
 
 A sock, a hat, and a river.
 Which one is not clothing?
 The river.
 
----
 
 A cloud, rain, and a bicycle.
 Which one is not weather?
 The bicycle.
 
----
 
 A dog, a cat, and a table.
 Which one is not a pet?
 The table.
 
----
 
 A bus, a train, and a flower.
 Which one is not transport?
 The flower.
 
----
 
 A guitar, a drum, and a book.
 Which one is not an instrument?
 The book.
 
----
 
 A window, a door, and a cow.
 Which one is not a part of a house?
 The cow.
 
----
 
 A star, a moon, and a tree.
 Which one is not in the sky?
 The tree.
 
----
 
 A fish, a bird, and a car.
 Which one is not a living thing?
 The car.
 
----
 
 A knife, a fork, and a pillow.
 Which one is not a utensil?
 The pillow.
 
----
 
 A shirt, a pants, and a sofa.
 Which one is not clothing?
 The sofa.
 
----
 
 A balloon, a kite, and a rock.
 Which one can fly?
 The balloon and kite, but which one cannot fly? The rock.
 
----
 
 A rabbit, a squirrel, and a stone.
 Which one is not an animal?
 The stone.
 
----
 
 A pencil, a pen, and a sofa.
 Which one is not a writing tool?
 The sofa.
 
----
 
 A hat, a coat, and a plate.
 Which one is not clothing?
 The plate.
 
----
 
 A cup, a bowl, and a book.
 Which one is not dishware?
 The book.
 
----
 
 A car, a motorcycle, and a lamp.
 Which one is not a vehicle?
 The lamp.
 
----
 
 A dog, a cat, and a fish.
 Which one can not live on land?
 The fish.
 
----
 
 A bird, a plane, and a ship.
 Which one is not a watercraft?
 The bird and plane, but specifically not watercraft is bird and plane, but ask: which is not aircraft? Ship.
 
----
 
 A spider, an ant, and a hammer.
 Which one is not a tool?
 The spider and ant, but which is not an insect? Hammer.
 
----
 
 A tree, a bush, and a house.
 Which one is not a plant?
 The house.
 
----
 
 A cake, a pizza, and a hammer.
 Which one is not food?
 The hammer.
 
----
 
 A shoe, a boot, and a flower.
 Which one is not footwear?
 The flower.
 
----
 
 A fork, a spoon, and a cloud.
 Which one is not a utensil?
 The cloud.
 
----
 
 A train, a ship, and a tree.
 Which one is not a mode of transport?
 The tree.
 
----
 
 A book, a magazine, and a chair.
 Which one is not a reading material?
 The chair.
 
----
 
 A clown, a teacher, and a stone.
 Which one is not a person?
 The stone.
 
----
 
 A violin, a flute, and a desk.
 Which one is not an instrument?
 The desk.
 
----
 
 A banana, a grape, and a television.
 Which one is not a fruit?
 The television.
 
----
 
 A cup, a saucer, and a drum.
 Which one is not dishware?
 The drum.
 
----
 
 A jacket, a sweater, and a towel.
 Which one is not clothing?
 The towel.
 
----
 
 A desk, a chair, and a computer.
 Which one is not furniture?
 The computer.
 
----
 
 A lion, a tiger, and a rose.
 Which one is not a flower?
 The lion and tiger, but ask: which is not an animal? Rose.
 
----
 
 A diamond, a ruby, and a leaf.
 Which one is not a gemstone?
 The leaf.
 
----
 
 A fish, a whale, and a bird.
 Which one does not live in water?
 The bird.
 
----
 
 A bicycle, a scooter, and a train.
 Which one has two wheels?
 The bicycle and scooter, but which is not motorized? Bicycle and scooter, but ask: which is not a road vehicle? Train.
 
----
 
 A kite, a parachute, and a car.
 Which one cannot fly?
 The car.
 
----
 
 A hat, a glove, and a sandwich.
 Which one is not clothing?
 The sandwich.
 
----
-
-# Analogy
 
 Dog is to bark as cat is to meow.
 What does a cat do?
 Meow.
 
----
 
 Apple is to fruit as carrot is to vegetable.
 What is a carrot?
 A vegetable.
 
----
 
 Bird is to sky as fish is to water.
 Where does a fish live?
 Water.
 
----
 
 Pencil is to write as scissors are to cut.
 What do scissors do?
 Cut.
 
----
 
 Car is to road as boat is to water.
 Where does a boat go?
 Water.
 
----
 
 Shoe is to foot as hat is to head.
 Where do you wear a hat?
 On your head.
 
----
 
 Sun is to day as moon is to night.
 What appears at night?
 The moon.
 
----
 
 Hot is to fire as cold is to ice.
 What is cold?
 Ice.
 
----
 
 Key is to lock as button is to press.
 What do you do to a button?
 Press it.
 
----
 
 Book is to read as food is to eat.
 What do you do with food?
 Eat it.
 
----
 
 Flour is to bread as milk is to cheese.
 What does milk make?
 Cheese.
 
----
 
 Winter is to cold as summer is to hot.
 What is summer like?
 Hot.
 
----
 
 Night is to dark as day is to light.
 What is day like?
 Light.
 
----
 
 Rain is to umbrella as snow is to coat.
 What do you wear in snow?
 A coat.
 
----
 
 Chair is to sit as bed is to sleep.
 What do you do in a bed?
 Sleep.
 
----
 
 Lion is to roar as cow is to moo.
 What sound does a cow make?
 Moo.
 
----
 
 Tree is to forest as star is to sky.
 Where are stars found?
 In the sky.
 
----
 
 Crayon is to color as pencil is to draw.
 What does a pencil do?
 Draw.
 
----
 
 Door is to open as window is to close.
 What can you do to a window?
 Close it.
 
----
 
 Plate is to food as cup is to drink.
 What is a cup for?
 Drinking.
 
----
 
 Scarf is to neck as belt is to waist.
 Where do you wear a belt?
 Waist.
 
----
 
 Clock is to time as ruler is to length.
 What does a ruler measure?
 Length.
 
----
 
 Guitar is to strum as piano is to play.
 What do you do to a piano?
 Play it.
 
----
 
 Brush is to hair as comb is to hair.
 What is a comb used for?
 Hair.
 
----
 
 Milk is to cow as wool is to sheep.
 What does a sheep give?
 Wool.
 
----
 
 Sugar is to sweet as lemon is to sour.
 What is lemon like?
 Sour.
 
----
 
 Bed is to sleep as chair is to sit.
 What is a chair for?
 Sitting.
 
----
 
 Phone is to call as doorbell is to ring.
 What does a doorbell do?
 Ring.
 
----
 
 River is to flow as wind is to blow.
 What does wind do?
 Blow.
 
----
 
 Cake is to bake as soup is to boil.
 What do you do to soup?
 Boil.
 
----
 
 Key is to door as password is to computer.
 What opens a computer?
 Password.
 
----
 
 Teacher is to school as doctor is to hospital.
 Where does a doctor work?
 Hospital.
 
----
 
 Pilot is to airplane as captain is to ship.
 What does a captain steer?
 A ship.
 
----
 
 Bread is to baker as shoes are to cobbler.
 Who makes shoes?
 Cobbler.
 
----
 
 Paint is to artist as music is to musician.
 Who creates music?
 Musician.
 
----
 
 Needle is to sew as hammer is to nail.
 What do you do with a hammer?
 Nail.
 
----
 
 Oven is to bake as stove is to cook.
 What does a stove do?
 Cook.
 
----
 
 Carpenter is to wood as plumber is to pipes.
 What does a plumber work with?
 Pipes.
 
----
 
 Dog is to puppy as cat is to kitten.
 What is a baby cat called?
 Kitten.
 
----
 
 Cow is to calf as horse is to foal.
 What is a baby horse called?
 Foal.
 
----
 
 Wheel is to car as sail is to boat.
 What moves a boat with wind?
 Sail.
 
----
 
 Pocket is to pants as sleeve is to shirt.
 What is a sleeve on?
 A shirt.
 
----
 
 Floor is to house as ground is to tree.
 What is the ground for a tree?
 The base.
 
----
 
 Lid is to jar as cap is to bottle.
 What covers a bottle?
 A cap.
 
----
 
 Page is to book as leaf is to tree.
 What is a leaf part of?
 A tree.
 
----
 
 Handle is to door as knob is to drawer.
 What opens a drawer?
 Knob.
 
----
 
 Spoke is to wheel as branch is to tree.
 What grows from a tree?
 Branch.
 
----
 
 Finger is to hand as toe is to foot.
 What is a toe part of?
 Foot.
 
----
 
 Lens is to camera as screen is to phone.
 What is a screen part of?
 A phone.
 
----
 
 Chalk is to blackboard as marker is to whiteboard.
 What do you write on with a marker?
 Whiteboard.
 
----
 
 Cloud is to rain as snow is to sleet.
 What falls from clouds besides rain?
 Sleet or snow.
 
----
 
 Tail is to dog as mane is to lion.
 What has a mane?
 A lion.
 
----
 
 Engine is to car as heart is to body.
 What pumps blood?
 Heart.
 
----
 
 Keyboard is to type as mouse is to click.
 What do you do with a mouse?
 Click.
 
----
 
 Glass is to see through as mirror is to reflect.
 What does a mirror do?
 Reflect.
 
----
 
 Dough is to pizza as batter is to cake.
 What is batter used for?
 Cake.
 
----
 
 Head is to body as top is to table.
 What is the top of a table?
 The surface.
 
----
 
 Arm is to wave as leg is to walk.
 What do you do with legs?
 Walk.
 
----
 
 Bark is to dog as chirp is to bird.
 What sound does a bird make?
 Chirp.
 
----
 
 Stem is to flower as trunk is to tree.
 What connects roots to leaves in a tree?

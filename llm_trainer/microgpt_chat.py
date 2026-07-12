@@ -111,6 +111,7 @@ class MicroGPTChatSession:
             prompt_text = self._render_prompt(prompt, system_prompt, reasoning_effort, thinking_enabled)
             input_ids = self.tokenizer.encode(prompt_text).ids[-self.config.context_length :]
             ids = torch.tensor([input_ids], dtype=torch.long, device=self.device)
+            emitted_text = ""
             for _ in range(max_tokens):
                 if should_stop and should_stop():
                     break
@@ -122,9 +123,28 @@ class MicroGPTChatSession:
                     break
                 ids = torch.cat((ids, torch.tensor([[next_id]], dtype=torch.long, device=self.device)), dim=1)
                 generated_ids.append(next_id)
-                piece = self.tokenizer.decode([next_id], skip_special_tokens=True)
+                # Decoding one token at a time can split a multi-byte
+                # character (emoji, accented letters, CJK text) across
+                # token boundaries, since each token only covers part of
+                # its UTF-8 bytes -- decoding it alone then produces the
+                # Unicode replacement character ("\ufffd") rather than the
+                # real text. Decoding the whole sequence generated so far
+                # recovers the correct character once enough tokens have
+                # arrived, but a naive length-based diff against what was
+                # already shown can still get stuck: a stale replacement
+                # character and the character that later replaces it are
+                # often the same length (one code point each), so slicing
+                # by length alone would silently keep showing the wrong
+                # one forever. Withholding emission whenever the decoded
+                # text currently ends in a replacement character -- and
+                # only emitting once it resolves -- avoids that.
+                full_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
+                if full_text.endswith("\ufffd"):
+                    continue
+                piece = full_text[len(emitted_text) :]
                 if not piece:
                     continue
+                emitted_text = full_text
                 reply_parts.append(piece)
                 elapsed = max(perf_counter() - started_at, 0.001)
                 if progress:
@@ -139,6 +159,12 @@ class MicroGPTChatSession:
                     )
 
             reply = self.tokenizer.decode(generated_ids, skip_special_tokens=True).strip() if generated_ids else ""
+            # If generation stopped (should_stop or max_tokens) exactly
+            # mid-way through a multi-byte character, the trailing bytes
+            # are incomplete and decode to a replacement character. That's
+            # a truncation artifact, not real content, so trim it rather
+            # than showing it to the user.
+            reply = reply.rstrip("\ufffd")
             if reply:
                 self._messages.append({"role": "user", "content": prompt})
                 self._messages.append({"role": "assistant", "content": reply})

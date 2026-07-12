@@ -6,6 +6,7 @@ from typing import Optional
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.checkpoint import checkpoint
 
 from .config import ModelConfig
 
@@ -354,7 +355,7 @@ class CausalSelfAttention(nn.Module):
         )
         self.register_buffer(
             "mask",
-            torch.tril(torch.ones(config.context_length, config.context_length)).view(
+            torch.tril(torch.ones(config.context_length, config.context_length, dtype=torch.bool)).view(
                 1, 1, config.context_length, config.context_length
             ),
         )
@@ -412,14 +413,30 @@ class CausalSelfAttention(nn.Module):
             mask = mask & window_mask.view(1, 1, token_count, key_count)
 
         if self.attention_backend == "sdpa" and hasattr(F, "scaled_dot_product_attention"):
-            attn_mask = mask[:, :, :, :].bool()
-            y = F.scaled_dot_product_attention(
-                query,
-                expanded_key,
-                expanded_val,
-                attn_mask=attn_mask,
-                dropout_p=self.attn_dropout.p if self.training else 0.0,
-            )
+            if self.attention_window <= 0 and past_kv is None:
+                # Plain full-sequence causal attention (the common training
+                # case): the mask built above is mathematically identical to
+                # is_causal=True. Passing an explicit attn_mask tensor here
+                # instead can prevent PyTorch from dispatching to the fused
+                # FlashAttention kernel on supported hardware, falling back
+                # to the slower/more memory-hungry "efficient" or "math"
+                # backends even when the SDPA/Flash backend is selected.
+                y = F.scaled_dot_product_attention(
+                    query,
+                    expanded_key,
+                    expanded_val,
+                    is_causal=True,
+                    dropout_p=self.attn_dropout.p if self.training else 0.0,
+                )
+            else:
+                attn_mask = mask[:, :, :, :].bool()
+                y = F.scaled_dot_product_attention(
+                    query,
+                    expanded_key,
+                    expanded_val,
+                    attn_mask=attn_mask,
+                    dropout_p=self.attn_dropout.p if self.training else 0.0,
+                )
         else:
             attention = (query @ expanded_key.transpose(-2, -1)) * (1.0 / math.sqrt(expanded_key.size(-1)))
             attention = attention.masked_fill(mask == 0, float("-inf"))
@@ -565,8 +582,14 @@ class MicroGPT(nn.Module):
         self.blocks = nn.Sequential(*[Block(config) for _ in range(config.layer_count)])
         self.ln_f = make_norm(config)
         self.lm_head = nn.Linear(config.embedding_size, config.vocab_size, bias=False)
+        self.gradient_checkpointing = False
         self.token_embedding.weight = self.lm_head.weight
         self.apply(self._init_weights)
+
+    def enable_gradient_checkpointing(self, enabled: bool = True) -> None:
+        """Trade extra compute for substantially lower activation memory."""
+
+        self.gradient_checkpointing = bool(enabled)
 
     def _init_weights(self, module: nn.Module) -> None:
         """Initialize module weights.
@@ -603,7 +626,11 @@ class MicroGPT(nn.Module):
             positions = torch.arange(0, token_count, dtype=torch.long, device=idx.device)
             value = value + self.position_embedding(positions)
         value = self.drop(value)
-        value = self.blocks(value)
+        for block in self.blocks:
+            if self.gradient_checkpointing and self.training:
+                value = checkpoint(block, value, use_reentrant=False)
+            else:
+                value = block(value)
         value = self.ln_f(value)
         return self.lm_head(value)
 

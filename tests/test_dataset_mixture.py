@@ -4,7 +4,11 @@ import unittest
 from pathlib import Path
 
 from llm_trainer.data import Document
-from llm_trainer.dataset_mixture import _apply_dataset_mixture, _deduplicate_documents
+from llm_trainer.dataset_mixture import (
+    _apply_dataset_mixture,
+    _deduplicate_documents,
+    _filter_repetitive_documents,
+)
 
 
 class DatasetMixtureTests(unittest.TestCase):
@@ -31,6 +35,18 @@ class DatasetMixtureTests(unittest.TestCase):
         self.assertTrue(report["applied"])
         self.assertEqual(len(selected), 1)
         self.assertEqual(selected[0].kind, "code")
+
+    def test_repetition_quality_gate_removes_template_padding(self) -> None:
+        repeated = " ".join("This generated training sentence is exactly repeated." for _ in range(80))
+        varied = " ".join(f"This is independently written fact number {index}." for index in range(80))
+        kept, report = _filter_repetitive_documents(
+            [
+                Document(path=Path("repeated.txt"), text=repeated),
+                Document(path=Path("varied.txt"), text=varied),
+            ]
+        )
+        self.assertEqual([document.path.name for document in kept], ["varied.txt"])
+        self.assertEqual(report["removed_documents"], 1)
 
 
 if __name__ == "__main__":

@@ -72,6 +72,10 @@ def train_from_dataset(
     if resume_path and progress:
         progress({"message": f"Resume safety check passed: {resume_path}", "percent": 3})
     shutil.copy2(tokenizer_path, training_config.output_dir / "tokenizer.json")
+    for metadata_name in ("tokenizer_config.json", "special_tokens_map.json"):
+        metadata_path = data_dir / metadata_name
+        if metadata_path.exists():
+            shutil.copy2(metadata_path, training_config.output_dir / metadata_name)
     result = train_model(
         model_config,
         training_config,
