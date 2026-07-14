@@ -251,7 +251,13 @@ def merge_lora_adapters(model: nn.Module) -> int:
     merged = 0
     for name, module in list(model.named_modules()):
         if isinstance(module, LoRALinear):
-            _set_nested_module(model, name, module.merged_linear())
+            # merged_linear() builds a fresh nn.Linear, which defaults to
+            # CPU regardless of what device the original layer was on.
+            # Moving it explicitly avoids ending up with a model whose
+            # merged layers are silently on a different device than
+            # everything else in it.
+            merged_linear = module.merged_linear().to(module.base.weight.device)
+            _set_nested_module(model, name, merged_linear)
             merged += 1
     return merged
 

@@ -65,6 +65,17 @@ def build_fine_tuning_tab(window) -> QWidget:
     )
     window.fine_tune_checkpoint = QLineEdit()
     window._tip(window.fine_tune_checkpoint, "Base MicroGPT checkpoint used for fine-tuning. Must match tokenizer and model architecture.")
+    # Architecture fields (n_embd, n_layer, etc.) are shared with the AI tab
+    # and are not automatically kept in sync with whichever checkpoint is
+    # selected here. Without this, a mismatched leftover architecture (e.g.
+    # a "Tiny" preset still selected from an earlier session) either fails
+    # the resume-compatibility check outright, or -- worse -- if the
+    # mismatch happens to pass, training silently starts from a randomly
+    # initialized model that only coincidentally matches the same shapes,
+    # rather than actually continuing from the selected base checkpoint.
+    # Syncing on every change to this field (not just via the separate
+    # "Apply Recommended" button) makes the common path safe by default.
+    window.fine_tune_checkpoint.textChanged.connect(lambda _text: window._sync_architecture_from_fine_tune_base())
     window.fine_tune_output_dir = QLineEdit()
     window._tip(
         window.fine_tune_output_dir,

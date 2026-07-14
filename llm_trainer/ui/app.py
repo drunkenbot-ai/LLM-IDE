@@ -2658,14 +2658,14 @@ class MainWindow(QMainWindow):
         """
 
         data = json.loads(project_file.read_text(encoding="utf-8"))
-        self._apply_project_state(data)
         self.current_project_file = project_file
         _register_recent_project(project_file)
         self._ensure_project_workspace(self.current_project_file.parent)
         dataset_state = data.get("dataset", {}) if isinstance(data, dict) else {}
+        saved_default_data_paths = dataset_state.get("default_data_paths")
         self._refresh_dataset_blueprint_source(
             self.current_project_file.parent / "training_data",
-            saved_paths=list(dataset_state.get("default_data_paths", [])),
+            saved_paths=(list(saved_default_data_paths) if saved_default_data_paths is not None else None),
             saved_plan=dict(dataset_state.get("domain_plan", {})),
             preset=str(dataset_state.get("domain_plan_preset", "Balanced Tiny LLM")),
         )
@@ -2776,7 +2776,7 @@ class MainWindow(QMainWindow):
         if saved_paths is not None:
             self._set_selected_default_data_paths(saved_paths)
         elif self.current_project_file is not None:
-            self._set_selected_default_data_paths([])
+            self._set_selected_default_data_paths(None)
         self.pages.setCurrentIndex(current_index)
 
     def _refresh_notification_manager(self, project_dir: Optional[Path] = None) -> None:
@@ -3230,7 +3230,10 @@ class MainWindow(QMainWindow):
             dict(dataset.get("domain_plan", DATASET_DOMAIN_DEFAULTS)),
             str(dataset.get("domain_plan_preset", "Balanced Tiny LLM")),
         )
-        self._set_selected_default_data_paths(list(dataset.get("default_data_paths", [])))
+        saved_default_data_paths = dataset.get("default_data_paths")
+        self._set_selected_default_data_paths(
+            list(saved_default_data_paths) if saved_default_data_paths is not None else None
+        )
         self.auto_vocab.setChecked(bool(dataset.get("auto_vocab", True)))
         self.manual_vocab_size.setValue(int(dataset.get("manual_vocab_size", self.manual_vocab_size.value())))
         include_conversation = bool(dataset.get("include_conversation_datasets", False))
@@ -4848,19 +4851,26 @@ class MainWindow(QMainWindow):
             if item.checkState(0) == Qt.Checked
         ]
 
-    def _set_selected_default_data_paths(self, paths: list[Any]) -> None:
+    def _set_selected_default_data_paths(self, paths: Optional[list[Any]]) -> None:
         """Restore bundled default data checkbox selections.
 
         Args:
-            paths: Saved bundled data file paths.
+            paths: Saved bundled data file paths. ``None`` means no
+                preference was ever saved (a brand-new project), and every
+                file is selected by default. An explicit empty list means
+                the user deliberately deselected everything, and that
+                choice is restored as-is rather than falling back to
+                "select everything" -- previously the two cases were
+                indistinguishable, so saving a project with nothing
+                selected silently reset to everything selected on reload.
         """
 
         if not hasattr(self, "default_data_actions"):
             return
-        if paths:
-            selected = {str(Path(path)) for path in paths}
-        else:
+        if paths is None:
             selected = set(self.default_data_actions)
+        else:
+            selected = {str(Path(path)) for path in paths}
         self.default_data_tree_updating = True
         try:
             for path, item in self.default_data_actions.items():
