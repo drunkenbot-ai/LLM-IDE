@@ -790,9 +790,12 @@ def build_dataset(
             ),
             45,
         )
-    documents, mixture_report = _apply_dataset_mixture(documents,
-                                                       config.mixture_weights,
-                                                       progress)
+    mixture_report = {
+        "applied": False,
+        "reason": "Dataset mixture disabled",
+    }
+
+    # leave documents unchanged
     if should_stop and should_stop():
         raise RuntimeError("Dataset preparation stopped by user.")
     if not documents:

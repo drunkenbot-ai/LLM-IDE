@@ -1,6 +1,6 @@
 
-TOKENIZER_PATH = r"F:\Micro_LLM_Projects\orange\models\tokenizer.json"
-MODEL_PATH = r"F:\Micro_LLM_Projects\orange\models\final_model.pt"
+TOKENIZER_PATH = r"F:\Micro_LLM_Projects\peach\models\tokenizer.json"
+MODEL_PATH = r"F:\Micro_LLM_Projects\peach\models\final_model.pt"
 
 
 
