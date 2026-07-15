@@ -3147,6 +3147,7 @@ class MainWindow(QMainWindow):
                 "scheduler_min_lr_ratio": self.min_lr_ratio.value(),
                 "polynomial_power": self.polynomial_power.value(),
                 "gradient_accumulation": self.gradient_accumulation.value(),
+                "sample_stride": self.sample_stride.value(),
                 "warmup_steps": self.warmup_steps.value(),
                 "eval_interval": self.eval_interval.value(),
                 "max_eval_batches": self.max_eval_batches.value(),
@@ -3346,6 +3347,7 @@ class MainWindow(QMainWindow):
         self.min_lr_ratio.setValue(float(training.get("scheduler_min_lr_ratio", self.min_lr_ratio.value())))
         self.polynomial_power.setValue(float(training.get("polynomial_power", self.polynomial_power.value())))
         self.gradient_accumulation.setValue(int(training.get("gradient_accumulation", self.gradient_accumulation.value())))
+        self.sample_stride.setValue(int(training.get("sample_stride", self.sample_stride.value())))
         self.warmup_steps.setValue(int(training.get("warmup_steps", self.warmup_steps.value())))
         self.eval_interval.setValue(int(training.get("eval_interval", self.eval_interval.value())))
         self.max_eval_batches.setValue(int(training.get("max_eval_batches", self.max_eval_batches.value())))
