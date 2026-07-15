@@ -1,0 +1,1451 @@
+           Introduction to Einstein and Universal Relativity
+                   What Is Einstein’s Contribution?
+
+Albert Einstein, orthodox Jew of German birth and ardent Zionist, is
+the most discussed figure in intellectual circles in the world today.
+It is not as a Jew nor as a Zionist, however, that we find him so
+much in the limelight of public opinion, although as such he is a
+distinguished figure and has only recently toured Europe and America
+in the interest of the Zionist movement. What has lately made the name
+of Einstein a byword upon the lips of scientists, philosophers and the
+multitudes of more common mortals is his revolutionary treatment of
+time, space and gravitation which materially affects various branches
+of accepted science and thereby threatens to throw certain portions of
+our school books and other scholarly works into the discard.
+
+The ideas which led to the development of Einstein’s theory are not
+new. Newton appreciated the principle of mechanical relativity and
+presented it in much detail. But to Einstein belongs the credit of
+completely disentangling the idea of relativity of motion from the
+ancient conception of absoluteness of velocity and carrying out the
+relativistic viewpoint to its logical conclusion. In so doing,
+however, he found it necessary to discard or revamp many popular
+theories and “laws of nature.” But consistency is a jewel wherever
+found, and Einstein seems to have placed the gem into its proper
+setting.
+
+This Jewish scientist, born in 1878 of humble parentage, began
+delving into the mysteries of the universe at an early age. When only
+sixteen, it is said, he contributed a paper, modest in its brevity,
+which was read before an assemblage of German scientists with marked
+appreciation of its merit, and soon thereafter his active mind began
+to traverse new and unbeaten paths of scientific thought. During the
+years that followed his ideas took more definite form, and in 1905,
+while occupying a chair in a Swiss university, Einstein published
+his first “Principle of Relativity,” now called the “Special Theory
+of Relativity,” which treats the physical laws relating to uniform,
+rectilinear motion, i. e., motion in its simplest form.
+
+Einstein’s hypothesis, unlike most theories advanced, did not originate
+with any physical “discovery” or observation. In a sense it grew out
+of the philosophic notion of the relativity of all knowledge. He
+laid hold of the idea that everything is measured by or considered
+_relative_ to something else; that our concepts of absolute
+position, absolute motion and absolute time are groundless for the
+reason that we have no immovable and unchangeable standard anywhere
+in the universe as a starting point. While there is nothing new or
+revolutionary in this fact, yet it actually produced certain scientific
+“revolutions” when carried out to a consistent end.
+
+Prior to Einstein, the principle of relativity had been recognized
+and philosophized upon to a certain point and then dropped when it
+ran counter to hitherto unquestioned conceptions. Einstein, on the
+contrary, contended that if the principle is admitted at all it must
+be admitted at every point irrespective of what it contradicts. After,
+therefore, his theory was fully developed it was then subjected
+to certain physical tests, with the result that it has been quite
+fully confirmed. This mode of theoretical development is called _a
+priori_ as against the more usual _a posteriori_ method,
+wherein the theory _follows_ rather than precedes certain
+particular phenomena.
+
+It was in 1915, during the stress of the great war, that Professor
+Einstein, working unconcernedly in his laboratory in Berlin, completed
+and published what is now called his “General Principle of Relativity.”
+Due to hostilities, the details of his developed theory did not reach
+the outside world until after the armistice in 1918; but such meagre
+accounts of it as did cross the German border were sufficient to awaken
+Eddington and other British scientists to the extent that they hastily
+equipped two research expeditions, dispatching one to the Island of
+Principe off the coast of Africa and the other to Sobral, Brazil, to
+test Einstein’s hypothesis about the deflection of light rays in a
+gravitational field, by taking photographs of stars near the sun
+during the solar eclipse of May 29, 1919, which was total in the
+regions mentioned.
+
+
+
+It was the announced results of these expeditions, confirming as they
+did this new theory of gravitation, that has made Albert Einstein
+famous.
+
+There are, of course, opponents of the Einstein theory in the circle of
+scientists in both Europe and America, though they are comparatively
+few in proportion to the number who see merit in his postulates if not,
+indeed, a complete solution of gravitational and other phenomena which
+have baffled the sages of every century. Sir Oliver Lodge is a leading
+opponent of the Einstein theory among a certain few British scientists,
+but his opposition is easily accounted for when it is remembered that
+Einstein, by ignoring the ether and denying other unproven hypotheses,
+has materially upset Sir Oliver’s spiritistic playground.
+
+Einstein, to say the least, has stimulated the scientific thought
+of the world to an extent unprecedented by anyone since the days of
+Newton. If the Principle of Relativity is not universal, then any
+theory concerning it cannot long stand; it would predict results
+which actual experiment would disprove. It must be admitted, however,
+that experiments to date tend to confirm the Theory of Relativity as
+propounded by Einstein.
+
+
+                       =Concepts Versus Reality=
+
+Relativity is a term appropriately applicable to that school of
+thought standing midway between mathematics, physics and astronomy,
+which concerns itself with determining the relationship between
+observers and their objects. Two or more observers may view a certain
+phenomenon or set of phenomena and reach divergent conclusions as
+to distance, position, size or other physical quantities commonly
+involved. It is not for anyone to arbitrarily conclude that one
+particular observation is correct and that all the others are
+consequently in error.
+
+It is the task of the relativist to consider the findings of the
+various observers, note the conditions attending each, eliminate the
+peculiarities of the varying viewpoints and the qualities which have
+been unmindfully superimposed by each observer upon the external
+object. He must then set down a general rule or law which will embody
+the inter-relations of the data before him and which will also hold
+good for all other observers regardless of distance, position or motion
+of their frames of reference.
+
+_A frame of reference_ is simply an arbitrary set of mutually
+perpendicular lines or planes from which measurements may be made for
+purposes of describing the location of points within a given area
+or region. If a _two_-dimensional area (i. e., a _plane_
+surface) is being dealt with, then our frame of reference would consist
+merely of two _lines_ drawn perpendicular to each other. Thence,
+any point within the right-angle formed by these two lines may be
+described by specifying its distance from each line.
+
+If we are to locate a given point in a _three_-dimensional region
+(i.e., where length, breadth and also _height_ are involved), then
+our frame of reference must consist of _planes_ instead of lines,
+three in number, each perpendicular to the other two, like the floor
+and two adjacent walls of a room. If any point within a room is to be
+located we would first select as a frame of reference, let us say, the
+east and south walls together with the floor. The location of the point
+may then be described with accuracy by simply specifying its distance
+from each of the two walls together with its height above the floor.
+
+The perpendiculars of a frame of reference are called its _axes_,
+and the distances from a given point to the axes are called its
+_co-ordinates_. A little reflection will suffice to show that it
+is quite impossible to record the exact location of anything, either in
+space or in a plane, without making use of a reference frame and two or
+more co-ordinates.
+
+
+                =Unlimited Choice of Reference Frames=
+
+We are not limited in our selection or choice of reference frames.
+They may be close by or relatively remote from the point or object
+whose location we wish to describe. The axes may be physical or purely
+imaginary. They may be in any direction or position whatsoever, so
+long as they are mutually perpendicular and embrace the area in which
+the point or object is located. They may be at rest relative to the
+object and in motion relative to the observer, or vice versa, or either
+at rest or in motion relative to both. If the relative velocity is
+known, the co-ordinates may be determined as certainly as though both
+the object and the observer, together with his reference frame, were
+relatively at rest.
+
+An observer usually prefers to select a frame of reference which
+partakes of his own motion, for the sake of convenience and simplicity.
+Hence for purposes of either local or astronomical observation we may
+choose an imaginary axis perpendicular to the surface of the earth. But
+we must admit that as the earth rotates our perpendicular rotates with
+it. Consequently it is really changing its direction from moment to
+moment. Such rotation, however, is not detected so long as we confine
+our observations to terrestrial things, because our frame of reference
+is at rest relative to the earth and to all things fixed upon the
+earth; but for astronomical observations the matter becomes somewhat
+complicated due to the various relative motions involved.
+
+Astronomers often choose as a reference frame an imaginary line
+reaching from the earth’s center to the center of the sun, together
+with another line perpendicular thereto extending from the earth to
+some other planet or point in space. But neither the earth or the sun,
+or in fact any other body of matter, is at rest; nor do they move in a
+perfectly straight line or plane. The axes of such a frame of reference
+continuously undergo a change of direction. Indeed, a reference frame
+attached to any physical body in the universe must of necessity move,
+because all matter of which we have any knowledge is in motion; and a
+frame of reference attached to nothing would be meaningless.
+
+By reason of the motion of all objects and of frames of reference it
+is necessary that the latter be supplemented by clocks for determining
+the times of occurrences of physical events encountered in our
+measurements. We may therefore say that no frame of reference, when
+used for physical purposes, is complete without a set of accurately
+synchronized timepieces. The element of time is an essential factor
+in any calculation of physical quantities because motion is forever
+involved.
+
+Velocity (rate of motion) means distance traveled within a given
+time. Only when distance and time are combined can we determine
+our co-ordinates with universal accuracy. This will be more fully
+understood when we come to consider the four-dimensional aspect of
+the universe. But for all practical purposes the time element cannot
+be divorced from the distance measurement of moving bodies even when
+viewed in the ordinary three-dimensional sense.
+
+Suppose, for sake of illustration, we are assigned the task of charting
+or recording the precise course of a ball shot from a cannon. In order
+to specifically state the history of its flight it will be necessary
+to indicate the position of the cannon ball during each moment of
+its journey. We will say this is a possibility without attempting
+an explanation of the method of measurement used. When our task is
+completed we will have a set of four figures for each successive
+second, as follows:
+
+(1) distance from cannon.
+(2) distance from ground.
+(3) distance to right or left.
+(4) duration of time.
+
+When these four sets of figures are carefully set down they may be
+transmitted on paper or by telegraph and the recipient will be able to
+determine therefrom the history of the fired ball with as much accuracy
+as though he had been personally present and made the observations
+himself. This, however, would be impossible were the time factor
+omitted.
+
+The foregoing illustration is given merely to show that time is fully
+as important as distance measurement in specifying the location of
+any moving body (and everything in the universe is moving). It is in
+no sense intended to show how time is really a fourth dimension. This
+fact will be brought out in subsequent pages; but thus far we have
+followed, rather, our ordinary concepts of time as an independent
+element, detached from any unit of space measurement whatsoever. Such a
+conception, however, comes from a lifelong training which is based upon
+a limited scope of vision.
+
+
+                  =Knowledge Broadens Many Concepts=
+
+Concepts do not necessarily represent the reality merely because they
+are easy to believe. They may be simply following in a groove caused
+by centuries of “thoughtless reasoning.” Prior to Galileo, human
+concept taught that “up” and “down” were absolute directions which
+never vary. It was easy to so believe, and nobody even thought to call
+such concept in question. But eventually it became known that two plumb
+lines which point “down” to earth do not hang parallel to each other.
+They each point to a common center like the spokes of a wheel.
+
+Now if two plumb lines happen to be about six thousand miles
+(one-fourth the circumference of the earth) apart, they then hang
+practically perpendicular to each other. When this erstwhile paradox
+was established as a certain fact mankind were obliged to change their
+former concepts of the absoluteness of the “up” and “down” directions.
+Einstein now asks us to revise our concepts of the absoluteness and
+independence of time and space and gives us his reasons therefor.
+
+In the light of Einstein’s treatment of the principle of relativity it
+is seen that no particular reference frame possesses any advantage over
+any other for mathematical accuracy irrespective of the physical laws
+involved. It would not be difficult, of course, to grasp this fact in
+a mechanical sense provided units of length and of time were absolute
+quantities which are unaffected by the motion of the reference frame.
+But as will be subsequently seen, such units when viewed independently,
+do vary constantly, and rigidity becomes in reality a meaningless term.
+
+In the face of this apparently insurmountable difficulty, however,
+Einstein shows in his Special Theory that any unaccelerated (i.e.,
+uniformly moving) frame of reference is as suitable as any other for
+the mathematical expression of physical laws. This is accomplished by
+regarding the universe and all objects therein as existing in four
+dimensions, viz., length, breadth, thickness and _time_--the
+latter altering the length unit according to the relative velocities of
+the reference frames.
+
+It is naturally impossible to mentally visualize or graphically portray
+more than three dimensions, but they can be mathematically conceived.
+We shall endeavor presently to show how time takes its place alongside
+the ordinary three dimensions in the true geometry of the universe,
+possessing the value of a fourth co-ordinate or dimension. In reality
+it supersedes in importance the other three in the sense that it
+possesses the illusive quality of automatically correcting or adjusting
+physical values which otherwise would be inconsistently altered by the
+velocities of our frames of reference.
+
+Irrespective of whether we can visualize the matter or not, it will be
+necessary for the reader to divest himself of all previous conceptions
+of time and of space as universally absolute, separate and unvarying
+in their unit length if he would comprehend the Einstein Theory of
+Relativity. He must guard against the notion that time and space are
+independent elements that should be measured separately. He must
+adjust himself to the relativistic viewpoint that time and space are so
+interlinked that either, when taken alone, becomes meaningless except
+by analogy. When, therefore, we measure the distance between bodies or
+the dimensions of the bodies themselves, we are not calculating the
+miles or units of _space_ merely, but of _space-time_.
+
+We will not attempt but will purposely avoid, in a work of this scope,
+the setting out of algebraic equations, believing they would not tend
+to make the essay _popularly_ readable however much they may
+appeal to the mathematical student. Therefore it must suffice here to
+state that the numerical value of time required for a light ray to
+traverse a given distance, together with the relative velocity between
+the frame of reference and the object, become considerable physical
+factors in calculation where great distances and enormous velocities
+are being dealt with. These items, however, are infinitesimal when
+merely earthly distances and ordinary velocities are involved.
+
+Einstein’s equations, therefore, may be said to have no practical
+bearing upon the ordinary things with which we have to do in daily
+experience--we may continue to use our yardstick and our pocket
+timepiece exactly as before. But this in no wise diminishes the
+fundamental importance of the matter. Scientific interest rests not in
+the _amount_ of variance from accustomed laws, but rather in the
+fact that a variance exists and why.
+
+
+                =Universe a Four-Dimensional Continuum=
+
+We shall at this point merely touch upon the space-time character of
+the universe as Einstein sees it, leaving the subject for treatment in
+appropriate order later on. Einstein did not originate the geometry
+which he uses; he has simply made a masterful application of the work
+of Riemann, Minkowski and others in the outworking of his theory.
+Various geometers, notably Minkowski, departing from the beaten path of
+Euclid, had come to view the universe as a four-dimensional continuum
+in which space and time are inseparably interlinked, and Einstein saw
+in this a solution of several phenomenal problems which had arisen in
+recent years to which the laws of Newton appeared inapplicable.
+
+The term _continuum_ denotes a continuity of units. The geometer
+speaks of a straight line as a one-dimensional continuum, because it
+consists of a continuity of _points_ extending in one direction. A
+plane, likewise, is termed a two-dimensional continuum for the reason
+that it is a continuity of _lines_ laid side by side producing an
+area of length and also breadth. Accordingly the whole spatial universe
+has been long regarded as a three-dimensional continuum, i. e., a
+continuity of _planes_ piled one on top of another, extending from
+infinity to infinity.
+
+As for _time_, it has been commonly looked upon as something
+entirely separate and apart from space. Humanity has habitually
+regarded it as an independent one-dimensional continuum, i. e., a
+continuity of _instants_, each being of universally definite
+duration, beginning where its predecessor ended and ending where its
+successor begins, and thus flowing on forever regardless of motion,
+location or any physical condition.
+
+
+                     =Time and Space Inseparable=
+
+But what ground have we for regarding space and time as independent and
+unrelated continua? Does not _time_ thrust itself upon us at every
+turn, wherever we undertake a measurement in space? This might not be
+so if we could regard space as motionless and then really measure it
+from point to point. But absolute space cannot be measured. The best
+that can be done is to measure from one body of matter to another
+body of matter--and all matter is in motion and continuously changing
+position, hence the entrance of time into all physical calculation.
+
+Everything in the universe is somewhere at some time and somewhere else
+at some other time. Thus it is seen that time must intersect space at
+every point wherever moving matter is involved. And if for any reason
+whatsoever the time units are shortened or lengthened then the points
+which they intersect are in reality distorted irrespective of what our
+conception of such a state of affairs might be.
+
+Instead, therefore, of regarding the universe as a continuity of
+immovable points it is in reality a continuity of _events_ in
+each one of which _time_ is an essentially governing factor.
+Consequently the term _event_ in a four-dimensional continuum is
+analogous to the term _point_ in a three-dimensional continuum.
+Something does not necessarily need to _happen_ at each
+_event_ in the continuum in order to constitute them “events.”
+On the contrary, the continuum of events exists as a background for
+phenomena, and when happenings occur in any region whatsoever, the
+events (time and space points combined) are there, ready to give forth
+their testimony to the mathematician when he calls for his location
+data.
+
+The fact that we cannot diagram such a continuum in no sense detracts
+from its reality. A combined space and time is no less real than
+the conceptual independent space and time which it supplants. There
+are various other continua in the world about us which cannot be
+represented by lines and angles or physical models. There is, for
+instance, the continuum of color, reaching from ultra violet to ultra
+red with its infinite number of graduating hues in between. Then there
+is the continuum of sound which cannot be visualized in any degree.
+The scale of musical notes is a perfect continuity, extending from
+the lowest to the highest audible sound and beyond, yet we cannot
+_see_ a continuum of this character any more than we can visualize
+the four-dimensional continuum of space-time.
+
+From the foregoing it will be seen that the difficulty of making clear
+in few words the substance of the Einstein theory is due to its radical
+departure from our ordinary concepts of things. Many pages might be
+utilized to fully define such apparently simple terms as time, space,
+distance, straight line, etc., and after these are seen from the
+viewpoint of the relativist, then the reader is equipped to proceed
+with his study of relativity, but not before.
+
+The aforementioned handicap has been apparent to every writer who has
+attempted to make the theory of relativity popularly readable. The
+following pages will discuss these terms in an applied fashion and
+will attempt to give the necessary foundation knowledge without which
+it would be impossible to appreciate the theory as expounded later in
+this essay and in other works on the same subject. The reader will
+undoubtedly find it profitable to review the foregoing paragraphs after
+he has perused the arguments which follow.
+
+
+                     =Relativity and Its Effects=
+
+Relativity, as applied to motion of all matter and systems of matter in
+the universe, stands opposed to the idea of _absolute velocity_.
+If nothing is stationary in the entire universe from which we may
+determine the _actual_ rate of motion of bodies, then the best we
+can do to describe the velocity of anything is to say that it moves
+at such and such a speed _relative_ to something else which is
+also moving at some unknown rate except as it is related to some other
+moving body.
+
+We may say that the earth is traveling at the rate of over eighteen
+miles per second in its annual trip around the sun. But this does not
+represent the actual velocity of our earth. It describes merely our
+motion relative to the sun; but who shall say how rapidly our sun is
+moving through space[1] and carrying us with it, just as we carry
+the moon with us as we revolve around the sun. We know the sun is
+apparently approaching a distant star cluster, but we cannot determine
+whether our system is moving toward it or whether the cluster is moving
+toward us, or both. We may be, in fact, chasing it through the heavens
+as a dog chases a rabbit, and gaining on it a trifle each century; or
+it may be really chasing us. All we know about it is that the distance
+between the two systems is growing gradually less.
+
+Then, again, who knows but that the entire stellar universe, including
+not only our solar system but all other systems as well, may be
+revolving about one common center located in the remote regions
+of space? And if so, in what general direction does it revolve?
+These reflections immediately convince us that all motion is purely
+relative; that no velocity can be looked upon as being absolute. Hence
+our eighteen-mile-per-second velocity around the sun is probably
+infinitesimal in comparison to our _actual_ speed through space,
+if such could really be determined by some stationary standard.
+
+Einstein did not originate the doctrine of relativity; it has been
+a much discussed philosophic subject for centuries and particularly
+of the nineteenth century. What he did, however, was to formulate a
+particular theory concerning it which co-ordinates and satisfies the
+observed laws of nature and accounts for discrepancies which have
+long troubled mathematicians and scientists who have based their
+calculations on the theories of the past, notably Newton’s laws.
+
+
+                        =Mercury’s Perihelion=
+
+A striking example of such a discrepancy which Einstein has accounted
+for, is the unusual yearly advancement of the perihelion of Mercury’s
+orbit. Due to gravity, all planets revolve about the sun in ellipses
+rather than in perfect circles, with the sun a trifle to one side of
+the center of such ellipse. This brings the planet nearer to the sun
+at one end of the ellipse than at the other. The near end of the orbit
+is called the _perihelion_, while the distant end is called the
+_aphelion_. See Fig. 1.
+
+Newton’s law would indicate that if our spherical sun had but one
+planet revolving around it, the orbit of that planet would never change
+its position unless disturbed by some outside cause, its perihelion
+and aphelion being fixed. But where there are more than one planet in
+a system, a slow annual advance of the perihelion would be produced.
+The amount of such advance is easily calculated; hence it has been
+an astonishment to astronomers to find that the perihelion of Mercury
+actually advances 42 minutes (that is, seven-tenths of a degree) per
+century more than Newton’s law allows for. Einstein, however simply
+points out that at perihelion a planet is moving with greater velocity
+than at aphelion because of its relative nearness to the sun, and
+that its velocity (the _time_ element) must be reckoned with in
+addition to the Newtonian gravitational advance. He computed that this
+should increase the advance of Mercury’s perihelion by 43 minutes per
+century, which most fully accounts for the observed discrepancy.
+
+
+
+Opponents of Einstein have attempted to account for the aforementioned
+discrepancy on the ground that the sun is not a perfect sphere, and
+that its equatorial diameter exceeds its polar diameter sufficiently
+to add the required amount to the attraction at perihelion. But this
+involves other difficulties, as for instance, a change of 3 minutes
+per century in the inclination of the orbit, which manifestly does not
+exist. The orbits of the other planets in our solar system are not
+sufficiently eccentric to reveal any marked difference between Newton’s
+and Einstein’s calculated results. But Einstein’s success in connection
+with Mercury has placed his theory upon a very satisfactory foundation.
+
+We have seen that all motion is relative. The same is true of
+_time_ because motion and time are inseparable. But even if this
+were not so, where would we find an absolute standard or universal unit
+of time any more than an absolute rate of motion of matter? We on earth
+count time according to the rotation of the earth on its axis, and we
+call the period of rotation a day, but the other planets in our solar
+system have days of very different length from ours, some shorter and
+some longer.
+
+All heavenly bodies possess their respective time standards, all
+different from ours and different from each other. Which shall be
+taken as the _absolute_ standard? There is no universal standard.
+Time is not an absolute quantity; it is relative even as motion is
+relative. A “perfect timekeeper” if suddenly transferred from earth to
+Jupiter would immediately be seen to keep a different time due to the
+differences in velocity of the two planets.
+
+
+                         =The Universal Unit=
+
+We have already emphasized that conceptual time, as an independent
+one-dimensional continuum, is fictitious. It does not really exist as
+such, but is a component part of space-time. The question naturally
+arises in our minds: if time does not exist in and of itself, and if
+there is no universal time unit, then how is it possible for Einstein
+or anybody else to make a calculation in which time is involved and
+arrive at any definite conclusion? The answer is that there is a
+universal unit, but not a universal _time_ unit. This true unit
+is the _separation-interval_ between events in the space-time
+continuum. It is a combination of distance and time.
+
+Such a combination unit may be partially illustrated by a crude
+analogy. Suppose we are calculating the distance between two points
+in a plane. We would first describe a triangle and let the hypotenuse
+of the triangle connect the two points in question. But somebody else
+might erect a different triangle from ours which would describe the
+distance between the two points equally well. The triangles would have
+the same hypotenuse, but their respective bases and altitudes would be
+dissimilar, as shown in Figure 2.
+
+Let us think of the bases as representing time and the altitudes
+as representing space, while the hypotenuse stands for our
+separation-interval. Even as we may have many base-altitude
+combinations for our common hypotenuse, so we may have numerous
+combinations of space and time for the same separation-interval. In
+certain combinations the space element is greater than in others,
+while the time element is correspondingly smaller, and vice versa,
+although the separation-interval, like our hypotenuse, remains a
+constant.
+
+
+
+It may be somewhat easier for the reader to appreciate the
+non-existence of a universal unit of length than it is for him to
+comprehend the unreality of independent time. No unit of length can
+be taken as a universal standard of measure, because measurements
+are relative and dependent upon the motion of the observer and his
+reference frame, or upon the velocity of the object relative thereto.
+This has been scientifically established by experiments made with
+particles emitted by radioactive substances whose velocities range
+from 20,000 to 170,000 miles per second.
+
+Lorentz and Fitzgerald, previous to Einstein, had suggested that all
+moving matter suffers a physical contraction in the direction of its
+motion, but their theory is not particularly convincing. To Einstein
+belongs the credit of postulating upon this subject in a manner that
+agrees with experiment and satisfactorily answers several phenomenal
+questions. He points out that there is an _apparent_ contraction
+which is proportional to the relative velocity between object and
+observer, but that this “contraction” does not exist if the observer
+happens to be moving along with the object which he is measuring.
+
+To illustrate: If an ocean liner measures 1,000 feet in length while
+lying at the pier, theoretically it would be a trifle less than 1,000
+feet while under way if viewed by an observer on shore. If, however,
+the measurement were taken by an observer aboard the moving ship,
+using the same yardstick that was used at the pier, the result would
+still be 1,000 feet. Einstein’s contention is that the ship undergoes
+no physical shortening such as Lorentz and Fitzgerald supposed, but
+it is simply the victim of a phenomenon of observation. The apparent
+contraction, however, holds good for all object or bodies of matter in
+exact ratio to their velocity relative to the observer as specified
+in Einstein’s mathematical formula, and is just as real in practical
+calculation as though it were a physical factor.
+
+
+                       =Motion and Contraction=
+
+It is within the realm of possibility, of course, that some degree of
+physical contraction does result from motion, on the theory that the
+electro-magnetic forces operating between the atoms and molecules of
+matter undergo a change due to velocity. If, therefore, the yardstick
+and everything else aboard the moving ship suffered a physical
+contraction exactly proportional to the length of the ship itself, then
+there would be no way of detecting it by any measurement taken aboard
+the vessel.
+
+It hardly appears reasonable, however, that materials of different
+density would undergo the same proportional contraction, as for
+instance a wooden yardstick and the steel sides of a ship, inasmuch
+as they are of entirely different molecular composition. The Einstein
+theory therefore proposes an observational variation rather than a
+physical contraction of the object, and shows that it equally exists
+whether we regard ourselves as at rest and the object as moving away
+from us, or whether we consider the object as stationary and ourselves
+as speeding past it.
+
+Let us suppose our observational instruments are lifted from their
+fixed position on shore and placed aboard a railway train and carried
+in the same direction and at the same velocity as the coastwise vessel.
+In this event the ship would measure full 1,000 feet in length just as
+it did when we measured it at the pier, because the observer under the
+conditions stated would be at rest relative to the moving ship. But if
+our train carried us faster than the ship, then the ship would again
+begin to measure short because our _relative_ motion would be the
+same as though we were stationary and the ship were moving away from us
+in the opposite direction.
+
+The foregoing illustration is merely theoretical, however, because the
+variation is too small for observation in cases of small distances
+and low velocities. Nevertheless, when the velocity approximates that
+of light rays the apparent contraction becomes plainly visible. Some
+of the particles emitted by radioactive substances possess a velocity
+of about nine-tenths that of light and in such cases the amount of
+apparent shortening which they undergo can be computed because it is
+very great. And should the velocity become equal to that of light rays
+(i. e., 186,300 miles a second), then, says Einstein, the observed
+length of the particle would be reduced to zero.
+
+Einstein does not claim that relative velocities greater than 186,300
+miles a second cannot be attained, but he does contend that velocities
+greater than that relative to an observer cannot be observed. Thus if
+a body of matter were moving away from an observer at only half the
+velocity of light, and the observer himself should suddenly become
+accelerated in the opposite direction until the relative velocity
+between the two became equal to or greater than that of light, then the
+observed _length_ of the body in the direction of motion would be
+zero, although its width would be unaffected.
+
+
+                    =“Absolute Length” Fictitious=
+
+All this leads us ultimately to the conclusion that there is no such
+thing as determining the _absolute_ dimensions of anything,
+because relativity of motion and the time element are undeniable
+factors in all measurements. The assertion that these are infinitesimal
+so far as the quantities we ordinarily have to deal with are concerned
+does not alter the fact that “_absolute_ length” is a fictitious
+phrase. For this reason we cannot reckon the _absolute distance_
+between any two conceptual points in the universe; we must calculate in
+units of _space and time_ combined or else accept the fact that
+our conclusions are simply of local and not of universal significance.
+
+We may, for instance, make a measurement of the distance between
+Neptune and the sun according to Euclidean geometry, obtaining a
+certain result. But if we were on another planet and there chose a
+reference frame which has a wholly different relative velocity to the
+frame of reference which we used here on earth, and with this new
+reference frame we measured the identically same space between Neptune
+and the sun we would obtain a very different result. Which measurement
+would be correct? Neither would be correct if by that term we mean the
+_absolute_ distance if the universe were motionless and unwarped
+by matter.
+
+Hence in measuring great distances involving enormous velocities
+we cannot ignore the principle of relativity and hope to obtain
+universally accurate results. It is because of this oversight that
+Euclid’s geometry is found to be inadequate in such cases. But as
+already suggested, there is a geometry that is universal in its
+application, in which _time_ enters as a fourth dimension. The
+measurements taken according to such a geometry do not, therefore,
+represent distance merely, but a blending of distance and time. This is
+the geometry which Einstein employs. It will be discussed in greater
+detail further on.
+
+
+                  =The Special Theory of Relativity=
+
+We will now consider Einstein’s original theory of 1905, which has
+subsequently been called the “Special” or “Restricted” Theory of
+Relativity, before attempting an examination of his “General Principle”
+which he announced ten years later. By so doing we will find it a
+stepping stone of much worth, leading us naturally to the General
+Theory which will be discussed later.
+
+The Special Theory is summarized in two postulates (propositions),
+one relating to uniform, straight-ahead motion, and the other to the
+velocity of light rays. It is the combination of these two propositions
+that necessitates the interrelation of time and space. If both are
+true, and the weight of evidence seems to be on Einstein’s side, then
+the space-time geometry already alluded to must be correct. In any
+event our new conception of space and time as heretofore mentioned has
+doubtless prepared our minds to appreciate the postulates which we will
+now paraphrase in non-technical terms as follows:
+
+ (1) EVERY LAW OF NATURE MAY BE STATED IN A FORM WHICH WILL HOLD
+ GOOD BETWEEN ALL OBSERVERS AND OBJECTS PROVIDED THE OBSERVERS AND
+ OBJECTS ARE EACH MOVING IN A STRAIGHT LINE AND WITH UNIFORM VELOCITY;
+ AND UNDER THESE CONDITIONS NO OBSERVER COULD POSSIBLY DETECT HIS OWN
+ MOTION BY ANY LOCAL EXPERIMENT WHATSOEVER, UNLESS HE MAKES REFERENCE
+ TO OBJECTS OUTSIDE HIS OWN MOVING SYSTEM.
+
+ (2) LIGHT RAYS IF UNOBSTRUCTED HAVE AN OBSERVED CONSTANT VELOCITY
+ IRRESPECTIVE OF THE RELATIVE VELOCITY BETWEEN THE OBSERVER AND THE
+ SOURCE OF LIGHT.
+
+On the surface there is nothing unusual about the first postulate;
+it appears to be simply another way of setting forth the mechanical
+principle of relativity announced by Newton. But it really involves
+more than that, because so long as we regard all bodies and measured
+lengths and times as rigid and unchanged by the motion of our reference
+frames, then it is not true that every law of nature holds good between
+observer and objects as set forth in the postulate. Electro-magnetic
+laws, for instance, are an exception, for they really do change their
+form in proportion to the relative motion of our reference frames.
+
+This first postulate simply demands a restatement of the laws of nature
+to make them harmonize with the principle of relativity _in toto_.
+As already observed, many inconsistencies arise in regard to time,
+distances and dimensions if we hold to our old conceptions that units
+of time and of lengths are absolute quantities which cannot vary under
+any circumstance or condition. We know by experiment that they do vary,
+hence the need of a restatement of nature’s laws to account for the
+facts resulting from motion. This postulate, however, concerns only
+one kind of motion, viz., uniform and rectilinear motion. Rotating and
+accelerated and generally irregular motions are dealt with under the
+General Theory which will be considered later.
+
+
+                   =Laws of Nature Not Unalterable=
+
+In this connection it is well to bear in mind that a “law of nature,”
+as the term is commonly used, is not some God-given formula that cannot
+be altered. It is but a human description of the operation of nature,
+based on observed facts. As our powers of observation and knowledge
+increase it sometimes occurs that our “laws of nature” are found to be
+inadequate and need revision. That is precisely what Einstein calls
+for. In mathematics we may stipulate that “things equal to the same
+thing are equal to each other,” but physically speaking the phrase is
+wholly ambiguous. Things observed to be equal while in uniform relative
+motion lose their equality when their velocities vary.
+
+It will be noted that Einstein in his first postulate also specifies
+that when an observer is moving straight ahead at uniform velocity he
+will be unable to detect his own motion and will believe himself to be
+at rest unless he performs an experiment on some outside object that
+is not moving along with him. The truth of this is apparent to anyone
+who has been aboard a smoothly running train while entering or leaving
+a station, and has been unable to determine whether it is his train or
+the train on the next track that is in motion, or both, until finally
+his train ceases to move uniformly and he experiences a jolt as it
+suddenly comes to a halt, or is thrown against the back of his seat as
+it begins to speed up. Or perhaps while the train was moving uniformly
+he performed an observational experiment on some outside object, such
+as a house or a telegraph pole, and thereby arrived at the conclusion
+that his train is moving rather than the one alongside it.
+
+Similarly we on earth are prone to consider ourselves as at rest and
+the heavenly bodies as moving around us, and for untold centuries
+mankind never stopped to question that conception. Even since we
+have come to know that we are merely one of the millions of rotating
+heavenly spheres which go to make up a universe, we are disinclined
+to admit that ours is not in some sense a favored position, or that
+an earthly reference frame is not somehow intrinsically better. But
+reflection convinces us that this is not so; and since it is not so,
+we would do well to put our science on a universal rather than upon a
+purely local basis by altering whatever age-old conception is necessary
+to make it agree with the principle of relativity.
+
+
+                    =Paradoxical Behavior of Light=
+
+It is the second postulate rather than the first that is astounding,
+because it substantially states that light rays from a given source
+will reach an observer who is running away from the rays just as
+quickly, i. e., at the same velocity, as they would reach another
+observer who is moving toward the rays. If an explosion should take
+place on the sun at this moment it would, of course, take the light
+about eight minutes to reach the earth, traveling at a constant
+velocity of 186,300 miles a second. Einstein’s declaration is that
+if two observers are on opposite sides of the rotating earth, one
+revolving away from the sun and the other revolving toward it, the
+instruments of each observer will indicate that the rays from the flash
+are traveling past him at exactly 186,300 miles a second regardless of
+whether he is traveling toward or away from the sun.
+
+Ordinary concept would assume that in the one case the observer’s own
+velocity toward the sun should shorten the time it takes the light
+to reach him and thereby make it appear to him that the light is
+traveling faster than 186,300 miles a second, while in the other case
+we would suppose that the observer’s instruments would indicate that
+the light is traveling slower than 186,300 miles a second due to his
+own velocity away from the sun which should lengthen the period of
+transit of the rays in overtaking him. But actual experiment appears to
+contradict this and to corroborate Einstein’s postulate, paradoxical
+though it seems to our accustomed concepts. Only by viewing the
+universe as a four dimensional (not as a three dimensional) continuum
+can the matter be understood.
+
+It is not, of course, any more strange that when _light_ waves
+once start on their journey, the velocity of those waves would
+thereafter be unaffected by the movement of the source from which they
+originated, than that waves of _water_ would not be increased or
+retarded by any forward or backward movement of the ship after the
+waves have been started on their course across the lake. Newton knew
+that the velocity of light past an observer is not increased by reason
+of the source of light moving toward the observer. But what he did not
+see was that _neither is the velocity of light increased by reason of
+the observer moving toward the light_.
+
+In other words, after admitting the principle of relativity in a
+mechanical sense, practically as stated in Einstein’s first postulate,
+Newton then denied or at least overlooked that principle when it
+touched the subject of the propagation of light. Take, for instance,
+the case of light rays reaching us from certain distant stars. We
+cannot surely know whether the source of light is traveling toward us,
+or whether we are moving toward the source of light. Newton would say
+that the velocity of light would be unaffected in the first instance,
+but increased in the second. Einstein says it makes no real difference
+which way it is, because the principle of relativity is universal,
+all motion is relative, and the universe is so constructed that the
+velocity of light always appears constant to all observers irrespective
+of their motion or of the motion of the source of light relative to
+them.
+
+If, however, we were traveling away from a given source of light at
+a greater velocity than light itself can travel it would certainly
+not be true that light, under such a condition, would register a
+constant velocity. But such a rate of motion is manifestly impossible
+of physical attainment, light being considered to possess the maximum
+velocity greater than which no material body can travel. In other
+words, 186,300 miles a second is the limiting velocity beyond which
+physical phenomena does not reach, because all matter would evidently
+suffer complete dissolution, being reduced to the state of free
+electrons, by the time such a velocity would be attained. Light is
+matter in the free electronic state, and the velocity of such a form of
+matter is known to be 186,300 miles a second, as has been stated.
+
+Light, being a form of matter, is acted upon by gravitation. This was
+first demonstrated during the solar eclipse of May 29, 1919, when
+photographs were taken of various stars whose light at that season had
+to pass very near the sun in order to reach us. Three months later
+photographs were taken of these same stars after they had moved from
+their former positions. Their normal relative motion being known, it
+was easy to determine from the two sets of photographs whether their
+displacement was entirely due to that motion. It was found that their
+displacement was considerably less than it would have been under normal
+conditions, thereby indicating that the light from these stars had been
+deflected as it passed near the sun’s rim, making it appear to the
+observer that these stars then occupied positions which they did not
+occupy. See Fig. 3.
+
+
+
+
+                   =Electronic Structure of Matter=
+
+Light and electricity both travel at the same velocity, and in the
+final analysis they are the same form of matter. All ponderable matter
+is made up of molecules, and molecules consist of atoms of varying
+elements, except where the substance is elementary throughout, in which
+case the molecules are made up of a certain number of atoms of the same
+element. An atom is an aggregation of negatively charged particles of
+electricity, called electrons, which revolve and vibrate at enormous
+rates around a central nucleus of “protons” carrying a positive charge.
+If we conceive of a handful of sand as whirling around and around at
+such an enormous velocity as to appear as a globe several feet in
+diameter we have a visualization of the ultra microscopic atom and its
+comparative dimension to that of the individual electrons and protons
+which compose it.
+
+Electrons and protons are manifestly identical in all form of matter,
+but all atoms do not contain the same number of them. An atom of
+hydrogen contains only one electron and one proton, while atoms of
+heavier matter contain a vast number. It is the _number of electrons
+and protons per atom_, together with their respective vibratory
+rates, that constitute the difference between elements. Hence every
+known form of matter, if reduced to the electronic state, would be
+found to consist of the same original stuff. Light, therefore, may be
+termed _free electrons_, i. e., electrons which are not bound into
+atoms, and consequently glide off in every direction at the highest
+possible velocity of which matter is capable, viz., 186,300 miles per
+second.
+
+Thus it may be seen that all other forms of matter, since they consist
+of electrons in the atomic or “bound” state, could not possess a
+velocity equal to that of _free_ electrons. But electrons do not
+become “free” simply by reason of matter undergoing a change of form.
+Water, for instance, may be changed into a solid (ice) or into gas
+(steam), but the electrons continue to revolve around their nucleus
+in true atomic order, and the atoms continue to hold together in the
+molecular state, the only change being in their rate of vibration which
+affects the degree of elasticity between the molecules and between the
+atoms. Hence whether water be in the solid, liquid or gaseous state,
+the molecules thereof will be found intact, each consisting of two
+atoms of hydrogen and one atom of oxygen (H₂O).
+
+When matter is being burned up, producing a flame or a glow of light,
+this phenomenon indicates that some of the electrons have been freed
+from their atomic condition and have started off on their journey in
+the form of light rays, while another portion of them remain bound as
+atoms but undergo a change of form, becoming either gas or ashes.
+
+
+                     =Michelson-Morley Experiment=
+
+Returning now to Einstein’s second postulate, that the velocity of
+unobstructed light rays appears to be constant to all observers
+irrespective of the relative velocity between the observer and the
+source of light. The evidence on which this theory is based was first
+produced by Michelson and Morley in 1887 who at that time undertook an
+experiment to ascertain if possible the velocity of the earth relative
+to the ether. The experiment revealed that light registers a constant
+velocity, whether it travels in the direction of the earth’s rotation,
+or against the rotation, or at right angles thereto. The experiment
+was repeated many times with different apparatus and under various
+conditions, but always with the same result.
+
+It is interesting to note the details of this experiment. Light is
+known to travel in waves, because rays coming against each other
+from opposite directions can be made to “interfere” in precisely the
+same manner as waves in water. If waves in the ocean come together
+from different directions, one of two things will happen; they will
+either unite and produce a larger wave, or else they will strike in
+a manner to measurably kill off both waves. If the crests of the two
+waves coincide they reinforce each other, but if they strike at right
+angles, the destruction of the wave motion results. This is called
+“interference.”
+
+Light rays conduct themselves in the same manner, thereby revealing
+their wave-like nature. This is not contradictory to the idea that
+light rays really consist of individual electrons, freed from atomic
+attraction. Possibly each separate electron which goes to make up a
+ray of light vibrates in a wave-like manner, possessing a wave motion
+within itself. Waves of light are exceedingly minute and we do not
+ordinarily witness any reinforcement or interference of light rays
+about us, because there is no occasion for them to “pile up.” However,
+in laboratory experiments, interference of light waves has been
+produced, and to whatever extent the interference kills off the wave
+motion, to that extent darkness ensues irrespective of the brightness
+of the light at its source.
+
+Michelson and Morley worked on the theory that if they sent rays of
+light from west to east (the direction of the earth’s rotation) and
+then reflected them back over their course it should take longer
+to make the eastward trip than the westward, because in the first
+instance the earth is carrying the objective point away from the light
+while in the latter instance it would be rushing to meet the oncoming
+reflected rays. Under this condition there should be a noticeable
+_interference_ of the light waves due to the difference in
+distance and time involved in making the two halves of the round
+trip. But to the amazement of all there was no interference whatever,
+notwithstanding the fact that the apparatus was ten times larger than
+it needed to be to reveal such interference of the waves had it really
+occurred.
+
+The conclusion reached by Einstein as a result of this experiment is
+that since light rays consist of matter in its basic or electronic
+state, freed from atomic attraction, they therefore possess the
+limiting velocity of which matter is capable. Hence they could not
+travel more rapidly than 186,300 miles a second even if given a quick
+send-off, nor would our traveling toward the light affect its apparent
+velocity to us--unless it were possible for us to be traveling forward
+more rapidly than light itself can travel. This would undoubtedly be
+impossible, inasmuch as any physical body would necessarily consist
+of electrons in the atomic or “bound” state and therefore could not
+possess the mobility that free electrons would enjoy. The universe,
+then, being a four-dimensional continuum, is so constructed that the
+velocity of light always appears constant to all observers within it.
+
+This is what Einstein means when he postulates that light _in
+vacuuo_ (i. e., unobstructed) possesses a constant velocity
+irrespective of the relative velocity of observer and source of light.
+That is, it is constant so far as the observer is concerned. Thus if
+a flash should occur on any heavenly body and we were moving toward
+the flash at say 40,000 miles a second and another observer were
+moving away from it at say 60,000 miles a second, the experiment of
+each observer would indicate that the light has reached him at exactly
+186,300 miles a second, although according to Euclid’s conception of
+space the light has been obliged to travel 100,000 miles a second
+faster to reach the one observer than the other. But Euclid’s
+conception is faulty, as will be seen shortly.
+
+How, then, would it be possible for the light rays to possess the same
+apparent velocity per second for the two observers? It would not be
+possible if “time” and “distance” are absolute quantities having the
+same meaning for all observers. But if “seconds” and “miles” mean one
+thing to observer “A” and a totally different thing to observer “B,”
+then the apparent contradiction of facts becomes harmonious. This
+is the essence of the doctrine of relativity. Observer “A” himself
+does not use the terms “seconds” and “miles” consistently, i. e., as
+unvarying quantities, nor does anyone. They mean one thing today and
+something else tomorrow, depending upon what we are measuring and the
+relative velocity between the observer and the object. The observer
+is not aware of this inconsistency. To him there is no inconsistency
+whatever. Nevertheless, only by acknowledging the varying quantities of
+time and of space, and admitting the geometry which combines the two
+into one unit, can the Michelson-Morley experiment and other similar
+observations be understood and explained.
+
+
+                   =Simultaneity a Meaningless Term=
+
+We have been taught that the true length of a moving body is “the
+distance between _simultaneous_ positions of its end points”--a
+very good definition, but impossible of application for the reason
+that we cannot determine the _simultaneous_ positions of any two
+points in the universe. Simultaneity is a meaningless term so long as
+the absolute velocity of the observer and the absolute velocity of the
+object being measured are unknown. We may know the _relative_
+velocity between them, but that is not sufficient. The two may be
+relatively at rest--but for all we know the entire universe may be
+speeding through space at thousands of miles a second in either one
+direction or another.
+
+We may _see_ two events occur at the same instant, but that does
+not prove that they actually _occurred_ simultaneously. Before we
+could compute the exact time of the occurrence of either of the events
+we must know the direction in which, and the velocity at which the
+universe as a whole is moving, together with any and all velocities of
+the observer at the moment. This knowledge we do not possess. Until the
+_absolute_ velocity of bodies can be determined the question of
+simultaneity must remain unsolved.
+
+
+                 =The General Principle of Relativity=
+
+When in 1905 Einstein published the foregoing postulates which are
+limited to uniform, rectilinear motion he may have considered that
+it would be expecting too much to look for a general principle of
+relativity such as would hold good for all kinds of rotating and
+irregular motions and by which observers of different and variable
+velocities might agree as to the reality of things under their
+observation. Concluding, however, that the universe must surely be
+constructed in a consistent manner he finally set out to find some rule
+or principle by means of which an observer in one region would be seen
+to possess no advantage over an observer in any other region of the
+great expanse in arriving at accurate conclusions.
+
+Of course Einstein hardly expects to go to the Pleiades or to
+Betelguese and from there take measurements and make calculations; he
+is doubtless content to make all his observations from this earth.
+But how may he be sure that observations made from a reference frame
+located in this particular region of the universe will be true to the
+reality since it is manifest that observers located elsewhere and using
+different reference frames must necessarily reach conclusions different
+from ours if they employed our accustomed laws? Maybe they would be
+much nearer the reality than we! What right have _we_ to assume a
+monopoly on truth! None whatever until we can formulate nature’s laws
+in a manner that will hold good for every part of the universe alike.
+
+Until we are able to do this our science must be like the vain efforts
+of the unskilled fisherman who harpoons for fish. Ignorant of the
+trick that water plays on the line of sight he strikes directly at
+the spot where he “sees” the fish and always misses his prey. The
+skilled harpooner, on the contrary, understands the law of refraction
+of light rays in water, and knows how to allow for this refraction;
+hence he strikes a little this side of where the fish appears to be
+and is rewarded with success. He is guided by a proven law and thereby
+ascertains the true location of the fish, whereas the other man follows
+“blind” observation which is quite frequently deceptive.
+
+Einstein’s “General Principle of Relativity” is not, in fact, a mere
+generalization of the Special Theory in the sense that it simply
+enlarges upon the two postulates which we have already considered.
+On the contrary it handles the subject of Relativity from quite a
+new standpoint, and therefore might be said to belong to an entirely
+different school of thought. It does not lend itself to visualization
+as readily as does the Special Theory, and is consequently more
+difficult of explanation and comprehension. However, what we have
+already learned concerning Relativity will materially aid us in
+understanding what follows, for the two theories are, after all,
+dealing with the same general subject matter. We shall therefore
+endeavor to link the two phases of the subject in a logical and
+consistent manner.
+
+We know, as a matter of fact, that “uniform, straight-ahead motion”
+which Einstein in his original theory assumed to exist, is an ideality
+that does not appear in nature, because all motion with which we are
+familiar is to some extent irregular, nor does any material object
+move in a perfectly straight line. But realizing the necessity for a
+standard from which to proceed, Einstein properly enough assumed a
+standard of absolute perfection and absolute simplicity of motion,
+even though it does not actually exist anywhere around us. In exactly
+the same manner Euclidean geometry assumes and deals with theoretical
+points, lines and planes which have no material existence in fact.
+
+As set forth in Einstein’s first postulate of the Special Theory, an
+observer on a uniformly moving system could not possibly detect the
+motion of his system without making reference to some outside object.
+In the case of bodies or systems moving irregularly (i. e., with
+acceleration) however, an observer thereon would detect “forces” acting
+upon himself and upon all other objects on his system, due, of course,
+to the acceleration. Recalling the illustration of the moving train:
+so long as it is moving with perfect uniformity an observer thereon
+would not know he is in motion at all until he made a comparison
+with some outside object. But if the train suddenly slows down he is
+thrown forward in his seat; if it speeds up he is thrown backward.
+This force is called _inertia_. Now if we had never experienced
+it before and were put aboard a noiseless and uniformly moving car
+from which we could not see out we would be unable to interpret these
+strange “forces” that we would feel as the motion of the car became
+accelerated. We would probably attempt to explain them as some sort
+of magnetic attraction, exactly as we are accustomed to explain the
+“force” of gravity.
+
+
+                       =Gravitation and Inertia=
+
+In the General Principle of Relativity Einstein deals with these forces
+(inertial and gravitational) and attributes them to a common cause,
+viz., acceleration of motion, and has put the matter upon a consistent
+mathematical basis which at once accounts for certain discrepancies
+long observed in Euclidean geometry and in Newton’s laws. It is obvious
+enough that where there is no acceleration of motion there could be no
+centrifugal or inertial force exhibited: but we have been accustomed
+to looking upon gravitation as something entirely different--as a
+mysterious drawing power or attractive force that is somehow inherent
+in matter. But gravitation is non-existent if we fall with the proper
+acceleration. To use Einstein’s own illustration: if we were in a
+closed room poised somewhere in gravitational space, and began to
+fall with the acceleration common to that field, there would be no
+gravitational effects to be observed. Objects released by our hand
+would not fall but would remain where they are, and we could raise
+ourselves from the floor and stand midway between the floor and the
+ceiling as easily as upon the floor itself.
+
+Again assume we are in a closed room poised in space, in a region
+remote from any gravitational field whatsoever. Then suppose we began
+to rise with a constant acceleration. Forthwith we would feel our feet
+pressing against the floor. Objects released from our hand would strike
+the floor by reason of the floor rising up to meet them, and in all
+respects the effects would be identical with that of gravitation. In
+other words we would have created an artificial gravitational field,
+and it would be due to our accelerated motion.
+
+The characteristics of gravitation and inertia are identical. No
+amount of insulation or screening will diminish the “pull” of gravity
+on anything. Furthermore, gravity acts on every kind and quantity of
+matter alike, so that if a feather weighing less than an ounce and
+a pig of lead weighing a ton were held side by side at the top of a
+great vacuum tube and allowed to drop at the same instant, the feather
+would reach bottom within the same time as the lead, each falling at an
+acceleration of approximately 32 feet per second. It is the resistance
+of the air that retards the fall of light materials, such as a feather,
+but in a vacuum there is no resistance and gravity is found to act on
+all matter to the same degree under such conditions. The same is true
+of inertia _in vacuuo_.
+
+When this relationship between the two forces is recognized we are
+prepared to believe Einstein when he states that inertial force and
+gravitational force are due to a common cause, viz., acceleration. This
+does not mean that our earth, for instance, is being accelerated in all
+directions at once, expanding out to meet “falling” objects such as in
+the case of the artificial gravitational field mentioned in the above
+paragraph. It does mean, however, that the falling objects themselves
+are accelerated, but as will be presently seen this acceleration is not
+due to any attractive force exerted by a “center of gravity” but rather
+to a warped condition of space which surrounds all bodies of matter.
+
+Neither Newton nor Einstein have attempted to analyze the structure
+of matter and on this basis explain the phenomenon of gravitation.
+Newton evidently believed, however, that every particle of matter
+exerts a drawing force upon every other particle of matter, hence he
+formulated his law which specifies this attraction between bodies as
+being directly proportional to the product of their mass and inversely
+proportional to the square of the distance between them. But he did not
+attempt to make clear what that “drawing force” is, or _why_ it is
+inherent in all matter, nor did he explain how or through what medium
+or mechanism it operates.
+
+Newton contented himself with merely dealing with the phenomenon
+of gravitation in the abstract. So does Einstein, but with this
+difference: the latter denies the existence of any mechanism whatever
+in connection with gravitational force so far as any attractive power
+from within is concerned, and accounts for it on purely geometrical
+grounds. This is the most difficult phase of the Einstein theory
+for the layman to grasp, for the reason that it involves the whole
+structure of non-Euclidean geometry with which the public is generally
+unfamiliar.
+
+
+                       =Non-Euclidean Geometry=
+
+Euclid, the famous Greek mathematician, in the third century B. C.
+published the first systematic treatise on geometry (the science of
+space and its measurement), and his axioms and theorems are generally
+taught in our high schools and colleges today. Euclid proceeded upon
+the simple theory that all space consists of points, lines and planes.
+He defined a _point_ as that which has position but not size; a
+_line_ (continuity of points) as possessing length but no breadth
+or thickness; and a _plane_ (continuity of lines) as having length
+and breadth, but no thickness. They are simply abstract terms having
+no physical existence in nature, except as they exist in our minds.
+Nevertheless they have proved themselves convenient in measurement and
+calculation.
+
+But when mathematicians, after centuries of earnest effort, were unable
+to prove Euclid’s postulate concerning parallel lines, it occurred
+to some of them that possibly the whole Euclidean system rests upon
+a faulty foundation. Then it was that Saccheri in Italy, Legendre
+in France, Gauss in Germany, Bolyai in Hungary and Lobatschewsky in
+Russia, all masters of Euclidean geometry, conceived of other methods
+of decomposing space than that proposed in Euclid’s _Elements_.
+
+Thus it was that early in the nineteenth century, almost simultaneously
+in many countries, did many non-Euclidean geometric works come to be
+published. These were of the same general character or form, commonly
+called Hyperbolic geometry. Each of them is as consistent in itself
+as is the geometry of Euclid. But to Riemann belongs the credit of
+formulating a geometry which in the light of Einstein is seen to
+approach much nearer to the reality of nature than does the Euclidean
+or any other system.
+
+Riemann produced his general work along this line in 1854 which was
+far ahead of his time. He actually prophesied the connection of
+geometry with matter, and had he possessed a little more vision he
+would doubtless have worked out the details as well as the principles
+underlying gravitation in much the same manner as Einstein has done.
+Riemann’s efforts in the field of non-Euclidean geometry has materially
+aided Einstein in the development of the present theory. Minkowski’s
+work was utilized by Einstein to much profit in the outworking of the
+Special Theory, particularly his clarification of _time_ as a
+fourth dimension.
+
+
+                     =Time as a Fourth Dimension=
+
+
+
+It is natural for us to think of all matter as possessing but three
+dimensions--length, breadth and thickness--and we have been accustomed
+to making our measurements of matter and of space on that basis. Using
+the formula of Pythagoras we have ascertained the distance between any
+two points in a _plane_ (a two-dimensional area) by extracting the
+square root of the sum of the squares of the co-ordinate axes, i. e.,
+the base and the altitude as in the accompanying diagram. See Figure 4.
+
+If point A is 8 miles south and 6 miles west of point B then A and B
+are 10 miles apart, thus:
+
+The square of 8 is  64
+The square of 6 is  36
+                   ---
+The square root of 100 is 10
+
+Likewise, the distance between any two points in a three-dimensional
+region (as from an upper to the remotest lower corner of a room) is
+generally considered to be “the square root of the sum of the squares
+of the three sides” (Fig. 5).
+
+Thus if the distance O to X is 12 feet and X to Y is also 12 feet,
+while Y to Z is 14 feet, then the straight diagonal distance from O
+directly through the room to point Z is 22 feet, because the sum of the
+squares of the three sides (144 + 144 + 196) yields a total of 484, and
+the square root of that number is 22. This simple formula will hold
+good for all ordinary measurements, but for great distances in space
+a slight correction is found necessary because of the little trick
+that light rays are prone to factor, i. e., the numerical value of the
+interval of time required for a light ray to traverse play upon us. We
+must subtract the _time_ from the distance. Hence if our cube
+were large enough to fill a goodly portion of the universe we would
+no longer say that the diagonal distance from O to Z is
+√(x^2 + y^2 + z^2) but rather √(x^2 + y^2 + z^2 - t^2), ----t,
+of course, representing _time_.
+
+
+
+Now recall what we learned in the preceding pages, that the velocity of
+light always appears to be the same to all observers irrespective of
+the relative velocity between the observer and the source of light. It
+is manifest, therefore, that in making measurements the time factor (t)
+_really_ represents one quantity for one observer and a totally
+different quantity for another observer notwithstanding the fact that
+it appears to be a constant to all observers. Inasmuch as the velocity
+of light does appear to be constant to all observers its actual
+stretching or contracting of units is not manifest. Therefore the
+corrected equation as given above (the subtraction of the _time_
+element) holds good for all observers irrespective of their motion.
+
+The point of interest to the non-Euclidean geometer in connection with
+any measurement, be it remembered, is not the abstract _distance_
+between points, because distance is not a constant and is not
+determinable unless we know the _absolute_ velocity of the
+observer and of the points being measured, which knowledge we do not
+possess. What we should look for, then, is the _distance and time
+combined_, or the _separation-interval_ as it is aptly called.
+The time factor automatically corrects the units for each observer, no
+matter what his motion may be, and thus the separation-interval appears
+a constant.
+
+The foregoing illustrates how time takes its place alongside the
+ordinary three dimensions of space, and is in reality a fourth
+dimension, although it is not a thing that can be visualized as we can
+visualize the length or breadth or thickness of any object. In the
+following paragraphs we shall examine further into the geometry of the
+universe, particularly as it relates to the phenomenon of gravitation.
+
+
+                  =Geometry with a Physical Meaning=
+
+Certain news dispatches and book reviews have erroneously reported
+Professor Einstein as having said “only twelve men in the world can
+understand the Principle of Relativity.” The statement becomes absurd
+in view of the scores of volumes now in print, all of which set forth
+more or less clearly the details of the Einstein theory. What he
+alluded to in the remark so generally misquoted and misconstrued is his
+mathematical equations (calculus of tensors). He questioned if there
+are more than a dozen mathematicians in the world who are familiar with
+this abstruse differential calculus because it is not generally taught
+in the university text books.
+
+This calculus is a veritable maze of formulæ, really invented by
+Riemann and Cristoffel, but systematized by the celebrated Italian
+mathematicians, Ricci and Levi-Cevita, and is impractical for any
+ordinary use. This is why so few mathematicians have familiarized
+themselves with it. Einstein, however, found it invaluable in dealing
+with such complex geometrical problems as his theory produced.
+
+Briefly, the non-Euclidean geometer deals with _surfaces_ rather
+than planes, and his fundamental postulates are sufficiently broad
+to apply to all regular surfaces whether they be planes, spheres,
+cylinders, conicoids or even spheroids or ellipsoids. He considers
+a “straight” line as being the shortest distance between two points
+_on a surface_, hence if the surface is curved the “straight”
+line connecting any two points thereon will also be curved. This
+_shortest_ distance between points is called a _geodesic_. If
+the surface happens to be a _plane_ then the geodesics connecting
+points thereon are really straight lines in the Euclidean sense, but
+this would not be true for any other kind of a surface. Thus it is seen
+that Euclidean geometry is simply a limiting case of this more general
+geometry.
+
+Geometers of the elliptic or spherical school, including Einstein,
+declare that in nature there is no such thing as a purely Euclidean
+straight line such as may be prolonged in opposite directions to
+infinity. On the contrary they hold that any “straight” line if
+prolonged sufficiently would return upon itself, because the universe
+is so constructed. In other words, what we ordinarily call a straight
+line is but an arc of a near infinite circle which possesses the
+_least possible curvature_. Magazine writers in an endeavor to
+make clear this portion of the theory of Relativity have strikingly
+declared that “according to Einstein a man might look through a
+telescope in any direction whatsoever and behold the back of his
+neck.” This jest, though omitting essential facts, is not without
+geometrical foundation. If we possessed a near infinite telescope and
+should live for a near infinite period of time to enable the rays of
+light to traverse this near infinite circle, then, if there were no
+obstructions along our line of sight, we might be rewarded with a
+round trip view of the rear portion of our body--though the simpler
+method would be to use two ordinary mirrors.
+
+All this, however, has an important bearing upon Einstein’s
+interpretation of gravitation. Not only does he contend for
+Lobatschewsky’s “curvature of space” but he also holds that surrounding
+every body of matter there is a _special_ space-curvature (four
+dimensional), the degree of which depends upon the body’s observed
+mass. This special curvature or “warp” of space constitutes the
+“gravitational field” surrounding all large bodies of matter and causes
+the acceleration of falling particles in that field. This distortion of
+space increases in proportion to the mass of the body causing it, and
+decreases with the distance from that body until ultimately it becomes
+_nil_ or practically so in a region remote from all matter.
+
+Perhaps the nearest approach to a visualization of this space-curvature
+(which constitutes a gravitational field) is to consider the lines of
+force in a magnetic field. The reader is doubtless familiar with the
+age-old experiment of placing file dust on a thin sheet of cardboard or
+plate of glass and then holding a horseshoe magnet underneath with the
+two poles touching the sheet or plate. Immediately the filings arrange
+themselves into curved lines between the poles as shown in Fig. 6.
+
+This experiment indicates that between the poles of a magnet are
+constant lines of force, invisible to sight but manifesting themselves
+when attractable particles are in or near their path. The earth,
+likewise, is a great magnet, having one magnetic pole in upper Canada
+above Hudson Bay, about 70° north latitude, and another pole in the
+Antarctic Ocean south of Australia. Between these two magnetic poles
+continually flow these invisible curved lines of force, just as with
+our horseshoe magnet in Figure 6. These lines of force are the cause
+of compasses pointing in a northerly and southerly direction. Other
+planets undoubtedly possess magnetic poles similar to those of the
+earth.
+
+
+
+
+                    =The Background of Gravitation=
+
+Now let us conceive of invisible geometric lines pervading the entire
+spatial universe somewhat analogous to these lines of force in a
+local magnetic field. To each point in these lines let us ascribe an
+electric and gravitational potential (remembering, of course, that we
+are dealing with _four_-dimensional space), and we have before
+us, in a nearly visualized, sense, the background of the new theory of
+gravitation.
+
+Einstein was the first to present the subject of gravitation from this
+viewpoint. For centuries up to this time geometry and physics were
+considered as belonging to entirely different schools of thought, but
+under the master hand of Einstein the two sciences have been welded
+together into one. As Freundlich puts it, “quantities which hitherto
+had only a purely geometrical import, for the first time became
+animated with physical meaning.” Thus “empty space” is no longer empty,
+even though the existence of the ether be denied. When the study of
+free electrons has sufficiently advanced, it may be seen that these
+elementary particles of electricity, or energy-particles, freed from
+atomic or mass attraction, play an important role in gravitational
+phenomena.
+
+Figure 7 represents in a crude fashion the special curvature of space
+in the region of a large body of matter, for instance our earth, with
+the points (events) situated at finite instead of infinite nearness to
+each other for sake of illustration. It will be readily seen that the
+distortion of the geometric lines would necessarily alter the relative
+positions of the point-potentials.
+
+Any falling body moves in a geodesic, i. e., from one point to the
+_next nearest_ point in space-time.[2] In an undisturbed region,
+remote from matter, the points (events) may be considered as so
+arranging themselves that any four neighboring ones would constitute
+practically a square. It may then be seen that the easiest path for
+falling bodies would be to follow the _sides_ of the squares
+because by so doing they would be following the _geodesic_ or
+shortest distance between points. (See Fig. 7.) But in the region of
+a large body of matter the lines of points become so distorted that
+the _diagonal_ of any four neighbor points becomes the geodesic.
+Then the path of the falling particle will accordingly deviate. It will
+always follow the geodesic, or easiest path.
+
+
+
+This causes the falling particle to take a direction which points
+toward the center of the gravitational field--but the center of gravity
+is exerting no drawing or attractive force as Newton supposed. Gravity
+is thus seen to be not an external _drawing_ power operating
+between bodies of matter, but an inherent order of nature in space.
+The acceleration as well as the direction of the falling particle is
+accounted for by this theory. As the separation-interval between points
+becomes shorter--due to the constantly accentuated distortion as the
+large body is approached--the falling particle would be correspondingly
+accelerated. The distortion being constantly increased the acceleration
+would likewise be constant.
+
+Newton, in his law of inertia, postulated that any particle of matter
+at rest will forever remain at rest if not disturbed, but when once
+set in motion it will continue to move at uniform velocity in a
+straight line unless interfered with by outside force. Einstein, on
+the contrary, holds that any particle of matter if left to itself will
+_move_ (let us say _fall_, if you please) in the easiest
+direction (i. e., in a geodesic) at constant velocity unless it
+encounters a gravitational field (a distorted region), in which event
+it will become accelerated, and will also, if necessary, change its
+direction, in obedience to the principle of least action. In other
+words, it is natural for matter to possess energy, therefore natural
+for it to be in motion and unnatural for it to be at rest. And the
+contention has this much in its favor: every particle of matter in the
+universe, from the infinitesimal electron to the more gigantic sun
+and super-system of outer space, _is moving_, so far as our most
+modern observations extend. Nothing has yet been discovered to be at
+rest.
