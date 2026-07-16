@@ -344,7 +344,7 @@ class WikipediaDownloaderGUI(QMainWindow):
         self.search_button.setMinimumHeight(35)
 
         self.limit_spin = QSpinBox()
-        self.limit_spin.setRange(5, 100)
+        self.limit_spin.setRange(5, 1000)
         self.limit_spin.setValue(20)
         self.limit_spin.setPrefix("Max results: ")
         self.limit_spin.setMinimumHeight(35)
@@ -541,7 +541,7 @@ class WikipediaDownloaderGUI(QMainWindow):
         filters_layout.addWidget(QLabel("Min Words:"))
         self.min_words_spin = QSpinBox()
         self.min_words_spin.setRange(0, 100000)
-        self.min_words_spin.setValue(5000)
+        self.min_words_spin.setValue(15000)
         filters_layout.addWidget(self.min_words_spin)
 
         # Add to your settings layout
