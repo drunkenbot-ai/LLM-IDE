@@ -1,0 +1,529 @@
+A British Chain Home transmitter antenna, the first comprehensive radar system The German Freya worked at higher frequencies, and was thus smaller than its Chain Home counterpart.
+
+The anode block of the original cavity magnetron built by Randal and Boot , which provided a leap forward in radar design The history of radar (where radar stands for radio detection and ranging ) started with experiments by Heinrich Hertz in the late 19th century that showed that radio waves were reflected by metallic objects. This possibility was suggested in James Clerk Maxwell 's seminal work on electromagnetism . However, it was not until the early 20th century that systems able to use these principles were becoming widely available, and it was German inventor Christian Hülsmeyer who first used them to build a simple ship detection device intended to help avoid collisions in fog (Reichspatent Nr. 165546 in 1904). True radar which provided directional and ranging information, such as the British Chain Home early warning system, was developed over the next two decades.
+
+The development of systems able to produce short pulses of radio energy was the key advance that allowed modern radar systems to come into existence.
+
+By timing the pulses on an oscilloscope , the range could be determined and the direction of the antenna revealed the angular location of the targets.
+
+The two, combined, produced a "fix", locating the target relative to the antenna.
+
+In the 1934–1939 period, eight nations developed independently, and in great secrecy, systems of this type: the United Kingdom, Germany, the United States , the USSR , Japan, the Netherlands, France, and Italy.
+
+In addition, Britain shared their information with the United States and four Commonwealth countries: Australia, Canada, New Zealand, and South Africa, and these countries also developed their own radar systems.
+
+During the war, Hungary was added to this list.
+
+The term RADAR was coined in 1939 by the United States Signal Corps as it worked on these systems for the Navy. Progress during the war was rapid and of great importance, probably one of the decisive factors for the victory of the Allies . A key development was the magnetron in the UK, which allowed the creation of relatively small systems with sub-meter resolution.
+
+By the end of hostilities, Britain, Germany, the United States, the USSR, and Japan had a wide variety of land- and sea-based radars as well as small airborne systems.
+
+After the war, radar use was widened to numerous fields, including civil aviation , marine navigation, radar guns for police, meteorology , and medicine. Key developments in the post-war period include the travelling wave tube as a way to produce large quantities of coherent microwaves , the development of signal delay systems that led to phased array radars , and ever-increasing frequencies that allow higher resolutions. Increases in signal processing capability due to the introduction of solid-state computers has also had a large impact on radar use. Significance The place of radar in the larger story of science and technology is argued differently by different authors.
+
+On one hand, radar contributed very little to theory, which was largely known since the days of Maxwell and Hertz. Therefore, radar did not advance science, but was instead a matter of technology and engineering. Maurice Ponte, one of the developers of radar in France, states: The fundamental principle of the radar belongs to the common patrimony of the physicists; after all, what is left to the real credit of the technicians is measured by the effective realisation of operational materials. But others point out the immense practical consequences of the development of radar. Far more than the atomic bomb, radar contributed to the Allied victory in World War II. Robert Buderi states that it was also the precursor of much modern technology.
+
+From a review of his book: ... radar has been the root of a wide range of achievements since the war, producing a veritable family tree of modern technologies. Because of radar, astronomers can map the contours of far-off planets, physicians can see images of internal organs, meteorologists can measure rain falling in distant places, air travel is hundreds of times safer than travel by road, long-distance telephone calls are cheaper than postage, computers have become ubiquitous and ordinary people can cook their daily dinners in the time between sitcoms, with what used to be called a radar range.
+
+In later years radar was used in scientific instruments, such as weather radar and radar astronomy . Early contributors Heinrich Hertz In 1886–1888 the German physicist Heinrich Hertz conducted his series of experiments that proved the existence of electromagnetic waves (including radio waves ), predicted in equations developed in 1862–4 by the Scottish physicist James Clerk Maxwell .
+
+In Hertz's 1887 experiment he found that these waves would transmit through different types of materials and also would reflect off metal surfaces in his lab as well as conductors and dielectrics .
+
+The nature of these waves being similar to visible light in their ability to be reflected, refracted, and polarized would be shown by Hertz and subsequent experiments by other physicists. Guglielmo Marconi Radio pioneer Guglielmo Marconi noticed radio waves were being reflected back to the transmitter by objects in radio beacon experiments he conducted on March 3, 1899, on Salisbury Plain.
+
+In 1916 he and British engineer Charles Samuel Franklin used short-waves in their experiments, critical to the practical development of radar. He would relate his findings 6 years later in a 1922 paper delivered before the Institution of Electrical Engineers in London: I also described tests carried out in transmitting a beam of reflected waves across country ... and pointed out the possibility of the utility of such a system if applied to lighthouses and lightships, so as to enable vessels in foggy weather to locate dangerous points around the coasts ... It seems to me that it should be possible to design apparatus by means of which a ship could radiate or project a divergent beam of these rays in any desired direction, which rays, if coming across a metallic object, such as another steamer or ship, would be reflected back to a receiver screened from the local transmitter on the sending ship, and thereby immediately reveal the presence and bearing of the other ship in fog or thick weather. Christian Hülsmeyer In 1904, Christian Hülsmeyer gave public demonstrations in Germany and the Netherlands of the use of radio echoes to detect ships so that collisions could be avoided. His device consisted of a simple spark gap used to generate a signal that was aimed using a dipole antenna with a cylindrical parabolic reflector .
+
+When a signal reflected from a ship was picked up by a similar antenna attached to the separate coherer receiver , a bell sounded.
+
+During bad weather or fog, the device would be periodically spun to check for nearby ships.
+
+The apparatus detected the presence of ships up to 3 kilometres (1.6 nmi), and Hülsmeyer planned to extend its capability to 10 kilometres (5.4 nmi). It did not provide range (distance) information, only warning of a nearby object. He patented the device, called the telemobiloscope , but due to lack of interest by the naval authorities the invention was not put into production. Hülsmeyer also received a patent amendment for estimating the range to the ship. Using a vertical scan of the horizon with the telemobiloscope mounted on a tower, the operator would find the angle at which the return was the most intense and deduce, by simple triangulation, the approximate distance. This is in contrast to the later development of pulsed radar, which determines distance via two-way transit time of the pulse. Germany A radio-based device for remotely indicating the presence of ships was built in Germany by Christian Hülsmeyer in 1904. This has been recognized by the Institute of Electrical and Electronics Engineers as the invention of the first working radar system by inauguration of an IEEE Historic Milestone in October 2019. Over the following three decades in Germany, a number of radio-based detection systems were developed but none were pulsed radars. This situation changed before World War II. Developments in three leading industries are described. GEMA In the early 1930s, physicist Rudolf Kühnhold , Scientific Director at the Kriegsmarine (German navy) Nachrichtenmittel-Versuchsanstalt (NVA—Experimental Institute of Communication Systems) in Kiel , was attempting to improve the acoustical methods of underwater detection of ships. He concluded that the desired accuracy in measuring distance to targets could be attained only by using pulsed electromagnetic waves .
+
+During 1933, Kühnhold first attempted to test this concept with a transmitting and receiving set that operated in the microwave region at 13.5 cm (2.22 GHz).
+
+The transmitter used a Barkhausen–Kurz tube (the first microwave generator) that produced only 0.1 watt. Unsuccessful with this, he asked for assistance from Paul-Günther Erbslöh and Hans-Karl Freiherr von Willisen, amateur radio operators who were developing a VHF system for communications. They enthusiastically agreed, and in January 1934, formed a company, Gesellschaft für Elektroakustische und Mechanische Apparate (GEMA), for the effort.
+
+From the start, the firm was always called simply GEMA. Work began in earnest at GEMA. Hans Hollmann and Theodor Schultes, both affiliated with the prestigious Heinrich Hertz Institute in Berlin, were added as consultants.
+
+The first apparatus used a split-anode magnetron purchased from Philips in the Netherlands. This provided about 70 W at 50 cm (600 MHz), but suffered from frequency instability. Hollmann built a Barkhausen-Kurz tube regenerative receiver connected to Schultes dipole antenna array, while von Willisen used a 48 cm transmitter, first connected to a Yagi antenna and then a parabolic antenna at 13.5 cm and 48 cm.
+
+In June 1934, a large steamer was detected by Doppler-beat interference at a distance of about 2 km (1.2 mi) with the 48 cm equipment, and 4 km with the 13.5 cm equipment.
+
+In October, strong reflections were observed from an aircraft that happened to fly through the continuous-wave beam. Yet, keeping the transmitted signal out of the receiver continued to be a problem. Kühnhold then shifted the GEMA work to a pulse-modulated system. A new 52 cm (600 MHz) Philips magnetron with better frequency stability was used. It was modulated with 2- μs pulses at 2000 per second.
+
+The transmitting antenna was an array of 10 pairs of dipoles with a reflecting mesh.
+
+The broad band heterodyne receiver used Acorn tubes from RCA, and the receiving antenna had three pairs of dipoles and incorporated lobe switching . A Braun tube (a CRT) was used for displaying the range.
+
+The equipment was first tested at a NVA site at the Lübecker Bay near Pelzerhaken.
+
+During May 1935, it detected returns from woods across the bay at a range of 15 km (9.3 mi). It had limited success, however, in detecting a research ship, Welle , only a short distance away.
+
+The receiver was then rebuilt, becoming a super-regenerative set with two intermediate-frequency stages. With this improved receiver, the system readily tracked vessels at up to 8 km (5.0 mi) range.
+
+The system performance was excellent; the range was read off the Braun tube with a tolerance of 50 meters (less than 1 percent variance), and the lobe switching allowed a directional accuracy of 0.1 degree.
+
+Although this apparatus was not put into production, GEMA was funded to develop similar systems operating around 50 cm (500 MHz) and 2.4 m. These became the Seetakt for the Kriegsmarine and the Freya for the Luftwaffe (German Air Force) respectively.The navy needed the shorter wavelengths for surface targets, while the air force needed the extended range with the longer wavelengths.
+
+The 50 cm magnetron was replaced with the GEMA TS1 triode , while the magnetron replaced the Barkhausen tube. Kühnhold remained with the NVA, but also consulted with GEMA. He is considered by many in Germany as the Father of Radar.
+
+During 1933–6, Hollmann wrote the first comprehensive treatise on microwaves, Physik und Technik der ultrakurzen Wellen (Physics and Technique of Ultrashort Waves), Springer 1938. Telefunken In 1933, when Kühnhold at the NVA was first experimenting with microwaves, he had sought information from Telefunken on microwave tubes. (Telefunken was the largest supplier of radio products in Germany) There, Wilhelm Tolmé Runge had told him that no vacuum tubes were available for these frequencies.
+
+In fact, Runge was already experimenting with high-frequency transmitters and had Telefunken's tube department working on cm-wavelength devices.
+
+In the summer of 1935, Runge, now Director of Telefunken's Radio Research Laboratory, initiated an internally funded project in radio-based detection. Using Barkhausen-Kurz tubes, a 50 cm (600 MHz) receiver and 0.5-W transmitter were built. With the antennas placed flat on the ground some distance apart, Runge arranged for an aircraft to fly overhead and found that the receiver gave a strong Doppler-beat interference signal. Runge, now with Hans Hollmann as a consultant, continued in developing a 1.8 m (170 MHz) system using pulse-modulation. Wilhelm Stepp developed a transmit-receive device (a duplexer ) for allowing a common antenna. Stepp also code-named the system Darmstadt after his home town, starting the practice in Telefunken of giving the systems names of cities.
+
+The system, with only a few watts transmitter power, was first tested in February 1936, detecting an aircraft at about 5 km (3.1 mi) distance. This led the Luftwaffe to fund the development of a 50 cm (600 MHz) gun-laying system, the Würzburg . Lorenz Since before the First World War, Standard Elektrik Lorenz had been the main supplier of communication equipment for the German military and was the main rival of Telefunken.
+
+In late 1935, when Lorenz found that Runge at Telefunken was doing research in radio-based detection equipment, they started a similar activity under Gottfried Müller. A pulse-modulated set called Einheit für Abfragung (DFA – Device for Detection) was built. It used a type DS-310 tube (similar to the Acorn) operating at 70 cm (430 MHz) and about 1 kW power, it had identical transmitting and receiving antennas made with rows of half-wavelength dipoles backed by a reflecting screen.
+
+In early 1936, initial experiments gave reflections from large buildings at up to about 7 km (4.3 mi).
+
+The power was doubled by using two tubes, and in mid-1936, the equipment was set up on cliffs near Kiel, and good detections of ships at 7 km (4.3 mi) and aircraft at 4 km (2.5 mi) were attained.
+
+The success of this experimental set was reported to the Kriegsmarine , but they showed no interest; they were already fully engaged with GEMA for similar equipment. Also, because of extensive agreements between Lorenz and many foreign countries, the naval authorities had reservations concerning the company handling classified work.
+
+The DFA was then demonstrated to the Heer (German Army), and they contracted with Lorenz for developing Kurfürst (Elector), a system for supporting Flugzeugabwehrkanone (Flak, anti-aircraft guns). United Kingdom Robert Watson-Watt In 1915, Robert Watson Watt joined the Meteorological Office as a meteorologist , working at an outstation at Aldershot in Hampshire . Over the next 20 years, he studied atmospheric phenomena and developed the use of radio signals generated by lightning strikes to map out the position of thunderstorms .
+
+The difficulty in pinpointing the direction of these fleeting signals using rotatable directional antennas led, in 1923, to the use of oscilloscopes in order to display the signals.
+
+The operation eventually moved to the outskirts of Slough in Berkshire , and in 1927 formed the Radio Research Station (RRS), Slough, an entity under the Department of Scientific and Industrial Research (DSIR). Watson Watt was appointed the RRS Superintendent. : 39 In 1934, the Air Ministry established the Committee for the Scientific Survey of Air Defence (CSSAD) with the goal of finding "how far recent advances in scientific and technical knowledge can be used to strengthen the present methods of defence against hostile aircraft". This "Tizard Committee" was named after its chair Sir Henry Tizard . : 42–43 H. E. Wimperis, Director of Scientific Research at the Air Ministry and a member of the Tizard Committee, had read about a German newspaper article claiming that the Germans had built a death ray using radio signals, accompanied by an image of a very large radio antenna. Both concerned and potentially excited by this possibility, but highly skeptical at the same time, Wimperis looked for an expert in the field of radio propagation who might be able to pass judgement on the concept. Watt, Superintendent of the RRS, was now well established as an authority in the field of radio, and in January 1935, Wimperis contacted him asking if radio might be used for such a device.
+
+After discussing this with his scientific assistant, Arnold F. 'Skip' Wilkins , Wilkins quickly produced a back-of-the-envelope calculation that showed the energy required would be enormous. Watt wrote back that this was unlikely, but added the following comment: "Attention is being turned to the still difficult, but less unpromising, problem of radio detection and numerical considerations on the method of detection by reflected radio waves will be submitted when required". Over the following several weeks, Wilkins considered the radio detection problem. He outlined an approach and backed it with detailed calculations of necessary transmitter power, reflection characteristics of an aircraft, and needed receiver sensitivity. He proposed using a directional receiver based on Watt's lightning detection concept, listening for powerful signals from a separate transmitter. Timing, and thus distance measurements, would be accomplished by triggering the oscilloscope's trace with a muted signal from the transmitter, and then simply measuring the returns against a scale. Watson Watt sent this information to the Air Ministry on February 12, 1935, in a secret report titled "The Detection of Aircraft by Radio Methods". : 44–45 In 1935, Arnold Wilkins set up his receiving equipment six miles from the BBC 49.8 meter shortwave transmitter, and recorded the reflection from a passing Handley Page Heyford bomber passing between the two. Witnessed by Albert Rowe , the Air Ministry allocated research funds and classified the project Highly Secret. : 46 This experiment was later reproduced by Wilkins for the 1977 BBC television series The Secret War episode "To See a Hundred Miles". Based on pulsed transmission as used for probing the ionosphere , a preliminary system was designed and built at the RRS by the team. Their existing transmitter had a peak power of about 1 kW, and Wilkins had estimated that 100 kW would be needed. Edward George Bowen was added to the team to design and build such a transmitter. Bowens’ transmitter operated at 6 MHz (50 m), had a pulse-repetition rate of 25 Hz, a pulse width of 25 μs , and approached the desired power.
+
+In 1935, testing began at Orford Ness Six wooden towers were erected, two for stringing the transmitting antenna, and four for corners of crossed receiving antennas. : 48–49 On June 17, the first target was detected — a Supermarine Scapa flying boat at 17 mi (27 km) range. Watson Watt, Wilkins, and Bowen are generally credited with initiating what would later be called radar in this nation. : 50 In December 1935, the British Treasury appropriated £60,000 for a five-station system called Chain Home (CH), covering approaches to the Thames Estuary .
+
+The secretary of the Tizard Committee, Albert Percival Rowe , coined the acronym RDF as a cover for the work, meaning Range and Direction Finding but suggesting the already well-known Radio Direction Finding . : 53 Late in 1935, responding to Lindemann's recognition of the need for night detection and interception gear, and realizing existing transmitters were too heavy for aircraft, Bowen proposed fitting only receivers, what would later be called bistatic radar . Frederick Lindemann 's proposals for infrared sensors and aerial mines would prove impractical. It would take Bowen's efforts — at the urging of Tizard, who became increasingly concerned about the need — to see air-to-surface-vessel (ASV) radar and, through it, aircraft interception (AI) radar , to fruition.
+
+In 1937, Bowen's team set their crude ASV radar , the world's first airborne set, to detect the Home Fleet in dismal weather. Only in spring 1939, "as a matter of great urgency" after the failure of the searchlight system Silhouette, did attention turn to using ASV for air-to-air interception (AI). Demonstrated in June 1939, AI got a warm reception from Air Chief Marshal Hugh Dowding , and even more so from Churchill . This proved problematic. Its accuracy, dependent on the height of the aircraft, meant that CH, capable of only 4 mi (6.4 km), was not accurate enough to place an aircraft within its detection range, and an additional system was required. Its wooden chassis had a disturbing tendency to catch fire (even with attention from expert technicians), so much so that Dowding, when told that Watson-Watt could provide hundreds of sets, demanded "ten that work".
+
+The Cossor and MetroVick sets were overweight for aircraft use and the RAF lacked night fighter pilots, observers, and suitable aircraft.
+
+In 1940, John Randall and Harry Boot developed the cavity magnetron , which made ten-centimetre (wavelength ) radar a reality. : 144 To aid Chain Home in making height calculations, at Dowding's request, the Electrical Calculator Type Q (commonly called the "Fruit Machine") was introduced in 1940.
+
+The solution to night intercepts would be provided by Dr. W. B. "Ben" Lewis, who proposed a new, more accurate ground control display, the Plan Position Indicator (PPI), a new Ground-Controlled Interception (GCI) radar, and reliable AI radar .
+
+The AI sets would ultimately be built by EMI . GCI was unquestionably delayed by Watson-Watt's opposition to it and his belief that CH was sufficient, as well as by Bowen's preference for using ASV for navigation, despite Bomber Command disclaiming a need for it, and by Tizard's reliance on the faulty Silhouette system. Air Ministry Chain Home Radar Coverage 1939–1940 In March 1936, the work at Orfordness was moved to Bawdsey Manor , nearby on the mainland. Until this time, the work had officially still been under the DSIR, but was now transferred to the Air Ministry.
+
+At the new Bawdsey Research Station, the Chain Home (CH) equipment was assembled as a prototype. There were equipment problems when the Royal Air Force (RAF) first exercised the prototype station in September 1936. These were cleared by the next April, and the Air Ministry started plans for a larger network of stations. Initial hardware at CH stations was as follows: The transmitter operated on four pre-selected frequencies between 20 and 55 MHz, adjustable within 15 seconds, and delivered a peak power of 200 kW.
+
+The pulse duration was adjustable between 5 and 25 μs, with a repetition rate selectable as either 25 or 50 Hz. For synchronization of all CH transmitters, the pulse generator was locked to the 50 Hz of the British power grid. Four 360-foot (110 m) steel towers supported transmitting antennas, and four 240-foot (73 m) wooden towers supported cross-dipole arrays at three different levels. A goniometer was used to improve the directional accuracy from the multiple receiving antennas. : 56–57 By the summer of 1937, 20 initial CH stations were in check-out operation. A major RAF exercise was performed before the end of the year, and was such a success that £10,000,000 was appropriated by the Treasury for an eventual full chain of coastal stations.
+
+At the start of 1938, the RAF took over control of all CH stations, and the network began regular operations. : 58–59 In May 1938, Rowe replaced Watson Watt as Superintendent at Bawdsey.
+
+In addition to the work on CH and successor systems, there was now major work in airborne RDF equipment. This was led by E. G. Bowen and centered on 200-MHz (1.5 m) sets.
+
+The higher frequency allowed smaller antennas, appropriate for aircraft installation. : 58–59 From the initiation of RDF work at Orfordness, the Air Ministry had kept the British Army and the Royal Navy generally informed; this led to both of these forces having their own RDF developments. British Army In 1931, at the Woolwich Research Station of the Army's Signals Experimental Establishment (SEE), W. A. S. Butement and P. E. Pollard had examined pulsed 600 MHz (50-cm) signals for detection of ships.
+
+Although they prepared a memorandum on this subject and performed preliminary experiments, for undefined reasons the War Office did not give it consideration.
+
+As the Air Ministry's work on RDF progressed, Colonel Peter Worlledge of the Royal Engineer and Signals Board met with Watson Watt and was briefed on the RDF equipment and techniques being developed at Orfordness. His report, "The Proposed Method of Aeroplane Detection and Its Prospects", led the SEE to set up an "Army Cell" at Bawdsey in October 1936. This was under E. Talbot Paris and the staff included Butement and Pollard.
+
+The Cell's work emphasize two general types of RDF equipment: gun-laying (GL) systems for assisting anti-aircraft guns and searchlights, and coastal-defense (CD) systems for directing coastal artillery and defense of Army bases overseas. : 68–69 Pollard led the first project, an early warning RDF code-named Mobile Radio Unit (MRU). This truck-mounted system was designed as a small version of a CH station. It operated at 23 MHz (13 m) with a power of 300 kW. A single 105-foot (32 m) tower supported a transmitting antenna, as well as two receiving antennas set orthogonally for estimating the signal bearing.
+
+In February 1937, a developmental unit detected an aircraft at a range of 60 miles (97 km).
+
+The Air Ministry also adopted this system as a mobile auxiliary to the CH system. : 68–69 In early 1938, Butement started the development of the Radar, Coast Defense, Mark I system based on Bowen's evolving 200-MHz (1.5-m) airborne sets.
+
+The transmitter had a 400 Hz pulse rate, a 2-μs pulse width, and 50 kW power (later increased to 150 kW). Butement also introduced beam and the radar equation.
+
+By May 1939, the CD MK II RDF could detect aircraft flying as low as 500 feet (150 m) and at a range of 25 mi (40 km). : 69–71 Royal Navy Although the Royal Navy maintained close contact with the Air Ministry work at Bawdsey, they chose to establish their own RDF development at the Experimental Department of His Majesty's Signal School (HMSS) in Portsmouth , Hampshire , on the south coast. : 73 HMSS started RDF work in September 1935. Initial efforts, under R. F. Yeo, were in frequencies between 75 MHz (4 m) and 1.2 GHz (25 cm). All of the work was under the utmost secrecy; it could not even be discussed with other scientists and engineers at Portsmouth. A 75 MHz range-only set was eventually developed and designated Type 79X. Basic tests were done using a training ship, but the operation was unsatisfactory.
+
+In August 1937, the RDF development at HMSS changed, with many of their best researchers brought into the activity. John D. S. Rawlinson was made responsible for improving the Type 79X. To increase the efficiency, he decreased the frequency to 43 MHz ( 7 metre wavelength). Designated Type 79Y, it had separate, stationary transmitting and receiving antennas.
+
+In 1938, Type 79Y was tested at sea, detecting aircraft at 30 and 50 miles (48 and 80 km).
+
+The systems were then deployed on HMS Sheffield and HMS Rodney . : 74–75 United States In the United States, both the Navy and Army needed means of remotely locating enemy ships and aircraft.
+
+In 1930, both services initiated the development of radio equipment that could meet this need. There was little coordination of these efforts; thus, they will be described separately. United States Navy In the autumn of 1922, Albert H. Taylor and Leo C. Young at the U.S. Naval Aircraft Radio Laboratory were conducting communication experiments when they noticed that a wooden ship in the Potomac River was interfering with their signals. They prepared a memorandum suggesting that this might be used for ship detection in a harbor defense, but their suggestion was not taken up.
+
+In 1930, Lawrence A. Hyland working with Taylor and Young, now at the U.S. Naval Research Laboratory (NRL) in Washington, D.C., used a similar arrangement of radio equipment to detect a passing aircraft. This led to a proposal and patent for using this technique for detecting ships and aircraft. A simple wave-interference apparatus can detect the presence of an object, but it cannot determine its location or velocity . That had to await the invention of pulsed radar, and later, additional encoding techniques to extract this information from a CW signal.
+
+When Taylor's group at the NRL were unsuccessful in getting interference radio accepted as a detection means, Young suggested trying pulsing techniques. This would also allow the direct determination of range to the target.
+
+In 1924, Hyland and Young had built such a transmitter for Gregory Breit and Merle A. Tuve at the Carnegie Institution of Washington for successfully measuring the height of the ionosphere . Robert Morris Page was assigned by Taylor to implement Young's suggestion. Page designed a transmitter operating at 60 MHz and pulsed 10 μs in duration and 90 μs between pulses.
+
+In December 1934, the apparatus was used to detect a plane at a distance of one mile (1.6 km) flying up and down the Potomac.
+
+Although the detection range was small and the indications on the oscilloscope monitor were almost indistinct, it demonstrated the basic concept of a pulsed radar system. Based on this, Page, Taylor, and Young are usually credited with building and demonstrating the world's first pulsed radar. An important subsequent development by Page was the duplexer , a device that allowed the transmitter and receiver to use the same antenna without overwhelming or destroying the sensitive receiver circuitry. This also solved the problem associated with synchronization of separate transmitter and receiver antennas which is critical to accurate position determination of long-range targets. : 66–67 The experiments with pulsed radar were continued, primarily in improving the receiver for handling the short pulses.
+
+In June 1936, the NRL's first prototype radar system, now operating at 28.6 MHz, was demonstrated to government officials, successfully tracking an aircraft at distances up to 25 miles (40 km). Their radar was based on low frequency signals, at least by today's standards, and thus required large antennas , making it impractical for ship or aircraft mounting. Ship radar of the United States Navy Antenna size is inversely proportional to the operating frequency; therefore, the operating frequency of the system was increased to 200 MHz, allowing much smaller antennas.
+
+The frequency of 200 MHz was the highest possible with existing transmitter tubes and other components.
+
+In 1937, it was tested installed on the USS Leary , with a Yagi antenna mounted on a gun barrel. : 126 Based on success of the sea trials, the NRL further improved the system. Page developed the ring oscillator , allowing multiple output tubes and increasing the pulse-power to 15 kW in 5-μs pulses. A 20-by-23 ft (6 x 7 m), stacked-dipole "bedspring" antenna was used.
+
+In laboratory test during 1938, the system, now designated XAF , detected planes at ranges up to 100 miles (160 km). It was installed on the battleship USS New York for sea trials starting in January 1939, and became the first operational radio detection and ranging set in the U.S. fleet. : 126–127 In May 1939, a contract was awarded to RCA for production. Designated CXAM , deliveries started in May 1940.
+
+The acronym RADAR was coined from "Radio Detection And Ranging". One of the first CXAM systems was placed aboard the USS California , a battleship that was sunk in the Japanese attack on Pearl Harbor on December 7, 1941. United States Army As the Great Depression started, economic conditions led the U.S. Army Signal Corps to consolidate its widespread laboratory operations to Fort Monmouth, New Jersey .
+
+On June 30, 1930, these were designated the Signal Corps Laboratories (SCL) and Lt. Colonel (Dr.) William R. Blair was appointed the SCL Director. Among other activities, the SCL was made responsible for research in the detection of aircraft by acoustical and infrared radiation means. Blair had performed his doctoral research in the interaction of electromagnet waves with solid materials, and naturally gave attention to this type of detection. Initially, attempts were made to detect infrared radiation, either from the heat of aircraft engines or as reflected from large searchlights with infrared filters, as well as from radio signals generated by the engine ignition. Some success was made in the infrared detection, but little was accomplished using radio.
+
+In 1932, progress at the Naval Research Laboratory (NRL) on radio interference for aircraft detection was passed on to the Army.
+
+While it does not appear that any of this information was used by Blair, the SCL did undertake a systematic survey of what was then known throughout the world about the methods of generating, modulating, and detecting radio signals in the microwave region. : 130 In 1934, the SCL was directed by the Chief of the Army Signal Corps to investigate microwave radio position-finding (RPF).
+
+In 1934 and 1935 tests showed Doppler-shifted signals, using a bi-static arrangement. : 130–131 Blair was evidently not aware of the success of a pulsed system at the NRL in December 1934.
+
+In an internal 1935 note, Blair had commented: Consideration is now being given to the scheme of projecting an interrupted sequence of trains of oscillations against the target and attempting to detect the echoes during the interstices between the projections. : 131 In 1936, W. Delmar Hershberger and Robert H. Noyes built a 75 watt, 110 MHz (2.73 m) transmitter with pulse modulation and a receiver patterned on the one at the NRL. : 132–133 In October 1936, Paul E. Watson became the SCL Chief Engineer and led the project. A field setup near the coast was made with the transmitter and receiver separated by a mile.
+
+On December 14, 1936, the experimental set detected at up to 7 mi (11 km) range aircraft flying in and out of New York City.
+
+In 1937, Ralph I. Cole and William S. Marks lead used separate antennas for the receiver and azimuth - elevation detection, illuminating a bomber. Observing, Secretary of War Henry A. Woodring placed orders the next day. : 132 In 1938, the 1.5 meter SCR-268 used Major James C. Moore designed lobe switching antennas. Assisted by Western Electric and Westinghouse production started by Western Electric in 1939, entering service in 1941. : 132–133 Even before the SCR-268 entered service, it had been greatly improved.
+
+In a project led by Major (Dr.) Harold A. Zahl , two new configurations evolved – the 2.83 meter mobile SCR-270 and the fixed base SCR-271 (fixed-site).
+
+In 1940, Westinghouse started deliveries.
+
+The Army deployed five of the first SCR-270 sets around the island of Oahu in Hawaii, where one of these radars detected a flight of aircraft involved in the Attack on Pearl Harbor . : 134–135 USSR On 7 May 1895 , Alexander Stepanovich Popov , a physics instructor at the Imperial Russian Navy 's Torpedo School of the Naval Warfare Institute in Kronstadt , presented a paper to the Russian Physical and Chemical Society on his coherer lightning detector.
+
+In March 1896, he added a spark-gap transmitter and transmitted a Morse code message in a demonstration to the same society.
+
+In 1897, he demonstrated communication between two ships in the Baltic Sea . He also noted interference beat caused by the passage of a third vessel.
+
+In 1899, Popov collaborated with Eugène Adrien Ducretet in building wireless sets in Paris, based on Popov's apparatus, and under license in the Siemens & Halske St. Petersburg factory.
+
+In 1900, after Popov's receiver was patented in Russia, England and France, the Russian Imperial Navy adopted wireless communication.
+
+By 1924, 50 radio stations were operating in Russia.
+
+The Red Army's Glavnoe Artilleriyskoe Upravlenie (GAU, Main Artillery Administration), seeking help with radio location, were assisted by Yu. K. Korovin of the Tsentral’naya Radiolaboratoriya (TsRL, Central Radio Laboratory) in Leningrad.
+
+On 3 January 1934, he was able to show reflections from aircraft using 50 centimeter transmitter.
+
+The TsRL were then engaged to develop radio location to assist searchlights and anti-aircraft guns.
+
+In 1934, following a Russian Academy of Sciences conference for the Voiska Protivo-vozdushnoi aborony (PVO), Pavel Oshchepkov was able to initiate radio location work with Abram Fedorovich Ioffe 's Leningrad Physics and Technology Institute (LEPI), the Ukrainian Institute of Physics and Technology (UIPT), his Special Construction Bureau (SCB), and Svetlana .
+
+In October 1934, the PVO ordered five of LEPI Bistro sets for experimentation. Operating at 4.7 meters, the Bistatic radar system built by B.K. Shembel's team could only determine the presence of a target, and a rough direction, but not its range.
+
+In 1936, Shembel's team in Mikhail A. Bonch-Bruevich 's Nauchno-issledovatelsky institut-9 (NII-9, Scientific Research Institute #9), used a UIPT 18 centimeter magnetron to build Burya . Though capable of range, elevation, and azimuth detection, it was still insufficient for Aa guns . Burya-2 and Burya-3 , incorporated three receiving antennas paired vertically and horizontally, and included lobe switching , but it was still a continuous-wave radar (CW). Simultaneously in 1936, Oshehepkov at the SCB, and V.V. Tsimbalin at the LPTI, developed a 4 meter pulsed radar system. However, this bistatic system could not directly detect range with the pulses.
+
+In June 1937, all of the work in Leningrad on radio-location suddenly stopped.
+
+The infamous Great Purge of dictator Joseph Stalin swept over the military high commands and its supporting scientific community.
+
+The PVO chief was executed. Oshchepkov, charged with "high crime", was sentenced to 10 years at a Gulag penal labor camp. NII-9 as an organization was saved, but Shenbel was dismissed and Bonch-Bruyevich was named the new director.
+
+The Nauchnoissledovatel'skii ispytalel'nyi institut svyazi RKKA (NIIIS-KA, Scientific Research Institute of Signals of the Red Army), had initially opposed research in radio-location, favoring instead acoustical techniques. However, this portion of the Red Army gained power as a result of the Great Purge, and did an about face, pressing hard for speedy development of radio-location systems. They took over Oshchepkov's laboratory and were made responsible for all existing and future agreements for research and factory production. Writing later about the Purge and subsequent effects, General Lobanov commented that it led to the development being placed under a single organization, and the rapid reorganization of the work.
+
+In 1938, NII-9's D. S. Stogov developed Reven (Rhubarb), a slightly better version of Bistro . This became the basis for the mobile system Radio Ulavlivatel Samoletov (RUS) RUS-1 . This CW bi-static system used a truck-mounted 4.7 meter transmitter, and two truck-mounted receivers separated by 40 km.
+
+In 1940, the system entered service, of which 45 were built. Yet the system lacked range capabilities.
+
+In 1940, an oscilloscope was used to display range, and designated RUS-2 . Modified with range-finding and a duplexer, an additional 15 systems were built. One set was tested aboard the Soviet cruiser Molotov as Redut-k by Aksel Berg .
+
+In 1938, the Scientific Research Institute of Signals of the Red Ary (NIIS-KA)' A. I. Shestako continued work on Oshchepkov's 4 meter pulsed radar system. Ioffe's turned it into a mobile system, Redut , using Yagi antennas .
+
+In 1939 it was field tested, indicating longer range and better direction-angle measurements than RUS-1 , and 14 sets eventually ordered.
+
+At the NII-9 under Bonch-Bruyevich, scientists developed two types of very advanced microwave generators.
+
+In 1938, a linear-beam, velocity-modulated vacuum tube (a klystron ) was developed by Nikolay Devyatkov , based on designs from Kharkiv. This device produced about 25 W at 15–18 cm (2.0–1.7 GHz) and was later used in experimental systems. Devyatkov followed this with a simpler, single-resonator device (a reflex klystron ).
+
+At this same time, D. E. Malyarov and N. F. Alekseyev were building a series of magnetrons, also based on designs from Kharkov; the best of these produced 300 W at 9 cm (3 GHz).
+
+In 1938, UIPT's Abram Slutskin tested Zenit , a pulsed radar system using Aleksandr Usikov's 60 centimeter magnetron and Semion Braude 's superheterodyne receiver with a 955 acorn triode .
+
+The system used an oscilloscope for display and separate 3 meter parabolic antennas . Work at the LEMO continued on Zenit , particularly by Ivan Truten in converting it into a single-antenna 54 centimeter system designated Rubin by 1943 . This effort, however, was disrupted by the invasion of the USSR by Germany in June 1941.
+
+In a short while, the development activities at Kharkov were ordered to be evacuated to the Far East.
+
+The research efforts in Leningrad were similarly dispersed.
+
+In 1942, Viktor Tikhomirov 's Factory 339 in Moscow, developed the SCH-3 transponder, which responded to the 4 meter RUS-2 , as an Identification Friend or Foe system. Using Nikolay Devyatkov 's reflex klystron , the factory modified the Gneis-2 airborne 16 centimeter radar system for the Petlyakov Pe-3 , into the 1.5 meter Gneiss-2 . Japan One of Japan's best-known radio researchers in the 1920s–1930s era was Professor Hidetsugu Yagi .
+
+After graduate study in Germany, England, and America, Yagi joined Tohoku University , where his research included developing the Yagi-Uda antenna , oscillators for high-frequency communications, and guiding Kinjiro Okabe in the development of the 12 centimeter split-anode magnetron . : 312–314 A summary of the radio research work at Tohoku University was contained in a 1928 seminal paper by Yagi.
+
+In 1932, the Naval Technology Research Institute's Yoji Ito conducted research on the magnetron.
+
+In 1936, Tohoku Imperial University's Tsuneo Ito developed a 10 centimeter split-anode magnetron called Tachibana .
+
+The two Itos then collaborated on magnetron frequency stabilization. Also, in 1936, Okabe detected passing aircraft using a VHF transmitter and receiver with a Yagi antenna. : 315–316, 324–325 In 1938, NEC engineers noted field strength fading of their high-frequency transmitters when an aircraft passed overhead, something Kinji Satake had also noticed in 1937. Masatsugu Kobayashi noted the direct signal and the Doppler-shifted reflected signal caused a beat frequency suitable for aircraft detection.
+
+The NEC then developed the Bi-static Doppler Interference Detector, though it could not detect range or travel direction, it was deployed in 1941. : 319–320 By early 1939, NTRI/JRC had jointly developed a 10-cm (3-GHz), stable-frequency Mandarin-type magnetron (No. M3) that, with water cooling, could produce 500-W power.
+
+In the same time period, magnetrons were built with 10 and 12 cavities operating as low as 0.7 cm (40 GHz).
+
+The configuration of the M3 magnetron was essentially the same as that used later in the magnetron developed by Boot and Randall at Birmingham University in early 1940, including the improvement of strapped cavities. Unlike the high-power magnetron in Britain, however, the initial device from the NTRI generated only a few hundred watts.
+
+The system had separate transmitter and receiver dipole antennas .
+
+In November 1941, the first manufactured RRF was placed into service as a land-based early-warning system at Katsuura, Chiba , a town on the Pacific coast about 100 km (62 mi) from Tokyo. A large system, it weighed close to 8,700 kg (19,200 lb).
+
+The detection range was about 130 km (81 mi) for single aircraft and 250 km (160 mi) for groups.
+
+In 1942, the Type 12 operated at either 2 or 1.5 m. Type 21 was a shipboard version. Type 13 used a diplexer for a common antenna.
+
+In 1945, the 6 meter Type 14 entered service. : 326–327 Netherlands Early radio-based detection in the Netherlands was along two independent lines: one a microwave system at the firm Philips and the other a VHF system at a laboratory of the Armed Forces.
+
+The Philips Company in Eindhoven , Netherlands, operated Natuurkundig Laboratorium ( NatLab ) for fundamental research related to its products. NatLab researcher Klaas Posthumus developed a split-anode magnetron with four elements.
+
+In 1935, C.H.J.A. Staal used this magnetron in a pulse mode noted a reflected signal from a large plate set some distance from the side-by-side transmitting and receiving antennas.
+
+In 1937, he demonstrated the phenomena to the Royal Dutch Navy . Development was interrupted with the German invasion of the Netherlands .
+
+In 1938, J.L.W.C. von Weiler and S.G. Gratama demonstrated a 1.25 meter searchlight directing and anti-aircraft system. : 337–341 The navy provided funding for final production of the "M39", and Max Staal was added to the team. To maintain secrecy, the production was assigned to different organizations: The transmitter was built at the Delft Technical College and the receiver at the University of Leiden .
+
+The mechanical construction was built by van Heijst in The Hague. Ten sets would be assembled under the personal supervision of J.J.A. Schagen van Leeuwen, head of the firm Hazemeijer Fabriek van Signaalapparaten.
+
+The Dutch electric listening device The system had a peak-power of 1 kW, and used a pulse length of 2 to 3 μs with a 10- to 20 kHz PRF.
+
+The receiver was a super-heterodyne type using Acorn tubes and a 6 MHz IF stage.
+
+The antenna consisted of 4 rows of 16 half-wave dipoles backed by a 3- by 3-meter mesh screen.
+
+The operator used a bicycle-type drive to rotate the antenna and the elevation could be changed using a hand crank.
+
+In 1940, several were deployed on the Malieveld . Von Weiler and Max Staal fled to England with two sets. : 340 Based on the electric listening device sets, Van Weiler and Staal developed a Range and Direction Finder ("radar") for the two Hazemeijer fire control units controlling the twin-mounted Bofors 400 mm guns of the HNLMS Isaac Sweers .
+
+The set was called RDF 289 . France The late 1920s founders of French radar include Pierre David, who studied meter wavelength reflections, Camille Gutton , who studied 16 centimeter reflections, Émile Girardeau , and Maurice Ponte.
+
+In 1932, Henri Gutton and Robert Warneck collaborated in producing a 80 centimeter magnetron.
+
+In 1934, David detected Doppler interference from passing aircraft using a 4 meter centimeter continuous wave transmitter, which he called barrage électromagnétique. : 345–348 In 1934, following systematic studies on the magnetron, the research branch of the CSF, headed by Maurice Ponte, submitted a patent application for a device designed to detect obstacles using continuous radiation of ultra-short wavelengths produced by a magnetron. These were still CW systems and depended on Doppler interference for detection. However, as most modern radars, antennas were collocated.
+
+The device was measuring distance and azimuth but not directly as in the later "radar" on a screen (1939). Still, this was the first patent of an operational radio-detection apparatus using centimetric wavelengths.
+
+In 1935, David's and Henri Gutton's systems were tested on the cargo ship Oregon , which were inconclusive. Then Henri Gutton and Maurice Bridge tested a 16 centimeter system onboard the SS Normandie . : 348–349 In late 1937, Maurice Elie at SFR developed a means of pulse-modulating transmitter tubes. This led to a new 16-cm system with a peak power near 500 W and a pulse width of 6 μs. French and U.S. patents were filed in December 1939.
+
+The system was planned to be sea-tested aboard the Normandie , but this was cancelled at the outbreak of war.
+
+In 1936, the Défense Aérienne du Territoire (Defence of Air Territory), ran tests on David's electromagnetic curtain.
+
+In the tests, the system detected most of the entering aircraft, but too many were missed.
+
+As the war grew closer, the need for an aircraft detection was critical. David realized the advantages of a pulsed system, and in October 1938 he designed a 50 MHz, pulse-modulated system with a peak-pulse power of 12 kW. This was built by the firm SADIR. France declared war on Germany on September 3, 1939, and there was a great need for an early-warning detection system.
+
+The SADIR system was taken to near Toulon , and detected and measured the range of invading aircraft as far as 55 km (34 mi).
+
+The SFR pulsed system was set up near Paris where it detected aircraft at ranges up to 130 km (81 mi). However, the German advance was overwhelming and emergency measures had to be taken; it was too late for France to develop radars alone and it was decided that her breakthroughs would be shared with her allies.
+
+In mid-1940, Maurice Ponte, from the laboratories of CSF in Paris, presented a cavity magnetron designed by Henri Gutton at SFR (see above) to the GEC laboratories at Wembley , Britain. This magnetron was designed for pulsed operation at a wavelength of 16 cm. Unlike other magnetron designs to that day, such as the Boots and Randall magnetron (see British contributions above), this tube used an oxide-coated cathode with a peak power output of 1 kW, demonstrating that oxide cathodes were the solution for producing high-power pulses at short wavelengths, a problem which had eluded British and American researchers for years.
+
+The significance of this event was underlined by Eric Megaw, in a 1946 review of early radar developments: "This was the starting point of the use of the oxide cathode in practically all our subsequent pulsed transmitting waves and as such was a significant contribution to British radar.
+
+The date was the 8th May 1940". A tweaked version of this magnetron reached a peak output of 10 kW by August 1940. It was that model which, in turn, was handed to the Americans as a token of good faith during the negotiations made by the Tizard delegation in 1940 to obtain from the U.S. the resources necessary for Britain to exploit the full military potential of her research and development work. Italy In 1933, Guglielmo Marconi while experimenting with 600 MHz communications, nearby moving objects affected the transmission.
+
+In 1935, he demonstrated his radioecometro , a 0.91 meter Barkhausen-Kurz tube continuous wave detector of the Doppler effect .
+
+The press called it a "death ray."In 1936, Ugo Tiberio prepared a report for the Regio Istituto Elettrotecnico e delle Comunicazioni outlining further research, which included the radar equation .
+
+In 1936, the 1.5 meter EC-1 system, telemetro radiofonico del rivelatore , was demonstrated after development by Nello Carrara . : 341–343 In 1937, the 1.7 meter pulsed EC-2, was designed by Alfeo Brandimarte , mixing the transmitted and reflected signals for an audible tone.
+
+The 70 centimeter EC-3 radar used a pair of triodes with a resonant cavity, simulating a magnetron.
+
+In cooperation with the Fabbrica Valvove Radio Elettriche, both a 70 centimeter shipboard version called Gufo and a 1.5 meter coastal version called Folaga were built.
+
+In 1941, Gufo was deployed onboard the Littorio . An air-search system called Lince was developed by Arturo Castellani and Francesco Vecchiacchi. : 343–345 Others In early 1939, the British Government invited representatives from the most technically advanced Commonwealth Nations to visit England for briefings and demonstrations on the highly secret RDF (radar) technology. Based on this, RDF developments were started in Australia, Canada, New Zealand, and South Africa by September 1939.
+
+In addition, this technology was independently developed in Hungary early in the war period. Australia: the Radiophysics Laboratory in Australia was established at Sydney University under the Council for Scientific and Industrial Research; John H. Piddington was responsible for RDF development.
+
+The first project was a 200-MHz (1.5-m) shore-defense system for the Australian Army . Designated ShD, this was first tested in September 1941, and eventually installed at 17 ports.
+
+Following the Japanese attack on Pearl Harbor , the Royal Australian Air Force urgently needed an air-warning system, and Piddington's team, using the ShD as a basis, put the AW Mark I together in five days. It was being installed in Darwin, Northern Territory , when Australia received the first Japanese attack on February 19, 1942. A short time later, it was converted to a light-weight transportable version, the LW-AW Mark II; this was used by the Australian forces, as well as the U.S. Army, in early island landings in the South Pacific. Canada: The early RDF developments in Canada were at the Radio Section of the National Research Council of Canada . Using commercial components and with essentially no further assistance from Britain, John Tasker Henderson led a team in developing the Night Watchman, a surface-warning system for the Royal Canadian Navy to protect the entrance to the Halifax Harbour . Successfully tested in July 1940, this set operated at 200 MHz (1.5 m), had a 1 kW output with a pulse length of 0.5 μs, and used a relatively small, fixed antenna. This was followed by a ship-borne set designated Surface Warning 1st Canadian (SW1C) with the antenna hand-rotated through the use of a Chevrolet steering wheel in the operator's compartment.
+
+The SW1C was first tested at sea in mid-May 1941, but the performance was so poor compared to the Royal Navy's Model 271 ship-borne radar that the Royal Canadian Navy eventually adopted the British 271 in place of the SW1C. For coastal defense by the Canadian Army , a 200 MHz set with a transmitter similar to the Night Watchman was developed. Designated CD, it used a large, rotating antenna atop a 70-foot (21 m) wooden tower.
+
+The CD was put into operation in January 1942. New Zealand : Ernest Marsden represented New Zealand at the briefings in England, and then established two facilities for RDF development – one in Wellington at the Radio Section of the Central NZ Post Office, and another at Canterbury University College in Christchurch . Charles N. Watson-Munro led the development of land-based and airborne sets at Wellington, while Frederick W. G. White led the development of shipboard sets at Christchurch.
+
+Before the end of 1939, the Wellington group had converted an existing 180-MHz (1.6-m), 1 kW transmitter to produce 2-μs pulses and tested it to detect large vessels at up to 30 km; this was designated CW (Coastal Watching). A similar set, designated CD (Coast Defense) used a CRT for display and had lobe-switching on the receiving antenna; this was deployed in Wellington in late 1940. A partially completed ASV 200 MHz set was brought from Britain by Marsden, and another group at Wellington built this into an aircraft set for the Royal New Zealand Air Force ; this was first flown in early 1940.
+
+At Christchurch, there was a smaller staff and work went slower, but by July 1940, a 430-MHz (70-cm), 5 kW set was tested. Two types, designated SW (Ship Warning) and SWG (Ship Warning, Gunnery), were placed into service by the Royal New Zealand Navy starting in August 1941.
+
+In all some 44 types were developed in New Zealand during WWII. Radar systems were developed from 1939; initially New Zealand made but then (because of difficulty on sourcing components) British made. Transportable GCI radar sets were deployed in the Pacific, including one with RNZAF personnel at the American aerodrome at Henderson Field, Guadalcanal in September 1942, where the American SCR 270-B sets could not plot heights so were inadequate against frequent Japanese night raids.
+
+In the first half of 1943 additional New Zealand radar units and staff were sent to the Pacific at the request of COMOSPAC, Admiral Halsey. South Africa did not have a representative at the 1939 meetings in England, but in mid-September, as Ernest Marsden was returning by ship to New Zealand, Basil F. J. Schonland came aboard and received three days of briefings. Schonland, a world authority on lightning and Director of the Bernard Price Institute of Geophysics at Witwatersrand University , immediately started an RDF development using amateur radio components and Institute's lightning-monitoring equipment. Designated JB (for Johannesburg ), the 90-MHz (3.3-m), 500-W mobile system was tested in November 1939, just two months after its start.
+
+The prototype was operated in Durban before the end of 1939, detecting ships and aircraft at distances up to 80 km, and by the next March a system was fielded by anti-aircraft brigades of the South African Defence Force . Hungary: Zoltán Lajos Bay in Hungary was a professor of physics at the Technical University of Budapest as well as the Research Director of Egyesült Izzolampa (IZZO), a radio and electrical manufacturing firm.
+
+In late 1942, IZZO was directed by the Minister of Defense to develop a radio-location ( rádiólokáció , radar) system. Using journal papers on ionospheric measurements for information on pulsed transmission, Bay developed a system called Sas (Eagle) around existing communications hardware. : 373–376 The Sas operated at 120 MHz (2.5 m) and was in a cabin with separate transmitting and receiving dipole arrays attached; the assembly was all on a rotatable platform. According to published records, the system was tested in 1944 atop Mount János and had a range of "better than 500 km". A second Sas was installed at another location. There is no indication that either Sas installation was ever in regular service.
+
+After the war, Bay used a modified Sas to successfully bounce a signal off the moon. World War II radar The acronym RADAR (for RAdio Detection And Ranging) was coined by the U.S. Navy in 1940, and the subsequent name "radar" was soon widely used.
+
+The XAF and CXAM search radars were designed by the Naval Research Laboratory, and were the first operational radars in the US fleet, produced by RCA.
+
+When France had just fallen to the Nazis and Britain had no money to develop the cavity magnetron on a massive scale, Churchill agreed that Sir Henry Tizard should offer the cavity magnetron to the Americans in exchange for their financial and industrial help (the Tizard Mission ). An early 6 kW version, built in England by the General Electric Company Research Laboratories, Wembley , London (not to be confused with the similarly named American company General Electric), was given to the US government in September 1940.
+
+The British magnetron was a thousand times more powerful than the best American transmitter at the time and produced accurate pulses.
+
+At the time the most powerful equivalent microwave producer available in the US (a klystron) had a power of only ten watts.
+
+The cavity magnetron was widely used during World War II in microwave radar equipment and is often credited with giving Allied radar a considerable performance advantage over German and Japanese radars, thus directly influencing the outcome of the war. It was later described by noted Historian James Phinney Baxter III as "The most valuable cargo ever brought to our shores".
+
+The Bell Telephone Laboratories made a producible version from the magnetron delivered to America by the Tizard Mission, and before the end of 1940, the Radiation Laboratory had been set up on the campus of the Massachusetts Institute of Technology to develop various types of radar using the magnetron.
+
+By early 1941, portable centimetric airborne radars were being tested in American and British aircraft.
+
+In late 1941, the Telecommunications Research Establishment in Great Britain used the magnetron to develop a revolutionary airborne, ground-mapping radar codenamed H2S ; and was partly developed by Alan Blumlein and Bernard Lovell .
+
+The magnetron radars used by the US (e.g. H2X ) and Britain could spot the periscope of a U-boat . Post-war radar World War II, which gave impetus to the great surge in radar development, ended between the Allies and Germany in May 1945, followed by Japan in August. With this, radar activities in Germany and Japan ceased for a number of years.
+
+In other countries, particularly the United States, Britain, and the USSR, the politically unstable post-war years saw continued radar improvements for military applications.
+
+In fact, these three nations all made significant efforts in bringing scientists and engineers from Germany to work in their weapon programs; in the U.S., this was under Operation Paperclip . Even before the end of the war, various projects directed toward non-military applications of radar and closely related technologies were initiated.
+
+The US Army Air Forces and the British RAF had made wartime advances in using radar for handling aircraft landing, and this was rapidly expanded into the civil sector.
+
+The field of radio astronomy was one of the related technologies; although discovered before the war, it immediately flourished in the late 1940s with many scientists around the world establishing new careers based on their radar experience. Four techniques, highly important in post-war radars, were matured in the late 1940s-early 1950s: pulse Doppler, monopulse, phased array, and synthetic aperture; the first three were known and even used during wartime developments, but were matured later. Pulse-Doppler radar (often known as moving target indication or MTI), uses the Doppler-shifted signals from targets to better detect moving targets in the presence of clutter. Monopulse radar (also called simultaneous lobing) was conceived by Robert Page at the NRL in 1943. With this, the system derives error-angle information from a single pulse, greatly improving the tracking accuracy. Phased-array radar has the many segments of a large antenna separately controlled, allowing the beam to be quickly directed. This greatly reduces the time necessary to change the beam direction from one point to another, allowing almost simultaneous tracking of multiple targets while maintaining overall surveillance. Synthetic-aperture radar (SAR), was invented in the early 1950s at Goodyear Aircraft Corporation. Using a single, relatively small antenna carried on an aircraft, a SAR combines the returns from each pulse to produce a high-resolution image of the terrain comparable to that obtained by a much larger antenna. SAR has wide applications, particularly in mapping and remote sensing . One of the early applications of digital computers was in switching the signal phase in elements of large phased-array antennas.
+
+As smaller computers came into being, these were quickly applied to digital signal processing using algorithms for improving radar performance. Other advances in radar systems and applications in the decades following WWII are far too many to be included herein.
+
+The following sections are intended to provide representative samples. Military radars In the United States, the Rad Lab at MIT officially closed at the end of 1945.
+
+The Naval Research Laboratory (NRL) and the Army's Evans Signal Laboratory continued with new activities in centimeter radar development.
+
+The United States Air Force (USAF) – separated from the Army in 1946 – concentrated radar research at their Cambridge Research Center (CRC) at Hanscom Field , Massachusetts.
+
+In 1951, MIT opened the Lincoln Laboratory for joint developments with the CRC.
+
+While the Bell Telephone Laboratories embarked on major communications upgrades, they continued with the Army in radar for their ongoing Nike air-defense program In Britain, the RAF's Telecommunications Research Establishment (TRE) and the Army's Radar Research and Development Establishment (RRDE) both continued at reduced levels at Malvern, Worcestershire , then in 1953 were combined to form the Radar Research Establishment.
+
+In 1948, all of the Royal Navy's radio and radar R&D activities were combined to form the Admiralty Signal and Radar Establishment , located near Portsmouth , Hampshire .
+
+The USSR, although devastated by the war, immediately embarked on the development of new weapons, including radars.
+
+During the Cold War period following WWII, the primary "axis" of combat shifted to lie between the United States and the Soviet Union .
+
+By 1949, both sides had nuclear weapons carried by bombers. To provide early warning of an attack, both deployed huge radar networks of increasing sophistication at ever-more remote locations.
+
+In the West, the first such system was the Pinetree Line , deployed across Canada in the early 1950s, backed up with radar pickets on ships and oil platforms off the east and west coasts.
+
+The Pinetree Line initially used vintage pulsed radars and was soon supplemented with the Mid-Canada Line (MCL). Soviet technology improvements made these Lines inadequate and, in a construction project involving 25,000 persons, the Distant Early Warning Line (DEW Line) was completed in 1957. Stretching from Alaska to Baffin Island and covering over 6,000 miles (9,700 km), the DEW Line consisted of 63 stations with AN/FPS-19 high-power, pulsed, L-Band radars, most augmented by AN/FPS-23 pulse-Doppler systems.
+
+The Soviet Unit tested its first Intercontinental Ballistic Missile (ICBM) in August 1957, and in a few years the early-warning role was passed almost entirely to the more capable DEW Line. Both the U.S. and the Soviet Union then had ICBMs with nuclear warheads, and each began the development of a major anti-ballistic missile (ABM) system.
+
+In the USSR, this was the Fakel V-1000, and for this they developed powerful radar systems. This was eventually deployed around Moscow as the A-35 anti-ballistic missile system , supported by radars designated by NATO as the Cat House , Dog House, and Hen House.
+
+In 1957, the U.S. Army initiated an ABM system first called Nike-X; this passed through several names, eventually becoming the Safeguard Program . For this, there was a long-range Perimeter Acquisition Radar (PAR) and a shorter-range, more precise Missile Site Radar (MSR).
+
+The PAR was housed in a 128-foot (39 m)-high nuclear-hardened building with one face sloping 25 degrees facing north. This contained 6,888 antenna elements separated in transmitting and receiving phased arrays.
+
+The L-Band transmitter used 128 long-life traveling-wave tubes (TWTs), having a combined power in the megawatt range The PAR could detect incoming missiles outside the atmosphere at distances up to 1,800 miles (2,900 km).
+
+The MSR had an 80-foot (24 m), truncated pyramid structure, with each face holding a phased-array antenna 13 feet (4.0 m) in diameter and containing 5,001 array elements used for both transmitting and receiving. Operating in the S-Band, the transmitter used two klystrons functioning in parallel, each with megawatt-level power.
+
+The MSR could search for targets from all directions, acquiring them at up to 300 miles (480 km) range. One Safeguard site, intended to defend Minuteman ICBM missile silos near the Grand Forks AFB in North Dakota , was finally completed in October 1975, but the U.S. Congress withdrew all funding after it was operational but a single day.
+
+During the following decades, the U.S. Army and the U.S. Air Force developed a variety of large radar systems, but the long-serving BTL gave up military development work in the 1970s. A modern radar developed by of the U.S. Navy is the AN/SPY-1 . First fielded in 1973, this S-Band, 6 MW system has gone through a number of variants and is a major component of the Aegis Combat System . An automatic detect-and-track system, it is computer controlled using four complementary three-dimensional passive electronically scanned array antennas to provide hemispherical coverage. Radar signals, traveling with line-of-sight propagation , normally have a range to ground targets limited by the visible horizon , or less than about 10 miles (16 km). Airborne targets can be detected by ground-level radars at greater ranges, but, at best, several hundred miles.
+
+Since the beginning of radio, it had been known that signals of appropriate frequencies (3 to 30 MHz) could be "bounced" from the ionosphere and received at considerable distances.
+
+As long-range bombers and missiles came into being, there was a need to have radars give early warnings at great ranges.
+
+In the early 1950s, a team at the Naval Research Laboratory came up with the Over-the-Horizon (OTH) radar for this purpose. To distinguish targets from other reflections, it was necessary to use a phase-Doppler system. Very sensitive receivers with low-noise amplifiers had to be developed.
+
+Since the signal going to the target and returning had a propagation loss proportional to the range raised to the fourth power, a powerful transmitter and large antennas were required. A digital computer with considerable capability (new at that time) was necessary for analyzing the data.
+
+In 1950, their first experimental system was able to detect rocket launches 600 miles (970 km) away at Cape Canaveral, and the cloud from a nuclear explosion in Nevada 1,700 miles (2,700 km) distant.
+
+In the early 1970s, a joint American-British project, code named Cobra Mist , used a 10-MW OTH radar at Orfordness (the birthplace of British radar), England, in an attempt to detect aircraft and missile launchings over the Western USSR. Because of US-USSR ABM agreements, this was abandoned within two years.
+
+In the same time period, the Soviets were developing a similar system; this successfully detected a missile launch at 2,500 km (1,600 mi).
+
+By 1976, this had matured into an operational system named Duga ("Arc" in English), but known to western intelligence as Steel Yard and called Woodpecker by radio amateurs and others who suffered from its interference – the transmitter was estimated to have a power of 10 MW. Australia, Canada, and France also developed OTH radar systems. With the advent of satellites with early-warning capabilities, the military lost most of its interest in OTH radars. However, in recent years, this technology has been reactivated for detecting and tracking ocean shipping in applications such as maritime reconnaissance and drug enforcement. Systems using an alternate technology have also been developed for over-the-horizon detection. Due to diffraction , electromagnetic surface waves are scattered to the rear of objects, and these signals can be detected in a direction opposite from high-powered transmissions. Called OTH-SW (SW for Surface Wave), Russia is using such a system to monitor the Sea of Japan , and Canada has a system for coastal surveillance. Civil aviation radars The post-war years saw the beginning of a revolutionary development in Air Traffic Control (ATC) – the introduction of radar.
+
+In 1946, the Civil Aeronautics Administration (CAA) unveiled an experimental radar-equipped tower for control of civil flights.
+
+By 1952, the CAA had begun its first routine use of radar for approach and departure control. Four years later, it placed a large order for long-range radars for use in en route ATC; these had the capability, at higher altitudes, to see aircraft within 200 nautical miles (370 kilometres).
+
+In 1960, it became required for aircraft flying in certain areas to carry a radar transponder that identified the aircraft and helped improve radar performance.
+
+Since 1966, the responsible agency has been called the Federal Aviation Administration (FAA). A Terminal Radar Approach Control (TRACON) is an ATC facility usually located within the vicinity of a large airport.
+
+In the US Air Force it is known as RAPCON (Radar Approach Control), and in the US Navy as a RATCF (Radar Air Traffic Control Facility). Typically, the TRACON controls aircraft within a 30 to 50 nautical miles (93 kilometres) radius of the airport at an altitude between 10,000 and 15,000 feet (3,000 and 4,600 m). This uses one or more Airport Surveillance Radars (ASR-8, 9 and 11, ASR-7 is obsolete), sweeping the sky once every few seconds. These Primary ASR radars are typically paired with secondary radars (Air Traffic Radar Beacon Interrogators, or ATCBI) of the ATCBI-5, Mode S or MSSR types. Unlike primary radar, secondary radar relies upon an aircraft based transponder, which receives an interrogation from the ground and replies with an appropriate digital code which includes the aircraft id and reports the aircraft's altitude.
+
+The principle is similar to the military IFF Identification friend or foe .
+
+The secondary radar antenna array rides atop the primary radar dish at the radar site, with both rotating at approximately 12 revolutions per minute.
+
+The Digital Airport Surveillance Radar (DASR) is a newer TRACON radar system, replacing the old analog systems with digital technology.
+
+The civilian nomenclature for these radars is the ASR-9 and the ASR-11, and AN/GPN-30 is used by the military.
+
+In the ASR-11, two radar systems are included.
+
+The primary is an S-Band (~2.8 GHz) system with 25 kW pulse power. It provides 3-D tracking of target aircraft and also measures rainfall intensity.
+
+The secondary is a P-Band (~1.05 GHz) system with a peak-power of about 25 kW. It uses a transponder set to interrogate aircraft and receive operational data.
+
+The antennas for both systems rotate atop a tall tower. Weather radar Main articles: Weather radar and Mobile radar observation of tornadoes David Atlas During World War II , military radar operators noticed noise in returned echoes due to weather elements like rain, snow, and sleet . Just after the war, military scientists returned to civilian life or continued in the Armed Forces and pursued their work in developing a use for those echoes.
+
+In the United States, David Atlas , for the Air Force group at first, and later for MIT , developed the first operational weather radars.
+
+In Canada, J.S. Marshall and R.H. Douglas formed the "Stormy Weather Group " in Montreal. Marshall and his doctoral student Walter Palmer are well known for their work on the drop size distribution in mid-latitude rain that led to understanding of the Z-R relation, which correlates a given radar reflectivity with the rate at which water is falling on the ground.
+
+In the United Kingdom, research continued to study the radar echo patterns and weather elements such as stratiform rain and convective clouds , and experiments were done to evaluate the potential of different wavelengths from 1 to 10 centimetres. Between 1950 and 1980, reflectivity radars, which measure position and intensity of precipitation, were built by weather services around the world.
+
+In United States, the U.S. Weather Bureau , established in 1870 with the specific mission of to provide meteorological observations and giving notice of approaching storms, developed the WSR-1 (Weather Surveillance Radar-1), one of the first weather radars. This was a modified version of the AN/APS-2F radar, which the Weather Bureau acquired from the Navy.
+
+The WSR-1A, WSR-3, and WSR-4 were also variants of this radar. This was followed by the WSR-57 (Weather Surveillance Radar – 1957) was the first weather radar designed specifically for a national warning network. Using WWII technology based on vacuum tubes, it gave only coarse reflectivity data and no velocity information. Operating at 2.89 GHz (S-Band), it had a peak-power of 410 kW and a maximum range of about 580 mi (930 km). AN/FPS-41 was the military designation for the WSR-57.
+
+The early meteorologists had to watch a cathode-ray tube .
+
+During the 1970s, radars began to be standardized and organized into larger networks.
+
+The next significant change in the United States was the WSR-74 series, beginning operations in 1974. There were two types: the WSR-74S, for replacements and filling gaps in the WSR-57 national network, and the WSR-74C, primarily for local use. Both were transistor-based, and their primary technical difference was indicated by the letter, S band (better suited for long range) and C band , respectively. Until the 1990s, there were 128 of the WSR-57 and WSR-74 model radars were spread across that country.
+
+The first devices to capture radar images were developed during the same period.
+
+The number of scanned angles was increased to get a three-dimensional view of the precipitation, so that horizontal cross-sections ( CAPPI ) and vertical ones could be performed. Studies of the organization of thunderstorms were then possible for the Alberta Hail Project in Canada and National Severe Storms Laboratory (NSSL) in the US in particular.
+
+The NSSL, created in 1964, began experimentation on dual polarization signals and on Doppler effect uses.
+
+In May 1973, a tornado devastated Union City, Oklahoma , just west of Oklahoma City . For the first time, a Dopplerized 10-cm wavelength radar from NSSL documented the entire life cycle of the tornado.
+
+The researchers discovered a mesoscale rotation in the cloud aloft before the tornado touched the ground : the tornadic vortex signature . NSSL's research helped convince the National Weather Service that Doppler radar was a crucial forecasting tool. Between 1980 and 2000, weather radar networks became the norm in North America, Europe, Japan and other developed countries. Conventional radars were replaced by Doppler radars, which in addition to position and intensity of could track the relative velocity of the particles in the air.
+
+In the United States, the construction of a network consisting of 10 cm (4 in) wavelength radars, called NEXRAD or WSR-88D (Weather Service Radar 1988 Doppler), was started in 1988 following NSSL's research.
+
+In Canada, Environment Canada constructed the King City station, with a five centimeter research Doppler radar, by 1985; McGill University dopplerized its radar ( J. S. Marshall Radar Observatory ) in 1993. This led to a complete Canadian Doppler network between 1998 and 2004. France and other European countries switched to Doppler network by the end of the 1990s to early 2000s. Meanwhile, rapid advances in computer technology led to algorithms to detect signs of severe weather and a plethora of "products" for media outlets and researchers.
+
+After 2000, research on dual polarization technology moved into operational use, increasing the amount of information available on precipitation type (e.g. rain vs. snow). "Dual polarization" means that microwave radiation which is polarized both horizontally and vertically (with respect to the ground) is emitted. Wide-scale deployment is expected by the end of the decade in some countries such as the United States, France, and Canada.
+
+Since 2003, the U.S. National Oceanic and Atmospheric Administration has been experimenting with phased-array radar as a replacement for conventional parabolic antenna to provide more time resolution in atmospheric sounding . This would be very important in severe thunderstorms as their evolution can be better evaluated with more timely data. Also in 2003, the National Science Foundation established the Engineering Research Center for Collaborative Adaptive Sensing of the Atmosphere , "CASA", a multidisciplinary, multi-university collaboration of engineers, computer scientists, meteorologists, and sociologists to conduct fundamental research, develop enabling technology, and deploy prototype engineering systems designed to augment existing radar systems by sampling the generally undersampled lower troposphere with inexpensive, fast scanning, dual polarization, mechanically scanned and phased array radars. Mapping radar The plan position indicator , dating from the early days of radar and still the most common type of display, provides a map of the targets surrounding the radar location. If the radar antenna on an aircraft is aimed downward, a map of the terrain is generated, and the larger the antenna, the greater the image resolution.
+
+After centimeter radar came into being, downward-looking radars – the H2S (L-Band) and H2X (C-Band) – provided real-time maps used by the U.S. and Britain in bombing runs over Europe at night and through dense clouds. Synthetic-aperture radar Main article: History of synthetic-aperture radar In 1951, Carl Wiley led a team at Goodyear Aircraft Corporation (later Goodyear Aerospace ) in developing a technique for greatly expanding and improving the resolution of radar-generated images. Called synthetic aperture radar (SAR), an ordinary-sized antenna fixed to the side of an aircraft is used with highly complex signal processing to give an image that would otherwise require a much larger, scanning antenna; thus, the name synthetic aperture.
+
+As each pulse is emitted, it is radiated over a lateral band onto the terrain.
+
+The return is spread in time, due to reflections from features at different distances. Motion of the vehicle along the flight path gives the horizontal increments.
+
+The amplitude and phase of returns are combined by the signal processor using Fourier transform techniques in forming the image.
+
+The overall technique is closely akin to optical holography . Through the years, many variations of the SAR have been made with diversified applications resulting.
+
+In initial systems, the signal processing was too complex for on-board operation; the signals were recorded and processed later. Processors using optical techniques were then tried for generating real-time images, but advances in high-speed electronics now allow on-board processes for most applications. Early systems gave a resolution in tens of meters, but more recent airborne systems provide resolutions to about 10 cm. Current ultra-wideband systems have resolutions of a few millimeters. Other radars and applications There are many other post-war radar systems and applications. Only a few will be noted. Radar gun The most widespread radar device today is undoubtedly the radar gun . This is a small, usually hand-held, Doppler radar that is used to detect the speed of objects, especially trucks and automobiles in regulating traffic, as well as pitched baseballs, runners, or other moving objects in sports. This device can also be used to measure the surface speed of water and continuously manufactured materials. A radar gun does not return information regarding the object's position; it uses the Doppler effect to measure the speed of a target. First developed in 1954, most radar guns operate with very low power in the X or Ku Bands. Some use infrared radiation or laser light; these are usually called LIDAR . A related technology for velocity measurements in flowing liquids or gasses is called laser Doppler velocimetry ; this technology dates from the mid-1960s. Impulse radar As pulsed radars were initially being developed, the use of very narrow pulses was examined.
+
+The pulse length governs the accuracy of distance measurement by radar – the shorter the pulse, the greater the precision. Also, for a given pulse repetition frequency (PRF), a shorter pulse results in a higher peak power. Harmonic analysis shows that the narrower the pulse, the wider the band of frequencies that contain the energy, leading to such systems also being called wide-band radars.
+
+In the early days, the electronics for generating and receiving these pulses was not available; thus, essentially no applications of this were initially made.
+
+By the 1970s, advances in electronics led to renewed interest in what was often called short-pulse radar. With further advances, it became practical to generate pulses having a width on the same order as the period of the RF carrier (T = 1/f). This is now generally called impulse radar.
+
+The first significant application of this technology was in ground-penetrating radar (GPR). Developed in the 1970s, GPR is now used for structural foundation analysis, archeological mapping, treasure hunting, unexploded ordnance identification, and other shallow investigations. This is possible because impulse radar can concisely locate the boundaries between the general media (the soil) and the desired target.
+
+The results, however, are non-unique and are highly dependent upon the skill of the operator and the subsequent interpretation of the data.
+
+In dry or otherwise favorable soil and rock, penetration up to 300 feet (91 m) is often possible. For distance measurements at these short ranges, the transmitted pulse is usually only one radio-frequency cycle in duration; With a 100 MHz carrier and a PRF of 10 kHz (typical parameters), the pulse duration is only 10 ns (nanosecond). leading to the "impulse" designation. A variety of GPR systems are commercially available in back-pack and wheeled-cart versions with pulse-power up to a kilowatt. With continued development of electronics, systems with pulse durations measured in picoseconds became possible. Applications are as varied as security and motion sensors, building stud-finders, collision-warning devices, and cardiac-dynamics monitors. Some of these devices are matchbox sized, including a long-life power source. Radar astronomy As radar was being developed, astronomers considered its application in making observations of the Moon and other near-by extraterrestrial objects.
+
+In 1944, Zoltán Lajos Bay had this as a major objective as he developed a radar in Hungary. His radar telescope was taken away by the conquering Soviet army and had to be rebuilt, thus delaying the experiment. Under Project Diana conducted by the Army's Evans Signal Laboratory in New Jersey, a modified SCR-271 radar (the fixed-position version of the SCR-270 ) operating at 110 MHz with 3 kW peak-power, was used in receiving echoes from the Moon on January 10, 1946. Zoltán Bay accomplished this on the following February 6. 1946 newsreel Radio astronomy also had its start following WWII, and many scientists involved in radar development then entered this field. A number of radio observatories were constructed during the following years; however, because of the additional cost and complexity of involving transmitters and associated receiving equipment, very few were dedicated to radar astronomy.
+
+In fact, essentially all major radar astronomy activities have been conducted as adjuncts to radio astronomy observatories.
+
+The radio telescope at the Arecibo Observatory , opened in 1963, was the largest in the world. Owned by the U.S. National Science Foundation and contractor operated, it was used primarily for radio astronomy, but equipment was available for radar astronomy. This included transmitters operating at 47 MHz, 439 MHz, and 2.38 GHz, all with very-high pulse power. It has a 305-metre (1,001-foot) primary reflector fixed in position; the secondary reflector is on tracks to allow precise pointing to different parts of the sky. Many significant scientific discoveries have been made using the Arecibo radar telescope, including mapping of surface roughness of Mars and observations of Saturn and its largest moon, Titan .
+
+In 1989, the observatory radar-imaged an asteroid for the first time in history.
+
+After an auxiliary and main cable failure on the telescope in August and November 2020, respectively, the NSF announced the decision that they would decommission the telescope through controlled demolition, but that the other facilities on the Observatory would remain operational in the future. However, before the safe decommission of the telescope could occur, remaining support cables from one tower rapidly failed in the morning of December 1, 2020, causing the instrument platform to crash through the dish, shearing off the tops of the support towers, and partially damaging some of the other buildings, though there were no injuries. NSF has stated that it is still their intention to continue to have the other Observatory facilities operational as soon as possible and are looking at plans to rebuild a new telescope instrument in its place Several spacecraft orbiting the Moon, Mercury, Venus, Mars, and Saturn have carried radars for surface mapping; a ground-penetration radar was carried on the Mars Express mission. Radar systems on a number of aircraft and orbiting spacecraft have mapped the entire Earth for various purposes; on the Shuttle Radar Topography Mission , the entire planet was mapped at a 30-m resolution.
+
+The Jodrell Bank Observatory , an operation of the University of Manchester in Britain, was originally started by Bernard Lovell to be a radar astronomy facility. It initially used a war-surplus GL-II radar system operating at 71 MHz (4.2 m).
+
+The first observations were of ionized trails in the Geminids meteor shower during December 1945.
+
+While the facility soon evolved to become the third largest radio observatory in the world, some radar astronomy continued.
+
+On the triangle run . Toronto: Totem Books. pp. 26–28 . ISBN 978-0-00-217909-6 . ^ Moorcroft, Don; "Origins of Radar-based Research in Canada", Univ. Western Ontario, 2002; "DRM - radar history" . Archived from the original on 2014-11-29 . Retrieved 2014-12-14 . ^ Unwin, R. S.; "Development of Radar in New Zealand in World War II", IEEE Antennas and Propagation Magazine , vol. 34, June, pp.31–33, 1992 ^ " "Radar" chapter from the New Zealand official war history of the RNZAF in the Pacific" . NZETC. 1955. ^ Hewitt, F. J.; "South Africa’s Role in the Development and Use of Radar in World War II", Military History Journal , vol. 3, no, 3, June 1975; "South African Military History Society - Journal- SA and Radar" . Archived from the original on 2010-01-27 . Retrieved 2010-02-13 . ^ Renner, Peter; "The Role of the Hungarian Engineers in the Development of Radar Systems", Periodica Polytechnica Ser. Soc. Man. Sci , Vol. 12, p. 277, 2004; "Archived copy" (PDF) . Archived from the original (PDF) on 2011-07-19 . Retrieved 2010-02-13 . {{ cite web }} : CS1 maint: archived copy as title ( link ) ^ a b Angela Hind (February 5, 2007). "Briefcase 'that changed the world' " . BBC News . Archived from the original on November 15, 2007 . Retrieved 2007-08-16 . ^ James Phinney Baxter III (Official Historian of the Office of Scientific Research and Development), Scientists Against Time (Boston: Little, Brown, and Co., 1946), page 142. ^ Barlow, E. J.; "Doppler Radar", Proc. IRE , vol. 37, pp. 340–355, April 1949 ^ Page, R. M.; "Monopulse Radar", op. cit. ^ Von Aulock, W. H.; "Properties of Phased Arrays", Proc. IRE , vol. 48, pp. 1715–1727, Oct., 1960 ^ "Airborne Synthetic Aperture Radar"; "AIRSAR JPL/NASA, Welcome !" . Archived from the original on 2012-04-14 . Retrieved 2010-03-11 . ^ "ABM Research and Development at Bell Laboratories", "Archived copy" (PDF) . Archived (PDF) from the original on 2011-07-17 . Retrieved 2010-03-11 . {{ cite web }} : CS1 maint: archived copy as title ( link ) ^ "Cobra Mist"; "Orford Ness, Cobra Mist" . Archived from the original on 2008-07-04 . Retrieved 2010-03-11 . ^ "Mystery Signals Of The Short Wave", Wireless World , Feb. 1977; "Mystery Signals of the Short Wave" . Archived from the original on 2011-10-03 . Retrieved 2015-01-31 . ^ "Airport Surveillance Radars"; "Airport Surveillance Radar (ASR-11)" . Archived from the original on 2014-08-11 . Retrieved 2014-06-24 . ^ David Atlas , "Radar in Meteorology", published by American Meteorological Society ^ "Stormy Weather Group" . McGill University . 2000. Archived from the original on 2011-07-06 . Retrieved 2006-05-21 . ^ Whiton, Roger C., et al. "History of Operational Use of Weather Radar by U.S. Weather Services. Part I: The Pre-NEXRAD Era"; Weather and Forecasting , vol. 13, no. 2, pp. 219–243, 19 Feb. 1998; http://ams.allenpress.com/amsonline/?request=get-document&doi=10.1175%2F1520-0434(1998)013%3C0219:HOOUOW%3E2.0.CO%3B2 ^ a b c Susan Cobb (October 29, 2004). "Weather radar development highlight of the National Severe Storms Laboratory first 40 years" . NOAA Magazine . NOAA . Archived from the original on February 15, 2013 . Retrieved 2009-03-07 . ^ Crozier, C.L.; P.I. Joe; J.W. Scott; H.N. Herscovitch; T.R. Nichols (1990). "The King City Operational Doppler Radar: Development, All-Season Applications and Forecasting (PDF)" (PDF) . Canadian Meteorological and Oceanographic Society. Archived from the original (PDF) on 2006-10-02 . Retrieved 2006-05-24 . ^ "Information about Canadian radar network" .
+
+The Radar Pages.uk: Deflating British Radar Myths of World War II — by Maj. Gregory C. Clark (1997).
+
+The Secrets of Radar Museum: "Canada's involvement in WWII Radar" Navweaps.com: German Radar Equipment of World War II
