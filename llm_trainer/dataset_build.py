@@ -33,7 +33,6 @@ from .data import (
 from .lineage import read_json, record_dataset_version, write_json
 from .manifest_store import ManifestStore
 from .tokenizer import (
-    MAX_TOKENIZER_TRAINING_CHARS,
     encode_file,
     load_tokenizer,
     save_tokenizer_package,
@@ -275,11 +274,11 @@ def _load_or_create_tokenizer(
             shutil.copy2(import_path, tokenizer_path)
         return load_tokenizer(tokenizer_path), False, True, str(import_path)
 
-    training_mb = min(corpus_path.stat().st_size,
-                      MAX_TOKENIZER_TRAINING_CHARS) / (1024 * 1024)
+    training_mb = corpus_path.stat().st_size / (1024 * 1024)
+
     _emit(
         progress,
-        f"Training tokenizer on a bounded {training_mb:.1f} MB corpus sample to keep memory stable...",
+        f"Training tokenizer on the full {training_mb:.1f} MB corpus...",
         62,
     )
     tokenizer = train_tokenizer(
@@ -731,7 +730,6 @@ def _load_documents_with_cache(
 
 
 from .dataset_mixture import (
-    _apply_dataset_mixture,
     _deduplicate_documents,
     _filter_repetitive_documents,
 )
@@ -840,7 +838,7 @@ def build_dataset(
         _emit(progress,
               f"Quality: skipped {skipped_file_count:,} empty file(s), failed {failed_file_count:,} file(s).",
               48)
-    if config.mixture_weights:
+    if mixture_report.get("applied") and config.mixture_weights:
         mixture_parts = []
         for key, value in config.mixture_weights.items():
             try:
@@ -849,10 +847,14 @@ def build_dataset(
                 numeric_value = 0.0
             if numeric_value > 0.0:
                 mixture_parts.append(
-                    f"{key.replace('_', ' ')} {numeric_value:.1f}%")
+                    f"{key.replace('_', ' ')} {numeric_value:.1f}%"
+                )
+
         mixture_text = ", ".join(mixture_parts)
+
         if mixture_text:
             _emit(progress, f"Dataset mixture plan: {mixture_text}.", 49)
+
     if mixture_report.get("applied"):
         for family, row in mixture_report.get("families", {}).items():
             if int(row.get("selected_documents", 0) or 0) > 0 or float(
