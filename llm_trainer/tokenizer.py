@@ -20,7 +20,6 @@ BOS_TOKEN = "<bos>"
 EOS_TOKEN = "<eos>"
 SPECIAL_TOKENS = [PAD_TOKEN, UNK_TOKEN, BOS_TOKEN, EOS_TOKEN]
 DEFAULT_CHAT_TEMPLATE = """{% for message in messages %}{{ '<bos>' if loop.first else '' }}{{ message['role'] | capitalize }}: {{ message['content'] }}{{ '<eos>' if loop.last else '\\n' }}{% endfor %}{% if add_generation_prompt %}{{ '\\nAssistant:' }}{% endif %}"""
-MAX_TOKENIZER_TRAINING_CHARS = 25_000_000
 MAX_TOKENIZER_LINE_CHARS = 8_192
 # Tokens are streamed to disk in fixed-size batches rather than accumulated
 # into one giant Python list, so peak RAM during encoding stays roughly
@@ -109,36 +108,21 @@ def save_tokenizer_package(
     )
 
 
-def _iter_corpus_lines(corpus_path: Path, should_stop: Optional[Callable[[], bool]]) -> Iterator[str]:
-    """Yield corpus lines and check for cancellation between chunks.
+def _iter_corpus_lines(
+    corpus_path: Path,
+    should_stop: Optional[Callable[[], bool]],
+) -> Iterator[str]:
+    """Yield corpus lines and check for cancellation between chunks."""
 
-    Args:
-        corpus_path: Text corpus path.
-        should_stop: Optional cancellation callback.
-
-    Yields:
-        Corpus text lines.
-
-    Raises:
-        RuntimeError: If cancellation is requested.
-    """
-
-    emitted_chars = 0
     with corpus_path.open("r", encoding="utf-8") as handle:
         for line in handle:
             if should_stop and should_stop():
                 raise RuntimeError("Dataset preparation stopped by user.")
+
             for start in range(0, len(line), MAX_TOKENIZER_LINE_CHARS):
                 chunk = line[start : start + MAX_TOKENIZER_LINE_CHARS]
-                if not chunk:
-                    continue
-                remaining = MAX_TOKENIZER_TRAINING_CHARS - emitted_chars
-                if remaining <= 0:
-                    return
-                if len(chunk) > remaining:
-                    chunk = chunk[:remaining]
-                emitted_chars += len(chunk)
-                yield chunk
+                if chunk:
+                    yield chunk
 
 
 def load_tokenizer(path: Path) -> Tokenizer:

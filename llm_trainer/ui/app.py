@@ -2877,14 +2877,7 @@ class MainWindow(QMainWindow):
                 "conversation_sample_limit": 20000,
                 "conversation_dataset_path": "",
                 "instruction_dataset_path": "",
-                "mixture_weights": {
-                    **DATASET_DOMAIN_DEFAULTS,
-                    "local_prose": 50.0,
-                    "source_code": 30.0,
-                    "online_base": 20.0,
-                    "instruction": 0.0,
-                    "conversation": 0.0,
-                },
+                "mixture_weights": {},
                 "min_frequency": 2,
                 "context_length": 128,
                 "validation_split": 0.1,
@@ -4526,6 +4519,7 @@ class MainWindow(QMainWindow):
 
         self.dataset_progress.setValue(100)
         self.auto_vocab_label.setText(f"{result.vocab_size:,}")
+
         LOGGER.info(
             "Dataset prepared: documents=%s tokens=%s vocab=%s code=%s prose=%s conversation=%s output=%s",
             result.document_count,
@@ -4536,38 +4530,35 @@ class MainWindow(QMainWindow):
             getattr(result, "conversation_sample_count", 0),
             result.output_dir,
         )
+
         self.dataset_log.append(
-            f"Prepared {result.document_count} documents, {result.character_count:,} characters, "
-            f"{result.token_count:,} tokens, vocab {result.vocab_size:,}."
+            f"Prepared {result.document_count} documents, "
+            f"{result.character_count:,} characters, "
+            f"{result.token_count:,} tokens, "
+            f"vocab {result.vocab_size:,}."
         )
-        if getattr(result, "train_window_count", 0) or getattr(result, "val_window_count", 0):
+
+        if getattr(result, "train_window_count", 0) or getattr(result,
+                                                               "val_window_count",
+                                                               0):
             self.dataset_log.append(
-                f"Training windows: {result.train_window_count:,}; validation windows: {result.val_window_count:,}."
+                f"Training windows: {result.train_window_count:,}; "
+                f"validation windows: {result.val_window_count:,}."
             )
+
         self.dataset_log.append(
-            f"Cache summary: reused {result.cached_file_count:,} file(s), processed {result.processed_file_count:,} file(s)."
+            f"Cache summary: reused {result.cached_file_count:,} file(s), "
+            f"processed {result.processed_file_count:,} file(s)."
         )
+
         if getattr(result, "dataset_version_id", ""):
-            self.dataset_log.append(f"Dataset version: {result.dataset_version_id}")
-        mixture_report = getattr(result, "mixture_report", {}) or {}
-        if mixture_report:
-            self.dataset_log.append("Mixture report:")
-            for family in ("local_prose", "source_code", "online_base", "instruction", "conversation"):
-                row = mixture_report.get("families", {}).get(family, {})
-                if not row:
-                    continue
-                requested = float(row.get("requested_weight", 0.0) or 0.0)
-                selected = int(row.get("selected_documents", 0) or 0)
-                available = int(row.get("available_documents", 0) or 0)
-                dropped = int(row.get("dropped_documents", 0) or 0)
-                actual = float(row.get("actual_percent", 0.0) or 0.0)
-                if requested > 0.0 or selected > 0 or available > 0:
-                    self.dataset_log.append(
-                        f"- {row.get('label', family)}: requested {requested:.1f}%, "
-                        f"selected {selected:,}/{available:,}, dropped {dropped:,}, actual {actual:.1f}%"
-                    )
+            self.dataset_log.append(
+                f"Dataset version: {result.dataset_version_id}"
+            )
+
         if result.warning:
             self.dataset_log.append(f"Recommendation: {result.warning}")
+
         self._update_dataset_quality_report(
             {
                 "document_count": result.document_count,
@@ -4578,30 +4569,44 @@ class MainWindow(QMainWindow):
                 "tokenizer_vocab_size": result.vocab_size,
                 "code_sample_count": result.code_sample_count,
                 "prose_sample_count": result.prose_sample_count,
-                "conversation_sample_count": getattr(result, "conversation_sample_count", 0),
+                "conversation_sample_count": getattr(result,
+                                                     "conversation_sample_count",
+                                                     0),
                 "cached_file_count": result.cached_file_count,
                 "processed_file_count": result.processed_file_count,
                 "skipped_file_count": result.skipped_file_count,
                 "failed_file_count": result.failed_file_count,
                 "warning": result.warning,
-                "mixture_report": mixture_report,
-                "sequence_token_stats": getattr(result, "sequence_token_stats", {}),
-                "duplicate_block_count": getattr(result, "duplicate_block_count", 0),
+                "sequence_token_stats": getattr(result, "sequence_token_stats",
+                                                {}),
+                "duplicate_block_count": getattr(result,
+                                                 "duplicate_block_count", 0),
                 "unique_block_count": getattr(result, "unique_block_count", 0),
                 "corpus_block_count": getattr(result, "corpus_block_count", 0),
-                "duplicate_block_ratio": getattr(result, "duplicate_block_ratio", 0.0),
-                "unique_block_ratio": getattr(result, "unique_block_ratio", 1.0),
+                "duplicate_block_ratio": getattr(result,
+                                                 "duplicate_block_ratio", 0.0),
+                "unique_block_ratio": getattr(result, "unique_block_ratio",
+                                              1.0),
             }
         )
+
         self.train_data_dir.setText(str(result.output_dir))
         self.project_state.setText("Dataset ready")
-        self.dataset_status.setText(f"Dataset: {result.document_count} files, {result.token_count:,} tokens")
+
+        self.dataset_status.setText(
+            f"Dataset: {result.document_count} files, {result.token_count:,} tokens"
+        )
+
         if result.code_sample_count:
             self.dataset_status.setText(
-                f"Dataset: {result.code_sample_count:,} code, {result.prose_sample_count:,} prose, {result.token_count:,} tokens"
+                f"Dataset: {result.code_sample_count:,} code, "
+                f"{result.prose_sample_count:,} prose, "
+                f"{result.token_count:,} tokens"
             )
+
         self.refresh_model_estimate()
         self.refresh_fine_tune_workflow()
+
         self._notify_complete(
             "dataset",
             "Dataset preparation complete",
@@ -4633,6 +4638,7 @@ class MainWindow(QMainWindow):
                 f"Health: {'warning - ' + result.warning if result.warning else 'ready'}",
             ],
         )
+
         self._clear_button_busy("DataSet Prepared")
 
     def _prepare_mode_value(self) -> str:
