@@ -3097,7 +3097,7 @@ class MainWindow(QMainWindow):
                 "min_frequency": self.min_frequency.value(),
                 "context_length": self.context_length.value(),
                 "validation_split": self.validation_split.value(),
-                "lowercase": self.lowercase.isChecked(),
+                "lowercase": False,
                 "max_workers": self.max_workers.value(),
                 "prepare_mode": self._prepare_mode_value(),
                 "tokenizer_strategy": self._tokenizer_strategy_value(),
@@ -3239,7 +3239,6 @@ class MainWindow(QMainWindow):
         self.min_frequency.setValue(int(dataset.get("min_frequency", self.min_frequency.value())))
         self.context_length.setValue(int(dataset.get("context_length", self.context_length.value())))
         self.validation_split.setValue(float(dataset.get("validation_split", self.validation_split.value())))
-        self.lowercase.setChecked(bool(dataset.get("lowercase", False)))
         self.max_workers.setValue(int(dataset.get("max_workers", self.max_workers.value())))
         self._set_combo_by_data(self.prepare_mode, str(dataset.get("prepare_mode", "incremental")), {
             "incremental": "Incremental update",
@@ -4203,7 +4202,7 @@ class MainWindow(QMainWindow):
             min_frequency=self.min_frequency.value(),
             context_length=self.context_length.value(),
             validation_split=self.validation_split.value(),
-            lowercase=self.lowercase.isChecked(),
+            lowercase=False,
             max_workers=self.max_workers.value(),
             code_training_mode=self.code_training_mode.isChecked(),
             include_prose=self.include_prose.isChecked(),
@@ -4824,25 +4823,19 @@ class MainWindow(QMainWindow):
             self.include_source_code.setChecked(True)
             self.extract_code_blocks.setChecked(True)
             self.preserve_indentation.setChecked(True)
-            self._set_mixture_weights({"code_technical": 100.0, "source_code": 100.0})
-        elif stage == "conversation":
-            self._set_mixture_weights({"conversation": 100.0, "social_emotional": 100.0})
-        else:
-            self._set_mixture_weights({"instruction": 100.0, "structured_qa": 70.0, "reasoning": 30.0})
+        self._set_mixture_weights({})
         self._switch_page(0)
         self.dataset_log.append(f"Configured Ingest for {dataset_stage_label(stage)}. Import the base tokenizer before preparing.")
         self.project_state.setText(f"Configured {dataset_stage_label(stage)} data")
 
     def _dataset_plan_from_ui(self) -> dict[str, float]:
-        """Return high-level dataset blueprint percentages.
+        """Return dataset blueprint state.
 
         Returns:
-            Mapping from dataset domain key to target percentage.
+            Empty mapping because category percentages are disabled.
         """
 
-        if not hasattr(self, "dataset_plan_spins"):
-            return dataset_plan_defaults()
-        return {key: float(widget.value()) for key, widget in self.dataset_plan_spins.items()}
+        return {}
 
     def _selected_default_data_paths(self) -> list[Path]:
         """Return bundled default data files selected in the Dataset Blueprint.
@@ -4886,6 +4879,40 @@ class MainWindow(QMainWindow):
             self._refresh_default_data_category_states()
         finally:
             self.default_data_tree_updating = False
+
+    def _set_dataset_blueprint_refresh_busy(self, busy: bool) -> None:
+        """Toggle refresh busy state indicators for the Dataset Sources page."""
+
+        if hasattr(self, "dataset_plan_refresh_button"):
+            self.dataset_plan_refresh_button.setEnabled(not busy)
+            self.dataset_plan_refresh_button.setText("Refreshing..." if busy else "Refresh")
+        if hasattr(self, "dataset_plan_progress"):
+            if busy:
+                self.dataset_plan_progress.setRange(0, 0)
+                self.dataset_plan_progress.setVisible(True)
+            else:
+                self.dataset_plan_progress.setRange(0, 100)
+                self.dataset_plan_progress.setValue(0)
+                self.dataset_plan_progress.setVisible(False)
+
+    def refresh_dataset_blueprint_files(self) -> None:
+        """Reload the Dataset Blueprint file tree from disk."""
+
+        root = getattr(self, "blueprint_data_root", default_data_root())
+        selected_paths = [str(path) for path in self._selected_default_data_paths()]
+        self._set_dataset_blueprint_refresh_busy(True)
+        QApplication.processEvents()
+        try:
+            self._refresh_dataset_blueprint_source(
+                Path(root),
+                saved_paths=selected_paths,
+                saved_plan=self._dataset_plan_from_ui(),
+                preset="Custom",
+            )
+            self.project_state.setText("Blueprint refreshed")
+            LOGGER.info("Dataset blueprint tree refreshed from %s", root)
+        finally:
+            self._set_dataset_blueprint_refresh_busy(False)
 
     def _handle_default_data_tree_changed(self, item: Any, column: int) -> None:
         """Handle category and file toggles in the bundled data tree.
@@ -4983,87 +5010,43 @@ class MainWindow(QMainWindow):
             self.dataset_plan_preset.blockSignals(False)
 
     def _update_dataset_plan_total(self) -> None:
-        """Refresh the visible dataset blueprint total."""
+        """No-op retained for compatibility after blueprint percentage removal."""
 
-        if not hasattr(self, "dataset_plan_total_label"):
-            return
-        total = sum(self._dataset_plan_from_ui().values())
-        self.dataset_plan_total_label.setText(f"Total: {total:.1f}%")
-        self.dataset_plan_total_label.setProperty("state", "ok" if abs(total - 100.0) <= 0.1 else "warning")
-        self.dataset_plan_total_label.style().unpolish(self.dataset_plan_total_label)
-        self.dataset_plan_total_label.style().polish(self.dataset_plan_total_label)
+        return
 
     def normalize_dataset_plan(self) -> None:
-        """Scale high-level dataset blueprint values to 100 percent."""
+        """No-op retained for compatibility after blueprint percentage removal."""
 
-        values = self._dataset_plan_from_ui()
-        total = sum(values.values())
-        if total <= 0:
-            self._set_dataset_plan(dataset_plan_defaults(), "Balanced Tiny LLM")
-            if hasattr(self, "_mixture_weights_state"):
-                delattr(self, "_mixture_weights_state")
-            return
-        normalized = {key: value * 100.0 / total for key, value in values.items()}
-        self._set_dataset_plan(normalized, "Custom")
-        if hasattr(self, "_mixture_weights_state"):
-            delattr(self, "_mixture_weights_state")
-        LOGGER.info("Dataset blueprint normalized: %s", normalized)
+        return
 
     def apply_dataset_plan_preset(self, preset: str) -> None:
-        """Apply a named dataset blueprint preset.
+        """No-op retained for compatibility after blueprint percentage removal.
 
         Args:
             preset: Preset label from the Dataset Blueprint combo box.
         """
 
-        if preset == "Custom" or preset not in DATASET_DOMAIN_PRESETS:
-            return
-        self._set_dataset_plan(DATASET_DOMAIN_PRESETS[preset], preset)
-        if hasattr(self, "_mixture_weights_state"):
-            delattr(self, "_mixture_weights_state")
-        LOGGER.info("Dataset blueprint preset applied: %s", preset)
+        return
 
     def apply_dataset_plan_to_ingestion(self) -> None:
-        """Apply the high-level dataset blueprint as active mixture weights."""
+        """Clear ingestion mixture overrides (category percentages are disabled)."""
 
-        plan = self._dataset_plan_from_ui()
-        total = sum(plan.values())
-        if total <= 0:
-            plan = dataset_plan_defaults()
-            total = sum(plan.values())
-        normalized = {key: value * 100.0 / total for key, value in plan.items()}
-        mixture = {
-            **normalized,
-            "local_prose": 0.0,
-            "source_code": 0.0,
-            "online_base": 0.0,
-            "instruction": 0.0,
-            "conversation": 0.0,
-        }
-        self._set_mixture_weights(mixture)
+        self._set_mixture_weights({})
         if hasattr(self, "dataset_log"):
-            self.dataset_log.append("Dataset blueprint applied to ingestion mixture.")
+            self.dataset_log.append("Dataset blueprint applied: category percentages are disabled.")
         self.project_state.setText("Blueprint applied")
-        LOGGER.info("Dataset blueprint applied to ingestion mixture: plan=%s mixture=%s", normalized, mixture)
+        LOGGER.info("Dataset blueprint applied with category percentages disabled")
 
     def _mixture_weights_from_ui(self) -> dict[str, float]:
         """Return dataset mixture weights from the Ingest tab.
 
         Returns:
-            Mapping from mixture source family to percentage.
+            Empty mapping because category percentages are disabled.
         """
 
-        if not hasattr(self, "mixture_local_prose"):
-            if not hasattr(self, "_mixture_weights_state"):
-                self.apply_dataset_plan_to_ingestion()
-            return dict(getattr(self, "_mixture_weights_state", dataset_plan_defaults()))
-        return {
-            "local_prose": float(self.mixture_local_prose.value()),
-            "source_code": float(self.mixture_source_code.value()),
-            "online_base": float(self.mixture_online_base.value()),
-            "instruction": float(self.mixture_instruction.value()),
-            "conversation": float(self.mixture_conversation.value()),
-        }
+        if not hasattr(self, "_mixture_weights_state"):
+            self._mixture_weights_state = {}
+        return {}
 
     def _set_mixture_weights(self, weights: dict[str, Any]) -> None:
         """Restore dataset mixture weights.
@@ -5072,52 +5055,17 @@ class MainWindow(QMainWindow):
             weights: Saved mixture weights by source family.
         """
 
-        self._mixture_weights_state = dict(weights or {})
-        if not hasattr(self, "mixture_local_prose"):
-            return
-        defaults = {
-            **dataset_plan_defaults(),
-            "local_prose": 50.0,
-            "source_code": 30.0,
-            "online_base": 20.0,
-            "instruction": 0.0,
-            "conversation": 0.0,
-        }
-        values = {**defaults, **(weights or {})}
-        widgets = {
-            "local_prose": self.mixture_local_prose,
-            "source_code": self.mixture_source_code,
-            "online_base": self.mixture_online_base,
-            "instruction": self.mixture_instruction,
-            "conversation": self.mixture_conversation,
-        }
-        for key, widget in widgets.items():
-            try:
-                widget.setValue(float(values.get(key, defaults[key])))
-            except (TypeError, ValueError):
-                widget.setValue(defaults[key])
-        self._update_mixture_total()
+        self._mixture_weights_state = {}
 
     def _update_mixture_total(self) -> None:
-        """Refresh the visible dataset mixture total."""
+        """No-op retained for compatibility after mixture percentage removal."""
 
-        if not hasattr(self, "mixture_total_label"):
-            return
-        total = sum(self._mixture_weights_from_ui().values())
-        self.mixture_total_label.setText(f"Total: {total:.1f}%")
-        self.mixture_total_label.setProperty("state", "ok" if abs(total - 100.0) <= 0.1 else "warning")
-        self.mixture_total_label.style().unpolish(self.mixture_total_label)
-        self.mixture_total_label.style().polish(self.mixture_total_label)
+        return
 
     def _normalize_mixture_weights(self) -> None:
-        """Scale dataset mixture values so they total 100 percent."""
+        """No-op retained for compatibility after mixture percentage removal."""
 
-        weights = self._mixture_weights_from_ui()
-        total = sum(weights.values())
-        if total <= 0:
-            self._set_mixture_weights({"local_prose": 100.0})
-            return
-        self._set_mixture_weights({key: value * 100.0 / total for key, value in weights.items()})
+        return
 
     def _training_launch_target_value(self) -> str:
         """Return whether training should launch locally or remotely.

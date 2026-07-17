@@ -788,6 +788,17 @@ def build_dataset(
             ),
             45,
         )
+        _emit(progress, "Low-diversity files excluded:", 45)
+        for excluded in repetition_filter_report["examples"]:
+            _emit(
+                progress,
+                (
+                    f"  - {excluded['path']} "
+                    f"(duplicate unit ratio: {excluded['duplicate_unit_ratio']:.1%}, "
+                    f"units: {excluded['unit_count']:,})"
+                ),
+                45,
+            )
     mixture_report = {
         "applied": False,
         "reason": "Dataset mixture disabled",
