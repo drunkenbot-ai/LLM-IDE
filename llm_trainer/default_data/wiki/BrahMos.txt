@@ -1,0 +1,573 @@
+The BrahMos (also designated as PJ-10 ) is a long-range, ramjet -powered supersonic cruise missile that can be launched from submarines, ships, fighter aircraft or TEL . It is a joint venture between India 's Defence Research and Development Organisation (DRDO) and the Russian Federation's NPO Mashinostroyeniya , who together have formed BrahMos Aerospace .
+
+The name BrahMos is a portmanteau formed from the names of two rivers, the Brahmaputra of India and the Moskva of Russia. Land-launched, ship-launched as well as air-launched versions have been inducted across the services of the Indian Armed Forces .
+
+The missile guidance has been developed by BrahMos Aerospace.
+
+In 2016, after India joined the Missile Technology Control Regime (MTCR), the range of the missile was gradually enhanced.
+
+In 2022, the CEO of BrahMos Aerospace, Atul Rane, stated that a future hypersonic missile, designated as the BrahMos-II and based on the 3M22 Zircon , could be developed. Origin Warning: Loud sound BrahMos tested with Indian components in January 2022.
+
+The BrahMos was developed from Russia's NPO Mashinostroyenia (NPOMASH) P-800 Oniks family of cruise missiles, through a joint venture between NPOMASH and India's Defence Research and Development Organisation (DRDO), named BrahMos Aerospace.The missile design was significantly aided by Alexander Leonov , CEO and Chief designer at NPOMASH .
+
+The company was established on 5 December 1995 with an authorized share capital of US$250 million . India holds 50.5% share of the joint venture, and its initial financial contribution was US$126.25 million , while Russia holds 49.5% share with an initial contribution of US$123.75 million .
+
+Since late 2004, the missile has undergone several tests from a variety of platforms, including a land-based test from the Pokhran range in the desert, in which the evasive 'S' maneuver at Mach 2.8 was demonstrated for the Indian Army , and a launch in which the land attack capability from sea was demonstrated. BrahMos is India's fastest cruise missile BrahMos missile at Republic Day Parade 2009 Keltec (now known as BrahMos Aerospace Trivandrum Ltd or BATL), an Indian state-owned firm, was acquired by BrahMos Corporation in 2008. Approximately ₹ 1,500 crore (equivalent to ₹ 42 billion or US$437.8 million in 2023) invested in the facility to make BrahMos components and integrate the missile systems. This was necessitated by the increased order book of the missile system, with orders having been placed by both the Indian Army and Navy. Initially, Russia supplied 65% of the BrahMos' components, including its ramjet engine and radar seeker.
+
+As of 2018 , 65% of the missile was manufactured in India and there were plans to increase this to 85% by replacing the components with an Indian made seeker and booster.
+
+The BrahMos headquarters complex is located at New Delhi and consists of a design centre and aerospace knowledge centre.
+
+The integration complex is located at Hyderabad and a production centre is located at Thiruvananthapuram . Another assembly line is being established at Pilani .
+
+The aerodynamic characterization research was conducted at the National Aerospace Laboratories ' 1.2m Trisonic Wind Tunnel Facility. Defence Materials and Stores Research and Development Establishment (DMSRDE) was successful in preparing domestic fuel for BrahMos. Testing of the fuel, which will power the missile's liquid ramjet engine, has begun at Defence Research and Development Laboratory (DRDL).
+
+As per the lab, the fuel will not freeze even in temperatures between −50° and −55 °C. It will replace the imported fuel from Russia. Development Surface-to-surface variants Surface-launched BrahMos tested in May 2018. BrahMos was first test-fired on 12 June 2001 from the Integrated Test Range (ITR), Chandipur in a vertical launch configuration.
+
+On 14 June 2004, another test was conducted at ITR and BrahMos was fired from a mobile launcher.
+
+On 5 March 2008, the land attack version of the missile was fired from the destroyer INS Rajput and the missile hit and destroyed the right target among a group of targets.
+
+The vertical launch of BrahMos was conducted on 18 December 2008 from INS Ranvir .
+
+The BrahMos I Block-I for the army was successfully tested with new capabilities in the deserts of Rajasthan , at a test range near Pokharan in December 2004 and March 2007.
+
+During a user trial on 20 January 2009, BrahMos was tested with a new navigation system but it failed to hit the target. BrahMos Aerospace Corporation's director Dr A. Sivathanu Pillai said, "The missile performance was absolutely normal until the last phase, but the missile missed the target, though it maintained the direction." and that "The problem was in the software, not hardware".
+
+The Defence Research and Development Organisation (DRDO) said that there were "small hitches" in the last stage of the test firing due to delay in input of satellite navigation input to the inertial navigation system , the missile travelled for 112 seconds instead of the slated 84 seconds and fell 7 km away from the target. According to BrahMos Corporation, another test of the new missile was to be conducted within one month, but it was eventually conducted on 4 March 2009 and was deemed successful. BrahMos was test-fired again on 29 March 2009. For the test, the missile had to identify a building among a cluster of buildings in an urban environment. BrahMos successfully hit the intended target in two and a half minutes of launch. According to official sources, "The new seeker is unique and would help us to hit our targets, which are insignificant in terms of size, in a cluster of large buildings. India is now the only nation in the world with this advanced technology".
+
+After the third test, Lt Gen. Noble Thamburaj, said that the Indian Army wanted the BrahMos to achieve high standards of accuracy and congratulated the scientists on behalf of the Indian Army.
+
+The Indian Army confirmed that the test was successful and the army is satisfied with the missile. This marking the completion of the development phase of BrahMos Block-II, and it was ready for induction. BrahMos fired from INS Chennai during TROPEX 2017 The 5 September 2010 test of BrahMos created a world record for being the first cruise missile to be tested at supersonic speeds in a steep-dive mode.
+
+The missile was test-fired from the integrated test range launching complex-3 (LC-3) at Chandipur around 11.35 am. With this launch, the Indian army's requirement for land attacks with Block-II advanced seeker software with target discriminating capabilities was met. BrahMos became the only supersonic cruise missile possessing advanced capability of selection of a particular land target amongst a group of targets, providing an edge to the user with precise hit. Block III has advanced guidance and upgraded software, incorporating high manoeuvres at multiple points and steep dive from high altitude. It will be deployed in Arunachal Pradesh . It can engage ground targets from an altitude as low as 10 metres for surgical strikes without any collateral damage. It is capable of being launched from multiple platforms like submarines, ships, aircraft and land based Mobile Autonomous Launchers (MAL).
+
+On 12 August 2011, it was test-fired by ground forces and met all mission parameters. BrahMos at the moment of impact The new navigation system uses an Indian chip called G3OM ( GPS , GLONASS , GAGAN on a module ).
+
+The system weighs around 17 grams, and gives accuracy below five metres using Indian, US and Russian navigation satellites.
+
+The system can be used in tandem with an inertial navigation system (INS) to provide high-accuracy targeting without using any seeker. BrahMos was tested with an Indian seeker for the first time on 22 March 2018, and was tested with an India-developed propulsion system, airframe and power supply on 30 September 2019.
+
+On 30 September 2020, India successfully test-fired an extended range BrahMos, offering a range of around 350 km, at speeds up to Mach 2.8, an improvement over the initial 290 km.
+
+The test was carried out under BrahMos project of the Defence Research and Development Organisation (DRDO), under which the missile was launched with an indigenous booster.
+
+The missile was launched from a land-based facility in Odisha . This is the second test-firing of the extended range version of the missile which has an indigenously developed airframe and booster.
+
+In May 2025, a report suggested that an indigenous seeker, developed by Data Patterns, was flight-tested in BrahMos around four weeks earlier.
+
+The seeker performed in a "text book manner" and the company expected an order for te seekers soon. Submarine-launched variant The submarine-launched variant of BrahMos was test fired successfully for the first time from a submerged pontoon near Visakhapatnam at the coast of Bay of Bengal on 20 March 2013. This was the first vertical launch of an Indian supersonic missile from a submerged platform.
+
+The missile can be launched from a depth of 40 to 50 m (130 to 160 ft). Air-launched variant BrahMos-A displayed at MAKS 2009 BrahMos-A The BrahMos-A is a modified air-launched variant of the missile with a range of 500 km which can be launched from a Sukhoi Su-30MKI as a standoff weapon . To reduce the missile's weight to 2.55 tons, many modifications were made like using a smaller booster, adding fins for airborne stability after launch, and relocating the connector. It can be released from the height of 500 to 14,000 metres (1,640 to 46,000 ft).
+
+After release, the missile free falls for 100–150 metres, then goes into a cruise phase at 14,000 metres and finally the terminal phase at 15 metres. BrahMos Aerospace planned to deliver the missile to the IAF in 2015, where it is expected to arm at least three squadrons. A Su-30MKI fighter armed with BrahMos The missile was also planned to arm the Indian Navy's Ilyushin Il-38 and Tupolev Tu-142 maritime patrol and anti-submarine aircraft with 6 missiles per aircraft, but this could not be made possible due to insufficient ground clearance of the IL-38, high cost of modifying the Tu-142 and the questionable benefits of modifying an aging fleet. An expert committee from the DRDO and the Indian Air Force (IAF) had ruled out any structural modifications to the Su-30MKI to carry the missile.
+
+On 22 October 2008, A. Sivathanu Pillai , Chief Controller, R&D, DRDO and CEO and managing director of BrahMos Aerospace, announced that trials and tests were to be carried out by 2011, and the IAF would get its own version of BrahMos by 2012.
+
+On 10 January 2009, it was reported that two Indian Air Force Su-30MKI fighter jets were sent to Russia for a retrofit program that would enable them to launch the missile.
+
+On 8 August 2009, Alexander Leonov, Director of the Russian Machine Building Research and Production Centre, said "we are ready for test launches." He also said that a new takeoff engine for the launching of the missile in air and at extremely high altitudes had been developed, and the initial test firing of the missile would be undertaken from the Su-30 MKI but did not specify the dates.
+
+On 26 February 2012, A. Sivathanu Pillai said that the air-launched version of BrahMos is being developed and will be tested by the end of 2012. This version of the BrahMos missile will use air-breathing scramjet propulsion technology and would be more fuel-efficient than a traditional rocket-powered missile.
+
+The purchase of over 200 air-launched BrahMos supersonic cruise missiles for the IAF was cleared by the Cabinet Committee on Security (CCS) on 19 October 2012, at the cost of ₹ 6,000 crore (equivalent to ₹ 110 billion or US$1 billion in 2023). This would include funds for the integration and testing of the BrahMos on Su-30MKI of the IAF.
+
+As per this plan, the first test of the air-launched version of the missile was to be conducted by December 2012. Two Su-30MKI of the IAF would be modified by the Hindustan Aeronautics Limited (HAL) at its Nashik facility where they will also be integrated with the missile's aerial launcher. Su-30MKI with BrahMos-ER A demonstration flight was carried out at HAL Nashik on 25 June 2016 as a modified Su-30MKI carrying BrahMos-A underwent a successful trial flight, the first time a heavyweight supersonic cruise missile had been integrated on a long-range fighter aircraft; the project to adapt the weapon for air launch was approved in 2011, but was bogged down with technology transfer and intellectual property rights concerns. To carry the missile, the Su-30MKI undercarriage had to be strengthened, which also required new hard points and structural modifications.
+
+The cost of adapting the BrahMos for air launch was "phenomenal", but efforts to downsize the missile were abandoned after an attempt to reduce the size of the ramjet.
+
+On 22 November 2017, the missile was successfully test fired for the first time from a Sukhoi-30MKI against a sea-based target in the Bay of Bengal. This made the Indian Air Force the first in the world to have successfully tested such a type of air launched trisonic-class missile on a sea-based target.
+
+After the IAF successfully tested BrahMos from a Su-30MKI against a sea-based target, it declared on 17 December 2019 that the integration of BrahMos-A on Su-30 MKI is completed. 50 IAF SU-30MKI will be modified to carry the BrahMos-A missile, these modified Su-30MKIs will have electronic circuits capable of withstanding nuclear electromagnetic pulse . According to the CEO of BrahMos Aerospace, Sudhir Kumar Mishra, BrahMos-A can reach targets thousands of kilometres away considering the range of launch aircraft.
+
+On 20 January 2020, the IAF commissioned its first squadron of Su-30MKI fighters equipped with the BrahMos-A missile. IAF plans to procure 200 BrahMos-A missiles.
+
+On 6 April 2021, the contract for the air-launched BrahMos-ER was signed, and two successful live firings were conducted from Su-30MKI against a land target and a sea target, respectively. IAF test fired BrahMos-A from Su-30MKI on 8 December 2021 and is now ready to enter mass production.
+
+The missile engaged the designated mock targets close to 300 km away with a direct hit on the ground target in both cases with pinpoint accuracy from a mobile platform. 56 17 Dec 2019 SSM DRDO -IAF Integrated Test Range Mobile launcher Launch Complex 3 (8:30 am) 57 ALCM-AShM Kalaikunda AFS /Bay of Bengal Su-30MKI 58 8 Dec 2021 ALCM IAF Integrated Test Range Su-30MKI Validated structural integrity and functional performance. Cleared for serial production. 59 11 January 2022 ASM Indian Navy INS Visakhapatnam (D66) Certifies the accuracy of the ship's combat system and armament complex and also validates a new capability of the missile. 60 20 January 2022 DRDO Integrated Test Range Mobile launcher Improved variant with more indigenous content 61 1 February 2022 AShM Indian Navy Andaman and Nicobar Islands 62 18 February 2022 AShM Bay of Bengal INS Visakhapatnam 63 5 Mar 2022 SSM INS Chennai Extended-range land-attack BrahMos variant tested. 64 23 Mar 2022 SSM Andaman and Nicobar command Andaman and Nicobar Islands Mobile launcher Extended range version tested. 65 19 Apr 2022 ASM and ALCM IAF and Indian Navy Bay of Bengal Su-30MKI and INS Delhi Air-launched version fired at a decommissioned ship. SSM version tested from INS Delhi from an upgraded modular launcher. 66 27 Apr 2022 AShM Indian Navy and A&N command A&N Island Mobile launcher 67 12 May 2022 ALCM IAF and DRDO Bay of Bengal Sukhoi Su-30MKI IAF and DRDO tested extended range version of BrahMos missile from Su-30 MKI, hit the target precisely. 68 29 Nov 2022 SSM Indian Army A&N Island Mobile launcher 69 29 Dec 2022 ALCM; AShM IAF Bay of Bengal Su-30MKI ER Version of BrahMos Air Launched missile against a Ship Target 70 5 Mar 2023 AShM Indian Navy Arabian Sea Naval Ship 71 14 May 2023 AShM INS Mormugao (D67) 72 18 Oct 2023 ALCM IAF A&N Island Su-30MKI 73 22 Nov 2023 ER-AShM Indian Navy Arabian Sea INS Imphal (D68) 74 24 January 2024 ER-LACM Indian Navy and BAPL Bay of Bengal INS Ranvir or INS Ranvijay 75 2 April 2024 ER-LACM Indian Army A&N Island Mobile launcher Conducted by Eastern Command 76 17 January 2025 ER-LACM Indian Army A&N Island Mobile launcher Conducted by XXI Corps , Southern Command 77 1 December 2025 ER-LACM Indian Army A&N Island Mobile launcher Conducted by a BrahMos unit under the Southern Command and elements of Andaman and Nicobar Command . Specifications Vertical Launch System for BrahMos on INS Trikand BrahMos has the capability of attacking surface targets by flying as low as five metres in altitude and the maximum altitude it can fly is 15,000 metres. It has a diameter of 70 cm and a wingspan of 1.7 m. It can gain a speed of Mach 3.5, and has a maximum range of 650 km.
+
+The ship-launched and land-based missiles can carry a 200 kg warhead , whereas the aircraft-launched variant (BrahMos A) can carry a 300 kg warhead. It has a two-stage propulsion system, with a solid-propellant rocket for initial acceleration and a liquid-fuelled ramjet responsible for sustained supersonic cruise. Air-breathing ramjet propulsion is much more fuel-efficient than rocket propulsion, giving the BrahMos a longer range than a pure rocket-powered missile would achieve.
+
+The propulsion systems of BrahMos is supplied by Solar Defence and Aerospace Limited (SDAL), Nagpur.
+
+The high speed of the BrahMos likely gives it better target-penetration characteristics than lighter subsonic cruise-missiles, such as Tomahawk . Being twice as heavy and almost four times as fast as Tomahawk, the BrahMos has more than 32 times the on-cruise kinetic energy of a Tomahawk missile, although it carries only 3/5 the payload and a fraction of the range, which suggests that the missile was designed with a different tactical role. Its Mach 2.8 speed means that it cannot be intercepted by some existing missile defence systems and its precision makes it lethal to water targets. INS Nilgiri firing BrahMos.
+
+Although BrahMos was primarily an anti-ship missile, the BrahMos Block III can also engage land-based targets. It can be launched either in a vertical or inclined position and is capable of covering targets over a 360-degree horizon.
+
+The BrahMos missile has an identical configuration for land, sea, and sub-sea platforms.
+
+The air-launched version has a smaller booster and additional tail fins for added stability during launch.
+
+The BrahMos has currently been configured for aerial deployment with the Su-30MKI as its carrier.
+
+On 5 September 2010 BrahMos created a record for the first supersonic steep dive.
+
+The BrahMos missile also utilises a " fire-and-forget " system, requiring no additional input from the operator once the missile has been launched. Variants INS Delhi fires BrahMos missile BrahMos Block-III test fired Surface-launched (Block I) Ship-launched, anti-ship variant (operational) Ship-launched, land-attack variant (operational) Land-launched, land-attack variant (operational) Land-launched, anti-ship variant (in induction) Surface-launched (Upgraded) BrahMos Block II land-attack variant (operational) BrahMos Block III land-variant (in induction) INS Chennai firing a BrahMos missile Anti-aircraft carrier variant (tested in March 2012) – the missile gained the capability to attack aircraft carriers using the supersonic vertical dive variant of the missile that could travel up to 290 km. Air-launched Air-launched, anti-ship variant (operational) Air-launched, land-attack variant (operational) Submarine-launched Submarine-launched, anti-ship variant Submarine-launched, land-attack variant Extended Range In 2016, India became a member of the MTCR . India and Russia are now planning to jointly develop a new generation of BrahMos missiles with 400, 800 and even 1500 km-plus range and an ability to hit protected targets with pinpoint accuracy.
+
+In its March 2024 order for 220 units of the missile, the Indian Navy has reportedly sought the 800 km ranged variant of the BrahMos.
+
+As of October 2025, the 800 km ranged variant is under trials and most of its development have completed, including the modified ramjet motor.
+
+The development is expected to be completed by 2027-end.
+
+After this, the existing 450 km range BrahMos, including those in service with the Navy could be modified to extend their range to 800 km.
+
+The procedure would include changes in the software, the graphical user interface of the fire control system and others.
+
+While the Army and Navy will induct the missile earlier, the air-launched variant will take more time to be developed.
+
+The ground-launched variant when in service with the Army, will be part of the proposed Integrated Rocket Force (IRF). Further developments BrahMos-NG Size comparison between BrahMos and the planned BrahMos-M/BrahMos-NG. BrahMos-NG (Next Generation) or BrahMos-MA is a shortened version based on the existing BrahMos system. A model of the new variant was revealed on 20 February 2013, at the 15th anniversary celebrations of BrahMos Corporation. It will maintain range of 290 km and speed of Mach 3.5 but will weigh around 1.5 tons, with a length of 6 metres and a diameter of 50 cm, making it 50% lighter and three metres shorter than its predecessor.
+
+The first test flight was expected to take place in late 2024 induction by the end of 2025. BrahMos-NG will have lesser radar cross section (RCS) compared to its predecessor, making it harder for air defense systems to detect and engage the target. BrahMos-NG will have Air-launched and Submarine torpedo tube/VLS-launched variants.
+
+The missile has been designated as BrahMos-M, BrahMos-NG and BrahMos-MA over the years. Additionally, the BrahMos-NG will have an AESA radar rather than the mechanically scanned one on the BrahMos.
+
+The missile will arm the Sukhoi Su-30MKI, Mikoyan MiG-29K , HAL Tejas , including Dassault Rafale , and HAL Tejas Mk 2 in later stages. Submarine launched variant will be capable of being fired from the new P75I class of submarines.
+
+The Sukhoi Su-30MKI would carry three missiles while other combat aircraft would carry one each. BrahMos Aerospace will manufacture BrahMos-NG in Uttar Pradesh .
+
+The Indian Air Force already confirmed a requirement of 400 missiles that will cost around ₹8,000 crore and be delivered within 5 years of time period.
+
+At the World Defense Show in February 2024, BrahMos Export Director Pravin Pathak disclosed that the initial flight samples of the BrahMos-NG will be gathered for flight testing concurrently with the building of the manufacturing factory, with an anticipated launch date of late 2025 or early 2026.
+
+In August 2024, co-director of the project, Alexander Maksichev revealed that the flight trials of BrahMos-MA will begin in 2026 and the company is now engaged in preparing the detailed design documents. This difference in timeline and name designation, however, led to a question that whether India and Russian projects are different. BrahMos-II The former President of India , A. P. J. Abdul Kalam asked BrahMos Aerospace to develop an advanced version of the BrahMos cruise missile to maintain India's lead in the field. He stated that a hypersonic version of BrahMos would be needed that could deliver its payload and return to base. Combat Use 2020-2021 China-India Skirmishes In 2020, India deployed BrahMos along with long range cruise missile Nirbhay and Akash surface to air missile to deter Chinese aggression along the Line of Actual Control in eastern Ladakh . 2025 India–Pakistan conflict Main article: 2025 India–Pakistan conflict It was reported that India used BrahMos missiles as part of its Operation Sindoor on 7 May 2025 against suspected militant targets and training camps at 9 locations inside Pakistan.
+
+On 10 May 2025, India reportedly used BrahMos missiles from Sukhoi Su-30MKI in precision strikes on Pakistani airbases during the 2025 India–Pakistan conflict . Pakistan's Prime Minister , Shehbaz Sharif , while speaking at an event in Azerbaijan on the 29th of May said that his armed forces were planning to retaliate against India at 4:30 in the morning of May 10 but before that hour even arrived, India used BrahMos missile to strike 11 PAF airbases including PAF Base Nur Khan ( Chaklala , near Islamabad ), Rafiqui , Murid , Sukkur , Sialkot , Pasrur , Chunian , Sargodha , Skardu , Bholari and Jacobabad in a coordinated attack. His admission confirms that Pakistan was unable to intercept the BrahMos missiles, launched either by the Indian Air Force or the Indian Army.
+
+The use of BrahMos was confirmed by the Indian Prime Minister Narendra Modi in a speech at Kanpur on 30 May 2025. A Pakistani politician , Rana Sanaullah , admitted that Pakistan's military had only about 30 to 45 seconds to assess whether the BrahMos missiles fired by India at the Nur Khan Airbase carried a nuclear warhead which could have further escalated the situation towards a nuclear conflict. Earlier, during the 2025 India–Pakistan crisis , multiple Indian Naval Ships undertook several successful anti-ship firings in the Arabian Sea to revalidate the preparedness of platforms, systems, and crew for long-range, precise offensive strikes. Operational history Side view of the MAL's missiles India Indian Army First Regiment On 21 June 2007, the Indian Army raised its first BrahMos regiment, designated 861 Missile Regiment , equipped with Block-I variant.
+
+Before the induction, four tests were conducted successfully including two by Army personnel.
+
+The induction took place one year before scheduled delivery in July 2008. Two mobile launchers and mobile command post was delivered.
+
+The first regiment with five mobile launcher cost $83 million to set up. Second Regiment By 2009, after multiple tests, Block-II variant of the missile with advanced seeker was ready for induction. This will be followed by raising of two regiments of Block-II BrahMos Weapon System. Around 260 missiles would be bought.
+
+The deal would cost over ₹ 8,000 crore (equivalent to ₹ 200 billion or US$2.1 billion in 2023).
+
+On 9 November 2011, the second regiment equipped with BrahMos Block-II was officially commissioned with 16 weapon systems.
+
+The delivery was completed ahead of schedule. Reports also confirmed that two more regiments were also planned including one equipped with Block-III variant.
+
+On 4 March 2012, the Army test fired a BrahMos missile at the Pokhran Field Firing Range .
+
+Following this, the second regiment of BrahMos, meant for desert warfare, was operationalised.
+
+The third regiment was already on order and would be inducted in Arunachal Pradesh . Each of the two new regiments would have 65 missiles, five Mobile Autonomous Launchers and two mobile command post.
+
+The development was confirmed by the then Indian Defence Minister A. K. Antony in a written reply in the Parliament . Third Regiment In 2015, Indian Army activated the third regiment of BrahMos Block-II missiles, designated 344 Missile Regiment .
+
+The regiment which took part in the Republic Day Parade in 2025 was the latest BrahMos regiment. Fourth Regiment On 3 August 2016, it was reported that the Cabinet Committee on Security (CCS) cleared a fourth regiment for the 'steep-dive' (Block-III) variant of the BrahMos missile at a cost of ₹ 4,300 crore (equivalent to ₹ 62 billion or US$650 million in 2023).
+
+The regiment would have 100 missiles, 5 mobile autonomous launchers on 12×12 heavy-duty trucks and a mobile command post.
+
+The regiment would be deployed in northeast region along the Line of Actual Control . These missiles have a steep dive capability of up to 75° which would be increased to 90°.
+
+As of then, the Army had inducted three regiments of Block I and II variants since 2007.
+
+As of April 2018, the Indian Army's fourth BrahMos regiment was under formation in Ladakh region.
+
+On 20 March 2025, it was reported that the Defence Acquisition Council (DAC) had cleared the procurement of additional regiments equipped with BrahMos-ER missiles worth around ₹ 20,000 crore (US$2.1 billion).
+
+The DAC will meet on 27 March 2026 during which it is expected to clear the Indian Army's plan to purchase large number of extended range BrahMos missiles. Indian Air Force Thanjavur AFS : 47 Wing No. 222 Squadron ( Tigersharks ) (Air launched BrahMos) The Indian Air Force also operates surface launched ( transporter erector launcher ) variants.
+
+The number of TELs in service with IAF is unknown.
+
+The land based weapons complex was inducted into the force in December 2014.
+
+The variants were test fired once from the Pokhran Test Range in 2016, twice from the Trak Island, Nicobar Islands in October 2019 as part of a training missions and once from the Integrated Test Range Launch Complex 3 in December 2019 along with an air-launched anti-ship missile.
+
+As of July 2024, 40 Sukhoi Su-30MKIs have been modified to carry BrahMos missiles.
+
+The range of air launched BrahMos is already upgraded to 450 km and will be increased to over 800 km. Another 84 jets will be modified under the Super Sukhoi upgrade programme.
+
+On 5 August 2025, the Defence Acquisition Council cleared the procurement of 110 BrahMos air-launched cruise missiles for the Indian Air Force at a cost of ₹ 10,800 crore (US$1.1 billion). Indian Navy BrahMos has become the primary strike missile deployed in the Navy fleet. Most of the modern destroyers, frigates and corvettes are being equipped with the missile.
+
+In May 2015, the Defence Acquisition Council of the Indian Ministry of Defence cleared the procurement of nine systems of BrahMos cruise missiles to equip three of the Delhi -class destroyers as well as the first batch of Talwar -class frigates at a cost of ₹ 2,700 crore (equivalent to ₹ 41 billion or US$430 million in 2023).
+
+By 2016, 10 frontline warships of the Navy were equipped with BrahMos.
+
+On 30 March 2023, MoD inked a contract with BrahMos Aerospace Private Limited (BAPL) for procurement of Next Generation Maritime Mobile Coastal Batteries (Long Range) {NGMMCB (LR)} and BrahMos Missiles at an approximate cost of over ₹ 1,700 crore (US$180 million).
+
+The delivery of NGMMCBs is scheduled to commence from 2027. Reportedly, the orders include 2 batteries. Each battery would include 4 Tatra launch vehicles, each carrying 3 BrahMos missiles, a mobile command post and a mobile tracking radar. These will be initially deployed from INS Trata in Mumbai which is a coastal missile defence battery base.
+
+The NGMMCB will replace P-15 Termit anti ship missile batteries.
+
+On 21 February 2024, the Cabinet Committee on Security of India cleared the acquisition of over 220 BrahMos-ER for deployment on warships of the Indian Navy. A deal worth around ₹ 19,518.65 crore (US$2.0 billion) for missile procurement has been signed on 1 March 2024 by BAPL and MoD along with a deal of ₹ 988.07 crore (US$100 million) for shipborne BrahMos launch systems.
+
+While this was the largest BrahMos order, the Ministry of Defence placed an overall order of ₹ 58,000 crore (US$6.1 billion) with the BrahMos Aerospace till date.
+
+On 5 August 2025, the Defence Acquisition Council cleared the procurement of eight BrahMos fire control systems and vertical launchers for the Indian Navy at a cost of ₹ 650 crore (US$68 million).
+
+By that time, 20 frontline warships were equipped with the missile system. BrahMos has become the primary conventional strike weapon for the Indian Armed Forces.
+
+By December 2025, INS Vidyut (K48) have been equipped with two inclined twin BrahMos launchers while the remaining in-service Veer -class corvettes are also expected to be equipped with the weapon system. Philippines Philippine Marine Corps BrahMos deal between India and the Philippines signed on 28 January 2022 for the Philippine Marines' Coastal Defense Regiment's SBASM Battalion In 2017, the Shore-based Anti-ship Missile System Acquisition Project for the maritime force was first conceptualized, while in 2020 the Office of the President approved its inclusion in the Horizon 2 Priority Projects.
+
+In March 2021, the Department of National Defense (DND) signed an arms agreement with India to potentially acquire Indian weapons, including the BrahMos missile.
+
+On 27 December 2021, two (SARO) — worth Php 1.3 billion (₹190 crore) and Php 1.535 billion (₹224 crore) — were issued by the Department of Budget Management (DBM) for the Shore-Based Anti-Ship Missile System Acquisition Project of the Philippine Navy .
+
+The SARO allows the DND to finalise contracts for military projects.
+
+On 31 December 2021, BrahMos Aerospace Pvt Ltd's representatives received the Notice of Award (NOA) for the project worth US$374,962,800. A contract was signed on 28 January 2022. It includes at least 3 batteries as part of the agreement. A battery will have at least 3 mobile firing units, plus attached command and control, radar, and support vehicles and units. Each mobile firing unit has 3 ready-to-fire BrahMos anti-ship supersonic missiles, with the export variant having a maximum range of around 290 km (180 mi).
+
+The batteries would be operated by the Shore-Based Anti-Ship Missile (SBASM) Battalion of the Philippine Marine Corps ' Coastal Defense Regiment . Philippines Marine Corps personnel has also completed their mandatory operator training under the supervision of BrahMos Aerospace and the Indian Navy in 2023. Indian Navy Chief Admiral R Hari Kumar felicitated Philippines Marine Corps personnel in a valedictory ceremony in India. Addressing the ceremony, Admiral Hari Kumar said that the induction of the BrahMos missile into the Philippine Marine Corps will strengthen the country's maritime capability and will contribute to the collective maritime security within the region.
+
+On 19 April 2024, Indian Prime Minister Narendra Modi announced the first units of the BrahMos Missile Systems were delivered to the Philippine Marine Corps via Indian Air Force's C-17 and Il-76 transport aircraft.
+
+The deliveries to the Philippines was held up for a few months as the two nations hadn't signed a non-disclosure agreement, various sources stated.
+
+The delivery of the first battery was conducted with support from civilian aircraft agencies after a non-stop six-hour journey.
+
+On 20 April 2025, India delivered the second battery of BrahMos cruise missiles to Philippines via sea.
+
+As of September 2025, the first battery has already been inducted by the Marine Corps while the third and the final battery is now ready for delivery. However, the delivery date has not been announced.
+
+The first battery of the Philippines Marine Corps will be based at the Naval Station Leovigildo Gantioqui located southwards of Philippine Merchant Marine Academy , Zambales .
+
+The construction had begun by August 2022.
+
+The battery is composed of two twin missile launcher vehicles supported by a maintenance vehicle, a command post vehicle and a four-missile transporter-reloader vehicle.
+
+The version is reportedly an export variant of BrahMos Block I. Future users Vietnam Vietnam was included in the "definite list of countries" which have expressed interest in BrahMos as per a report in 2021. However, Chinese concerns were believed to have been a direct cause behind the unsuccessful early negotiations for the sale of BrahMos to Vietnam even though Vietnam had previously acquired and commissioned the Russian Bastion-P coastal defence system which uses the largely-equivalent Yakhont anti-ship missile .
+
+On 22 December 2024, it was reported that a deal worth $700 million for the sale of BrahMos to Vietnam was to be signed within few months.
+
+The initial techno-commercial intricacies had been discussed, while the draft agreement (which includes the final deal amount, delivery timeline, payment terms, and other details from the manufacturer) is awaited.
+
+The orders are expected from both Vietnamese Army and Vietnamese Navy .
+
+During a delegation-level meeting between the Indian defence minister , Rajnath Singh , and his Russian counterpart , Andrey Belousov , on 4 December, the latter had approved of the no objection on the weapon's export to Vietnam and Indonesia.The receival of the formal No Objection Certificate , however, is due. Further negotiations may be conducted on the deal worth ₹ 5,800 crore (US$610 million) for a regiment of Coastal missile battery between India and Vietnam during the Vietnamese president To Lam's visit to New Delhi in May 2025.
+
+On 31 May 2026, the Defence Secretary , Rajesh Kumar Singh , confirmed during the Shangri-La Dialogue that an order has indeed been signed during the visit, though the exact public details were not publicly announced. India also expressed interest to supply the missiles to other ASEAN nations. Indonesia Indonesia has been in discussion with India for the purchase of BrahMos missile since July 2020 during the meet of the then Indonesian Defence Minister Prabowo Subianto with his Indian counterpart Rajnath Singh in India.
+
+As reported in January 2025, a deal worth $450 million for 290 km range BrahMos missiles is to be signed soon making Indonesia the third export customer after Philippines and Vietnam. Multiple reports suggested that the deal would be finalised on 25–26 January 2025 when the Indonesian President , Prabowo Subianto, visits India as the Republic Day chief guest since India, Russia and Indonesia has trilaterally agreed upon the price of the deal.
+
+The final deal could take some time as formal procedures are due.
+
+The purchase will be on loan from one of the national banks of India (like the State Bank of India ) unlike the previously expected EXIM Bank .
+
+On 26 January, it was reported that an Indonesian delegation led by Navy chief Muhammad Ali visited the BrahMos Aerospace headquarters in order to finalise the proposed deal.
+
+As reported on 4 November by ANI , all procedures and negotiations for Indonesia's BrahMos deal had been completed and only a final nod from the Russian authorities was pending for the contract signing.
+
+During a delegation-level meeting between the Indian defence minister , Rajnath Singh , and his Russian counterpart , Andrey Belousov , on 4 December, the latter had approved of the no objection on the weapon's export to Vietnam and Indonesia.
+
+The combined value of both the deal is $450 million and further order might be placed following the initial deal.
+
+The receival of the formal No Objection Certificate , however, is due.
+
+On 9 March 2026, Indonesian defence ministry spokesperson, Rico Ricardo Sirait, told Reuters that the country has entered an agreement of unknown amount with India to purchase the BrahMos missile system.
+
+The deal is expected to cost $200–$350 million. One battery for coastal defence will be procured in the first phase.
+
+The procurement will be expanded to three additional batteries in future phases.
+
+The contract is expected to be signed within 2 to 3 months, i.e., early in the following fiscal year .
+
+The nation plans has also sought an additional battery. An MoU was signed for the on 7 July when India's Prime Minister , Narendra Modi , was on a visit to Indonesia. Indonesia plans to operate a total of three BrahMos batteries.
+
+The country will also purchase Astra missiles .
+
+The worth of the BrahMos deal is estimated between $200–$350 million. Potential users Russia In September 2016, it was revealed that the Russian Defense Ministry is interested in purchasing the air-launched BrahMos to arm their Su-30SM fighters. So far, Russia has not purchased the missile system for the Russian Air Force .
+
+The BrahMos could be fitted to only few, if any, of the new ships of the Russian Navy .
+
+The updated Gorshkov -class frigates which are the latest type of frigate being built could possibly accommodate the missile. No BrahMos missile has been bought and inducted by the navy. Philippines In October 2019, the Philippine Army was reported to be in discussion with India for a possible BrahMos missile sale for at least 2 batteries to be acquired under the Land Based Missile System Acquisition (LBMS) Project. These systems are planned to be operated by the 1st Land Based Missile System Battery of the Army Artillery Regiment, which was activated in October 2019.
+
+On 21 January 2022, the Philippine Army announced plans to purchase two of BrahMos medium-range missile systems within the 3rd horizon of the Revised Armed Forces of the Philippines Modernization Program (R-AFPMP) scheduled at the start of 2023 to the end of 2027. Further orders from Philippines are expected to materialise as of 23 December 2025. Brazil Brazil has shown interest in the missile system.
+
+The discussions for signing a deal with BrahMos Aerospace to procure the missiles are on.
+
+In the case of Malaysia, they are considering the purchase of the missile for use on its Kedah class warships and Sukhoi Su-30MKM . One of the major issues regarding sales of the missile is that the nations looking to buy may have stressful relations with allies and trading partners of Russia. China is one of the main nations that has objections about its neighbours getting these missiles for their navies. It views the selling of these missiles as an act of belligerence and interference in the disputed territories like the South China Sea .
+
+As per a June 2026 report by the Reuters , BrahMos is one of the weapon systems that are on offer to the United Arab Emirates (UAE) from India along with the Akashteer system.
+
+The discussions are at early stages but are "progressing rapidly". Further, Saudi Arabia and Thailand besides Egypt, Brazil and Chile are also reportedly interested in procuring the system. Operators Current operators India Indian Army : Four BrahMos regiments are known to be in service: 861 Missile Regiment (BrahMos Block-I) 1889 Missile Regiment 334 Missile Regiment (BrahMos Block-II) 881 Missile Regiment Indian Air Force Indian Air Force BrahMos units: Surface-to-surface missiles Thanjavur AFS (47 Wing) No. 222 Squadron ( Tigersharks ) Indian Navy : The following ship classes of the navy are equipped with BrahMos: Visakhapatnam -class destroyer Kolkata -class destroyer Delhi -class destroyer – INS Delhi (D61) and INS Mumbai (D62) Rajput -class destroyer – INS Ranvir (D54) and INS Ranvijay (D55) Nilgiri -class frigate Shivalik -class frigate Talwar -class frigate – Batch 2 onwards Veer -class corvette - INS Vidyut Philippines – Three BrahMos batteries ordered. Two batteries delivered as of April 2025. Missile base reportedly under construction at Naval Station San Miguel . Philippine Marine Corps : Operates the BrahMos Shore-Based Anti-Ship Missile system (Land-launched, anti-ship variant) Coastal Defense Regiment Shore-Based Anti-Ship Missile (SBASM) Battalion 1st BrahMos Battery – Naval Station Leovigildo Gantioqui , Zambales Future operators Indonesia Indonesian Navy : A contract to acquire one coastal defence battery signed on 7 July 2026.
+
+The agreement was finalised by March 2026. One BrahMos battery ordered initially, with option of up to three batteries possible. Vietnam Vietnam People's Navy : Agreement signed in FY2025-26. Potential operators Armenia Armenian Air Force Brazil Brazilian Army Brazilian Navy India Integrated Rocket Force (Planned) Malaysia Royal Malaysian Air Force – Sukhoi Su-30MKM (Air-launched variant) Philippines Philippine Army Russia Russian Air Force Russian Navy United Arab Emirates Accidents and incidents 20 January 2009 – On a test launch, an early developmental variant of the BrahMos missile missed its target at the Pokhran Test Range by 7 km, due to the switching off of GPS satellites and erroneous data from the INS series of satellites. A repeat mission on 4 March 2009 was a success. 12 July 2021 – In a test fire off the coast of Odisha , an extended-range variant of the missile fell to the ground shortly after launch, reportedly due to an error in the propulsion system. 9 March 2022 – An accidentally fired missile crashed into Pakistan . Pakistan said that the missile took off on the evening of 9 March and it was picked up by its air defence systems.
+
+From its initial course, the missile suddenly maneuvered towards Pakistani territory and crashed near Mian Channu city of Punjab province, causing no civilian casualties. Pakistan said its air force had "initiated requisite tactical actions" in response as it tracked the missile from its point of origin in India to its point of impact. Pakistan strongly condemned the incident and also cautioned India against recurrence of any such incident in the future. India said the incident was due to a "technical malfunction" and that it was "deeply regrettable". India also said that they have ordered a high-level court of inquiry to look into the incident.
+
+The Times of India . 29 December 2022. ^ " 'Game Changer' : India Tests Extended-Range BrahMos Missile from Su-30 Fighter" . Hindustan Times . 12 May 2022. ^ a b "BrahMos supersonic cruise missile" . Brahmos Aerospace. Archived from the original on 5 August 2013 . Retrieved 8 July 2013 . ^ "BrahMos supersonic cruise missile" . Brahmos Aerospace. Archived from the original on 5 August 2013 . Retrieved 8 July 2015 . ^ Bana, Sarosh (May–June 2017). "Armed to the Hilt – Indian Navy's Anti-Ship Missiles" (PDF) . Vayu Aerospace and Defence Review . No. 3. Society for Aerospace Studies. p. 68. Archived (PDF) from the original on 29 September 2018 . Retrieved 28 September 2018 . ^ "Indian Navy test-fires Brahmos supersonic missile" (PDF) . Vayu Aerospace and Defence Review . No. 3. Society for Aerospace Studies. May–June 2017. p. 18. Archived (PDF) from the original on 29 September 2018 . Retrieved 28 September 2018 . ^ Proma, Aishwarya Sanjukta Roy (3 August 2023). "India's Potential Sale Of Brahmos Missiles: A New Avenue In Indo-Russian Defense Cooperation – Analysis" . Eurasia Review . Retrieved 21 March 2025 . ^ Gady, Franz-Stefan. "India Developing BrahMos-NG Missile for Project 75I Submarines" . thediplomat.com . Retrieved 1 May 2022 . ^ a b c India Displays Big Missiles at Defense Show Archived 5 May 2018 at the Wayback Machine . Aviation International News . 19 April 2018. ^ "Products and Technologies | Defence Research and Development Organisation - DRDO, Ministry of Defence, Government of India" . ^ "BrahMos air launch completes India's supersonic cruise missile triad: Five things you need to know" .
+
+The Indian Express . Archived from the original on 22 November 2017 . Retrieved 22 November 2017 . ^ a b c d "India Unveils Ambitious BrahMos Missile Expansion Plan" . Aviation Week . 4 March 2013. Archived from the original on 21 February 2014 . Retrieved 6 July 2013 . ^ "Brahmos Missiles – The Hans India" . www.thehansindia.com . 12 August 2015. Archived from the original on 23 November 2015 . Retrieved 24 July 2023 . ^ "P-800 Oniks/Yakhont/Bastion (SS-N-26 Strobile)" . Missile Threat . Retrieved 24 July 2023 . ^ a b "Indian Air Force declares integration of BrahMos-A onto Su-30MKI complete | Jane's 360" . janes.com . Archived from the original on 19 December 2019 . Retrieved 6 January 2020 . ^ "armed with brahmos, INS Teg inducted into Indian Navy" . BrahMos. 12 April 2012. Archived from the original on 7 January 2013. ^ "India now working on 1,500-km range BrahMos supersonic cruise missile" . ThePrint . 24 November 2020. Archived from the original on 24 November 2020 . Retrieved 25 November 2020 . ^ "Upgraded BRAHMOS with 500-km range ready: BrahMos Chief" . BrahMos Aerospace . Archived from the original on 5 October 2019 . Retrieved 16 August 2019 . ^ a b "Upgraded BrahMos with 500-km range ready: CEO, BrahMos Aerospace" .
+
+The Economic Times . 8 July 2019. Archived from the original on 9 July 2019 . Retrieved 8 July 2019 . ^ a b c Chaudhury, Dipanjan Roy; Pubby, Manu. "MTCR benefit: India, Russia to develop 600-km range cruise missiles that can cover entire Pakistan" .
+
+The Economic Times . Archived from the original on 19 October 2016 . Retrieved 19 October 2016 . ^ a b Staff, Naval News (2 August 2022). "Hypersonic BrahMos-II missile may include tech from Tsirkon missile" . Naval News . Retrieved 26 December 2023 . ^ a b "Russia, India to test-fly hypersonic missiles by 2017: BrahMos chief" .
+
+The Hindu . 28 June 2012. Archived from the original on 1 July 2012 . Retrieved 28 June 2012 . ^ "P-800 Oniks/Yakhont/Bastion (SS-N-26 Strobile)" . Missile Threat . Retrieved 19 June 2023 . {{ cite web }} : CS1 maint: deprecated archival service ( link ) ^ PTI (5 April 2026). "Russian Missile Designer Alexander Leonov Who Developed Brahmos Dies At 74" . NDTV . Retrieved 7 April 2026 . {{ cite web }} : CS1 maint: url-status ( link ) ^ "Joint Venture" . brahmos.com . Archived from the original on 5 August 2013 . Retrieved 8 May 2018 . ^ "BrahMos missile cant be intercepted in next 20 years: A Sivathanu Pillai" .
+
+The Economic Times . 17 June 2013. Archived from the original on 6 June 2016 . Retrieved 7 July 2013 . ^ "History of BrahMos" . brahmos.com . Archived from the original on 9 May 2018 . Retrieved 8 May 2018 . ^ "Print Release" . Pib.nic.in. Archived from the original on 21 December 2013 . Retrieved 30 April 2013 . ^ "BrahMos: Everything You Need to Know About India's Mach 2.8 Missile" . 25 July 2017. Archived from the original on 29 July 2017 . Retrieved 29 July 2017 . ^ "BrahMos cruise missile test fired from naval ship" . Archived from the original on 6 March 2008 . Retrieved 5 March 2008 . ^ "Modernisation and expansion after Keltec-BrahMos merger" . Newindpress.com. 27 August 2010 . Retrieved 31 August 2010 . ^ "BrahMos Aerospace (Tvm) goes live with Rs 1000-cr agenda" .
+
+The Financial Express . 1 January 2008. Archived from the original on 19 November 2009 . Retrieved 31 August 2010 . ^ "DNA – India – Kerala gets BrahMos unit" . Daily News and Analysis . 2 January 2008. Archived from the original on 15 January 2009 . Retrieved 31 August 2010 . ^ "India, Russia to increase BrahMos' strike range | Jane's 360" . Archived from the original on 29 July 2017 . Retrieved 29 July 2017 . ^ "BrahMos to attain 76% localisation in six months" . Business Line . 6 May 2018. Archived from the original on 31 August 2020 . Retrieved 8 May 2018 . ^ "India's L&T develops inclined launcher for BrahMos cruise missile" . www.janes.com . Archived from the original on 8 May 2018 . Retrieved 8 May 2018 . ^ "BrahMos Work Centres" . brahmos.com . Archived from the original on 6 June 2017 . Retrieved 11 August 2017 . ^ "2 state villages chosen by DRDO for setting up radar to track enemy" . dna . 4 August 2017. Archived from the original on 11 August 2017 . Retrieved 11 August 2017 . ^ "Bengaluru: 1.2m trisonic wind tunnel at National Aerospace Laboratories completes 55 years of service" . ANI . 6 June 2022 . Retrieved 22 November 2024 . ^ "DMSRDE prepares indigenous fuel for BrahMos, testing begins" .
+
+The Times of India . 22 January 2024. ISSN 0971-8257 . Retrieved 24 January 2024 . ^ "BrahMos Test Fired" . BrahMos.com. Archived from the original on 25 April 2012 . Retrieved 20 October 2011 . ^ "BrahMos naval version tested successfully" . Pib.nic.in. 25 March 2008. Archived from the original on 24 September 2010 . Retrieved 30 April 2013 . ^ "Brahmos naval version tested successfully" . Google webcache. Archived from the original on 24 September 2010. ^ "BrahMos-launched successfully" .
+
+The Hindu . Chennai, India. 19 December 2008. Archived from the original on 26 June 2009 . Retrieved 31 August 2010 . ^ "Delivery of BrahMos cruise missiles to Indian Army begins" . India-defence.com. 21 June 2007. Archived from the original on 10 September 2010 . Retrieved 31 August 2010 . ^ "South Asia news, business and economy from India and Pakistan" . Asia Times . 23 January 2009. Archived from the original on 6 June 2016 . Retrieved 20 October 2011 . ^ "Minor hitches in BrahMos missile test: DRDO" .
+
+The Indian Express . 21 January 2009. Archived from the original on 29 January 2009 . Retrieved 20 October 2011 . ^ "Why BrahMos failed" . Frontline India. Archived from the original on 11 January 2016 . Retrieved 1 November 2015 . ^ "BrahMos missed the target" .
+
+The Hindu . Chennai, India. 22 January 2009. Archived from the original on 5 August 2009 . Retrieved 31 August 2010 . ^ "New BrahMos test successful" .
+
+The Hindu . Chennai, India. 5 March 2009. Archived from the original on 29 August 2010 . Retrieved 31 August 2010 . ^ "Supersonic BrahMos Successfully Tested in Pokhran" . News.outlookindia.com. Archived from the original on 22 October 2009 . Retrieved 31 August 2010 . ^ "Army wanted BrahMos to achieve high standards of accuracy" .
+
+The Hindu . Chennai, India. 30 March 2009. Archived from the original on 3 June 2009 . Retrieved 31 August 2010 . ^ "Army:Process of inducting new version BrahMos to begin soon" . Hinduonnet.com. 30 March 2009. Archived from the original on 21 August 2009 . Retrieved 31 August 2010 . ^ "BrahMos develops Block II for precision strike" . India Strategic. Archived from the original on 17 January 2013 . Retrieved 7 February 2013 . ^ "BrahMos test-fired, creates world record" .
+
+The Times of India . 6 September 2010. Archived from the original on 6 June 2016 . Retrieved 7 February 2013 . ^ "Supersonic BrahMos missile test fired successfully" .
+
+The Times of India . 30 March 2009. Archived from the original on 23 October 2012 . Retrieved 30 April 2013 . ^ a b "BrahMos test-fired, creates world record" .
+
+The Times of India . 6 September 2010. Archived from the original on 6 June 2016 . Retrieved 6 September 2010 . ^ "India test-fires Brahmos cruise missile" . Reuters.com . 5 September 2010. Archived from the original on 5 March 2014 . Retrieved 20 October 2011 . ^ a b "Govt acts on General VK Singh's complaint, fast-tracks acquisition of weapons" .
+
+The Times of India . 18 April 2012. Archived from the original on 6 June 2016 . Retrieved 18 April 2012 . ^ a b "Upgraded-BrahMos-cruise-missile-successfully-test-fired" .
+
+The Times of India . 2 December 2010. Archived from the original on 6 June 2016. ^ "BrahMos Block III version successfully test fired" . BrahMos.com. 2 December 2010. Archived from the original on 7 February 2012 . Retrieved 20 October 2011 . ^ "Desi G3OM Makes BrahMos Smarter" .
+
+The New Indian Express . 9 July 2014. Archived from the original on 12 July 2014 . Retrieved 9 July 2014 . ^ "DRDO-Private Industry Collaboration Creates GPS Receiving Module 'G3om' For Military Operations" . Defence Now. Archived from the original on 23 September 2015 . Retrieved 9 July 2014 . ^ "Small device with big applications" .
+
+The Hindu . 3 September 2012. Archived from the original on 11 January 2016 . Retrieved 9 July 2014 . ^ "Indigenous technology tested on BrahMos supersonic missile" .
+
+The Hindu . 22 March 2018. ISSN 0971-751X . Archived from the original on 5 October 2020 . Retrieved 16 August 2019 . ^ a b "BrahMos Supersonic Cruise Missile, with major indigenous systems, successfully test-fired" . Press Information Bureau . 30 September 2019. Archived from the original on 1 October 2019 . Retrieved 1 October 2019 . ^ "India successfully test-fires extended-range version of BrahMos missile from Sukhoi" .
+
+The Economic Times . 12 May 2022. ISSN 0013-0389 . Retrieved 19 June 2023 . ^ "BRAHMOS Supersonic Cruise Missile - BrahMos.com" . www.brahmos.com . Archived from the original on 17 October 2022 . Retrieved 19 June 2023 . ^ "India successfully test-fires over 400 km strike range BrahMos supersonic cruise missile" . ANI . Archived from the original on 2 October 2020 . Retrieved 30 September 2020 . ^ Hariharan, Sindhu (19 May 2025). "Data Patterns expects production orders for Brahmos Seekers after successful flight tests" . BusinessLine . Retrieved 2 June 2025 . ^ a b "India test fires submarine-launched version of BrahMos supersonic cruise missile" .
+
+The Times of India . 20 March 2013. Archived from the original on 6 June 2016. ^ a b "Sub-Launched Version Of BrahMos Missile Tested" . Aviation Week . 20 March 2013. Archived from the original on 3 December 2013 . Retrieved 6 July 2013 . ^ "Submarine-launched variant" . Brahmos. Archived from the original on 5 August 2013 . Retrieved 8 July 2013 . ^ "Successful firing of Brahmos Air Launched Missile from Su-30 MKI Aircraft" . pib.nic.in . Archived from the original on 1 December 2017 . Retrieved 22 November 2017 . ^ a b c Gady, Franz-Stefan (22 November 2017). "India Test Fires Nuclear-Capable Cruise Missile From Fighter Jet" . thediplomat.com . Archived from the original on 24 January 2021 . Retrieved 31 March 2022 . ^ "Upgraded ASW aircraft Tu-142ME was delivered to the Indian Navy" . Rusnavy.com. Archived from the original on 18 September 2010 . Retrieved 31 August 2010 . ^ "Su-30 MKI fit to carry Brahmos" . Bharat-rakshak.com. Archived from the original on 9 June 2011 . Retrieved 31 August 2010 . ^ Express News Service (24 October 2008). "IAF will get Brahmos version by 2012" . Express India . Archived from the original on 19 August 2009 . Retrieved 5 September 2010 . ^ "IAF Sukhoi-30MKI jets in Russia for BrahMos aerial version retrofit program" . Domain-b.com. Archived from the original on 4 February 2010 . Retrieved 31 August 2010 . ^ "Russian Embassy article" . Rusembassy.in. 26 February 2012. Archived from the original on 1 April 2012 . Retrieved 30 April 2013 . ^ "Times of India News article" .
+
+The Times of India . 26 February 2012. Archived from the original on 6 June 2016 . Retrieved 30 April 2013 . ^ "Air Variant of BrahMos Test Delayed Until End Of 2013" . Aviation Week . 28 December 2012. Archived from the original on 24 March 2013 . Retrieved 6 July 2013 . ^ "Indian cabinet clears Rs 8000 cr plan to fit IAF with BrahMos" . Brahmand.com. Archived from the original on 28 July 2013 . Retrieved 30 April 2013 . ^ "First successful test flight of Su-30MKI armed with Brahmos" . India Today . Archived from the original on 26 June 2016 . Retrieved 25 June 2016 . ^ Brahmos Missile Finally Takes Flight on Indian Sukhoi Fighter Archived 2 July 2016 at the Wayback Machine – Ainonline.com, 30 June 2016 ^ a b c "Brahmos Flight test from IAF's Su-30MKI fighter aircraft" . pib.nic.in . Archived from the original on 23 November 2017 . Retrieved 22 November 2017 . ^ "IAF first in world to fire BrahMos missile from air" . 22 November 2017. Archived from the original on 4 August 2018 . Retrieved 28 February 2019 . ^ "Successful Firing of Brahmos Air Launched Missile from Su-30 MKI Aircraft" . pib.gov.in . 17 December 2019. Archived from the original on 17 December 2019 . Retrieved 17 December 2019 . ^ First Indian BrahMos Squadron Commissioned Archived 24 January 2020 at the Wayback Machine . Aviation International News . 23 January 2020. ^ "2023-24 Annual Report" (PDF) . Ministry of Defence, Government of India . 10 October 2025 . Retrieved 10 October 2025 . ^ a b Peri, Dinakar (8 December 2021). "Air-launched BrahMos supersonic cruise missile ready for serial production" .
+
+The Hindu . ISSN 0971-751X . Archived from the original on 8 December 2021 . Retrieved 8 December 2021 . ^ a b c "BrahMos launch a 'big breakthrough' " .
+
+The Hindu . 30 October 2003 . Retrieved 22 March 2018 . ^ a b c d "BrahMos test" . Frontline . 20 November 2003. Archived from the original on 2 January 2026 . Retrieved 2 January 2026 . ^ "Anti-ship missile Brahmos test fired" .
+
+The Times of India . Press Trust of India. 12 February 2003. Archived from the original on 29 July 2018 . Retrieved 23 March 2018 . ^ "BrahMos successfully test-fired" . Rediff.com . Press Trust of India. 9 November 2003. Archived from the original on 24 March 2018 . Retrieved 23 March 2018 . ^ T.S. Subramanian (3 December 2003). "Anti-ship version of BrahMos proves its mettle" .
+
+The Hindu . ^ "India test-fires BrahMos cruise missile". BBC Selected Wire Articles: India . Press Trust of India. 23 November 2003 – via NewsBank. ^ T.S. Subramanian (14 June 2004). "BrahMos launch successful" .
+
+The Hindu . Archived from the original on 30 April 2018. ^ T.S. Subramanian (14 June 2004). "Kalam congratulates scientists" .
+
+The Hindu . ^ T.S. Subramanian (4 November 2004). "Supersonic cruise missile BrahMos ready to join Navy" .
+
+The Hindu . ^ "Brahmos tested successfully" .
+
+The Times of India . Press Trust of India. 3 November 2004. Archived from the original on 24 March 2018 . Retrieved 23 March 2018 . ^ T.S. Subramanian (22 December 2004). "BrahMos-II bang on target" .
+
+The Hindu . Archived from the original on 30 April 2018. ^ T.S. Subramanian (16 April 2005). "BrahMos test-fired off west coast" .
+
+The Hindu . Archived from the original on 19 April 2005. ^ Subramanian, T.S. (1 December 2005). "Army version of BrahMos test-fired" .
+
+The Hindu . ^ "BrahMos test-fired successfully for 12th time" .
+
+The Hindu . 1 June 2006. Archived from the original on 11 October 2020 . Retrieved 24 March 2018 . ^ "Brahmos successfully test fired" . Press Information Bureau. 31 May 2006. ^ "BrahMos missile test-fired successfully" .
+
+The Hindu . 5 February 2007. ISSN 0971-751X . Archived from the original on 13 October 2020 . Retrieved 22 March 2018 . ^ "BrahMos test-fired successfully" .
+
+The Hindu . 23 April 2007. ISSN 0971-751X . Archived from the original on 24 February 2021 . Retrieved 22 March 2018 . ^ "Fourteenth flight trial of land version of Brahmos Successful" . Press Information Bureau. 22 April 2007. Archived from the original on 24 March 2018 . Retrieved 24 March 2018 . ^ "Brahmos naval version tested successfully" . Press Information Bureau. 5 March 2008. Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ Pandit, Rajat (18 December 2008). "India tests BrahMos supersonic missile" .
+
+The Times of India . Archived from the original on 28 March 2018 . Retrieved 27 March 2018 . ^ "BrahMos software being modified to overcome range problem" .
+
+The Economic Times . 14 February 2009. Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "New BrahMos test successful :: BrahMos.com" . brahmos.com . Archived from the original on 6 November 2013 . Retrieved 21 March 2025 . ^ "New BrahMos test successful" .
+
+The Hindu . 5 March 2009. ISSN 0971-751X . Archived from the original on 25 February 2021 . Retrieved 22 March 2018 . ^ T. S. Subramanian (30 March 2009). "BrahMos launch successful" .
+
+The Hindu . ISSN 0971-751X . Archived from the original on 30 April 2018 . Retrieved 22 March 2018 . ^ "Supersonic BrahMos successfully tested in Pokhran" .
+
+The Economic Times . Press Trust of India. 29 March 2009. Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ Bhatia, Vimal (30 July 2009). "Army test-fires BrahMos again" .
+
+The Times of India . Archived from the original on 17 June 2018 . Retrieved 27 March 2018 . ^ "BrahMos missile proves its mettle once again" . Press Information Bureau. 21 March 2010. Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ T. S. Subramanian (22 March 2010). "Vertical launch of BrahMos missile successful" .
+
+The Hindu . Archived from the original on 24 February 2021 . Retrieved 27 March 2018 . ^ T. S. Subramanian (5 September 2010). "BrahMos tested in steep-dive mode" .
+
+The Hindu . ISSN 0971-751X . Archived from the original on 8 October 2020 . Retrieved 22 March 2018 . ^ "Brahmos Block III Successfully Test Fired" . Press Information Bureau. 2 December 2010. Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "BrahMos capability in mountain warfare tested" .
+
+The Hindu . 2 December 2010. ISSN 0971-751X . Archived from the original on 9 October 2020 . Retrieved 22 March 2018 . ^ Pandit, Rajat (13 August 2011). "BrahMos cruise missile testfired successfully" .
+
+The Times of India . Archived from the original on 28 March 2018 . Retrieved 27 March 2018 . ^ "User trial of BrahMos Block-III supersonic cruise missile successful" .
+
+The Economic Times . Press Trust of India. 12 August 2011. Archived from the original on 27 March 2018 . Retrieved 27 March 2018 . ^ a b c "BrahMos cruise missile test fired successfully" .
+
+The Economic Times . Press Trust of India. 4 March 2012. Archived from the original on 27 March 2018 . Retrieved 27 March 2018 . ^ Bhatia, Vimal (4 March 2012). "BrahMos missile test fire at Pokhran today" .
+
+The Times of India . Archived from the original on 28 March 2018 . Retrieved 27 March 2018 . ^ Somasekhar, M. (28 March 2012). "BrahMos tactical version fired off Odisha coast" . Business Line . Archived from the original on 4 June 2018 . Retrieved 27 March 2018 . ^ "Brahmos missile flight tested successfully off Orissa coast" . Yahoo News . ANI. 28 March 2012. Archived from the original on 27 March 2018 . Retrieved 27 March 2018 . ^ "29th test-flight of BrahMos a success" .
+
+The Hindu . 29 March 2012. Archived from the original on 30 April 2018 . Retrieved 27 March 2018 . ^ "Brahmos supersonic cruise missile with new systems test fired at Chandipur" .
+
+The Economic Times . Press Trust of India. 30 March 2012. Archived from the original on 28 March 2018 . Retrieved 27 March 2018 . ^ "BrahMos' developmental flight successful" .
+
+The Hindu . 31 March 2012. Archived from the original on 9 October 2020 . Retrieved 27 March 2018 . ^ "Supersonic missile BrahMos test-fired" .
+
+The Times of India . 30 July 2012. Archived from the original on 31 July 2012 . Retrieved 4 August 2012 . ^ "India test-fires BrahMos missile with new systems" . DNA India . 30 July 2012. Archived from the original on 31 July 2012 . Retrieved 4 August 2012 . ^ "Supersonic missile BrahMos successfully test-fired" . NDTV. Press Trust of India. 30 July 2012. Archived from the original on 1 August 2012 . Retrieved 4 August 2012 . ^ "Test Failure of Cruise Missile Brahmos" . Press Information Bureau. Archived from the original on 27 September 2013 . Retrieved 30 April 2013 . ^ "BrahMos missile successfully test-fired" .
+
+The Hindu . Press Trust of India. 7 October 2012. Archived from the original on 11 October 2020 . Retrieved 27 March 2018 . ^ Radyuhin, Vladimir (13 October 2012). "BrahMos gains sub-strategic super weapon capability" .
+
+The Hindu . Archived from the original on 29 February 2020 . Retrieved 27 March 2018 . ^ "India test-fires manoeuvrable version of BRAHMOS :: BrahMos.com" . brahmos.com . Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "BrahMos missile successfully test fired from ship" . @businessline . Archived from the original on 30 April 2018 . Retrieved 22 March 2018 . ^ "Army test-fires BrahMos in Pokhran – Times of India" .
+
+The Times of India . Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "BrahMos successfully penetrates hardened targets in Army test" .
+
+The Hindu . 18 November 2013. ISSN 0971-751X . Archived from the original on 7 July 2019 . Retrieved 22 March 2018 . ^ "Brahmos missile successfully fired in salvo mode" . brahmos.com . Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "BrahMos Ready for Mountain Warfare" .
+
+The New Indian Express . 8 April 2014. Archived from the original on 8 April 2014 . Retrieved 8 April 2014 . ^ "Army test-fires BrahMos in Pokhran" .
+
+The Times of India . 8 April 2014. Archived from the original on 10 April 2014 . Retrieved 8 April 2014 . ^ "BrahMos missile test-fired from warship INS Kolkata" . livemint.com . 9 June 2014. Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "BrahMos missile test-fired successfully from INS Kolkata" . delhidailynews.com . Archived from the original on 25 December 2014 . Retrieved 22 March 2018 . ^ "BrahMos Missile Achieves High Accuracy Against Hidden Land Targets" .
+
+The New Indian Express . 8 July 2014. Archived from the original on 9 July 2014 . Retrieved 9 July 2014 . ^ "BrahMos supersonic cruise missile successfully test-fired" . Patrika Group . 8 July 2014. Archived from the original on 14 July 2014 . Retrieved 8 July 2014 . ^ "BrahMos missile test-fired from Indian Navy's newest ship INS Kochi, hits target" .
+
+The Indian Express . 2 November 2015. Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "BrahMos Missile Test-Fired From New Naval Ship, Hits Target" . NDTV.com . Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "India successfully test-fires BrahMos missile from INS Kolkata" .
+
+The Economic Times . 14 February 2015. Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "Indian Army test-fires BrahMos cruise missile successfully" . Oneindia . Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "BrahMos missile test-fired, meets all flight parameters" .
+
+The Economic Times . 8 May 2015. Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "Indian Army Successfully Test-Fires Supersonic BrahMos Land Attack Missile" . NDTV.com . Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "Indian Army successfully test-fires BrahMos missile at Pokhran" . Hindustan Times . 7 November 2015. Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ a b Rout, Hemant Kumar (27 May 2016). "Indian air force successfully test fires supersonic cruise missile BrahMos" .
+
+The New Indian Express . Retrieved 5 May 2026 . ^ Bhatia, Vimal (27 May 2016). "Indian Air Force successfully test-fires land-attack version of BrahMos cruise missile" . India Today . Retrieved 5 May 2026 . ^ "TROPEX 2017: Indian Navy displays might; fires Brahmos missile from INS Chennai" .
+
+The Economic Times . 8 February 2017. Archived from the original on 23 March 2018 . Retrieved 23 March 2018 . ^ "Brahmos Bulletin" (PDF) . Archived from the original (PDF) on 23 March 2018. ^ a b "BrahMos missile with higher range: This 'killer' India-Russia project will scare Pakistan and China" .
+
+The Financial Express (India) . 19 October 2016. Archived from the original on 20 October 2016 . Retrieved 19 October 2016 . ^ "Maiden Firing of BrahMos Land Attack Supersonic Cruise Missile" . Archived from the original on 22 April 2017 . Retrieved 22 April 2017 . ^ "Navy successfully tests land-attack BrahMos supersonic missile" .
+
+The Times of India . Archived from the original on 6 June 2016 . Retrieved 22 April 2017 . ^ "Indian Army successfully test-fires advanced Block-III version of Brahmos cruise missile" .
+
+The Indian Express . 2 May 2017. Archived from the original on 2 May 2017 . Retrieved 2 May 2017 . ^ "Indian Army test fires advanced BrahMos cruise missile" .
+
+The Financial Express . 2 May 2017. Archived from the original on 17 June 2017 . Retrieved 2 May 2017 . ^ "Two Launches in a row with Precise Hit of Brahmos Block 3" . Archived from the original on 18 August 2017 . Retrieved 13 May 2017 . ^ "Successful Test Firing of Brahmos with Indigenous Seeker" . pib.nic.in . Archived from the original on 23 March 2018 . Retrieved 22 March 2018 . ^ "India successfully test-fires BrahMos supersonic cruise missile" .
+
+The Economic Times . 21 May 2018. Archived from the original on 7 July 2018 . Retrieved 23 May 2018 . ^ "BrahMos successfully test-fired for 2nd consecutive day" .
+
+The Economic Times . 22 May 2018. Archived from the original on 7 July 2018 . Retrieved 23 May 2018 . ^ "Successful Test Firing of Brahmos to Validate Service Life Extension" . pib.nic.in . Archived from the original on 18 July 2018 . Retrieved 17 July 2018 . ^ "Vertical steep dive version of Brahmos missile successfully test fired" .
+
+The Indian Express . 7 July 2019. Archived from the original on 7 July 2019 . Retrieved 8 July 2019 . ^ "Land-attack version of BrahMos missile successfully test-fired" .
+
+The Times of India . 30 September 2019. Archived from the original on 2 October 2019 . Retrieved 1 October 2019 . ^ a b "Successful Firing of The Brahmos Surface To Surface Missile at Trak Island" (Press release). Press Information Bureau . 23 October 2019 . Retrieved 5 May 2026 . ^ a b "IAF successfully test fires Brahmos surface-to-surface missile from mobile platform" .
+
+The Economic Times . 22 October 2019. ISSN 0013-0389 . Retrieved 5 May 2026 . ^ a b "2 versions of BrahMos missile successfully test-fired" .
+
+The Economic Times . 17 December 2019. Archived from the original on 14 March 2020 . Retrieved 17 December 2019 . ^ a b "Successful launch of two BrahMos missiles from land and air platforms" . Press Information Bureau . 17 December 2019. Archived from the original on 17 December 2019 . Retrieved 17 December 2019 . ^ a b "BRAHMOS missiles successfully test-fired from land and air platforms" (Press release). BrahMos Aerospace . 17 December 2019 . Retrieved 5 May 2026 . ^ "Naval variant of BrahMos supersonic missile test-fired from INS Visakhapatnam" .
+
+The Indian Express . 11 January 2022. Archived from the original on 11 January 2022 . Retrieved 11 January 2022 . ^ "India successfully test fires sea-to-sea variant of BrahMos Cruise Missile" . 11 January 2022. Archived from the original on 11 January 2022 . Retrieved 12 January 2022 . ^ "India successfully test-fires 'improved' BrahMos supersonic cruise missile" . India Today . 20 January 2022. Archived from the original on 14 March 2022 . Retrieved 21 January 2022 . ^ "India successfully testfires new version of the BrahMos supersonic cruise missile" .
+
+The Times of India . 20 January 2022. Archived from the original on 14 March 2022 . Retrieved 21 January 2022 . ^ Livemint (18 February 2022). "Brahmos supersonic cruise missile successfully test-fired from INS Visakhapatnam" . mint . Retrieved 4 November 2022 . ^ ANI (5 March 2022). "Navy successfully test-fires BrahMos cruise missile from INS Chennai" . ThePrint . Retrieved 4 November 2022 . ^ " 'Hit its target': India successfully tests BrahMos supersonic cruise missile" . Hindustan Times . 23 March 2022 . Retrieved 19 April 2022 . ^ " 'Direct hit on the target': IAF successfully test fires BrahMos missile from Sukhoi Su30-MKI jet" . Firstpost . 19 April 2022 . Retrieved 19 April 2022 . ^ "Watch: Successful maiden BrahMos firing by INS Delhi from an upgraded modular launcher" .
+
+The Economic Times . 19 April 2022 . Retrieved 19 April 2022 . ^ "Anti-ship version of BRAHMOS missile successfully test-fired" . brahmos.com . Archived from the original on 29 December 2022 . Retrieved 29 December 2022 . ^ " 'A direct hit': IAF successfully fires extended range version of Brahmos missile from Su-30 MKI" . Hindustan Times . 12 May 2022 . Retrieved 12 May 2022 . ^ "brahmos: India test-fires extended-range version of BrahMos missile" .
+
+The Times of India . 12 May 2022 . Retrieved 12 May 2022 . ^ "SUCCESSFUL FIRING OF EXTENDED RANGE VERSION OF BRAHMOS AIR LAUNCHED MISSILE AGAINST SHIP TARGET FROM SU-30 MKI AIRCRAFT" . pib.gov.in . Retrieved 29 December 2022 . ^ PTI (5 March 2023). "Indian Navy successfully test-fires BrahMos missile" .
+
+The Hindu . ISSN 0971-751X . Retrieved 5 March 2023 . ^ "BrahMos supersonic missile firing from INS Mormugao hits 'bull's eye' " . India Today . 14 May 2023 . Retrieved 15 May 2023 . ^ "IAF successfully tests longer range air-launched BrahMos cruise missile" .
+
+The Times of India . 18 October 2023. ISSN 0971-8257 . Retrieved 27 November 2023 . ^ "Indian Navy's latest indigenous guided missile destroyer Imphal hits 'bull's eye'. Watch" . Hindustan Times . 22 November 2023 . Retrieved 27 November 2023 . ^ Kumar, Raju (24 January 2024). "Indian Navy carries out precision hit of land target with improved range of Brahmos | Watch" . www.indiatvnews.com . Retrieved 25 January 2024 . ^ Menon, Adithya Krishna (2 February 2024). "Indian Navy Tests BrahMos Missile With 'Enhanced Range' of 900 km" . Naval News . Retrieved 2 February 2024 . ^ "Indian Army test-fires BrahMos, Akash missiles" . Janes.com . Retrieved 2 April 2024 . ^ Bharatshakti, Team (1 April 2024). "The Rising Sun BrahMos Warriors Test Fire Missile Over Bay of Bengal" . Bharat Shakti . Retrieved 2 April 2024 . ^ @IaSouthern (16 January 2025). "#IndianArmy successfully conducted capability demonstration launch of the #Brahmos Supersonic Cruise Missile at extended range, engaging a target in the Bay of Bengal with pinpoint accuracy. A tremendous leap forward in #Atmanirbharta and precision strike capability" ( Tweet ) . Retrieved 17 January 2025 – via X (formerly Twitter) . ^ "Indian Army successfully conducts combat launch of BrahMos supersonic cruise missile" .
+
+The Hindu . 1 December 2025. ISSN 0971-751X . Retrieved 2 December 2025 . ^ Sharma, Shivani (1 December 2025). "Video: Army test-fires BrahMos missile, showcases long-range strike power" . India Today . Retrieved 2 December 2025 . ^ "Brahmos Displays Its 450-Km Reach" . www.magzter.com . Retrieved 23 May 2022 . ^ a b c "India places two-billion-dollar order for Russian missiles" . Pravda . 20 August 2008. Archived from the original on 8 May 2013 . Retrieved 7 February 2013 . ^ "Navy chief docks in Nagpur to inspect defence manufacturing units" .
+
+The Times of India . 13 June 2025. ISSN 0971-8257 . Retrieved 13 June 2025 . ^ "More Lethal Indian Army As BrahMos Cruise Missile Inducted Today" . India-Defence. Archived from the original on 28 July 2013 . Retrieved 7 February 2013 . ^ Harris, John (2009). Performance of a Fire-and-Forget Anti-tank Missile with a Damaged Wing . Mechanical and Aerospace Engineering Department, University of Alabama in Huntsville, Huntsville, AL, 35899, United States. p. 2. ^ "BRAHMOS Supersonic Cruise Missile - BrahMos.com" . www.brahmos.com . Archived from the original on 17 October 2022 . Retrieved 17 October 2022 . ^ a b "Ship-based Weapon Complex System - BrahMos.com" . www.brahmos.com . Retrieved 27 December 2023 . ^ "Army to Have Another BrahMos Missile Regiment" . News.outlookindia.com. 23 September 2011. Archived from the original on 17 October 2011 . Retrieved 30 April 2013 . ^ "BrahMos develops anti-aircraft carrier variant of the missile :: BrahMos.com" . brahmos.com . Retrieved 27 December 2023 . ^ "Anti-aircraft carrier variant of BrahMos successfully test-fired" .
+
+The Hindu . Chennai, India. 1 April 2012. Archived from the original on 11 January 2016 . Retrieved 24 July 2012 . ^ "Janes | Latest defence and security news" . Archived from the original on 22 January 2020 . Retrieved 22 January 2020 . ^ "Indian Military News Headlines" . Bharat-Rakshak.com. Archived from the original on 27 October 2010 . Retrieved 3 December 2010 . ^ "Aerial, sub-surface variants of the BrahMos cruise missile ready for tests" . Domain-b.com. 5 August 2008. Archived from the original on 9 January 2010 . Retrieved 31 August 2010 . ^ a b "BrahMos Submarine Launched Weapon System" . brahmos.com . ^ "India now working on 1,500-km range BrahMos supersonic cruise missile" .
+
+The Print . 24 November 2020. Archived from the original on 4 February 2021 . Retrieved 27 January 2021 . ^ a b "Upgrading strike capability: India tests 800-km BrahMos" .
+
+The Times of India . 20 October 2025. ISSN 0971-8257 . Retrieved 20 October 2025 . ^ "BrahMos to showcase a mockup of a new missile at DEFEXPO-2014 held in India – News – Russian Aviation" . Archived from the original on 22 February 2014. ^ Giovanni (9 February 2023). "Brahmos NG Missile Trials to Begin in Late 2024: CEO" . Defense aerospace . Retrieved 26 December 2023 . ^ Tomas, Alexander (26 September 2013). " "Looking for Project 75-I to have vertical launched BrahMos missiles"- Sivathanu Pillai" . Archived from the original on 6 June 2016. ^ "BrahMos: Air force to get armed with next generation missile by 2025" .
+
+The New Indian Express . 20 October 2022 . Retrieved 26 December 2023 . ^ "BrahMos Mini is now officially Brahmos-NG (Next Generation)" . Archived from the original on 5 April 2015. ^ a b "Air-Launched BrahMos Ready For Tests No Sooner Than 2026" . en.defence-ua.com . Retrieved 17 August 2024 . ^ User1 (21 May 2016). "Government open to making BrahMos-NG" . sundayguardianlive.com . Archived from the original on 26 May 2016. {{ cite web }} : |author1= has generic name ( help ) CS1 maint: numeric names: authors list ( link ) ^ "India & Russia to develop BrahMos missile for PAK FA 5th generation fighter jet" .
+
+The Economic Times . Archived from the original on 7 February 2017 . Retrieved 4 February 2017 . ^ Peri, Dinakar (31 May 2023). "We have BrahMos modified aircraft in almost all squadrons of the IAF: Air Chief Marshal" .
+
+The Hindu . ISSN 0971-751X . Retrieved 30 January 2024 . ^ Gady, Franz-Stefan. "India Developing BrahMos-NG Missile for Project 75I Submarines" .
+
+The Diplomat . Archived from the original on 3 September 2019 . Retrieved 18 August 2019 . ^ "Smaller version of BrahMos missile being developed for IAF" .
+
+The Economic Times . 20 February 2013. Archived from the original on 6 June 2016 . Retrieved 20 February 2013 . ^ "Smaller version of BrahMos missile being developed" . Zee News . 20 February 2013. Archived from the original on 3 October 2013 . Retrieved 20 February 2013 . ^ Srivastava, Rajiv (24 August 2021). "Uttar Pradesh to start manufacturing BrahMos missiles soon" .
+
+The Times of India . Archived from the original on 12 September 2021 . Retrieved 12 September 2021 . ^ Chacko, Joseph P. (6 February 2024). "BrahMos NG Production to Start in 2025, 2 New Export Deals this year" . Frontier India . Retrieved 7 February 2024 . ^ "BrahMos 2 Hypersonic Missile to be ready in five years" .
+
+The Economic Times . 10 January 2012. Archived from the original on 6 June 2016 . Retrieved 23 February 2012 . ^ BrahMos pushing hypersonic ramjet technology as scramjet stopgap Deprecated link archived 30 July 2016 at archive.today – Flightglobal.com, 27 August 2015 ^ "Kalam for developing BrahMos' hypersonic version" .
+
+The Hindu . Chennai, India. June 2011. Archived from the original on 23 August 2011 . Retrieved 10 March 2012 . ^ "Work on BrahMos' hypersonic version to begin this year: Russian official" . StratPost. 13 June 2011. Archived from the original on 27 August 2011 . Retrieved 4 August 2012 . ^ "Brahmos, Akash and Nirbhay: India rolls out its missiles to counter Chinese threat" . Shishur Gupta . 28 September 2020. Archived from the original on 28 September 2020 . Retrieved 28 September 2020 . ^ "India-China border standoff: Brahmos, Akash, Nirbhay missiles deployed to counter PLA threat" . 29 September 2020. Archived from the original on 6 October 2020 . Retrieved 29 September 2020 . ^ a b "IAF strikes 11 Pakistani airbases, inflicts severe damage; Targets include Nur Khan, Sargodha, and Skardu" .
+
+The Economic Times . 10 May 2025. ISSN 0013-0389 . ^ "Brahmos Strike And Mayhem In Pakistan: The Inside Story Behind Ceasefire" . News18 . Retrieved 11 May 2025 . ^ "For the first time ever, India likely used a BrahMos supersonic cruise missile to attack Pakistan" . Financial Express . Retrieved 11 May 2025 . ^ "BrahMos makes combat debut with strikes on Pak airbases" .
+
+The Tribune . Retrieved 11 May 2025 . ^ Chaudhury, Dipanjan Roy (29 May 2025). "Shehbaz Sharif admits Pakistan caught unawares by Brahmos" .
+
+The Economic Times . ISSN 0013-0389 . Retrieved 30 May 2025 . ^ BrahMos. "BrahMos Gave Pak Sleepless Nights" . Archived from the original on 30 May 2025 . Retrieved 30 May 2025 . ^ " 'We had just 30 seconds': Pakistan PM's aide recalls near-nuclear panic after India's BrahMos strike, credits Trump for de-escalation" .
+
+The Times of India . 3 July 2025. ISSN 0971-8257 . Retrieved 5 July 2025 . ^ " 'Had 30 seconds to react': Pakistan PM's advisor on BrahMos missile strike on Nur Khan airbase" . Hindustan Times . 4 July 2025 . Retrieved 4 July 2025 . ^ @pakistan_untold (3 July 2025). "Pakistan begged Trump for a ceasefire after Indian Brahmos (Harmus) hit Noor Khan Airbase and Pak forces had no time to react..." ( Tweet ) . Retrieved 5 July 2025 – via X (formerly Twitter) . ^ "Indian Navy conducts successful anti-ship missile firings to demonstrate combat readiness" .
+
+The Economic Times . 27 April 2025. ISSN 0013-0389 . Retrieved 2 May 2025 . ^ a b "Brahmos test fired off the coast of Orissa" . Indian Defence. Archived from the original on 31 July 2012 . Retrieved 6 September 2012 . ^ "BrahMos cruise missile inducted into Army" .
+
+The Times of India . 21 June 2007. ISSN 0971-8257 . Retrieved 27 January 2025 . ^ "Indian Army Demands More Missile Regiments" . Brahmos . 27 January 2010. Archived from the original on 7 September 2013 . Retrieved 7 July 2013 . ^ Dutta, Sujan (5 April 2009). "Army on board, navy at sea" .
+
+The Telegraph (India) . Calcutta, India. Archived from the original on 26 May 2011 . Retrieved 31 August 2010 . ^ "Second regiment of BrahMos cruise missiles commissioned" .
+
+The Economic Times . 9 November 2011. ISSN 0013-0389 . Retrieved 21 March 2025 . ^ "BrahMos missile fully operational with two Army regiments: Govt" .
+
+The Economic Times . 21 March 2012. ISSN 0013-0389 . Retrieved 26 January 2025 . ^ a b Peri, Dinakar (26 January 2025). "Missile systems at Republic Day parade capture evolving long-range tactical strike options of the military" .
+
+The Hindu . ISSN 0971-751X . Retrieved 26 January 2025 . ^ a b Pandit, Rajat (14 July 2018). "Army to get steep-dive BrahMos missile regiment for China front" .
+
+The Economic Times . ISSN 0013-0389 . Retrieved 27 January 2025 . ^ "Army to get steep-dive BrahMos missile regiment for China front" .
+
+The Times of India . 3 August 2016. ISSN 0971-8257 . Retrieved 27 January 2025 . ^ "Army to get BrahMos missile regiment for China front" . m.rediff.com . Retrieved 27 January 2025 . ^ "BrahMos missiles to become lighter, better: DRDO scientist" .
+
+The New Indian Express . 14 April 2018 . Retrieved 21 March 2025 . ^ "Modernisation proposals worth Rs 54,000 crore get ministry of defence's initial nod" .
+
+The Times of India . 21 March 2025. ISSN 0971-8257 . Retrieved 21 March 2025 . ^ "DAC likely to clear major deals for S-400, Unmanned Combat Jets, BrahMos cruise missiles; transport aircraft today" . ANI News . 27 March 2026 . Retrieved 27 March 2026 . ^ "Sulur air base to get one more LCA squadron" .
+
+The Times of India . 28 February 2019. Archived from the original on 24 February 2021 . Retrieved 20 February 2020 . ^ "Thanjavur set to host South India's first Sukhoi Squadron" . OnManorama . Archived from the original on 5 January 2020 . Retrieved 20 February 2020 . ^ "How Sukhoi-30 fighter jets will help check Chinese footprint in Indian Ocean" . Hindustan Times . 20 January 2020. Archived from the original on 20 February 2020 . Retrieved 20 February 2020 . ^ "IAF Chief inaugurates state-of-the-art BRAHMOS Technical Position" (Press release). BrahMos Aerospace . 9 December 2014 . Retrieved 5 May 2026 . ^ " 'Draft note' on Sukhoi upgrade project all set to head for PM-led panel's nod" .
+
+The Times of India . ISSN 0971-8257 . Retrieved 22 July 2024 . ^ a b "MoD clears big arms deals, including BrahMos, armed drones, worth Rs 67,000cr" .
+
+The Times of India . 6 August 2025. ISSN 0971-8257 . Retrieved 6 August 2025 . ^ a b "DAC clears proposals worth Rs 67,000 crore to enhance operational capability of the Armed Forces" (Press release). Press Information Bureau . 5 August 2025 . Retrieved 6 August 2025 . ^ "BrahMos In Naval & Maritime Domain – Indian Aerospace and Defence Bulletin – News for aerospace and defence in India" . 3 August 2023 . Retrieved 23 January 2024 . ^ "Govt gives nod to new aircraft carrier, BrahMos missiles for six ships" . Zeenews. 13 May 2015. Archived from the original on 17 May 2015 . Retrieved 17 May 2015 . ^ Pandit, Rajat (13 May 2015). "Defence ministry clears projects worth Rs 25,000 crore" . Times of India . Archived from the original on 16 May 2015 . Retrieved 17 May 2015 . ^ "Aatmanirbhar Bharat: MoD inks contract with BrahMos Aerospace Private Limited for Next Generation Maritime Mobile Coastal Batteries (Long range) & BrahMos Missiles worth Rs 1,700 crore" . pib.gov.in . Retrieved 31 March 2023 . ^ "Indian MoD approves procurement of coastal batteries armed with BrahMos missiles" . Janes.com . Retrieved 20 April 2024 . ^ Raghuvanshi, Vivek (7 April 2023). "India awards contracts for Akash and BrahMos missiles, plus more ships" . Defense News . Retrieved 27 January 2025 . ^ "CCS approves Rs 19,000 cr mega Indian Navy deal for BrahMos missiles" . ANI News . 22 February 2024. ^ George, Sarahbeth (25 February 2024). "Drones, Missiles, Radars, Fighter jets: Indian armed forces to get nearly 1 lakh crore infusion for game-changer tech" .
+
+The Economic Times . ISSN 0013-0389 . Retrieved 25 February 2024 . ^ Peri, Dinakar (1 March 2024). "Defence Ministry seals procurement deals worth ₹39,125 crore" .
+
+The Hindu . ISSN 0971-751X . Retrieved 1 March 2024 . ^ @D__Mitch (3 December 2025). "Upgraded 🇮🇳 Navy Veer (modified Tarantul)-class fast attack missile..." ( Tweet ) . Retrieved 10 December 2025 – via X (formerly Twitter) . ^ @AdithyaKM_ (4 December 2025). "Multiple reports had recently indicated that the Veer class would be equipped with BrahMos..." ( Tweet ) . Retrieved 10 December 2025 – via X (formerly Twitter) . ^ "After BrahMos missiles strike fear in Pakistan, India to load up Navy, Air Force with more of them" .
+
+The Week . Retrieved 10 December 2025 . ^ "DND inks P18.9-B cruise missiles deal with Indian firm" . Philippine News Agency . Archived from the original on 31 January 2022 . Retrieved 31 January 2022 . ^ "Philippines signs agreement with India for world's fastest supersonic missiles" .
+
+The Straits Times . 3 March 2021. Archived from the original on 3 March 2021 . Retrieved 4 March 2021 . ^ "₱5B released for missile system, combat choppers" . Philippine Daily Inquirer . 29 December 2021. Archived from the original on 29 December 2021 . Retrieved 29 December 2021 . ^ a b "Philippines Confirms Purchase of BrahMos Supersonic Missile System" .
+
+The Diplomat . Archived from the original on 15 January 2022 . Retrieved 15 January 2022 . ^ Peri, Dinakar (28 January 2022). "Philippines inks deal worth $375 million for BrahMos missiles" .
+
+The Hindu . ISSN 0971-751X . Archived from the original on 18 February 2022 . Retrieved 13 March 2022 . ^ a b Sadongdong, Martin (24 June 2022). "Marines, Army activate new battalions" . Manila Bulletin . Retrieved 2 July 2022 . {{ cite news }} : CS1 maint: deprecated archival service ( link ) ^ Nepomuceno, Priam (7 April 2022). "PMC activates battalion to operate BrahMos missile system" . Philippine News Agency . Retrieved 2 July 2022 . ^ "Philippine Navy personnel complete operator training of India's BrahMos supersonic cruise missile" . IgMp . 19 February 2023 . Retrieved 20 February 2023 . {{ cite web }} : CS1 maint: deprecated archival service ( link ) ^ "Philippines starts getting Brahmos units from India; BrahMos Ship Borne variant deal with Indonesia" . IgMp . 15 December 2022 . Retrieved 16 December 2022 . {{ cite web }} : CS1 maint: deprecated archival service ( link ) ^ "BrahMos delivery to Philippines to start from today" .
+
+The Times of India . 19 April 2024. ISSN 0971-8257 . Retrieved 19 April 2024 . {{ cite news }} : CS1 maint: deprecated archival service ( link ) ^ Peri, Dinakar (19 April 2024). "India delivers first batch of BrahMos to Philippines" .
+
+The Hindu . ^ "Eye on China: First batch of BrahMos missiles lands in Philippines from India" . Business Today . 19 April 2024 . Retrieved 2 May 2024 . ^ "India to deliver 1st batch of BrahMos missiles to Philippines on Friday" . Hindustan Times . 18 April 2024 . Retrieved 18 April 2024 . {{ cite web }} : CS1 maint: deprecated archival service ( link ) ^ Singh, Mayank (4 April 2024). "India to complete largest defence export deal; BrahMos missiles set to reach Philippines" .
+
+The New Indian Express . Retrieved 18 April 2024 . ^ Peri, Dinakar (19 April 2024). "India delivers first batch of BrahMos to Philippines" .
+
+The Hindu . ISSN 0971-751X . Retrieved 19 April 2024 . ^ a b c Singh, Mayank (20 April 2025). "BrahMos export: Second battery of missile shipped out for Philippines" .
+
+The New Indian Express . Retrieved 21 April 2025 . ^ Sharma, Shivani (12 September 2025). "India to send last batch of BrahMos missiles to Philippines under defence deal" . India Today . Retrieved 13 September 2025 . ^ a b Lariosa, Aaron-Matthew (14 June 2024). "Philippines Builds First BrahMos Anti-Ship Missile Base Facing South China Sea" . Naval News . Retrieved 9 November 2025 . ^ a b "Philippines' new anti-ship missile base puts Scarborough Shoal in cross hairs" . South China Morning Post . 23 June 2024 . Retrieved 9 November 2025 . ^ a b Mandal, Sohini (11 November 2025). "Philippines deploys first BrahMos battery" . Janes . Retrieved 13 November 2025 . ^ Lariosa, Aaron-Matthew (7 November 2025). "Philippine Marine Corps Unveils First BrahMos Anti-Ship Missile Battery" . USNI News . Retrieved 9 November 2025 . ^ "Philippines Unveils First BrahMos Missile Battery, Boosting Deterrence in South China Sea and India's Strategic Footprint" . Bharat Shakti . 8 November 2025 . Retrieved 9 November 2025 . ^ a b Pandit, Rajat (7 January 2021). "India draws up nations' list for Akash, BrahMos export" .
+
+The Times of India . Archived from the original on 7 January 2021 . Retrieved 8 January 2021 . ^ "BrahMos to Vietnam: Why is China bellyaching?" . SP's Aviation . Retrieved 20 December 2022 . {{ cite web }} : CS1 maint: url-status ( link ) ^ "Exclusive: Vietnam, India close to finalising BrahMos deal" . WION . 22 December 2024 . Retrieved 23 December 2024 . ^ "India-Vietnam $700M BrahMos deal boosts defence exports: All about it" . India Today . 24 December 2024 . Retrieved 25 December 2024 . ^ a b c "India closer to $450m BrahMos pacts with Vietnam, Indonesia" .
+
+The Times of India . 23 December 2025. ISSN 0971-8257 . Retrieved 2 January 2026 . ^ Negi, Manjeet (1 May 2026). "To Lam's Delhi visit may seal Rs 5,800 crore BrahMos deal with Vietnam" . India Today . Retrieved 1 May 2026 . ^ Jacob, Jayanth (30 April 2026). "Vietnam President To Lam to visit India from May 5-7" .
+
+The New Indian Express . Retrieved 1 May 2026 . ^ Sharma, Shivani (30 May 2026). "India says BrahMos deal signed with Vietnam, Indonesia next in line" . India Today . Retrieved 31 May 2026 . ^ a b c d Philip, Snehesh Alex (30 May 2026). "Defence Secretary announces BrahMos deal with Vietnam, secretly signed last fiscal" . ThePrint . Retrieved 1 June 2026 . ^ "Delhi all set to finalise $450 million BrahMos cruise missiles deal" .
+
+The Times of India . ISSN 0971-8257 . Retrieved 12 January 2025 . ^ Chaudhury, Dipanjan Roy (11 January 2025). "Indonesia's President cancels Pakistan detour as India readies BrahMos loan offer" .
+
+The Economic Times . ISSN 0013-0389 . Retrieved 10 March 2026 . ^ Singh, Mayank (7 January 2025). "Indonesia initiates $450 mn BrahMos missile export deal" .
+
+The New Indian Express . Retrieved 12 January 2025 . ^ "India close to finalising $450 million BrahMos missile deal with Indonesia" . India Today . 15 January 2025 . Retrieved 18 January 2025 . ^ Chaudhury, Dipanjan Roy (11 January 2025). "Indonesia's President cancels Pakistan detour as India readies BrahMos loan offer" .
+
+The Economic Times . ISSN 0013-0389 . Retrieved 18 January 2025 . ^ "India finally confirms Indonesia's Prabowo as Republic Day chief guest" . Firstpost . 16 January 2025 . Retrieved 18 January 2025 . ^ "India briefs Indonesia on BrahMos supersonic cruise missiles ahead of proposed deal" .
+
+The Times of India . ISSN 0971-8257 . Retrieved 26 January 2025 . ^ "BrahMos deal soon? India may extend Line of Credit to Indonesia for sale of BrahMos missiles" .
+
+The Times of India . 27 January 2025. ISSN 0971-8257 . Retrieved 27 January 2025 . ^ "India, Indonesia move closer towards signing BrahMos cruise missile deal" . ANI News . 4 November 2025 . Retrieved 5 November 2025 . ^ a b "Indonesia says it has entered agreement with India to procure BrahMos missiles" . Reuters . 9 March 2026 . Retrieved 9 March 2026 . {{ cite web }} : CS1 maint: url-status ( link ) ^ "Indonesia to procure BrahMos missiles from India: Report - The Times of India" .
+
+The Times of India . 9 March 2026. ISSN 0971-8257 . Retrieved 10 March 2026 . ^ a b Philip, Snehesh Alex (9 March 2026). "India and Indonesia finalise BrahMos deal, contract to be signed early next fiscal" . ThePrint . Retrieved 19 March 2026 . ^ a b Philip, Snehesh Alex (3 July 2026). "Indonesia seeks more BrahMos missiles from India. Delhi eyes critical minerals as Modi visits Jakarta" . ThePrint . Retrieved 7 July 2026 . ^ a b "India to supply BrahMos, Astra missiles to Indonesia: What it means for India's self-reliance push" . India TV News . 7 July 2026 . Retrieved 7 July 2026 . ^ "Astra missiles, BrahMos & Sabang port: India, Indonesia sign big defence, cooperation deals" .
+
+The Times of India . 7 July 2026. ISSN 0971-8257 . Retrieved 7 July 2026 . ^ "Indonesia, India sign BrahMos missile deal" .
+
+The Straits Times . 7 July 2026 . Retrieved 7 July 2026 . ^ a b "Admiral Gorshkov Class Frigates, Russia" . Naval Technology . 14 February 2013. Archived from the original on 7 December 2013 . Retrieved 13 February 2013 . ^ Mangosing, Frances (3 October 2019). "Philippine Army launches Aviation Regiment, air defense and missile units" . Inquirer.net . Philippine Daily Inquirer . Retrieved 21 June 2022 . {{ cite news }} : CS1 maint: deprecated archival service ( link ) ^ "PH Army next to get BrahMos missiles under AFP modernization" . Philippine News Agency . 21 January 2022. Archived from the original on 21 January 2022 . Retrieved 21 January 2022 . ^ a b c d Singh, Dalip (2 August 2024). "BrahMos finds global attention with Brazil delegation set to visit India" . BusinessLine . Retrieved 3 August 2024 . ^ a b "Brasil negocia con India la incorporación de Akash NG para su Ejército y el mantenimiento de submarinos para la Armada" . Infodefensa (in Spanish). 7 August 2024. ^ "India arms jets with BrahMos missiles" . United Press International . Archived from the original on 10 December 2010 . Retrieved 28 April 2010 . ^ "BrahMos missile exports a challenging proposition" . Russia Beyond . 10 November 2014. Archived from the original on 7 August 2020 . Retrieved 11 November 2014 . ^ a b "India in talks to sell supersonic BrahMos missile to UAE, sources say" . Reuters . 22 June 2026 . Retrieved 22 June 2026 . ^ "UAE looking to buy India's BrahMos, Akashteer air defence system: Report" .
+
+The Times of India . 22 June 2026. ISSN 0971-8257 . Retrieved 22 June 2026 . ^ "India's BrahMos widens global reach with fresh interest from six countries: Report" .
+
+The Times of India . 30 June 2026. ISSN 0971-8257 . Retrieved 2 July 2026 . ^ "Republic Day: Kartavya Path witnesses prowess of Indian weapon systems" . Business Standard . 26 January 2023 . Retrieved 21 March 2025 . ^ Livemint (26 January 2018). "Republic Day parade highlights: India showcases military might, cultural diversity" . mint . Archived from the original on 21 January 2025 . Retrieved 21 March 2025 . ^ "BrahMos missile successfully tested from Navy's INS Delhi, IAF's Sukhoi-30 MKI" .
+
+The Indian Express . 20 April 2022 . Retrieved 3 July 2022 . ^ "Ship-based weapon complex system" . Brahmos. Archived from the original on 9 February 2014 . Retrieved 7 January 2014 . ^ "India successfully test-fires BrahMos supersonic cruise missile" .
+
+The Times of India . 21 March 2010. Archived from the original on 6 June 2016 . Retrieved 7 January 2014 . ^ "Russia floats out first frigate for Indian Navy" . RIA Novosti. 27 November 2009. Archived from the original on 7 January 2014 . Retrieved 7 January 2014 . ^ "South China Sea: Philippines' anti-ship missile base puts Scarborough Shoal in cross hairs" . South China Morning Post . 23 June 2024. ^ Shofa, Jayanty Nada (7 July 2026). "Modi Secures BrahMos Missile Contract on Indonesia Trip" . Jakarta Globe . Retrieved 7 July 2026 . ^ "BrahMos deal with Vietnam signed, missile pact with Indonesia in final stages, we share tech with friends: Defence secy in Singapore" .
+
+The Times of India . 30 May 2026. ISSN 0971-8257 . Retrieved 1 June 2026 . ^ Karimli, Ilham (20 March 2025). "Armenia Intensifies Shelling of Azerbaijani Positions Amid Ongoing Military Buildup" . Caspian News . ^ Patel, Raghav (10 June 2025). "Armenia May Consider Buying India-made Su-30MKI Jets with Brahmos and Astra Missiles to Counter Azerbaijan's JF-17 Thunder Purchase" . Defence News India . ^ "PH Army next to get BrahMos missiles under AFP modernization" . Philippine News Agency . 21 January 2022. Archived from the original on 21 January 2022 . Retrieved 21 January 2022 . ^ "Why BrahMos failed" . Frontline . 9 April 2009. Archived from the original on 29 April 2021 . Retrieved 11 March 2022 . ^ "BrahMos missile fails during testfiring, falls shortly after takeoff" . ANI News . Archived from the original on 11 March 2022 . Retrieved 11 March 2022 . ^ "Pakistan seeks joint probe into Indian missile fiasco" . Express Tribune . 12 March 2022. Archived from the original on 14 March 2022 . Retrieved 12 March 2022 . ^ " 'India to explain what happened in Mian Channu,' says DG ISPR after Indian projectile falls in Pakistan" . Dawn News . 10 March 2022. ^ " 'India to explain what happened in Mian Channu,' says DG ISPR after Indian projectile falls in Pakistan" . Dawn News . 10 March 2022. Archived from the original on 11 March 2022 . Retrieved 12 March 2022 . ^ "India accidentally fires missile into Pakistan" . BBC News . 11 March 2022. Archived from the original on 11 March 2022 . Retrieved 12 March 2022 . ^ "India accidentally fired missile into Pakistan because of 'technical malfunction' " . France 24 . 11 March 2022. Archived from the original on 11 March 2022 . Retrieved 12 March 2022 . ^ "Accidentally fired missile into Pakistan due to tech glitch, says India. 'It was BrahMos' " .
+
+The Print . 11 March 2022. Archived from the original on 11 March 2022 . Retrieved 11 March 2022 . ^ "Missile firing: IAF inquiry on, but Pak seeks joint probe" . Times of India . 13 March 2022. Archived from the original on 14 March 2022 . Retrieved 13 March 2022 . ^ "Missile accidentally fired 'during inspection' at secret IAF base, Pakistan 'didn't track' " .

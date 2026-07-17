@@ -1,0 +1,281 @@
+The T-90 is a third-generation Russian main battle tank developed from, and designed to replace the T-72 . It uses a 125 mm 2A46 smoothbore main gun , the 1A45T fire-control system , an upgraded engine, and gunner's thermal sight . Standard protective measures include a blend of steel and composite armour , smoke grenade dischargers, Kontakt-5 explosive reactive armour (ERA) and the Shtora infrared anti-tank guided missile (ATGM) jamming system.
+
+The T-90 was designed and built by Uralvagonzavod , in Nizhny Tagil , Russia. It entered service with the Russian army in 1992.
+
+The tank allegedly first saw combat in the 1999 war in Dagestan , with Russian Ground Forces . Russia later used the tank from 2017 in its intervention in the Syrian civil war . Russian T-90s were deployed in the war in Donbas in 2014, as well as in the full-scale Russo-Ukrainian war following the 2022 Russian invasion of Ukraine .
+
+The Syrian Arab Army used the tank in the Syrian civil war in 2017, as did the Azerbaijani Land Forces in the 2020 Second Nagorno-Karabakh War . Development The T-90 has its origins in a Soviet -era program aimed at developing a replacement for the T-64 , T-72 and T-80 series of main battle tanks (MBT).
+
+The T-72 platform was selected as the basis for the new generation of tank owing to its cost-effectiveness, simplicity and automotive qualities.
+
+The Kartsev-Venediktov Design Bureau from Nizhny Tagil was responsible for the design work and prepared two parallel proposals—the Object 188 , which was a relatively simple upgrade of the existing T-72B tank ( Object 184 ), and the far more advanced Object 187 —only vaguely related to the T-72 series and incorporating major improvements to the hull and turret design, armor, powerplant and armament. Development work was approved in 1986 and the first prototypes were completed by 1988.
+
+The vehicles resulting from the Object 187 program have not been declassified to this date.
+
+The Object 188 was engineered by a team under V.N. Venediktov.
+
+The biggest change was the integration of the T-80U's 1A45 fire-control system .
+
+The Object 188 was initially designated as the T-72BM.
+
+The first four of these were delivered for trials in January 1989. An improved variant (called Upgraded T-72B ) was delivered beginning in June 1990.
+
+In March 1991, the Soviet Ministry of Defense recommended that the Army adopt the Object 188. Work on the Object 187 was simultaneously stopped for unknown reasons. Production and service history An early series T-90 with cast turret during a military exercise in Russia, demonstrating deep fording Russian tank production dwindled in the years before and after the breakup of the Soviet Union.
+
+The Kharkov tank plant belonged to the newly independent Ukraine , the Chelyabinsk Tractor Plant ended production in 1989, and Kirov in Leningrad in 1990.
+
+In the two remaining tank plants at Omsk and Nizhni-Tagil , state orders all but ceased in 1992. Around the same time, the Russian Ministry of Defense decided it would commit to eventually producing just one tank type.
+
+During the 1980s, the Soviet military had ordered T-64s, T-72s and T-80s, then in simultaneous production from rival tank design firms. Though all three tanks had similar characteristics, they each required different components, which contributed to the Army's logistical burden. Though both Nizhni-Tagil's T-90 and Omsk's T-80U had their merits, the T-80's gas turbine engine was notorious for its high fuel consumption and poor reliability. Additionally, Russian T-80s suffered heavy losses in their first combat use during the First Chechen War . Meanwhile, the T-90 was spared media criticism as it was not deployed in Chechnya, and its new name distanced it from the T-72, which was also lost in large numbers in the conflict.
+
+In January 1996, Colonel General Aleksandr Galkin , chief of the Main Armor Directorate of the Russian Ministry of Defense, said the Russian Armed Forces would phase out T-80 production in favor of the T-90 (Galkin reversed his position later that year, claiming the T-80U was a superior tank). Production of the T-80 at Omsk persisted until 2001, mainly for the export market.
+
+The principal upgrade in the T-90 is the incorporation of a slightly modified form of the T-80U's more sophisticated 1A45T Irtysh fire control system and an upgraded V-84MS multi-fuel engine developing 840 hp (618 kW).
+
+The T-90 was manufactured at the Uralvagonzavod factory in Nizhny Tagil, with low-level production being carried out since 1992 and virtually ceasing towards the end of the 1990s for the native market. Around 120 T-90 tanks were delivered to the Russian Ground Forces before production of an upgraded version was resumed in 2004.
+
+By September 1995, some 107 T-90 tanks had been produced, located in the Siberian Military District . Later, another U.S. report said that "..with only 150 built by mid-1998, the Siberian Military District's 21st Motor Rifle Division received these MBTs and formed a tank regiment (T-90s were also issued to the 5th Don Guards Tank Division in Buryatia)." However, the 21st MRD had already been reduced to the status of a motor-rifle brigade by this time, and then was reduced to a storage base in 1997. Facing tapering domestic orders, Uralvagonzavod received government approval to export the T-90 in the mid-1990s.
+
+The designers at Uralvagonzavod created a new, welded turret that offered improvements in protection and internal space in the same period.
+
+In 1997, India signaled interest in the T-90 in response to Pakistan's acquisition of 320 Ukrainian T-80UD tanks. India's Heavy Vehicles Factory in Avadi was already license-manufacturing the T-72 under the name "Ajeya".
+
+The first 42 complete Indian tanks were delivered in 2001 and were designated T-90S ( Object 188S ), still equipped with the older cast turrets of the early series (this exhausted the remaining stocks of cast turrets warehoused at Nizhny Tagil) and powered by the V-84 engine making 840 hp (618 kW).
+
+In 2002, 82 vehicles were delivered, now equipped with the new welded turrets and the V-92S2 engine, generating 1,000 hp (735 kW).
+
+The initial contract stipulated the following batch of 186 tanks, now officially called Bhishma , to be completed in India from Russian-supplied kits, and then gradually replaced with domestically manufactured parts. Delays in domestic production compelled the Indian authorities to place an additional order for 127 complete vehicles from Uralvagonzavod. A Russian specification T-90A.
+
+The new welded turret with its angular geometry is clearly visible.
+
+In 2005 the Russian army resumed delivery of the T-90, requesting the "original" specification for the vehicle with a cast turret. But with the new order numbering 14 tanks, and the large capital investment required to set up production of new cast turrets, the Russian Ministry of Defence agreed on a new configuration very close to the Indian T-90S, which was expeditiously accepted into service without any trials as the Object 188A1 or T-90A . 2005 saw delivery of 18 new tanks – enough to equip approximately five tank platoons. These new Russian tanks were powered by the V-92S2 engine, carried a T01-K05 Buran-M gunner's sight (passive-active night-vision channel with an EPM-59G Mirage-K matrix and a maximum observation distance of 1,800 m) and were protected by the most recent Kontakt-5 reactive armor with 4S22 explosive tiles.
+
+The years 2006–2007 saw the delivery of 31 T-90A tanks each, now fitted with entirely passive ESSA main gunner's sights supplied by Peleng in Belarus and using the 2nd-generation thermal camera Catherine-FC from Thales , and improved 4S23 ERA tiles.
+
+The joint venture established on the basis of JSC Volzhsky Optical and Mechanical Plant (VOMZ) and Thales Optronics, produced Catherine-FC thermal imaging devices, which were further used to develop "ESSA", "PLISA" and "SOSNA-U" sighting systems produced for the Russian armoured vehicles, including T-72B3 tanks and export versions of T-90S (exported to India, Algeria and Azerbaijan).
+
+Since 2012, Russia was able to produce 3rd-generation Catherine-XP cameras based on QWIP matrix technology.
+
+In 2012, the Russian-made commander combined sample supervisory-sighting system "T01-K04DT/Agat-MDT" was presented to the public at the International Forum Engineering Technologies 2012. According to Krasnogorsky Zavod plant, Agat-MDT has the ability to install (for further modernization) in the sight the newly developed domestic UPF format 640×512 by 15 microns, which makes possible in the future to extend the range of target identification at night to 3.5–4.0 km without modifications to the sight.
+
+In 2016, the Krasnogorsk plant finished testing the Irbis-K night-vision sighting system for the T-80U and T-90, with first deliveries planned for 2017. Completion of the Irbis-K, the first Russian-produced mercury cadmium telluride (MCT) matrix thermal sight, addressed a disadvantage of Russian tanks relative to their Western counterparts.
+
+The Irbis-K can identify targets at ranges up to 3,240 meters during day and night.
+
+In 2007, there were about 334 T-90 tanks of various types serving in the Russian Ground Forces' 5th Guards Tank Division , stationed in the Siberian Military District, and seven T-90 tanks assigned to the marines.
+
+Since 2008, the Russian army has received 62 tanks annually, suspending orders in 2011.
+
+After the cancellation of the T-95 in 2010, Uralvagonzavod began the OKR Armata (Armament) design study.
+
+The study resulted in the Object 148 based on the T-95 (itself based on the Object 187).
+
+The Russian Army curtailed T-90 orders beginning in 2012 to prepare for the arrival of the new tank.
+
+In July 2021, Industry and Trade Minister Denis Manturov said the tank, designated the T-14 Armata , will enter serial production in 2022. Deliveries of upgraded T-90M tanks started in April 2020 to the Guards Tank Army of the RF Western Military District .
+
+The T-90M ‘Proryv’ (‘Breakthrough’) has received a principally new turret, the 2A46M-5 gun, and a more powerful engine.
+
+The Proryv is outfitted with a new multi-channel sighting system that allows employing weapons at any time of day or night and it can exchange data with other vehicles in real time. A new batch was delivered in March 2021. According to Ukrainian intelligence sources, manufacturing of T-90s was slowed because of the effect of International sanctions since the start of the invasion of Ukraine . An article from Forbes magazine in early October 2023 suggested a rise in T-90M's production based on the increasing amount of T90 losses in Ukraine. It was estimated the Russian army had no more than 85 T-90M, and 380 earlier T-90 variants, in February 2022.
+
+The UK-based International Institute for Strategic Studies (IISS) estimates that annual production of T-90M tanks could reach up to 90 units in 2024. Analysis suggests, however, that the majority of these T-90Ms are likely upgrades of older T-90A models rather than newly built tanks. Sources indicate that over 200 T-90Ms have been delivered since the war in Ukraine started.
+
+The UK-based Military Watch Magazine reported in September 2024 that efforts to surge the production rate to well over 1000 per year had fallen far short, with the output remaining uncertain with some reports indicating that over 300 T-90Ms would be delivered throughout the year. Combat use Russian service An early variant of the export-oriented T-90S allegedly saw combat action during the 1999 Chechen invasion of Dagestan instead of being delivered to India.
+
+The tank's survivability against rocket-propelled grenades (RPGs) is disputed. Gordon L. Rottman writes that T-90s were "frequently" knocked out by three or four hits from a RPG-7 . He adds that Chechens found a way to compromise T-90s fitted with explosive reactive armor : they would fire an RPG-7 from close range (within 50m) to trigger the explosive reactive armor protection, and then re-attack the exposed tank armour underneath with two or more RPG hits, again from close range.
+
+On the other hand, Moscow Defense Brief gives the example of one T-90 that remained in action despite being hit by seven RPGs.
+
+The journal concluded that with regular equipment, the upgraded T-90 seems to be the best protected Russian tank, especially with the implementation of Shtora-1 and Arena defensive systems.
+
+The T-90A was deployed to Syria in 2015 to support the Russian involvement in the Syrian Civil War .
+
+In September 2020, a Russian T-90 was accidentally hit by an anti-tank guided missile (ATGM) during exercises held in Russia's Astrakhan region causing serious damage to the vehicle. Russo-Ukrainian War Destroyed Russian T-90A in Zaporizhzhia Oblast Russian T-90M tank, destroyed in the Kharkiv region reportedly by a Carl Gustaf During the war in Donbas stage of the Russo-Ukrainian War in the summer of 2014, elements of the Russian 136th Guards Motor Rifle Brigade equipped with T-90A tanks conducting operations in Luhansk Oblast of Ukraine were identified in social media posts, and locations of their photographs were geolocated by open-source investigators.
+
+During the full-scale 2022 Russian invasion of Ukraine beginning in February 2022, by 12 May, a T-90 was reported to have been destroyed by a Swedish Carl Gustaf man-portable anti-tank grenade launcher in Kharkiv .
+
+During this conflict, the T-90 has faced and been destroyed by many types of anti-tank missiles, including modern " top attack " missiles such as the American-produced FGM-148 Javelin and the Anglo-Swedish NLAW .
+
+The Arena system has not appeared in Ukraine and it is unclear if the system has met expectations.
+
+In January 2024, in fighting around Stepove , two Bradley Fighting Vehicles (BFV) from the Ukrainian 47th Separate Mechanized Brigade engaged a T-90M.
+
+The tank was disabled by the Bradleys, and its crew escaped before a FPV drone destroyed the tank.
+
+In late September 2024, reports backed by images shared on social media showed a destroyed T-90M that lacked Relikt ERA.
+
+The ERA bricks had been replaced by "construction bricks".
+
+As of 13 May 2026, the Oryx blog had documented that Russia had lost at least 213 T-90s since the start of the 2022 Russian invasion of Ukraine (visually confirmed), including 46 T-90A (of which 33 were destroyed, 3 abandoned, 10 captured), 2 T-90AK (1 was captured and later destroyed, and another was captured), 11 T-90S (9 destroyed, 1 abandoned, 1 captured) and 154 T-90M (102 destroyed, 16 damaged, 29 abandoned, 7 captured). Syrian service In early February 2016, Syrian Army forces began using T-90As in combat. A video was leaked on the internet which showed a T-90 survive a direct frontal turret hit by a TOW missile in Aleppo.
+
+The Kontakt-5 reactive armor discharged the TOW warhead before impact. Two Syrian Army operated T-90 were captured by HTS militias while ISIS fighters captured a third in November 2017. A rebel operated T-90 was recaptured by Syrian government forces while the second was reportedly destroyed in combat by a T-72. Another 5 Syrian Army operated T-90 tanks were knocked out or heavily damaged and 4 others suffered hits, according to recorded material. Azerbaijani service Azerbaijan used their T-90S tanks during the 2020 Nagorno-Karabakh conflict. One T-90 was damaged and captured by Armenian forces.
+
+At least two were confirmed destroyed in the initial phases of the war, being the first proven total loss of the combat vehicle. Export India The tanks have two different turret armor arrays. A T-90 Bhisma during combat exercise The T-90S Bhishma (named after the guardian warrior in the Mahabharata ) is a vehicle tailored for Indian service, improving upon the T-90S, and developed with assistance from Russia and France.
+
+The tanks are equipped with the French Thales-built Catherine-FC thermal sights. They use Russian Kontakt-5 explosive reactive armour , in addition to the primary armor, which consists of laminated plates and ceramic layers with high-tensile properties.
+
+The new welded turrets first developed for the Indian T-90S Bhishma have more advanced armour protection than the early cast turrets.
+
+The later T-90M features the 'Kaktus K-6' bolted explosive reactive armour (ERA) package on its frontal hull and turret-top (the T-90S has 'Kontakt-5' ERA), is fitted with an enhanced environmental control system supplied by Israel's Kinetics Ltd for providing cooled air to the fighting compartment, has additional internal volume for housing the cryogenic cooling systems for new-generation thermal imagers like the THALES -built Catherine-FC thermal imager (operating in the 8–12 micrometre bandwidth). Orders and deliveries In 2001, India purchased 310 T-90S tanks from Russia, of which 124 were delivered complete (42 featured the early cast turrets seen on Russian tanks) and 186 were to be assembled from kits delivered in various stages of completion with an emphasis on shifting production to domestic means.
+
+The T-90 was selected because it is a direct development of the T-72 that India already manufactured, simplifying training and maintenance. India opted to acquire the T-90 to counter Pakistani deployment of the Ukrainian-made T-80 tank in 1995–97. These T-90S tanks were made by Uralvagonzavod and the engines were delivered by Chelyabinsk Tractor Plant .
+
+The Indian tanks however omit the Shtora-1 passive electronic countermeasure system which was deemed obsolete. A follow-on contract, worth US$ 800 million, was signed in October 2006, for another 330 T-90S Bhishma MBTs that were to be manufactured in India by Heavy Vehicles Factory at Avadi , Tamil Nadu. A third contract, worth $1.23 billion, was signed in December 2007 for 347 upgraded T-90Ms, most to be licence-assembled by HVF.
+
+The Army hoped to field a force of over 21 regiments of T-90 tanks and 40 regiments of modified T-72s.
+
+The Indian Army began receiving its first T-90M main battle tank in completely knocked-down form from Russia's Nizhny Tagil-based Uralvagonzavod JSC at the end of 2009.
+
+The first batch of 10 T-90Ms built under licence was inducted into the Indian Army in August 2009. These vehicles were built at the Heavy Vehicles Factory at Avadi, Tamil Nadu. HVF planned to produce 100 units of the tank per year while India already had 700 units of the tank in service. A ₹ 10,000 crore (US$1.0 billion) purchase of 354 new T-90SM tanks for six tank regiments for the China border was being planned in 2012, making India, with a total of nearly 4,500 tanks (T-90 and variants, T-72 and Arjun MBT) in active service, the world's third-largest operator of tanks.
+
+In November 2019, India announced that Heavy Vehicles Factory would produce 464 T-90 MBTs for 10 tank regiments.
+
+On 13 May 2024, Heavy Vehicles Factory delivered the first batch of 10 units of Bhishma Mk. 3, which is a more advanced variant of T-90, as a part of the 464 tank deal signed in 2019.
+
+The rest of 454 tanks will be delivered within five years.
+
+The 1,000th T-90IM (Indigenously Manufactured) tank was delivered in May 2026.
+
+In 2013, India planned to have 21 T-90 tank regiments by 2020, with 45 combat tanks and 17 training and replacement tanks per regiment.
+
+On 3 February 2025, the Army released a Request for Information (RFI) to identify prospective vendors for the development of an active protection system for the T-90S/SK tank fleet.
+
+While explosive reactive armour protects the tanks from shoulder-fired missile , an APS is important for protection from tandem warheads in top-attack mode.
+
+The system being offered must feature Soft Kill, Hard Kill and Counter Unmanned Aerial System (C-UAS) measures and without compromising its existing capabilities. It should be capable of detecting all types of UAS (including loitering UAVs, first person view (FPV), swarm , and Kamikaze drones ) as well as all kinds of anti-tank projectiles (like anti-tank guided missiles , rocket-propelled grenades and chemical and kinetic energy munitions ).
+
+The document stated that the system should not compromise the mobility of the vehicle and be operable in high altitude terrains.
+
+The Defence Research and Development Organisation (DRDO) has started work on a similar systems in 2024. Bhishma Mk. 3 variant: In May 2024, Heavy Vehicles Factory unveiled the Bhishma Mk. 3 variant of T-90. Enhancements included increase in indigenous content and several upgrades.
+
+The upgrades included advanced Mid Wave Thermal Image -based sighting systems (8 km range) and Laser Range Finder (LRF; 5 km range) for commanders developed by DRDO and BEL (replacing Image Converter tube-based sight on older versions), a Digital Ballistic Computer to improve ammunition trajectory (derived from that of Arjun MBT ), Automatic Target Tracker. It is also expected that the new variant tanks will feature new generation ammunition like FSAPDS Mk2 (originally developed for Arjun MBT), and cannon-launched SAMHO missiles that is under development. Reports also suggest the use of a more efficient and powerful engine. There are plans for further upgradation of the T-90 tanks by including indigenous Active Protection Systems , Loitering Munitions and more advanced ammunitions. India started the licensed production of Russian tank rounds 3VBM17 used by the T-72 and T-90 tanks in July 2024. Overhaul : On 7 October 2024, the Indian Army Corps of Electronics and Mechanical Engineers completed the first complete overhaul of the T-90 Bhishma at the 505 Army Base Workshop in Delhi Cantonment .
+
+The overhauled T-90 belongs to the first batch of such tanks received by India. This significantly extends the series life in service with the army. Engine upgrade : On 20 March 2025, the Defence Acquisition Council (DAC) cleared the Acceptance of Necessity (AoN) for the procurement of 1,350 hp (1,010 kW) engines for T-90 tanks to improve the power-to-weight ratio and increase mobility in high-altitude regions. Other In 2005, deliveries began for an initial order of 185 tanks for Algeria . These are known as the T-90SA ("A" is an acronym for Algeria).
+
+The Cyprus House Defence Committee approved funds in January 2009 for the purchase of 41 Russian-built T-90 tanks.
+
+The money was included as part of the 2009 defence budget. Cyprus already operates the Russian-made T-80 tank.
+
+In March 2010 it was reported that Cyprus had opted for 41 additional T-80s instead of purchasing T-90s. Anonymous Venezuelan defence sources said that president Hugo Chavez "wants to replace his army's obsolete AMX-30 main battle tanks with between 50 and 100 Russian-built T-90 main battle tanks", according to an October 2008 article by analyst Jack Sweeney.
+
+In September 2009 a deal was announced for 92 T-72s only. Saudi Arabia was reported, in July 2008, by Russian daily Kommersant to be in negotiations to buy 150 T-90 tanks. Lebanese Defence Minister Elias El Murr met with Russian Defence Minister Anatoly Serdyukov in December 2008, when they discussed the possibility of a transfer of military equipment including T-90 tanks.
+
+In February 2010, an arms deal was signed between Libya and Russia. Details of the sale were not immediately released, but a Russian diplomat stated that Libya had wanted 20 fighter planes, air defence systems, and may also be interested in purchasing "several dozen" T-90s, and modernising a further 140 T-72s. However, after Libya's crackdown on anti-government protesters in early 2011, the United Nations enacted an international arms embargo on Libya resulting in the cancellation of Russian arms deals.
+
+In April 2013, Rosoboronexport requested for the entry of the T-90S in an upcoming tender by the Peruvian Army for main battle tanks. Peru sought to acquire between 120 and 170 tanks to replace its aging T-55 tanks.
+
+The T-90 was tested against the M1A1 Abrams from the United States , the Leopard 2 A4 offered from the Spanish Army , Leopard 2A6s formerly operated by the Dutch Army , and T-64s and T-84s offered by Ukraine.
+
+By September 2013, only the T-90S, the Russian T-80, the Ukrainian T-84, and American M1A1 were still competing. Vietnam and Iraq signed contracts for at least 150 T-90S/SK tanks in 2016. Design Armament A T-90A tank firing its main gun at Engineering Technologies 2012 The T-90 tank's main tank gun, the 2A46M 125 mm smoothbore tank gun External videos Autoloader animation on YouTube The T-90's main armament is the 2A46 M 125mm smoothbore tank gun. This is a highly modified version of the Sprut anti-tank gun , and is the same gun used as the main armament on the T-80-series tanks. It can be replaced without dismantling the inner turret and can fire armour-piercing fin-stabilized discarding sabot (APFSDS), high-explosive anti-tank (HEAT-FS), high-explosive fragmentation (HE-FRAG) ammunition, and 9M119M Refleks anti-tank guided missiles.
+
+The Refleks has semi-automatic command to line of sight (SACLOS) laser beam riding guidance and a tandem shaped charge HEAT warhead. It has an effective range of 100 m to 6 km, and takes 17.5 seconds to reach maximum range. Refleks can penetrate about 950 millimetres (37 in) of steel rolled homogeneous armour (RHA) and can also engage low-flying air targets such as helicopters .
+
+The NSV 12.7mm ( 12.7×108 ) remotely controlled anti-aircraft heavy machine gun can be operated from within the tank by the commander and has a range of 2 km and a cyclic rate of fire of 700–800 rounds per minute with 300 rounds available (the NSV was replaced by the Kord heavy machine gun in the late 1990s).
+
+The PKMT 7.62mm ( 7.62×54mmR ) coaxial machine gun weighs about 10.5 kg while the ammunition box carries 250 rounds (2,000 rounds carried) and weighs an additional 9.5 kg. Like other modern Russian tanks the 2A46M in the T-90 is fed by an automatic loader which removes the need for a manual loader in the tank and reduces the crew to 3 (commander, gunner, and driver).
+
+The autoloader can carry 22 ready-to-fire rounds in its carousel and can load a round in 5–8 seconds. It has been suggested that the automatic loaders on modern T-90 tanks have been modified to take advantage of newer ammunition such as the 3BM-44M APFSDS, which like the US M829A3 penetrates armour better than the previous shorter rounds. HEAT rounds that can be fired from the 2A46M includes the 3BK21B (with a depleted uranium liner), 3BK29 (with a credited penetration of 800mm RHA equivalency), and the 3BK29M (with a Triple-tandem charge warhead). Additionally the T-90 features the Ainet fuse setting system which allows the tank to detonate 3OF26 HE-FRAG rounds at a specific distance from the tank as determined by the gunner's laser rangefinder , improving its performance against helicopters and infantry . Accurate firing range of the HE-Frag-FS 10 km, APFSDS 4 km. Fire-control system of the T-90 showed the following features of combat shooting during state testing. Heavily armoured targets at ranges of up to 5 km were hit by tank T-90 on the move (up to 30 km/h) with a high probability of hit with the first shot.
+
+During state testing made 24 launches of missiles at ranges of 4–5 km and they all hit the target (all missile launches were made by inexperienced professionals). An experienced gunner at speeds of 25 km/h hit 7 real armoured targets located at ranges of 1,500–2,500 m and 54sec. Fire-control system on the T-90 includes the PNK-4S/SR AGAT day and night sighting system mounted at the commanders station which allows for night time detection of a tank sized target at ranges between 700 and 1100 metres depending on the version of the sight. Early models of the T-90 were equipped with the TO1-KO1 BURAN sight but later models (T-90S) were upgraded to use the ESSA thermal imaging sight, which allows for accurate firing to a range of 5,000–8,000m during day and 3,300m during night, using the CATHERINE-FC thermal camera produced by Thales Optronique .
+
+The gunner is also provided with the 1G46 day sighting system which includes a laser range finder, missile guidance channel and allows tank-sized targets to be detected and engaged at 5 to 8 kilometres (3.1 to 5.0 mi).
+
+The driver uses a TVN-5 day and night sight.
+
+In 2010, Russia started licensed production of Thales-developed Catherine FC thermal cameras for T-90M tanks, a Russian daily said. These thermal imagers are also present on T-90M "Bhishma" built in India under licence.
+
+In 2012, the Russian-made combined sample of commander supervisory-sighting system T01-K04DT/Agat-MDT was presented to the public. According to Krasnogorsky Zavod (plant), Agat-MDT has the ability to be installed (for further modernization) in the sight of the newly developed domestic UPF format 640×512 by 15 microns, which is possible in the future to extend the range of target identification at night to 3.5–4.0 km without sight modifications.
+
+In 2016, the Krasnogorsk plant finished testing the Irbis-K night-vision gunner's sighting system for the T-80U and T-90, with first deliveries in 2018. Completion of the Irbis-K, the first Russian-produced mercury-cadmium-telluride (MCT) matrix thermal sight, will bridge a gap with the leading NATO countries in this area.
+
+The Irbis-K can identify tank targets at ranges up to 3,240 meters during day and night.
+
+The Russian-made thermal imaging device not only meant that Russian tanks would no longer need to be equipped with foreign parts, but it also meant that complete tank modernization was cheaper. Furthermore, there will be no decrease in demand for the T-72 and the T-90 in the next few years.
+
+The new tank gunner's heat-vision sight Irbis-K and the commander's combined sighting and observation system Agat-MDT can be supplied to T-72, T-80 and T-90 upgraded versions (T-72B3M, T-80BVM, T-90M...), replacing the Thales Catherine-FC thermal camera. Mobility The T-90's diesel engine The prime mover is the V-92S diesel engine , built in the Chelyabinsk Tractor Plant. Different models of the T-90 tank are powered by various motors in its initial models, like the V-84MS 618 kW (840 hp) four-stroke V-12 piston engine , uprated 1,000 hp (750 kW) engines and 1,250 hp (930 kW) engines made by Uralvagonzavod and are delivered by Chelyabinsk Tractor Plant.
+
+The Т-90S with 1,000 hp (750 kW) engine can attain a top speed of 60 km/h on the road and up to 45 km/h on rough terrain.
+
+The T-90 tank has a typical drivetrain arrangement, with a rear placed engine and transmission.
+
+The 1,000 hp (750 kW) engines are V-92 four stroke, 12 cylinder, multi-fuel diesel while the 1,250 hp (930 kW) engine is V-96.
+
+The T-90 export version i.e. modified T-90S is fitted with an increased power multi-fuel 1,000 hp (750 kW) diesel engine with turbochargers .
+
+The tank has an air conditioning system for work in hot places. Protection A T-90A fitted with second generation Kontakt-5 ERA A T-90S Bhishma of the Indian Army is fitted with a "two-tiered" protection system: the first tier is the composite armour in the turret, second tier is third generation Kontakt-5 ERA.
+
+The T-90 has a "three-tiered" protection system.
+
+The first tier is the composite armour in the turret, consisting of basic armour shell with an insert of alternating layers of aluminum and plastics and a controlled deformation section.
+
+The second tier is third generation Kontakt-5 explosive reactive armour (ERA) bricks which degrade the penetrating power of kinetic-energy APFSDS ammunition. These bricks give the turret a distinctive angled "clam shell" appearance. ERA bricks are also located on the turret roof to protect against attacks from above.
+
+The turret's forward armour package, in addition to the ERA and steel plating, includes Russian composite armour sandwiched between upper and lower steel plates. Composite armour offers lower weight and better protection than steel-only armour.
+
+The third tier is a Shtora -1 (Russian: Штора-1 or "curtain" in English) countermeasures suite , produced by Elektromashina of Russia. This system includes two electro-optical/IR " dazzlers " (i.e. active infrared jammer) on the front of the turret (which gives the distinctive "Red Eyes"), four laser warning receivers , two 3D6 'smoke' grenade discharging systems and a computerised control system.
+
+The Shtora-1 warns the tank's crew when the tank has been ' painted ' by a weapon-guidance laser and allows the crew to slew the turret to face the threat.
+
+The infrared jammer, the TShU1-7 EOCMDAS, jams the semi-automatic command to line of sight (SACLOS) guidance system used by some anti-tank guided missiles.
+
+The smoke grenades are automatically launched after Shtora detects that it has been painted.
+
+The smoke grenades are used to mask a tank from laser rangefinders and designators, and the optics of other weapon systems. Indian T-90S tanks are not equipped with the Shtora-1 countermeasures suite. They will be equipped with the Land Electronic Defence System LEDS-150 .
+
+In addition to the passive and active protection systems, the T-90 is also fitted with nuclear, biological and chemical ( NBC ) protection equipment, KMT mine sweeps and an automatic fire suppression system .
+
+The EMT-7 electromagnetic-counter mine system can also be installed on the T-90. EMT-7 emits an electromagnetic pulse to disable magnetic mines and disrupt electronics before the tank reaches them.
+
+The Nakidka signature reduction suite is also available for the T-90. Nakidka is designed to reduce the probabilities of an object to be detected by infrared , thermal , radar-thermal, and radar bands.
+
+During a reported test conducted by the Russian military in 1999 the T-90 was exposed to a variety of RPG, ATGM, and APFSDS munitions.
+
+When equipped with Kontakt-5 ERA, the T-90 could not be penetrated by any of the APFSDS or ATGM used during the trial and outperformed a T-80U which also took part.
+
+During combat operations in Dagestan, there were witness accounts of one T-90 sustaining seven hits from RPGs, and remaining in action. T-90M and T-90MS mounts the more advanced "Relikt" ERA. Relikt defends against tandem warheads, while reducing the penetration of APFSDS rounds by over 50 percent. It can be installed instead of Kontakt-1 or Kontakt-5. Estimated protection level comparison Model ERA vs APFSDS vs HEAT T-72 M None 335–380 450–490 T-72M1 None 380–400 490 T-72A Kontakt-1 360–400 490–500 T-72B/T-72S (produced after 1985) Kontakt-1 400–500 500–550 T-72B (produced after 1988) Kontakt-5 690–800 940–1180 T-90 Kontakt-5 800–830 1150–1350 T-90A/T-90S Kontakt-5 ≈870–910 ≈1250–1450 T-90M/T-90MS Relikt 1100–1200 ≈1900 The T-90A / T-90S turret uses a stronger steel alloy, giving an approximately 10–15% increase in the protection level given from the steel elements of the armor array; as the array from many aspects is not wholly steel, the overall increase in protection is less than this margin over these areas. Protection values will decrease somewhat against Tandem HEAT or penetrators with precursor tips. These measures are not as effective against heavier, newer generations of E.R.A. such as Relikt.
+
+The actual level of protection provided by the T-90 was questioned after some of these models were destroyed or captured during the Russo-Ukrainian War . Turret issues The T-90 has an unknown issue that causes it to become disabled via the turret spinning uncontrollably. Currently there is no concrete understanding of what precisely causes this issue, but a theory by a former tank commander of the British Army, Hamish de Bretton-Gordon, states: "It’ll likely be a combination between inexperienced crews and poor electronics." Variants T-90A Main Battle Tank competing in the 2013 Tank Biathlon T-90M tank in parade T-90MS Main Battle Tank at the 2013 Russian Arms Expo T-90 (Object 188) – The first production version. Object 188 (1989), production 1992.
+
+At one point during development it was designated as the Upgraded T-72B. 46 tons.
+
+The main feature is the modernization of turret design ("all welded" instead of cast) with the new advanced fire control system Kalina (with integrated combat information and control systems), new PNM-T gunner's sight and four video cameras that provide a 360° view of the environment for the commander, new upgraded gun 2A46M-5 with coaxial machine gun of 7.62 mm, weapon station "UDP T05BV-1" with the remotely controlled machine gun of 12.7 mm "Kord". There is improved armor on the ammunition carousel. Each side of the hull is fitted with additional armor plates at the front and slat armor at the rear.
+
+The T-90MS is ready for serial production. Four video cameras provide a 360° view of the environment, while the tank is more connected to command.
+
+The T-90SM has an upgraded thermal imager that can detect tanks over 3,300 meters away.
+
+The same autoloader as the T-90M "Proryv-3" is used. Variants BREM-1M : Armoured recovery vehicle IMR-2MA : Combat engineer vehicle. Referred to as the IMR-3M by Russian sources. MTU-90 : Bridge layer tank with MLC50 bridge. UBIM (Universal Armored Engineering Vehicle) : It was unveiled at the Army-2018 international arms show. Operators T-90S "Bhishma" of the Indian Army Armenian T-90 in Yerevan T-90SA and T-72UMG. Celebrating the 20th year of independence in Turkmenistan . T-90M captured by the Ukrainian 80th Air Assault Brigade during the 2024 Kursk offensive Current Algeria : 600 T-90SA in service as of 2025 Armenia : 1 T-90A in service as of 2025 Azerbaijan : 93 T-90S in service as of 2025 India : 1,200 T-90S in service as of 2025 Iraq : 73 T-90S in service as of 2025 Russia : Some T-90A and 620 T-90M in service as of 2026. Unknown number of T-90 and T-90A tanks in storage been upgraded to T-90M. Remaining T-90A will be upgraded to T-90M. Syria : Unknown number of T-90 and T-90A tanks in service as of 2024 Turkmenistan : 4 T-90S in service as of 2025 Uganda : 44 T-90S in service as of 2025 Ukraine : Operates an unknown number of T-90A and T-90M tanks captured from Russian forces during the Russo-Ukrainian War Vietnam : 64 T-90S in service as of 2025 Former non-state operators Artsakh : 1 T-90S prior to the 2023 Azerbaijani offensive in Nagorno-Karabakh Wagner Group : Used during the Russian invasion Ukraine, they were later handed over to the Russian government in the aftermath of the Wagner Group rebellion Tahrir al-Sham : Prior to the Northwestern Syria offensive in November 2024, at least two were captured from the Syrian Army , one was recaptured by Syrian government forces and the other was disabled.
+
+During the Northwestern Syria offensive, at least one T-90A tank was captured. Failed bids Kuwait : Was looking to acquire 146 T-90MS tanks as replacement for M-84 . Contract could be signed after being approved by the National Assembly. Russian Presidential aide confirmed that Kuwaiti contract could be signed by the end of 2017. Kuwait indefinitely postponed the deal in 2019 and is unlikely to revive it, instead opted for upgrading their M1A2 Abrams . Malaysia : The tank was in the tender for Malaysia, but they selected the Polish tank PT-91M in 2002. Pakistan : Planned to acquire 600 battle tanks and considered the T-90 but instead opted for the Chinese VT-4 . Evaluation United States : 1 T-90A.
+
+The T-90A was first spotted in the middle of April 2023, at a Louisiana truck stop.
+
+The Economist . 16 July 2024. ISSN 0013-0613 . Retrieved 11 August 2024 . ^ Nikolov, Boyko (7 September 2024). "Uralvagonzavod rolls out new batch of T-90M tanks for Russia" . Bulgarian Military Industry Review . Retrieved 9 September 2024 . ^ Rottman, Gordon L. (2010).
+
+The Rocket Propelled Grenade . Weapon 2. Osprey Publishing. p. 65. ISBN 978-1-84908-153-5 . Archived from the original on 13 September 2023 . Retrieved 3 August 2022 . ^ Jeremy Bender (15 September 2015). "The tanks Russia is sending to Syria" . Business Insider . Archived from the original on 6 January 2016 . Retrieved 29 December 2015 . ^ "T-90 Tank Accidentally Hit by Missile During Russian Exercise" . 17 November 2020. Archived from the original on 19 September 2020 . Retrieved 18 September 2020 . ^ "Tankspotting: T-90As in the Donbass" . bellingcat . 2 April 2017. Archived from the original on 5 April 2017 . Retrieved 3 June 2018 . ^ Suciu, Peter (12 May 2022). "Tank Deathmatch: Russia's T-90M vs. Carl Gustav Rocket Launcher (Who Wins?)" . 19FortyFive . Archived from the original on 13 May 2022 . Retrieved 30 August 2023 . ^ "One Of Russia's Most Advanced Tanks Has Been Destroyed Just Days After Being Deployed" . 6 May 2022. Archived from the original on 7 May 2022 . Retrieved 7 May 2022 . ^ "Latest Defence Intelligence update on the situation in Ukraine – 07 May 2022" . 7 May 2022. Archived from the original on 7 May 2022 . Retrieved 7 May 2022 . ^ Bryen, Stephen (7 June 2022). "Russia's tanks in Ukraine are old, obsolete and failing" . Asia Times . Archived from the original on 13 February 2023 . Retrieved 25 June 2023 . ^ HOWARD ALTMAN (18 January 2024). "Armor Experts Breakdown Video Of Ukrainian M2 Bradley Mauling Russian T-90M Tank" .
+
+The War Zone . Retrieved 20 January 2024 . ^ Chris Panella (18 January 2024). "New video shows a US-made Bradley fighting vehicle hammering a T-90M, what Putin has called 'the world's best tank' " . Business Insider . Retrieved 20 January 2024 . ^ Boyko Nikolov (7 November 2024). "Russia puts building bricks on a T-90M Proryv tank as an armor" . bulgarianmilitary . Retrieved 11 November 2024 . ^ Mitzer, Stijn; Janovsky, Jakub. "Attack On Europe: Documenting Russian Equipment Losses During The 2022 Russian Invasion Of Ukraine" . Oryx . Oryxspioenkop. Archived from the original on 14 January 2024 . Retrieved 6 February 2025 . ^ a b c Roblin, Sebastien (7 April 2021). "What Happened When Russia Sent Its T-90 Tank To Syria?" . National Interest . Archived from the original on 22 April 2021 . Retrieved 16 February 2022 . ^ "WATCH: U.S.-made missile goes up against one of Russia's most advanced tanks" .
+
+The Washington Post . 26 February 2016. Archived from the original on 9 March 2016 . Retrieved 7 March 2016 . ^ "Ադրբեջանական ոչնչացված Տ-90 տանկի լուսանկարները" . 2 October 2020. Archived from the original on 22 October 2020 . Retrieved 19 October 2020 . ^ Dunnigan, James (24 June 2006). "Get the T-90s Out of the Kitchen" . Strategy Page . Archived from the original on 11 June 2008. ^ "T-90S "Bhishma" " (PDF) . ipcs.org. 1 February 2004. Archived (PDF) from the original on 7 April 2012 . Retrieved 23 September 2011 . ^ "T-90 "Bhishma" Tanks in Ladakh – A Comprehensive Look" . Air Power Asia . 3 July 2020. Archived from the original on 24 January 2022 . Retrieved 28 March 2022 . ^ "Battle Tanks used by the Indian Army | Team-BHP" . Team-BHP.com . Retrieved 21 March 2025 . ^ "T-90 "Bhishma" Tanks in Ladakh – A Comprehensive Look" . Air Power Asia . 3 July 2020 . Retrieved 21 March 2025 . ^ Zaloga 2018 , pp. 18, 20 ^ Dmitry Korobeinikov (24 August 2009). "Indian army receives first T-90 tanks made under Russian license" . RIA Novosti. Archived from the original on 4 September 2009 . Retrieved 7 February 2010 . ^ PTI (24 August 2009). "First batch of T-90 tanks handed over to Army" . mint . Archived from the original on 28 March 2022 . Retrieved 28 March 2022 . ^ Shukla, Ajai (26 November 2012). "Army scuttles Arjun trials to push through Russian T-90 purchase" . Business Standard India . Business Standard. Archived from the original on 12 February 2021 . Retrieved 29 November 2012 . ^ "Indian MoD awards OFB USD2.8 billion contract to licence-build 464 additional T-90S MBTs" . Janes.com . 11 November 2019. Archived from the original on 27 February 2022 . Retrieved 27 February 2022 . ^ "464 Bhishma tanks to made in Tamil Nadu's Avadi" .
+
+The Times of India . 8 November 2019. Archived from the original on 6 April 2024 . Retrieved 31 August 2024 . ^ "ऑटोट्रैकर, एंटी-थर्मल आईआर कोटिंग से लैस है टी-90 भीष्म टैंक का नया वर्जन, जंग में दुश्मनों के छुड़ाएगा छक्के" . आज तक (in Hindi). 14 May 2024 . Retrieved 27 May 2024 . ^ Suciu, Peter (15 June 2024). "T-90 Mk-III: India Is Now Building Russian Tanks" .
+
+The National Interest . Retrieved 17 June 2024 . ^ Shumlianskyi, Dmytro (24 May 2026). "India Produces 1,000th T-90 Tank" . Militarnyi . Retrieved 27 May 2026 . ^ "Armor: Indian T-90s Get 5,000 Meter Reach" . www.strategypage.com . 4 September 2013. Archived from the original on 7 September 2013 . Retrieved 21 March 2025 . ^ a b "Modernisation proposals worth Rs 54,000 crore get ministry of defence's initial nod" .
+
+The Telegraph . Retrieved 1 June 2024 . ^ a b Foss 2005 , pp. 85−88. ^ a b c d e Foss 2005 , p. 88. ^ a b "T-90" (in Polish). militarium.net. Archived from the original on 29 April 2012. ^ a b "Main Battle Tank – T-90/T90S/T90C" . armorsite. Archived from the original on 28 October 2008 . Retrieved 19 October 2008 . ^ Zaloga 2018 , p. 24 ^ Zaloga 2018 , p. 25. ^ "ОСНОВНОЙ ТАНК Т-90АМ (Т-90МС). MAIN BATTLE TANK T-90АМ (T-90MS)" . Archived from the original on 20 October 2014 . Retrieved 15 November 2014 . ^ Brent M., Eastwood (31 March 2022). "Why Russia's Feared T-90 Tank Keeps Getting Killed In Ukraine" . 1945 . Archived from the original on 23 April 2022 . Retrieved 6 April 2023 . ^ Вторник (9 April 2012). "T-90МС" . Archived from the original on 4 September 2012 . Retrieved 12 April 2014 . ^ "With New Upgrades, Have The T-90 Tanks Become The World's Deadliest Main Battle Tanks?" . eurasiantimes.com. 7 March 2021. Archived from the original on 4 June 2021 . Retrieved 4 June 2021 . ^ a b Zaloga 2018 , p. 26. ^ "Арабы убедились в превосходстве российского танка Т-90СМ над другими" . Российская газета . 27 February 2015. Archived from the original on 8 December 2019 . Retrieved 28 March 2021 . ^ "Система управления огнём танка Т-90МС "ТАГИЛ" | Армейский вестник" . Archived from the original on 9 June 2017 . Retrieved 4 June 2017 . ^ "Научные Разработки" . Archived from the original on 15 May 2017 . Retrieved 4 June 2017 . ^ "Экспортная версия танка Т-90МС готова к серийному производству" . РИА Новости . 9 September 2015. Archived from the original on 11 September 2015 . Retrieved 19 September 2015 . ^ "Т-90МС: ОСНОВНОЙ БОЕВОЙ ТАНК НОВОГО ПОКОЛЕНИЯ" . Archived from the original on 12 June 2018 . Retrieved 10 December 2018 . ^ "Ростех отправил в войска инженерные машины разграждения ИМР-3М" . Ростех (in Russian) . Retrieved 23 January 2026 . ^ "UBIM - Armored engineer vehicle" . Archived from the original on 30 March 2022 . Retrieved 30 March 2022 . ^ IISS 2025 , p. 325. sfn error: no target: CITEREFIISS2025 ( help ) ^ IISS 2025 , p. 165. sfn error: no target: CITEREFIISS2025 ( help ) ^ IISS 2025 , p. 167. sfn error: no target: CITEREFIISS2025 ( help ) ^ a b IISS 2025 , p. 340. sfn error: no target: CITEREFIISS2025 ( help ) ^ The Military Balance 2026 .
+
+The International Institute for Strategic Studies. p. 190. ISBN 9781003778974 . ^ "Russian T-90M production: less than meets the eye" . IISS . Archived from the original on 16 January 2026 . Retrieved 22 February 2026 . ^ IISS 2024 , p. 193. ^ Nikolov, Boyko (6 May 2024). "UVZ sent one trainload of T-90M Proryv tanks to the Russian Army" . Bulgarian Military Industry Review . Retrieved 7 May 2024 . ^ IISS 2024 , p. 386. ^ IISS 2025 , p. 194. sfn error: no target: CITEREFIISS2025 ( help ) ^ IISS 2025 , p. 503. sfn error: no target: CITEREFIISS2025 ( help ) ^ IISS 2024 , pp. 211, 214. ^ Epstein, Jake (October 2022). "Retreating Russian troops are arming Ukraine with modern T-90 tanks as Putin's army digs 60-year-old armor out of storage, Ukraine's military says" . Business Insider . Archived from the original on 14 October 2022 . Retrieved 14 October 2022 . ^ IISS 2025 , p. 306. sfn error: no target: CITEREFIISS2025 ( help ) ^ IISS 2023 , p. 174. ^ Axe, David (28 December 2022). "Why Are Mercenaries Driving Russia's Best T-90 Tanks?" . Forbes . Archived from the original on 5 January 2023 . Retrieved 5 January 2023 . ^ Seddon, Max (12 July 2023). "Wagner fighters start handing over their weapons" . Financial Times . Retrieved 13 April 2024 . ^ Janovský, Jakub (4 May 2018). "Seven Years of War — Documenting Syrian Rebel Use of Anti-Tank Guided Missiles" . Bellingcat . Retrieved 13 April 2024 . ^ Roblin, Sebastien (7 April 2021). "What Happened When Russia Sent Its T-90 Tank To Syria?" .
+
+The National Interest . Retrieved 13 April 2024 . ^ Suciu, Peter (5 December 2024). "Syrian Rebels Didn't Just Capture Aleppo − They Took Abandoned Military Hardware" .
+
+The National Interest . Retrieved 6 December 2024 . ^ Ershad, Alijani (3 December 2024). "Fighter Jets, tanks and more: Syrian army's retreat from Aleppo is a windfall for rebels" .
+
+The France 24 Observers . France 24 . Retrieved 6 December 2024 . ^ "Russia to Supply T-90MS Battle Tank to Mideast Country" . Al Defaiya. 28 February 2017. Archived from the original on 8 August 2017 . Retrieved 21 July 2017 . ^ Iddon, Paul. "Kuwait Upgrading M1A2 Abrams Tanks Long At Forefront Of Its Defense" . Forbes . Archived from the original on 14 September 2025 . Retrieved 22 February 2026 . ^ Bhuyam, Manash Pratim (31 December 2018). "Pakistan plans to buy 600 battle tanks; eyes Russian T-90" .
+
+The Week . Archived from the original on 2 January 2019 . Retrieved 2 January 2019 . ^ "Pakistan procuring 600 tanks to strengthen capability along border with India: Intelligence Sources" . Economic Times . Archived from the original on 2 January 2019 . Retrieved 2 January 2019 . ^ "Pakistan confirms plans to induct Chinese-made VT4 main battle tank" . Janes.com . 23 September 2020. Archived from the original on 27 February 2022 . Retrieved 27 February 2022 . ^ a b Altman, Howard; Trevithick, Joseph (14 April 2023). "Destination Of Russian T-90 Tank Left At Truck Stop Comes Into Focus" .
+
+The Drive . Archived from the original on 15 April 2023 . Retrieved 16 April 2023 . ^ Altman, Howard (13 April 2023). "Russian T-90 Tank From Ukraine Mysteriously Appears At U.S. Truck Stop" .
+
+The Drive. Archived from the original on 18 April 2023 . Retrieved 19 April 2023 . ^ Ankel, Sophia. "Pentagon explains the mysterious Russian tank at a truck stop in Louisiana — saying it was disarmed and is going to an Army training center" . Insider . Insider Inc. Archived from the original on 19 April 2023 . Retrieved 19 April 2023 . Sources Mallika, Joseph (2004) " Issue Brief No. 19: T-90S 'Bhishma' ". Institute of Peace and Conflict Studies. URL accessed 24 July 2006. Sewell, Stephen "Cookie" (1998), "Why Three Tanks" (PDF) , Armor , vol. CVII, no. July–August 1998, U.S. Army Armor Center, pp. 21– 29, 45, ISSN 0004-2420 , PB-17-98-4 , retrieved 4 March 2022 Zaloga, Steven J.; Markov, David (2000). Russia's T-80U Main Battle Tank . Hong Kong: Concord. ISBN 962-361-656-2 . Zaloga, Steven J.; Sarson, Peter (1993). T-72 Main Battle Tank 1974–93 . London: Osprey Publishing. ISBN 978-1855323384 . Zaloga, Steven J. (2018). T-90 Standard Tank . Osprey Publishing Ltd. ISBN 978-1-4728-1822-5 . Foss, Christopher F. , ed. (15 August 2005). Jane's Armour & Artillery, 2005-06 (26th ed.). Janes Information Group. ISBN 978-0-7106-2686-8 . International Institute for Strategic Studies (15 February 2023).
+
+The Military Balance 2023 (1st ed.). Routledge. ISBN 978-1032508955 . International Institute for Strategic Studies (13 February 2024).
