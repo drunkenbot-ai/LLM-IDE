@@ -1,0 +1,796 @@
+The Project Gutenberg eBook of Dairy Disagreeables Busy the Bacteriologists
+    
+This eBook is for the use of anyone anywhere in the United States and
+most other parts of the world at no cost and with almost no restrictions
+whatsoever. You may copy it, give it away or re-use it under the terms
+of the Project Gutenberg License included with this eBook or online
+at www.gutenberg.org. If you are not located in the United States,
+you will have to check the laws of the country where you are located
+before using this eBook.
+
+Title: Dairy Disagreeables Busy the Bacteriologists
+
+Author: Frank H. Hall
+        Harry Alexis Harding
+        L. A. Rogers
+        George A. Smith
+
+
+        
+Release date: January 10, 2022 [eBook #67134]
+                Most recently updated: October 18, 2024
+
+Language: English
+
+Original publication: United States: New York Agricultural Experiment Station, 1900
+
+Other information and formats: www.gutenberg.org/ebooks/67134
+
+Credits: Charlene Taylor, David E. Brown, and the Online Distributed Proofreading Team at https://www.pgdp.net (This file was produced from images generously made available by The Internet Archive)
+
+
+*** START OF THE PROJECT GUTENBERG EBOOK DAIRY DISAGREEABLES BUSY THE BACTERIOLOGISTS ***
+
+  POPULAR EDITION.
+
+  BULLETIN No. 183.        DECEMBER, 1900.
+
+  New York Agricultural Experiment Station.
+
+  GENEVA, N. Y.
+
+  [Illustration]
+
+  DAIRY DISAGREEABLES BUSY THE BACTERIOLOGISTS.
+
+  F. H. HALL, H. A. HARDING, L. A. ROGERS AND G. A. SMITH.
+
+  PUBLISHED BY THE STATION.
+
+
+
+
+BOARD OF CONTROL.
+
+
+     GOVERNOR THEODORE ROOSEVELT, Albany.
+     STEPHEN H. HAMMOND, Geneva.
+     AUSTIN C. CHASE, Syracuse.
+     FRANK O. CHAMBERLAIN, Canandaigua.
+     FREDERICK C. SCHRAUB, Lowville.
+     NICHOLAS HALLOCK, Queens.
+     LYMAN P. HAVILAND, Camden.
+     EDGAR G. DUSENBURY, Portville.
+     OSCAR H. HALE, North Stockholm.
+     MARTIN L. ALLEN, Fayette.
+
+
+OFFICERS OF THE BOARD.
+
+     STEPHEN H. HAMMOND, _President_.
+     WILLIAM O’HANLON, _Secretary and Treasurer_.
+
+
+EXECUTIVE COMMITTEE.
+
+     STEPHEN H. HAMMOND,
+     MARTIN L. ALLEN,
+     FRANK O. CHAMBERLAIN,
+     FREDERICK C. SCHRAUB,
+     LYMAN P. HAVILAND,
+     NICHOLAS HALLOCK.
+
+
+STATION STAFF.
+
+     WHITMAN H. JORDAN, SC. D., _Director_.
+
+     GEORGE W. CHURCHILL, _Agriculturist and Superintendent of Labor_.
+
+     WILLIAM P. WHEELER, _First Assistant_ (_Animal Industry_).
+
+     FRED C. STEWART, M.S., _Botanist_.
+
+     LUCIUS L. VANSLYKE, PH.D., _Chemist_.
+
+     CHRISTIAN G. JENTER, PH.C.,
+  [A]WILLIAM H. ANDREWS, B.S.,
+     J. ARTHUR LECLERC, B.S.,
+  [B]AMASA D. COOK, PH.C.,
+     FREDERICK D. FULLER, B.S.,
+  [B]EDWIN B. HART, B.S.,
+  [A]CHARLES W. MUDGE, B.S.,
+  [A]ANDREW J. PATTEN, B.S., _Assistant Chemists_.
+
+     HARRY A. HARDING, M.S., _Dairy Bacteriologist_.
+
+     LORE A. ROGERS, B.S., _Assistant Bacteriologist_.
+
+     GEORGE A. SMITH, _Dairy Expert_.
+
+     FRANK H. HALL, B.S., _Editor and Librarian_.
+
+     VICTOR H. LOWE, M.S.,
+  [C]F. ATWOOD SIRRINE, M.S., _Entomologists_.
+
+     PERCIVAL J. PARROTT, A.M., _Assistant Entomologist_.
+
+     SPENCER A. BEACH, M.S., _Horticulturist_.
+
+     HEINRICH HASSELBRING, B.S.A., _Assistant Horticulturist_.
+
+     FRANK E. NEWTON,
+     JENNIE TERWILLIGER, _Clerks and Stenographers_.
+
+     ADIN H. HORTON, _Computer_.
+
+Address all correspondence, not to individual members of the staff, but
+to the NEW YORK AGRICULTURAL EXPERIMENT STATION, GENEVA, N. Y.
+
+The Bulletins published by the Station will be sent free to any farmer
+applying for them.
+
+
+
+
+POPULAR EDITION[D]
+
+OF
+
+BULLETIN NO. 183.
+
+DAIRY DISAGREEABLES BUSY THE BACTERIOLOGISTS.
+
+F. H. HALL.
+
+
+FLAVOR IN MILK AND ITS PRODUCTS.
+
+[Sidenote: =Flavor: How tested?=]
+
+Good flavor sells milk, cream, butter and cheese; poor flavor condemns
+them. Flavor is that indescribable something, which, in good dairy
+products, appeals pleasantly to our senses, but often passes unnoticed
+because so familiar; in poor products it is equally indescribable, but
+more often characterized in vigorous language, when “frowzy” butter,
+“garlicy” milk, “bitter” cream or “strong” cheese present their
+offensive odors and tastes. The ordinary consumer calls flavor the
+“taste” of the article which tickles his palate; but the expert knows
+that the nerves of smell play the larger part, and he depends for his
+judgment largely upon a trained nose. Hence we see the butter judge
+or cheese scorer pass the trier beneath his nostrils with deep-drawn
+breath and meditative study of the aroma which arises. Smells, however,
+cannot be measured in degrees or separated into their elements by the
+spectroscope; therefore we have to depend upon general terms, often
+differing with the different experts, in our discussion of flavor; yet
+we have some well-marked classes which serve as a basis for reference.
+
+[Sidenote: =Faults of flavor classified.=]
+
+We can separate the faulty flavors into classes by their origin. The
+minute particles thrown off by dairy products, whose impact upon tongue
+or nostrils give rise to taste or smell, may come (1) from compounds in
+the food of the cow or developed in her body (2) from matters, other
+than germs, taken up by the milk while it stands in poorly-ventilated
+stables or rooms reeking with foul smells, or (3) from substances which
+are the direct or indirect result of the activity of living organisms
+in the milk.
+
+Odors of the first class will be most noticeable while the milk is
+warm from the cow and will not increase with time. They are really
+far less common than dairymen generally believe and may be avoided
+almost entirely by careful feeding. Garlic, turnips, cabbage and such
+“fragrant” edibles will, of course, taint the milk if they are fed
+within a few hours before milking; but when fed soon after the cows are
+milked, the volatile oils to which these odors are due will generally
+disappear from the animal’s system before the next morning or evening.
+
+Too often odors of the second class are assigned to the first, and
+the old cow takes the blame for man’s fault; as milk very readily and
+quickly takes up smells and tastes from its surroundings. When the
+owner delivers milk to the factory and is told that it “smells bad,” he
+forgets that he or his men let it stand in the uncleaned stable to draw
+in the “cowy” and worse odors, while the cows were being fed and some
+other chores attended to; or that they poured it into pails that lacked
+a little of perfect sweetness; and he immediately says; “I’ve got to
+stop feeding silage.” “The cows ate some cabbage trimmings last night,”
+or, “Someone forgot to close the rye-field gate.”
+
+Odors of these two classes, due to volatile compounds in the milk, are
+of most importance in the milk and cream trade, as the faults largely
+disappear in making butter and cheese. Thorough æration is often
+helpful in the removal of such flavors.
+
+Odors of the third class, except in some very rare cases where the
+udder itself is the seat of colonies of bacteria, are not observed in
+freshly-drawn milk. The bacteria, molds and yeasts which cause them
+must have a chance to develop and to set up chemical changes in the
+milk; and this rarely occurs to any great extent within 12 hours from
+the time the milk is drawn. A high temperature, however, is favorable
+to growth of these low forms of plant life; so in warm weather milk
+faults are common. In butter-making, and in cheese-making, also,
+the heat often used to ripen the cream and the high temperature at
+which the milk is held in “setting” and “cooking” the curd, furnish
+conditions very favorable to the germs present and they develop with
+great rapidity. In their growth part of the milk is used for food and
+in its breaking down into simpler compounds the aromatic substances
+which make flavor, good or bad, are formed.
+
+The flavor of good milk and cream, then, is an inherent quality due
+to the normal constituents of the milk; the flavors of butter, both
+good and bad, except that due to the fat and to odors absorbed by the
+milk, are held to be the result of bacterial action; the fundamental
+flavors of cheese are probably due to chemical decomposition, started
+by unorganized ferments known as enzyms; joined with which are other
+flavors marking the individual cheeses, which are probably due to
+bacteria; and it has recently been found that in some cases yeasts have
+been the cause of bad flavor.
+
+
+FISHY FLAVOR IN MILK.
+
+[Sidenote: =Ready Relief.=]
+
+This peculiar smell, as though the milk had set in a close room with
+a barrel of not-too-fresh fish, was brought to the attention of the
+Bacteriologist by a dealer who had already located it as coming from
+the milk of a certain dairy. The dairyman is a more than ordinarily
+careful milk-handler, who gladly coöperated with the Station in efforts
+to locate the trouble in his herd. Bottles were supplied by the
+Bacteriologist, which had been steamed to insure the death of all germ
+life and then sealed. These sealed bottles were taken by the dairyman
+to his farm; at milking time each was opened long enough to receive a
+little milk from each quarter of the udder of a single cow; and then
+re-sealed. All were brought to the Station; and, upon examination, the
+odor was found only in the milk of one cow. The owner rejected her milk
+and heard no further complaint, from the dealer, of bad smells. This
+was the practical point; and it was thus easily and simply gained.
+
+[Sidenote: =Cause not found.=]
+
+From the scientist’s standpoint, though, only a beginning had been
+made; the real cause of the trouble was as yet unknown; nor was any
+satisfactory solution reached even after a long investigation. The
+flavor could hardly come from the food, for all the cows were fed alike
+and no objectionable weeds were found in their pasture. The cow seemed
+perfectly healthy and no evidence of inflammation or disease could be
+found on the udder or in the milk. Neither could any form of bacteria
+be found in the milk, which, in cultures or introduced into the udder
+of a healthy cow, would reproduce the fishy smell.
+
+[Sidenote: =Rare fault.=]
+
+At least two other cases of similar flavor have been known; but no
+cause was evident in either case. The trouble is very infrequent, at
+worst, and is here discussed mainly to show how easily a trouble due to
+one cow can be located by taking individual samples of the milk; and
+how cheaply gotten rid of by leaving out the objectionable product.
+
+
+BITTER FLAVOR IN NEUFCHATEL CHEESE.
+
+[Sidenote: =An uncompleted study.=]
+
+A little better result than that in the study of fishy flavor was
+reached in the investigation of a bitter flavor in Neufchatel cheese;
+but this study also had to be left incomplete. The trouble in the
+factory was easily remedied; and the germ responsible for the outbreak
+was obtained in pure culture; but full study of the fault in all its
+bearings was hindered by the refusal of the herd owner to admit that
+the trouble was due to his milk. The investigation had to stop with the
+guilty herd; it did not locate the original source of infection.
+
+[Sidenote: =Method of detection.=]
+
+This bitter flavor is not the same as the bitterness quite common in
+milk and cream at certain seasons of the year; as the milk itself
+tasted and smelled all right until well along in the process of
+cheese-making when the curd was being ærated and drained. The flavor
+was noticed in the factory in October and could not be checked, though
+the maker took great pains to wash and scald all his utensils and
+everything which touched the milk after it came from the farm. To
+locate the trouble, samples were taken of the milk of each patron
+and the cheese-making process started with each sample. In 18 hours
+all the samples of curd appeared normal but two, which were gassy
+and bad-smelling; and one of these, when drained and exposed to the
+air, showed a pronounced bitter flavor. This sample proved to be from
+the dairy which had furnished the milk for making the Neufchatel,
+a milk specially selected because of its high fat-content. This
+furnished direct proof that the fault lay in the milk, not in its
+factory handling; and rejection of this milk ended the trouble in the
+Neufchatel. As already stated, the study could not be carried into the
+herd to see whether one cow, wrong stable surroundings, a stagnant pool
+of water or contaminated dairy utensils were to blame for the trouble
+in the factory.
+
+[Sidenote: =Bacteria blamable.=]
+
+Samples of this faulty milk were taken for laboratory study and various
+bacteria and molds were separated. This was done by diluting the milk
+with a sterilized fluid so that the germs were quite widely separated
+when the milk was poured out in flat glass dishes. Each kind of germ
+is marked by some peculiarity of growth which makes it possible to
+distinguish between them; and pure cultures can be made by transferring
+a little of the growing colony to a new dish of sterilized agar,
+gelatin or other material suited to germ life. From these pure cultures
+fresh milk from the Station herd was inoculated and small Neufchatel
+cheeses made. No bitter flavor was noticed in similar check cheeses;
+and the milk containing only one of the forms of germ life found
+produced bitter cheese. The bitterness, as in the factory, was noticed
+only after the curd was drained and ærated. Soft, poorly-drained curd
+was free from the flavor though well inoculated with the short bacillus
+which produced the bad flavor in well-dried curd. This shows that the
+germ is one which requires exposure to the air to develop the bitter
+compound in the cheese. Unfortunately this germ, when cultivated in
+milk for some time lost the power of producing bitter cheese, so the
+investigation came to an end.
+
+
+SWEET FLAVOR IN CHEDDAR CHEESE.
+
+[Sidenote: =A new cause of cheese faults.=]
+
+By methods similar to those just given the cause of the common and
+costly cheese fault known as “sweet flavor” has probably been found.
+This investigation was demanded by the occurrence in some of the
+best-conducted factories of outbreaks of the trouble which most
+thorough cleansing and scalding fail to overcome. It is believed that
+these attacks result in annual loss to the State of at least $10,000.
+The trouble is of obscure origin and is peculiar in its development,
+manifesting itself in flavors of varying intensity and character, from
+a faint sweetness to a well-marked fruity smell and taste, and seeming
+to appear and disappear without rule or method. This made study more
+difficult than in the case of well-defined troubles; but its manner of
+development in the cheese indicated some living germ as the cause; so
+the attempt at solution of the problem was made from that standpoint.
+
+By cultural methods, study was made of the flora of good and poor
+cheeses; that is, the various forms of plant life existing in these
+cheeses were separated from each other and their forms, actions and
+effects noted. These forms of life were mostly bacteria and yeasts;
+and, contrary to the usual rule, it was the latter which finally seemed
+to demand attention.
+
+Yeasts are plants a little higher in the scale of life than bacteria,
+a little larger but still microscopic, and differing from bacteria in
+their mode of reproduction, which is by budding of a new cell from
+an old one rather than by division of an old cell into two new ones
+of equal size. Their most characteristic action is the formation of
+alcohol and carbon dioxide; which makes them indispensable in brewing
+and bread making.
+
+In good cheeses almost no yeasts were found, but in the sweet-flavored
+cheeses sometimes half of the germs present were yeasts; and they were
+always found where the sweet flavor was noticed. Yeasts have not been
+recognized, hitherto, as a cause for such cheese faults; but their
+presence in such numbers cast strong suspicion upon them; which actual
+work proved to be well founded, for pronounced cases of sweet flavor
+developed in cheeses made from pure milk inoculated with the yeasts;
+and the vat in which the cheese was made became contaminated so that,
+without further intentional inoculation, sweet-flavored cheese was
+produced where none had been known before. As yeasts have hitherto
+played minor parts in dairy investigations, no classification of those
+found has yet been made, nor has the exact flavor due to each one been
+determined. Further study is being given to the subject.
+
+
+RUSTY SPOT IN CHEDDAR CHEESE.
+
+[Sidenote: =Not a flavor.=]
+
+Rusty spot is not a flavor trouble, as spotted cheeses of this kind
+may be all right in taste and smell. The spots, however, are offensive
+to the eye and render the cheese salable only at a reduction in price,
+if at all. From the Station investigations, continued for nearly two
+years, along much the same lines as the flavor studies but with a
+little more definite guide in color than in taste and smell, some
+direct knowledge has been gained, though not as definite as could be
+desired along preventive and remedial lines.
+
+[Sidenote: =Cause and conditions.=]
+
+The rusty spots are colonies of minute plants, bacteria, growing on
+the walls of the air spaces within the cheese. The trouble usually
+appears in May, often does little harm during the middle of the summer
+and generally disappears in October. In cheese made with a high acid
+content the moisture content of the air spaces within the cheese is
+low, and without abundance of moisture the germs make little growth;
+hence the spots are too small to be noticed. The marked influence, on
+the germs of rusty spot, of this slight variation in the character
+of the cheese probably accounts for the unexpected appearance and
+disappearance of the spots from cheeses of an occasional day’s make in
+infected factories.
+
+[Sidenote: =Cure.=]
+
+Where the spots are not too large or too plentiful, giving the cheese a
+good high color covers up the rustiness so that it is not noticeable.
+To get entirely rid of the trouble has bothered some of the best
+cheese-makers, aided by good advisers; but plenty of hot water followed
+by a liberal use of live steam on vats, cans and working utensils
+should give good results.
+
+
+
+
+FOOTNOTES:
+
+
+[A] Connected with Fertilizer Control.
+
+[B] At Second Judicial Department Branch Station, Jamaica, N. Y.
+
+[C] Absent on leave.
+
+[D] This is a brief review of Bulletin No. 183 of this Station entitled
+Notes on Some Dairy Troubles, by H. A. Harding, L. A. Rogers and G.
+A. Smith. Anyone specially interested in the detailed account of the
+investigations will be furnished, on application, with a copy of the
+complete bulletin. The names of those who so request will be placed
+on the Station mailing list to receive future bulletins, popular or
+complete as desired. Bulletins are issued at irregular intervals as
+investigations are completed, not monthly.
+
+
+
+
+TRANSCRIBER’S NOTES:
+
+
+Italicized text is surrounded by underscores: _italics_.
+
+Emboldened text is surrounded by equals signs: =bold=.
+
+
+
+*** END OF THE PROJECT GUTENBERG EBOOK DAIRY DISAGREEABLES BUSY THE BACTERIOLOGISTS ***
+
+
+    
+
+Updated editions will replace the previous one—the old editions will
+be renamed.
+
+Creating the works from print editions not protected by U.S. copyright
+law means that no one owns a United States copyright in these works,
+so the Foundation (and you!) can copy and distribute it in the United
+States without permission and without paying copyright
+royalties. Special rules, set forth in the General Terms of Use part
+of this license, apply to copying and distributing Project
+Gutenberg™ electronic works to protect the PROJECT GUTENBERG™
+concept and trademark. Project Gutenberg is a registered trademark,
+and may not be used if you charge for an eBook, except by following
+the terms of the trademark license, including paying royalties for use
+of the Project Gutenberg trademark. If you do not charge anything for
+copies of this eBook, complying with the trademark license is very
+easy. You may use this eBook for nearly any purpose such as creation
+of derivative works, reports, performances and research. Project
+Gutenberg eBooks may be modified and printed and given away—you may
+do practically ANYTHING in the United States with eBooks not protected
+by U.S. copyright law. Redistribution is subject to the trademark
+license, especially commercial redistribution.
+
+
+START: FULL LICENSE
+
+THE FULL PROJECT GUTENBERG™ LICENSE
+
+PLEASE READ THIS BEFORE YOU DISTRIBUTE OR USE THIS WORK
+
+To protect the Project Gutenberg™ mission of promoting the free
+distribution of electronic works, by using or distributing this work
+(or any other work associated in any way with the phrase “Project
+Gutenberg”), you agree to comply with all the terms of the Full
+Project Gutenberg License available with this file or online at
+www.gutenberg.org/license.
+
+Section 1. General Terms of Use and Redistributing Project Gutenberg
+electronic works
+
+1.A. By reading or using any part of this Project Gutenberg
+electronic work, you indicate that you have read, understand, agree to
+and accept all the terms of this license and intellectual property
+(trademark/copyright) agreement. If you do not agree to abide by all
+the terms of this agreement, you must cease using and return or
+destroy all copies of Project Gutenberg electronic works in your
+possession. If you paid a fee for obtaining a copy of or access to a
+Project Gutenberg electronic work and you do not agree to be bound
+by the terms of this agreement, you may obtain a refund from the person
+or entity to whom you paid the fee as set forth in paragraph 1.E.8.
+
+1.B. “Project Gutenberg” is a registered trademark. It may only be
+used on or associated in any way with an electronic work by people who
+agree to be bound by the terms of this agreement. There are a few
+things that you can do with most Project Gutenberg electronic works
+even without complying with the full terms of this agreement. See
+paragraph 1.C below. There are a lot of things you can do with Project
+Gutenberg electronic works if you follow the terms of this
+agreement and help preserve free future access to Project Gutenberg
+electronic works. See paragraph 1.E below.
+
+1.C. The Project Gutenberg Literary Archive Foundation (“the
+Foundation” or PGLAF), owns a compilation copyright in the collection
+of Project Gutenberg electronic works. Nearly all the individual
+works in the collection are in the public domain in the United
+States. If an individual work is unprotected by copyright law in the
+United States and you are located in the United States, we do not
+claim a right to prevent you from copying, distributing, performing,
+displaying or creating derivative works based on the work as long as
+all references to Project Gutenberg are removed. Of course, we hope
+that you will support the Project Gutenberg mission of promoting
+free access to electronic works by freely sharing Project Gutenberg
+works in compliance with the terms of this agreement for keeping the
+Project Gutenberg name associated with the work. You can easily
+comply with the terms of this agreement by keeping this work in the
+same format with its attached full Project Gutenberg License when
+you share it without charge with others.
+
+1.D. The copyright laws of the place where you are located also govern
+what you can do with this work. Copyright laws in most countries are
+in a constant state of change. If you are outside the United States,
+check the laws of your country in addition to the terms of this
+agreement before downloading, copying, displaying, performing,
+distributing or creating derivative works based on this work or any
+other Project Gutenberg work. The Foundation makes no
+representations concerning the copyright status of any work in any
+country other than the United States.
+
+1.E. Unless you have removed all references to Project Gutenberg:
+
+1.E.1. The following sentence, with active links to, or other
+immediate access to, the full Project Gutenberg License must appear
+prominently whenever any copy of a Project Gutenberg work (any work
+on which the phrase “Project Gutenberg” appears, or with which the
+phrase “Project Gutenberg” is associated) is accessed, displayed,
+performed, viewed, copied or distributed:
+
+    This eBook is for the use of anyone anywhere in the United States and most
+    other parts of the world at no cost and with almost no restrictions
+    whatsoever. You may copy it, give it away or re-use it under the terms
+    of the Project Gutenberg™ License included with this eBook or online
+    at www.gutenberg.org. If you
+    are not located in the United States, you will have to check the laws
+    of the country where you are located before using this eBook.
+  
+1.E.2. If an individual Project Gutenberg electronic work is
+derived from texts not protected by U.S. copyright law (does not
+contain a notice indicating that it is posted with permission of the
+copyright holder), the work can be copied and distributed to anyone in
+the United States without paying any fees or charges. If you are
+redistributing or providing access to a work with the phrase “Project
+Gutenberg” associated with or appearing on the work, you must comply
+either with the requirements of paragraphs 1.E.1 through 1.E.7 or
+obtain permission for the use of the work and the Project Gutenberg
+trademark as set forth in paragraphs 1.E.8 or 1.E.9.
+
+1.E.3. If an individual Project Gutenberg electronic work is posted
+with the permission of the copyright holder, your use and distribution
+must comply with both paragraphs 1.E.1 through 1.E.7 and any
+additional terms imposed by the copyright holder. Additional terms
+will be linked to the Project Gutenberg License for all works
+posted with the permission of the copyright holder found at the
+beginning of this work.
+
+1.E.4. Do not unlink or detach or remove the full Project Gutenberg
+License terms from this work, or any files containing a part of this
+work or any other work associated with Project Gutenberg.
+
+1.E.5. Do not copy, display, perform, distribute or redistribute this
+electronic work, or any part of this electronic work, without
+prominently displaying the sentence set forth in paragraph 1.E.1 with
+active links or immediate access to the full terms of the Project
+Gutenberg License.
+
+1.E.6. You may convert to and distribute this work in any binary,
+compressed, marked up, nonproprietary or proprietary form, including
+any word processing or hypertext form. However, if you provide access
+to or distribute copies of a Project Gutenberg work in a format
+other than “Plain Vanilla ASCII” or other format used in the official
+version posted on the official Project Gutenberg website
+(www.gutenberg.org), you must, at no additional cost, fee or expense
+to the user, provide a copy, a means of exporting a copy, or a means
+of obtaining a copy upon request, of the work in its original “Plain
+Vanilla ASCII” or other form. Any alternate format must include the
+full Project Gutenberg License as specified in paragraph 1.E.1.
+
+1.E.7. Do not charge a fee for access to, viewing, displaying,
+performing, copying or distributing any Project Gutenberg works
+unless you comply with paragraph 1.E.8 or 1.E.9.
+
+1.E.8. You may charge a reasonable fee for copies of or providing
+access to or distributing Project Gutenberg electronic works
+provided that:
+
+    • You pay a royalty fee of 20% of the gross profits you derive from
+        the use of Project Gutenberg works calculated using the method
+        you already use to calculate your applicable taxes. The fee is owed
+        to the owner of the Project Gutenberg trademark, but he has
+        agreed to donate royalties under this paragraph to the Project
+        Gutenberg Literary Archive Foundation. Royalty payments must be paid
+        within 60 days following each date on which you prepare (or are
+        legally required to prepare) your periodic tax returns. Royalty
+        payments should be clearly marked as such and sent to the Project
+        Gutenberg Literary Archive Foundation at the address specified in
+        Section 4, “Information about donations to the Project Gutenberg
+        Literary Archive Foundation.”
+    
+    • You provide a full refund of any money paid by a user who notifies
+        you in writing (or by e-mail) within 30 days of receipt that s/he
+        does not agree to the terms of the full Project Gutenberg™
+        License. You must require such a user to return or destroy all
+        copies of the works possessed in a physical medium and discontinue
+        all use of and all access to other copies of Project Gutenberg™
+        works.
+    
+    • You provide, in accordance with paragraph 1.F.3, a full refund of
+        any money paid for a work or a replacement copy, if a defect in the
+        electronic work is discovered and reported to you within 90 days of
+        receipt of the work.
+    
+    • You comply with all other terms of this agreement for free
+        distribution of Project Gutenberg™ works.
+    
+
+1.E.9. If you wish to charge a fee or distribute a Project
+Gutenberg™ electronic work or group of works on different terms than
+are set forth in this agreement, you must obtain permission in writing
+from the Project Gutenberg Literary Archive Foundation, the manager of
+the Project Gutenberg™ trademark. Contact the Foundation as set
+forth in Section 3 below.
+
+1.F.
+
+1.F.1. Project Gutenberg volunteers and employees expend considerable
+effort to identify, do copyright research on, transcribe and proofread
+works not protected by U.S. copyright law in creating the Project
+Gutenberg™ collection. Despite these efforts, Project Gutenberg™
+electronic works, and the medium on which they may be stored, may
+contain “Defects,” such as, but not limited to, incomplete, inaccurate
+or corrupt data, transcription errors, a copyright or other
+intellectual property infringement, a defective or damaged disk or
+other medium, a computer virus, or computer codes that damage or
+cannot be read by your equipment.
+
+1.F.2. LIMITED WARRANTY, DISCLAIMER OF DAMAGES - Except for the “Right
+of Replacement or Refund” described in paragraph 1.F.3, the Project
+Gutenberg Literary Archive Foundation, the owner of the Project
+Gutenberg™ trademark, and any other party distributing a Project
+Gutenberg™ electronic work under this agreement, disclaim all
+liability to you for damages, costs and expenses, including legal
+fees. YOU AGREE THAT YOU HAVE NO REMEDIES FOR NEGLIGENCE, STRICT
+LIABILITY, BREACH OF WARRANTY OR BREACH OF CONTRACT EXCEPT THOSE
+PROVIDED IN PARAGRAPH 1.F.3. YOU AGREE THAT THE FOUNDATION, THE
+TRADEMARK OWNER, AND ANY DISTRIBUTOR UNDER THIS AGREEMENT WILL NOT BE
+LIABLE TO YOU FOR ACTUAL, DIRECT, INDIRECT, CONSEQUENTIAL, PUNITIVE OR
+INCIDENTAL DAMAGES EVEN IF YOU GIVE NOTICE OF THE POSSIBILITY OF SUCH
+DAMAGE.
+
+1.F.3. LIMITED RIGHT OF REPLACEMENT OR REFUND - If you discover a
+defect in this electronic work within 90 days of receiving it, you can
+receive a refund of the money (if any) you paid for it by sending a
+written explanation to the person you received the work from. If you
+received the work on a physical medium, you must return the medium
+with your written explanation. The person or entity that provided you
+with the defective work may elect to provide a replacement copy in
+lieu of a refund. If you received the work electronically, the person
+or entity providing it to you may choose to give you a second
+opportunity to receive the work electronically in lieu of a refund. If
+the second copy is also defective, you may demand a refund in writing
+without further opportunities to fix the problem.
+
+1.F.4. Except for the limited right of replacement or refund set forth
+in paragraph 1.F.3, this work is provided to you ‘AS-IS’, WITH NO
+OTHER WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PURPOSE.
+
+1.F.5. Some states do not allow disclaimers of certain implied
+warranties or the exclusion or limitation of certain types of
+damages. If any disclaimer or limitation set forth in this agreement
+violates the law of the state applicable to this agreement, the
+agreement shall be interpreted to make the maximum disclaimer or
+limitation permitted by the applicable state law. The invalidity or
+unenforceability of any provision of this agreement shall not void the
+remaining provisions.
+
+1.F.6. INDEMNITY - You agree to indemnify and hold the Foundation, the
+trademark owner, any agent or employee of the Foundation, anyone
+providing copies of Project Gutenberg™ electronic works in
+accordance with this agreement, and any volunteers associated with the
+production, promotion and distribution of Project Gutenberg™
+electronic works, harmless from all liability, costs and expenses,
+including legal fees, that arise directly or indirectly from any of
+the following which you do or cause to occur: (a) distribution of this
+or any Project Gutenberg work, (b) alteration, modification, or
+additions or deletions to any Project Gutenberg work, and (c) any
+Defect you cause.
+
+Section 2. Information about the Mission of Project Gutenberg
+
+Project Gutenberg is synonymous with the free distribution of
+electronic works in formats readable by the widest variety of
+computers including obsolete, old, middle-aged and new computers. It
+exists because of the efforts of hundreds of volunteers and donations
+from people in all walks of life.
+
+Volunteers and financial support to provide volunteers with the
+assistance they need are critical to reaching Project Gutenberg’s
+goals and ensuring that the Project Gutenberg collection will
+remain freely available for generations to come. In 2001, the Project
+Gutenberg Literary Archive Foundation was created to provide a secure
+and permanent future for Project Gutenberg and future
+generations. To learn more about the Project Gutenberg Literary
+Archive Foundation and how your efforts and donations can help, see
+Sections 3 and 4 and the Foundation information page at www.gutenberg.org.
+
+Section 3. Information about the Project Gutenberg Literary Archive Foundation
+
+The Project Gutenberg Literary Archive Foundation is a non-profit
+501(c)(3) educational corporation organized under the laws of the
+state of Mississippi and granted tax exempt status by the Internal
+Revenue Service. The Foundation’s EIN or federal tax identification
+number is 64-6221541. Contributions to the Project Gutenberg Literary
+Archive Foundation are tax deductible to the full extent permitted by
+U.S. federal laws and your state’s laws.
+
+The Foundation’s business office is located at 41 Watchung Plaza #516,
+Montclair NJ 07042, USA, +1 (862) 621-9288. Email contact links and up
+to date contact information can be found at the Foundation’s website
+and official page at www.gutenberg.org/contact
+
+Section 4. Information about Donations to the Project Gutenberg
+Literary Archive Foundation
+
+Project Gutenberg™ depends upon and cannot survive without widespread
+public support and donations to carry out its mission of
+increasing the number of public domain and licensed works that can be
+freely distributed in machine-readable form accessible by the widest
+array of equipment including outdated equipment. Many small donations
+($1 to $5,000) are particularly important to maintaining tax exempt
+status with the IRS.
+
+The Foundation is committed to complying with the laws regulating
+charities and charitable donations in all 50 states of the United
+States. Compliance requirements are not uniform and it takes a
+considerable effort, much paperwork and many fees to meet and keep up
+with these requirements. We do not solicit donations in locations
+where we have not received written confirmation of compliance. To SEND
+DONATIONS or determine the status of compliance for any particular state
+visit www.gutenberg.org/donate.
+
+While we cannot and do not solicit contributions from states where we
+have not met the solicitation requirements, we know of no prohibition
+against accepting unsolicited donations from donors in such states who
+approach us with offers to donate.
+
+International donations are gratefully accepted, but we cannot make
+any statements concerning tax treatment of donations received from
+outside the United States. U.S. laws alone swamp our small staff.
+
+Please check the Project Gutenberg web pages for current donation
+methods and addresses. Donations are accepted in a number of other
+ways including checks, online payments and credit card donations. To
+donate, please visit: www.gutenberg.org/donate.
+
+Section 5. General Information About Project Gutenberg electronic works
+
+Professor Michael S. Hart was the originator of the Project
+Gutenberg concept of a library of electronic works that could be
+freely shared with anyone. For forty years, he produced and
+distributed Project Gutenberg eBooks with only a loose network of
+volunteer support.
+
+Project Gutenberg eBooks are often created from several printed
+editions, all of which are confirmed as not protected by copyright in
+the U.S. unless a copyright notice is included. Thus, we do not
+necessarily keep eBooks in compliance with any particular paper
+edition.
+
+Most people start at our website which has the main PG search
+facility: www.gutenberg.org.
+
+This website includes information about Project Gutenberg,
+including how to make donations to the Project Gutenberg Literary
+Archive Foundation, how to help produce our new eBooks, and how to
+subscribe to our email newsletter to hear about new eBooks.
+
+
