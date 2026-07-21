@@ -116,7 +116,13 @@ def build_dataset_tab(window) -> QWidget:
     window.validation_split = window._double_spin(0.0, 0.5, 0.1, 0.01, 3)
     window._tip(window.validation_split, "Fraction of tokens held out for validation. Validation helps detect overfitting during training.")
     window.max_workers = window._spin(1, 64, 4)
-    window._tip(window.max_workers, "Number of parallel file readers. More workers can speed PDF/text loading but uses more CPU and disk activity.")
+    window._tip(
+        window.max_workers,
+        "Number of source files extracted in parallel, each in its own process (capped by your CPU core count). "
+        "Faster on multi-core machines, but peak memory scales with this number -- each worker holds one "
+        "file's full text in memory while processing it. Lower this if you are extracting many very large "
+        "files (e.g. multi-gigabyte dumps) and see high memory use.",
+    )
     window.prepare_mode = QComboBox()
     window.prepare_mode.addItems(["Incremental update", "Full rebuild", "Force reprocess"])
     window.prepare_mode.setMaximumWidth(260)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from random import Random
 from typing import Callable, Iterator, Optional
 
 import numpy as np
@@ -21,6 +22,14 @@ EOS_TOKEN = "<eos>"
 SPECIAL_TOKENS = [PAD_TOKEN, UNK_TOKEN, BOS_TOKEN, EOS_TOKEN]
 DEFAULT_CHAT_TEMPLATE = """{% for message in messages %}{{ '<bos>' if loop.first else '' }}{{ message['role'] | capitalize }}: {{ message['content'] }}{{ '<eos>' if loop.last else '\\n' }}{% endfor %}{% if add_generation_prompt %}{{ '\\nAssistant:' }}{% endif %}"""
 MAX_TOKENIZER_LINE_CHARS = 8_192
+# The Rust BPE trainer builds an in-memory pretoken frequency table sized to
+# whatever corpus it is shown. Vocabulary quality saturates well before a
+# multi-gigabyte corpus is fully consumed, so by default only a bounded,
+# evenly-spread sample of the corpus is shown to the trainer. The full
+# corpus is still encoded with the resulting tokenizer afterward -- only
+# *training* the merges is sampled.
+DEFAULT_TOKENIZER_TRAINING_MAX_BYTES = 2 * 1024 * 1024 * 1024  # 2 GiB
+TOKENIZER_SAMPLE_SEED = 1337
 # Tokens are streamed to disk in fixed-size batches rather than accumulated
 # into one giant Python list, so peak RAM during encoding stays roughly
 # constant regardless of corpus size.
@@ -36,6 +45,7 @@ def train_tokenizer(
     vocab_size: int = 8000,
     min_frequency: int = 2,
     should_stop: Optional[Callable[[], bool]] = None,
+    max_training_bytes: Optional[int] = DEFAULT_TOKENIZER_TRAINING_MAX_BYTES,
 ) -> Tokenizer:
     """Train a byte-level BPE tokenizer.
 
@@ -45,6 +55,13 @@ def train_tokenizer(
         vocab_size: Target vocabulary size.
         min_frequency: Minimum token frequency for BPE merges.
         should_stop: Optional callback returning true when training should stop.
+        max_training_bytes: Maximum corpus bytes shown to the BPE trainer.
+            The trainer keeps a frequency table in memory sized to whatever it
+            is shown, so on very large corpora only an evenly-spread sample
+            up to this many bytes is used to fit merges. Pass ``None`` to
+            disable sampling and train on the entire corpus. The full corpus
+            is always encoded with the resulting tokenizer regardless of this
+            setting.
 
     Returns:
         Trained tokenizer instance.
@@ -61,7 +78,14 @@ def train_tokenizer(
         initial_alphabet=ByteLevel.alphabet(),
         show_progress=True,
     )
-    tokenizer.train_from_iterator(_iter_corpus_lines(corpus_path, should_stop), trainer=trainer)
+    corpus_size = corpus_path.stat().st_size
+    sample_ratio = 1.0
+    if max_training_bytes is not None and corpus_size > max_training_bytes:
+        sample_ratio = max_training_bytes / corpus_size
+    tokenizer.train_from_iterator(
+        _iter_corpus_lines(corpus_path, should_stop, sample_ratio=sample_ratio),
+        trainer=trainer,
+    )
     tokenizer.post_processor = TemplateProcessing(
         single=f"{BOS_TOKEN} $A {EOS_TOKEN}",
         special_tokens=[
@@ -111,13 +135,33 @@ def save_tokenizer_package(
 def _iter_corpus_lines(
     corpus_path: Path,
     should_stop: Optional[Callable[[], bool]],
+    sample_ratio: float = 1.0,
 ) -> Iterator[str]:
-    """Yield corpus lines and check for cancellation between chunks."""
+    """Yield corpus lines and check for cancellation between chunks.
+
+    Args:
+        corpus_path: Text corpus path to read line by line.
+        should_stop: Optional callback returning true when reading should stop.
+        sample_ratio: Fraction of lines to keep, in ``(0.0, 1.0]``. Lines are
+            kept via an independent per-line random draw (not a positional
+            head-of-file cut), so the kept sample is spread evenly across the
+            whole file rather than biased toward whatever content appears
+            first.
+
+    Raises:
+        RuntimeError: If cancellation is requested.
+    """
+
+    sample_ratio = max(0.0, min(1.0, sample_ratio))
+    sampling = sample_ratio < 1.0
+    rng = Random(TOKENIZER_SAMPLE_SEED) if sampling else None
 
     with corpus_path.open("r", encoding="utf-8") as handle:
         for line in handle:
             if should_stop and should_stop():
                 raise RuntimeError("Dataset preparation stopped by user.")
+            if sampling and rng.random() > sample_ratio:
+                continue
 
             for start in range(0, len(line), MAX_TOKENIZER_LINE_CHARS):
                 chunk = line[start : start + MAX_TOKENIZER_LINE_CHARS]
