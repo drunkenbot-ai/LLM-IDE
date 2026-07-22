@@ -5119,13 +5119,13 @@ class MainWindow(QMainWindow):
                 "norm_type": "rmsnorm",
                 "position_encoding": "rope",
                 "mlp_type": "swiglu",
-                "rope_theta": 10000.0,
+                "rope_theta": self.rope_theta.value(),
             }
         return {
             "norm_type": "layernorm",
             "position_encoding": "learned",
             "mlp_type": "gelu",
-            "rope_theta": 10000.0,
+            "rope_theta": self.rope_theta.value(),
         }
 
     def _optimizer_value(self) -> str:
@@ -5493,7 +5493,12 @@ class MainWindow(QMainWindow):
             "embedding_size": self.n_embd,
             "head_count": self.n_head,
             "layer_count": self.n_layer,
-            "context_length": self.context_length,
+            # NOT self.context_length -- that is the Dataset tab's tokenizer
+            # window-size setting (DatasetConfig.context_length), an
+            # unrelated dataset-preparation parameter. _current_model_config()
+            # reads self.train_context_length for ModelConfig.context_length,
+            # which is the field resume-compatibility actually checks.
+            "context_length": self.train_context_length,
         }
         for key, widget in mappings.items():
             if key in model_config:
@@ -5506,11 +5511,27 @@ class MainWindow(QMainWindow):
                 self.dropout.setValue(float(model_config["dropout"]))
             except (TypeError, ValueError):
                 LOGGER.warning("Invalid dropout in checkpoint %s: %r", checkpoint_path, model_config["dropout"])
+        if "rope_theta" in model_config:
+            try:
+                self.rope_theta.setValue(float(model_config["rope_theta"]))
+            except (TypeError, ValueError):
+                LOGGER.warning("Invalid rope_theta in checkpoint %s: %r", checkpoint_path, model_config["rope_theta"])
+        if "bias" in model_config:
+            self.use_bias.setChecked(bool(model_config["bias"]))
         norm_type = str(model_config.get("norm_type", "layernorm")).lower()
         position_encoding = str(model_config.get("position_encoding", "learned")).lower()
         mlp_type = str(model_config.get("mlp_type", "gelu")).lower()
         if norm_type == "rmsnorm" or position_encoding == "rope" or mlp_type == "swiglu":
-            self._set_combo_text(self.architecture_style, "Modern LLM")
+            # Must match training_tab.py's actual combo item text exactly
+            # ("Llama-like") -- _set_combo_text() silently no-ops on a
+            # non-editable combo when the text doesn't match any item, so a
+            # wrong string here does not raise or log anything. It used to
+            # say "Modern LLM", which does not exist as an option: this
+            # left architecture_style un-synced while every other field
+            # (n_embd, n_head, n_layer, ...) synced correctly, guaranteeing
+            # a resume-compatibility mismatch on norm_type/position_encoding
+            # /mlp_type with no indication of why.
+            self._set_combo_text(self.architecture_style, "Llama-like")
         else:
             self._set_combo_text(self.architecture_style, "Classic GPT")
         attention_type = str(model_config.get("attention_type", "mha")).lower()
@@ -5571,7 +5592,27 @@ class MainWindow(QMainWindow):
         }.get(self.attention_backend.currentText(), "sdpa")
 
     def apply_training_profile(self) -> None:
-        """Apply the selected optimizer/scheduler profile."""
+        """Apply the selected optimizer/scheduler/regularization profile.
+
+        Each branch below explicitly sets every field it conceptually owns
+        (optimizer, scheduler, LR/regularization, precision/memory knobs,
+        batch shape, and early-stopping patience), even fields that happen
+        to match the previous profile's value. This is deliberate: profiles
+        must be idempotent when switched between, or a field set by a
+        previously applied profile (e.g. activation_checkpointing=True from
+        Low-memory) can silently survive into a later profile that never
+        mentions it, producing a configuration no single profile actually
+        intended.
+
+        Two categories of fields are deliberately NOT touched here:
+          - attention_type / kv_head_count: an architecture choice, not a
+            training-strategy choice. Low-memory sets these to
+            Grouped-query because that specific profile is about reducing
+            memory end-to-end; the other profiles leave whatever the user
+            has selected alone rather than silently reverting it.
+          - training_mode / peft_method / lora_* (Code fine-tune only):
+            these belong to the fine-tuning tab's widgets, not this tab's.
+        """
 
         profile = self.training_profile.currentText()
         if profile == "Low-memory":
@@ -5580,19 +5621,42 @@ class MainWindow(QMainWindow):
             self.learning_rate.setValue(0.0002)
             self.weight_decay.setValue(0.05)
             self.min_lr_ratio.setValue(0.05)
+            self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(1.0)
             self._set_combo_text(self.precision, "BF16" if torch.cuda.is_available() else "FP32")
+            self.use_amp.setChecked(True)
             self._set_combo_text(self.attention_type, "Grouped-query")
             self.kv_head_count.setValue(max(1, self.n_head.value() // 2))
             self.activation_checkpointing.setChecked(True)
+            # The two knobs that most directly control peak memory: shrink
+            # the batch and make up the lost effective batch size with
+            # gradient accumulation, and avoid extra data-loader worker
+            # processes competing for memory.
+            self.batch_size.setValue(4)
+            self.gradient_accumulation.setValue(4)
+            self.data_loader_workers.setValue(0)
+            self.warmup_steps.setValue(100)
+            self.dropout.setValue(0.1)
+            self.early_stopping_patience.setValue(3)
         elif profile == "Code fine-tune":
             self._set_combo_text(self.optimizer_name, "AdamW")
             self._set_combo_text(self.scheduler_name, "Cosine decay")
             self.learning_rate.setValue(0.00005)
             self.weight_decay.setValue(0.05)
             self.min_lr_ratio.setValue(0.1)
+            self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(0.5)
+            self._set_combo_text(self.precision, "FP16")
+            self.use_amp.setChecked(True)
+            self.activation_checkpointing.setChecked(False)
+            self.batch_size.setValue(16)
+            self.gradient_accumulation.setValue(1)
+            self.data_loader_workers.setValue(0)
+            self.warmup_steps.setValue(50)
             self.dropout.setValue(0.05)
+            # Fine-tuning generally needs less patience than a full
+            # pretraining run before validation loss plateaus meaningfully.
+            self.early_stopping_patience.setValue(2)
             self._set_combo_text(self.training_mode, "Fine-tune checkpoint")
             self._set_combo_text(self.peft_method, "LoRA adapters")
             self.lora_rank.setValue(8)
@@ -5605,15 +5669,36 @@ class MainWindow(QMainWindow):
             self.learning_rate.setValue(0.0001)
             self.weight_decay.setValue(0.1)
             self.min_lr_ratio.setValue(0.01)
+            self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(1.0)
+            # Lion is reported to be more sensitive to fp16 under/overflow
+            # than AdamW; prefer bf16 where available, fp32 otherwise.
+            self._set_combo_text(self.precision, "BF16" if torch.cuda.is_available() else "FP32")
+            self.use_amp.setChecked(True)
+            self.activation_checkpointing.setChecked(False)
+            self.batch_size.setValue(16)
+            self.gradient_accumulation.setValue(1)
+            self.data_loader_workers.setValue(0)
+            self.warmup_steps.setValue(100)
+            self.dropout.setValue(0.1)
+            self.early_stopping_patience.setValue(3)
         else:
             self._set_combo_text(self.optimizer_name, "AdamW")
             self._set_combo_text(self.scheduler_name, "Cosine decay")
             self.learning_rate.setValue(0.0003)
             self.weight_decay.setValue(0.1)
             self.min_lr_ratio.setValue(0.1)
+            self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(1.0)
             self._set_combo_text(self.precision, "FP16")
+            self.use_amp.setChecked(True)
+            self.activation_checkpointing.setChecked(False)
+            self.batch_size.setValue(16)
+            self.gradient_accumulation.setValue(1)
+            self.data_loader_workers.setValue(0)
+            self.warmup_steps.setValue(100)
+            self.dropout.setValue(0.1)
+            self.early_stopping_patience.setValue(3)
         self._update_training_mode_controls()
         self.refresh_model_estimate()
         self.training_log.append(f"Applied training profile: {profile}")
@@ -5790,6 +5875,7 @@ class MainWindow(QMainWindow):
             head_count=self.n_head.value(),
             layer_count=self.n_layer.value(),
             dropout=self.dropout.value(),
+            bias=self.use_bias.isChecked(),
             attention_type=self._attention_type_value(),
             kv_head_count=self.kv_head_count.value(),
             attention_backend=self._attention_backend_value(),
@@ -5850,6 +5936,7 @@ class MainWindow(QMainWindow):
             resume_from_checkpoint=resume_path if self.resume_training.isChecked() else None,
             require_compatible_resume=self.resume_safety.isChecked(),
             early_stopping=self.early_stopping.isChecked(),
+            early_stopping_patience=self.early_stopping_patience.value(),
         )
 
     def _current_training_vocab_size(self, data_dir: Path) -> int:
@@ -5994,7 +6081,15 @@ class MainWindow(QMainWindow):
                 self.resume_training_preview.setText("[BLOCK] Could not determine current dataset tokenizer vocabulary size.")
                 return
             model_config = self._current_model_config(vocab_size=vocab_size)
-            training_config = self._current_training_config(resume_path)
+            # Explicit override: this is the AI/Training tab's own "Check
+            # Resume" button, checking a pretrain checkpoint. Without this,
+            # training_mode falls back to reading the separate Fine-Tuning
+            # tab's mode combo (self.training_mode), which defaults to
+            # "Instruction fine-tune" on a fresh session -- resolving to
+            # "fine_tune" and making training_config.validate() below raise
+            # "fine_tune_from_checkpoint is required for fine_tune mode",
+            # a confusing error unrelated to what the user is checking.
+            training_config = self._current_training_config(resume_path, training_mode="pretrain")
             model_config.validate()
             training_config.validate()
             report = check_resume_compatibility(resume_path, model_config, training_config)
@@ -6145,7 +6240,11 @@ class MainWindow(QMainWindow):
         """Refresh model size, rough VRAM, and run history widgets."""
 
         model_config = self._current_model_config()
-        training_config = self._current_training_config()
+        # Same reasoning as preview_resume_compatibility: this is the
+        # AI/Training tab's shared "Model Estimate" card, not the
+        # Fine-Tuning tab's; pass an explicit override rather than
+        # inheriting the Fine-Tuning tab's mode combo by fallback.
+        training_config = self._current_training_config(training_mode="pretrain")
         data_dir = Path(self.train_data_dir.text())
         train_tokens = max(model_config.context_length * training_config.batch_size, 1)
         try:
