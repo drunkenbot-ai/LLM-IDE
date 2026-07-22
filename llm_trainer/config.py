@@ -42,6 +42,13 @@ class DatasetConfig:
         fast_scan_mode: Uses sampled fingerprints for faster large-corpus scans.
         fast_scan_sample_bytes: Head/tail bytes per file used for fast fingerprints.
         strict_duplicate_verification: In fast mode, fully re-hashes only suspected duplicate groups.
+        tokenizer_training_max_gb: Maximum corpus size, in GiB, shown to the BPE
+            tokenizer trainer (which holds a frequency table sized to whatever it
+            is shown, in memory, for the whole training run). Sampling is applied
+            only above this size; the full corpus is still encoded into training
+            tokens regardless of this setting. 0 or a negative value disables the
+            cap and trains on the entire corpus -- only safe if you have enough
+            RAM to hold a frequency table for your full corpus size at once.
     """
 
     input_dir: Path
@@ -74,6 +81,7 @@ class DatasetConfig:
     fast_scan_mode: bool = False
     fast_scan_sample_bytes: int = 64 * 1024
     strict_duplicate_verification: bool = False
+    tokenizer_training_max_gb: float = 2.0
 
 
 @dataclass

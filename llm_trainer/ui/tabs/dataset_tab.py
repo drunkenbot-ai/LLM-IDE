@@ -123,6 +123,17 @@ def build_dataset_tab(window) -> QWidget:
         "file's full text in memory while processing it. Lower this if you are extracting many very large "
         "files (e.g. multi-gigabyte dumps) and see high memory use.",
     )
+    window.tokenizer_training_max_gb = window._double_spin(0.0, 256.0, 2.0, 0.5, 1)
+    window._tip(
+        window.tokenizer_training_max_gb,
+        "Maximum corpus size (in GiB) shown to the tokenizer trainer when learning vocabulary. The trainer "
+        "keeps a frequency table in memory sized to whatever it is shown, so very large corpora are sampled "
+        "down to this size by default -- vocabulary quality does not meaningfully improve past a few GiB of "
+        "sample text. Raise this if you have more RAM to spare (this is separate from, and much smaller than, "
+        "your training data itself -- the full corpus is always encoded into training tokens regardless of "
+        "this setting). Set to 0 to disable the cap entirely and train on the full corpus; only do this if "
+        "you are confident you have enough RAM to hold a frequency table sized to your whole corpus at once.",
+    )
     window.prepare_mode = QComboBox()
     window.prepare_mode.addItems(["Incremental update", "Full rebuild", "Force reprocess"])
     window.prepare_mode.setMaximumWidth(260)
@@ -189,6 +200,7 @@ def build_dataset_tab(window) -> QWidget:
     source_pipeline_layout.addWidget(mode_label)
     source_pipeline_layout.addWidget(window.prepare_mode, 2)
     source_form.addRow("Pipeline", source_pipeline_row)
+    source_form.addRow("Tokenizer training cap (GiB)", window.tokenizer_training_max_gb)
 
     source_options_row = QWidget()
     source_options_layout = QHBoxLayout(source_options_row)

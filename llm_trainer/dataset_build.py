@@ -285,19 +285,35 @@ def _load_or_create_tokenizer(
             shutil.copy2(import_path, tokenizer_path)
         return load_tokenizer(tokenizer_path), False, True, str(import_path)
 
-    training_mb = corpus_path.stat().st_size / (1024 * 1024)
-
-    _emit(
-        progress,
-        f"Training tokenizer on the full {training_mb:.1f} MB corpus...",
-        62,
+    corpus_size_bytes = corpus_path.stat().st_size
+    training_mb = corpus_size_bytes / (1024 * 1024)
+    max_training_bytes = (
+        int(config.tokenizer_training_max_gb * 1024**3)
+        if config.tokenizer_training_max_gb > 0
+        else None
     )
+    if max_training_bytes is not None and corpus_size_bytes > max_training_bytes:
+        _emit(
+            progress,
+            (
+                f"Training tokenizer on a {config.tokenizer_training_max_gb:.1f} GiB sample of the "
+                f"{training_mb:.1f} MB corpus (tokenizer_training_max_gb)..."
+            ),
+            62,
+        )
+    else:
+        _emit(
+            progress,
+            f"Training tokenizer on the full {training_mb:.1f} MB corpus...",
+            62,
+        )
     tokenizer = train_tokenizer(
         corpus_path,
         tokenizer_path,
         vocab_size=selected_vocab_size,
         min_frequency=config.min_frequency,
         should_stop=should_stop,
+        max_training_bytes=max_training_bytes,
     )
     return tokenizer, False, imported, source_path
 

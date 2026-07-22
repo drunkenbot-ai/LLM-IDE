@@ -28,12 +28,19 @@ MAX_TOKENIZER_LINE_CHARS = 8_192
 # evenly-spread sample of the corpus is shown to the trainer. The full
 # corpus is still encoded with the resulting tokenizer afterward -- only
 # *training* the merges is sampled.
-DEFAULT_TOKENIZER_TRAINING_MAX_BYTES = 2 * 1024 * 1024 * 1024  # 2 GiB
+DEFAULT_TOKENIZER_TRAINING_MAX_BYTES = 2 * 1024 * 1024 * 1024  * 1024 * 1024 * 1024 # 12 GiB
 TOKENIZER_SAMPLE_SEED = 1337
 # Tokens are streamed to disk in fixed-size batches rather than accumulated
 # into one giant Python list, so peak RAM during encoding stays roughly
 # constant regardless of corpus size.
 ENCODE_FLUSH_TOKEN_COUNT = 200_000
+# Number of line-chunks encoded per tokenizer.encode_batch() call. The Rust
+# tokenizers library parallelizes encode_batch() internally across CPU
+# cores (via Rayon); calling encode() one string at a time from a Python
+# loop -- the previous approach -- pays Python/Rust boundary overhead per
+# call and never engages that internal parallelism, which dominates total
+# time at billions-of-tokens scale.
+ENCODE_BATCH_SIZE = 1_000
 # Chunk size (in tokens) used when streaming raw token bytes into the final
 # .npy file. Keeps the .bin -> .npy conversion step's RAM use flat too.
 NPY_CONVERT_CHUNK_TOKENS = 1_000_000
@@ -315,6 +322,12 @@ def encode_file_to_bin(
     intermediate format (no shape/dtype header) -- see ``encode_file_to_npy``
     for the version that produces a directly loadable ``.npy`` file.
 
+    Line-chunks are also batched into groups of ``ENCODE_BATCH_SIZE`` and
+    encoded with a single ``tokenizer.encode_batch()`` call per group rather
+    than one ``tokenizer.encode()`` call per chunk -- the Rust tokenizer
+    parallelizes ``encode_batch()`` across CPU cores internally, which
+    matters enormously at multi-billion-token scale.
+
     Args:
         tokenizer: Tokenizer used for encoding.
         corpus_path: Text corpus path.
@@ -332,7 +345,22 @@ def encode_file_to_bin(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     buffer: list[int] = []
+    pending_chunks: list[str] = []
     total_tokens = 0
+
+    def flush_pending_chunks(sink) -> None:
+        """Encode any buffered chunks as one batch and append their IDs."""
+
+        nonlocal total_tokens
+        if pending_chunks:
+            for encoding in tokenizer.encode_batch(pending_chunks):
+                buffer.extend(encoding.ids)
+            pending_chunks.clear()
+        if len(buffer) >= ENCODE_FLUSH_TOKEN_COUNT:
+            np.asarray(buffer, dtype=dtype).tofile(sink)
+            total_tokens += len(buffer)
+            buffer.clear()
+
     with corpus_path.open("r", encoding="utf-8") as source, output_path.open("wb") as sink:
         for line in source:
             if should_stop and should_stop():
@@ -341,11 +369,10 @@ def encode_file_to_bin(
                 chunk = line[start : start + MAX_TOKENIZER_LINE_CHARS]
                 if not chunk:
                     continue
-                buffer.extend(tokenizer.encode(chunk).ids)
-                if len(buffer) >= ENCODE_FLUSH_TOKEN_COUNT:
-                    np.asarray(buffer, dtype=dtype).tofile(sink)
-                    total_tokens += len(buffer)
-                    buffer.clear()
+                pending_chunks.append(chunk)
+                if len(pending_chunks) >= ENCODE_BATCH_SIZE:
+                    flush_pending_chunks(sink)
+        flush_pending_chunks(sink)
         if buffer:
             np.asarray(buffer, dtype=dtype).tofile(sink)
             total_tokens += len(buffer)

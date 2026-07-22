@@ -3061,12 +3061,27 @@ class MainWindow(QMainWindow):
         dataset_dir = Path(self.dataset_dir.text()) if self.dataset_dir.text().strip() else None
         model_dir = Path(self.model_dir.text()) if self.model_dir.text().strip() else None
         export_dir = Path(self.export_dir.text()) if self.export_dir.text().strip() else None
+        now_iso = datetime.now().isoformat(timespec="seconds")
+        created_at = now_iso
+        existing_project_file = project_dir / "project.json"
+        if existing_project_file.exists():
+            try:
+                existing_data = json.loads(existing_project_file.read_text(encoding="utf-8"))
+            except Exception:
+                existing_data = {}
+            if isinstance(existing_data, dict):
+                # Preserve the original creation timestamp across saves.
+                # "saved_at" below is overwritten every save, so it cannot be
+                # used as a creation date; fall back to it only for projects
+                # saved before this field existed.
+                created_at = str(existing_data.get("created_at") or existing_data.get("saved_at") or now_iso)
         return {
             "schema": "micro_llm_creator_project",
             "version": 1,
             "project_name": project_name,
             "project_dir": str(project_dir),
-            "saved_at": datetime.now().isoformat(timespec="seconds"),
+            "created_at": created_at,
+            "saved_at": now_iso,
             "paths": {
                 "source_vault": self.input_dir.text(),
                 "dataset_core": self.dataset_dir.text(),
@@ -4215,6 +4230,7 @@ class MainWindow(QMainWindow):
             tokenizer_strategy=self._tokenizer_strategy_value(),
             tokenizer_path=Path(self.tokenizer_path.text()) if self.tokenizer_path.text().strip() else None,
             dataset_stage=dataset_stage,
+            tokenizer_training_max_gb=self.tokenizer_training_max_gb.value(),
         )
 
     def _selected_default_data_paths_for_stage(self, stage: str) -> list[Path]:
