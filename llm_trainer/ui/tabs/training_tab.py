@@ -71,8 +71,26 @@ def build_training_tab(window) -> QWidget:
         window.architecture_style,
         "Classic uses learned positions, LayerNorm, and GELU. Llama-like uses RoPE, RMSNorm, and SwiGLU.",
     )
+    window.rope_theta = window._double_spin(1.0, 10_000_000.0, 10000.0, 1000.0, 1)
+    window._tip(
+        window.rope_theta,
+        "RoPE frequency base. Only used when Block style is Llama-like. Higher values are commonly used when "
+        "targeting longer context lengths; 10000 is the standard default.",
+    )
+    window.use_bias = QCheckBox("Use bias terms")
+    window.use_bias.setChecked(True)
+    window._tip(
+        window.use_bias,
+        "Whether linear and normalization layers include bias terms. Some modern architectures (e.g. PaLM, "
+        "LLaMA) disable most biases to save a small amount of memory and compute with little quality impact. "
+        "Leave checked unless you are deliberately experimenting with this.",
+    )
     window.n_embd = window._spin(32, 4096, 128)
     window._tip(window.n_embd, "Embedding size, also called n_embd. Larger values increase model capacity and memory usage.")
+    window.architecture_style.currentTextChanged.connect(
+        lambda text: window.rope_theta.setEnabled(text == "Llama-like")
+    )
+    window.rope_theta.setEnabled(window.architecture_style.currentText() == "Llama-like")
     window.n_head = window._spin(1, 64, 4)
     window._tip(window.n_head, "Attention head count. More heads can model varied relationships, but n_embd must divide evenly by n_head.")
     window.attention_type = QComboBox()
@@ -103,6 +121,8 @@ def build_training_tab(window) -> QWidget:
     left.addRow("Model", window._path_row(window.model_dir, directory=True))
     left.addRow("Preset", window.preset)
     left.addRow("Block style", window.architecture_style)
+    left.addRow("RoPE theta", window.rope_theta)
+    left.addRow("", window.use_bias)
     left.addRow("n_embd", window.n_embd)
     left.addRow("n_head", window.n_head)
     left.addRow("Attention", window.attention_type)
@@ -208,6 +228,14 @@ def build_training_tab(window) -> QWidget:
         window.early_stopping,
         "Automatically stop training when validation loss stops improving. Uncheck to train for all remaining epochs.",
     )
+    window.early_stopping_patience = window._spin(1, 100, 3)
+    window._tip(
+        window.early_stopping_patience,
+        "Consecutive validation checks without improvement before early stopping triggers. Lower values stop "
+        "sooner (saves compute, risks stopping on noisy validation loss); higher values are more tolerant of "
+        "temporary plateaus. Has no effect if early stopping is unchecked.",
+    )
+    window.early_stopping.toggled.connect(window.early_stopping_patience.setEnabled)
     window.resume_checkpoint = QLineEdit()
     window._tip(window.resume_checkpoint, "Optional specific checkpoint file to resume from instead of the latest checkpoint.")
     window.resume_check_button = QPushButton("Check Resume")
@@ -251,6 +279,7 @@ def build_training_tab(window) -> QWidget:
     runtime.addRow("", window.resume_training)
     runtime.addRow("", window.resume_safety)
     runtime.addRow("", window.early_stopping)
+    runtime.addRow("Patience", window.early_stopping_patience)
     runtime.addRow("Checkpoint", window._path_row(window.resume_checkpoint, directory=False))
     runtime.addRow("", window.resume_check_button)
 

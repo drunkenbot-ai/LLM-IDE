@@ -50,7 +50,7 @@ def prepare(args: argparse.Namespace) -> None:
         min_frequency=args.min_frequency,
         context_length=args.context_length,
         validation_split=args.validation_split,
-        lowercase=args.lowercase,
+        lowercase=False,
         max_workers=args.max_workers,
         code_training_mode=args.code_training_mode,
         include_prose=not args.exclude_prose,
@@ -254,7 +254,6 @@ def build_parser() -> argparse.ArgumentParser:
     prepare_parser.add_argument("--min_frequency", type=int, default=2)
     prepare_parser.add_argument("--context_length", type=int, default=128)
     prepare_parser.add_argument("--validation_split", type=float, default=0.1)
-    prepare_parser.add_argument("--lowercase", action="store_true")
     prepare_parser.add_argument("--max_workers", type=int, default=4)
     prepare_parser.add_argument("--code_training_mode", action="store_true")
     prepare_parser.add_argument("--exclude_prose", action="store_true")

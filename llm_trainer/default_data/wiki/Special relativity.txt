@@ -32,7 +32,7 @@ As long as the universe can be modeled as a pseudo-Riemannian manifold , a Loren
 
 The more technical background ideas include: spacetime : geometrical space and time considered together. : 18 spacetime interval between two events: a measure of separation between events that incorporates both the spatial distance between them and the duration of time separating them: : 9 ( interval ) 2 = 2 − 2 {\displaystyle ({\text{interval}})^{2}=\left^{2}-\left^{2}} coordinate system or reference frame : a way to locate events in spacetime. Events have coordinates x , y , z for space and t for time.
 
-The coordinates of the event are different in a different reference frame. : 67 inertial reference frame : a region of a reference frame where objects at rest with respect to the frame stay as rest, or if in uniform motion, stay in motion; also called a free-float frame . : 31 prime system, frame, or coordinate. To emphasize the relationship between two systems of coordinates, both use the same x,y,z axes but one will be marked with a prime (') symbol. coordinate transformation : changing how an event is described from one reference frame to another. : 67 invariance : when physical laws or quantities do not change in different inertial frames.
+The coordinates of the event are different in a different reference frame. : 67 inertial reference frame : a region of a reference frame where objects (not influenced by external forces) at rest with respect to the frame stay at rest, or if in uniform motion, stay in motion; also called a free-float frame . : 31 prime system, frame, or coordinate. To emphasize the relationship between two systems of coordinates, both use the same x,y,z axes but one will be marked with a prime (') symbol. coordinate transformation : changing how an event is described from one reference frame to another. : 67 invariance : when physical laws or quantities do not change in different inertial frames.
 
 The speed of light is invariant in special relativity: it is always the same. : 67 Traditional "two postulates" approach to special relativity The longer and the more desperately I tried, the more I came to the conviction that only the discovery of a universal formal principle could lead us to assured results ... How, then, could such a universal principle be found?" — Albert Einstein: Autobiographical Notes Main article: Postulates of special relativity Einstein discerned two fundamental propositions that seemed to be the most assured, regardless of the exact validity of the (then) known laws of either mechanics or electrodynamics. These propositions were the constancy of the speed of light in vacuum and the independence of physical laws (especially the constancy of the speed of light) from the choice of inertial system.
 
@@ -44,13 +44,7 @@ The constancy of the speed of light was motivated by Maxwell's theory of electro
 
 In any case, the null result of the Michelson–Morley experiment helped the notion of the constancy of the speed of light gain widespread and rapid acceptance.
 
-The derivation of special relativity depends not only on these two explicit postulates, but also on several tacit assumptions, including the isotropy and homogeneity of space and the independence of measuring rods and clocks from their past history. Principle of relativity Main article: Principle of relativity Reference frames and relative motion Figure 2–1.
-
-The primed system is in motion relative to the unprimed system with constant velocity v only along the x -axis, from the perspective of an observer stationary in the unprimed system.
-
-By the principle of relativity , an observer stationary in the primed system will view a likewise construction except that the velocity they record will be − v .
-
-The changing of the speed of propagation of interaction from infinite in non-relativistic mechanics to a finite value will require a modification of the transformation equations mapping events in one frame to another. Reference frames play a crucial role in relativity theory.
+The derivation of special relativity depends not only on these two explicit postulates, but also on several tacit assumptions, including the isotropy and homogeneity of space and the independence of measuring rods and clocks from their past history. Principle of relativity Main article: Principle of relativity Reference frames and relative motion Reference frames play a crucial role in relativity theory.
 
 The term reference frame as used here is an observational perspective in space that is not undergoing any change in motion (acceleration), from which a position can be measured along 3 spatial axes (so, at rest or constant velocity).
 
@@ -60,7 +54,13 @@ Since the speed of light is constant in relativity irrespective of the reference
 
 In relativity theory, we often want to calculate the coordinates of an event from differing reference frames.
 
-The equations that relate measurements made in different frames are called transformation equations . Standard configuration To gain insight into how the spacetime coordinates measured by observers in different reference frames compare with each other, it is useful to work with a simplified setup with frames in a standard configuration . : 107 With care, this allows simplification of the math with no loss of generality in the conclusions that are reached.
+The equations that relate measurements made in different frames are called transformation equations . Standard configuration Figure 2–1.
+
+The primed system is in motion relative to the unprimed system with constant velocity v only along the x -axis, from the perspective of an observer stationary in the unprimed system.
+
+By the principle of relativity , an observer stationary in the primed system will view a likewise construction except that the velocity they record will be − v .
+
+The changing of the speed of propagation of interaction from infinite in non-relativistic mechanics to a finite value will require a modification of the transformation equations mapping events in one frame to another. To gain insight into how the spacetime coordinates measured by observers in different reference frames compare with each other, it is useful to work with a simplified setup with frames in a standard configuration . : 107 With care, this allows simplification of the math with no loss of generality in the conclusions that are reached.
 
 In Fig. 2-1, two Galilean reference frames (i.e., conventional 3-space frames) are displayed in relative motion. Frame S belongs to a first observer O , and frame S ′ (pronounced "S prime" or "S dash") belongs to a second observer O ′ .
 

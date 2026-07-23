@@ -10,6 +10,7 @@ from time import perf_counter
 from typing import Any, Callable, Optional, Union
 
 import numpy as np
+import numpy.lib.format as npy_format
 import torch
 import torch.nn.functional as F
 from torch.amp import GradScaler, autocast
@@ -290,6 +291,106 @@ def split_tokens(
         else:
             train_tokens.extend(piece)
     return train_tokens, val_tokens
+
+
+def split_tokens_to_files(
+    tokens: np.memmap,
+    train_path: Path,
+    val_path: Path,
+    validation_split: float,
+    dtype: np.dtype,
+    chunk_size: int = 2048,
+    seed: int = 1337,
+    should_stop: Optional[Callable[[], bool]] = None,
+) -> tuple[int, int]:
+    """Split a token stream into train/validation ``.npy`` files on disk.
+
+    Behaves like :func:`split_tokens` (same chunked, seeded shuffle so
+    validation samples are drawn from across the corpus, not just the tail),
+    but never materializes the full train or validation token stream in
+    memory. ``tokens`` is expected to be a read-only memmap (or any
+    ``__len__``/slice-able array) backed by disk; each chunk is read, cast to
+    ``dtype``, and written straight to the appropriate output file. Peak
+    memory use is therefore bounded by ``chunk_size`` regardless of corpus
+    size.
+
+    Args:
+        tokens: Full token stream, typically a memory-mapped ``.npy`` array.
+        train_path: Destination path for the training token ``.npy`` file.
+        val_path: Destination path for the validation token ``.npy`` file.
+        validation_split: Fraction of chunks reserved for validation.
+        dtype: Integer dtype to store each token ID as (see
+            ``tokenizer.token_dtype_for_vocab``).
+        chunk_size: Number of tokens per shuffle unit.
+        seed: Fixed seed for reproducible train/validation assignment.
+        should_stop: Optional callback returning true when the split should
+            stop early.
+
+    Returns:
+        Pair of ``(train_token_count, val_token_count)``.
+
+    Raises:
+        RuntimeError: If cancellation is requested.
+    """
+
+    total = len(tokens)
+    chunk_size = max(1, chunk_size)
+    validation_split = max(0.0, min(1.0, validation_split))
+
+    if total <= 1 or validation_split <= 0:
+        chunk_ranges: list[tuple[int, int]] = [(0, total)]
+        val_chunk_indices: set[int] = set()
+    elif validation_split >= 1:
+        chunk_ranges = [(0, total)]
+        val_chunk_indices = {0}
+    else:
+        chunk_ranges = [
+            (start, min(start + chunk_size, total)) for start in range(0, total, chunk_size)
+        ]
+        if len(chunk_ranges) <= 1:
+            split_at = int(total * (1.0 - validation_split))
+            split_at = max(1, min(split_at, total - 1))
+            chunk_ranges = [(0, split_at), (split_at, total)]
+            val_chunk_indices = {1}
+        else:
+            shuffled_indices = list(range(len(chunk_ranges)))
+            random.Random(seed).shuffle(shuffled_indices)
+            val_chunk_count = max(1, round(len(chunk_ranges) * validation_split))
+            val_chunk_count = min(val_chunk_count, len(chunk_ranges) - 1)
+            val_chunk_indices = set(shuffled_indices[:val_chunk_count])
+
+    train_token_count = sum(
+        end - start for index, (start, end) in enumerate(chunk_ranges) if index not in val_chunk_indices
+    )
+    val_token_count = sum(
+        end - start for index, (start, end) in enumerate(chunk_ranges) if index in val_chunk_indices
+    )
+
+    train_path.parent.mkdir(parents=True, exist_ok=True)
+    val_path.parent.mkdir(parents=True, exist_ok=True)
+    train_header = {
+        "descr": npy_format.dtype_to_descr(np.dtype(dtype)),
+        "fortran_order": False,
+        "shape": (train_token_count,),
+    }
+    val_header = {
+        "descr": npy_format.dtype_to_descr(np.dtype(dtype)),
+        "fortran_order": False,
+        "shape": (val_token_count,),
+    }
+    with train_path.open("wb") as train_file, val_path.open("wb") as val_file:
+        npy_format.write_array_header_1_0(train_file, train_header)
+        npy_format.write_array_header_1_0(val_file, val_header)
+        for chunk_index, (start, end) in enumerate(chunk_ranges):
+            if should_stop and should_stop():
+                raise RuntimeError("Dataset preparation stopped by user.")
+            piece = np.asarray(tokens[start:end], dtype=dtype)
+            if chunk_index in val_chunk_indices:
+                piece.tofile(val_file)
+            else:
+                piece.tofile(train_file)
+
+    return train_token_count, val_token_count
 
 
 def make_optimizer(model: MicroGPT, training_config: TrainingConfig) -> torch.optim.Optimizer:

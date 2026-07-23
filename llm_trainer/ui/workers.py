@@ -145,7 +145,15 @@ class ProcessTaskWorker(QObject):
         process = context.Process(
             target=_process_worker_entry,
             args=(self.fn, self.args, result_queue, child_progress_queue, child_stop_event, self.with_progress),
-            daemon=True,
+            # Not daemonic: Python forbids daemonic processes from spawning
+            # their own children, but some tasks run here (e.g.
+            # build_dataset) spawn their own worker-process pool internally
+            # for parallel CPU-bound work. Cleanup does not depend on the
+            # daemon flag -- this method explicitly terminates and joins
+            # the process below (on stop, on timeout, and in `finally`), so
+            # dropping daemon=True does not leave anything unmanaged in the
+            # normal shutdown paths.
+            daemon=False,
         )
         process.start()
         stop_requested_at: Optional[float] = None

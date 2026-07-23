@@ -3061,12 +3061,27 @@ class MainWindow(QMainWindow):
         dataset_dir = Path(self.dataset_dir.text()) if self.dataset_dir.text().strip() else None
         model_dir = Path(self.model_dir.text()) if self.model_dir.text().strip() else None
         export_dir = Path(self.export_dir.text()) if self.export_dir.text().strip() else None
+        now_iso = datetime.now().isoformat(timespec="seconds")
+        created_at = now_iso
+        existing_project_file = project_dir / "project.json"
+        if existing_project_file.exists():
+            try:
+                existing_data = json.loads(existing_project_file.read_text(encoding="utf-8"))
+            except Exception:
+                existing_data = {}
+            if isinstance(existing_data, dict):
+                # Preserve the original creation timestamp across saves.
+                # "saved_at" below is overwritten every save, so it cannot be
+                # used as a creation date; fall back to it only for projects
+                # saved before this field existed.
+                created_at = str(existing_data.get("created_at") or existing_data.get("saved_at") or now_iso)
         return {
             "schema": "micro_llm_creator_project",
             "version": 1,
             "project_name": project_name,
             "project_dir": str(project_dir),
-            "saved_at": datetime.now().isoformat(timespec="seconds"),
+            "created_at": created_at,
+            "saved_at": now_iso,
             "paths": {
                 "source_vault": self.input_dir.text(),
                 "dataset_core": self.dataset_dir.text(),
@@ -3097,7 +3112,7 @@ class MainWindow(QMainWindow):
                 "min_frequency": self.min_frequency.value(),
                 "context_length": self.context_length.value(),
                 "validation_split": self.validation_split.value(),
-                "lowercase": self.lowercase.isChecked(),
+                "lowercase": False,
                 "max_workers": self.max_workers.value(),
                 "prepare_mode": self._prepare_mode_value(),
                 "tokenizer_strategy": self._tokenizer_strategy_value(),
@@ -3239,7 +3254,6 @@ class MainWindow(QMainWindow):
         self.min_frequency.setValue(int(dataset.get("min_frequency", self.min_frequency.value())))
         self.context_length.setValue(int(dataset.get("context_length", self.context_length.value())))
         self.validation_split.setValue(float(dataset.get("validation_split", self.validation_split.value())))
-        self.lowercase.setChecked(bool(dataset.get("lowercase", False)))
         self.max_workers.setValue(int(dataset.get("max_workers", self.max_workers.value())))
         self._set_combo_by_data(self.prepare_mode, str(dataset.get("prepare_mode", "incremental")), {
             "incremental": "Incremental update",
@@ -4203,7 +4217,7 @@ class MainWindow(QMainWindow):
             min_frequency=self.min_frequency.value(),
             context_length=self.context_length.value(),
             validation_split=self.validation_split.value(),
-            lowercase=self.lowercase.isChecked(),
+            lowercase=False,
             max_workers=self.max_workers.value(),
             code_training_mode=self.code_training_mode.isChecked(),
             include_prose=self.include_prose.isChecked(),
@@ -4216,6 +4230,7 @@ class MainWindow(QMainWindow):
             tokenizer_strategy=self._tokenizer_strategy_value(),
             tokenizer_path=Path(self.tokenizer_path.text()) if self.tokenizer_path.text().strip() else None,
             dataset_stage=dataset_stage,
+            tokenizer_training_max_gb=self.tokenizer_training_max_gb.value(),
         )
 
     def _selected_default_data_paths_for_stage(self, stage: str) -> list[Path]:
@@ -4824,25 +4839,19 @@ class MainWindow(QMainWindow):
             self.include_source_code.setChecked(True)
             self.extract_code_blocks.setChecked(True)
             self.preserve_indentation.setChecked(True)
-            self._set_mixture_weights({"code_technical": 100.0, "source_code": 100.0})
-        elif stage == "conversation":
-            self._set_mixture_weights({"conversation": 100.0, "social_emotional": 100.0})
-        else:
-            self._set_mixture_weights({"instruction": 100.0, "structured_qa": 70.0, "reasoning": 30.0})
+        self._set_mixture_weights({})
         self._switch_page(0)
         self.dataset_log.append(f"Configured Ingest for {dataset_stage_label(stage)}. Import the base tokenizer before preparing.")
         self.project_state.setText(f"Configured {dataset_stage_label(stage)} data")
 
     def _dataset_plan_from_ui(self) -> dict[str, float]:
-        """Return high-level dataset blueprint percentages.
+        """Return dataset blueprint state.
 
         Returns:
-            Mapping from dataset domain key to target percentage.
+            Empty mapping because category percentages are disabled.
         """
 
-        if not hasattr(self, "dataset_plan_spins"):
-            return dataset_plan_defaults()
-        return {key: float(widget.value()) for key, widget in self.dataset_plan_spins.items()}
+        return {}
 
     def _selected_default_data_paths(self) -> list[Path]:
         """Return bundled default data files selected in the Dataset Blueprint.
@@ -4886,6 +4895,40 @@ class MainWindow(QMainWindow):
             self._refresh_default_data_category_states()
         finally:
             self.default_data_tree_updating = False
+
+    def _set_dataset_blueprint_refresh_busy(self, busy: bool) -> None:
+        """Toggle refresh busy state indicators for the Dataset Sources page."""
+
+        if hasattr(self, "dataset_plan_refresh_button"):
+            self.dataset_plan_refresh_button.setEnabled(not busy)
+            self.dataset_plan_refresh_button.setText("Refreshing..." if busy else "Refresh")
+        if hasattr(self, "dataset_plan_progress"):
+            if busy:
+                self.dataset_plan_progress.setRange(0, 0)
+                self.dataset_plan_progress.setVisible(True)
+            else:
+                self.dataset_plan_progress.setRange(0, 100)
+                self.dataset_plan_progress.setValue(0)
+                self.dataset_plan_progress.setVisible(False)
+
+    def refresh_dataset_blueprint_files(self) -> None:
+        """Reload the Dataset Blueprint file tree from disk."""
+
+        root = getattr(self, "blueprint_data_root", default_data_root())
+        selected_paths = [str(path) for path in self._selected_default_data_paths()]
+        self._set_dataset_blueprint_refresh_busy(True)
+        QApplication.processEvents()
+        try:
+            self._refresh_dataset_blueprint_source(
+                Path(root),
+                saved_paths=selected_paths,
+                saved_plan=self._dataset_plan_from_ui(),
+                preset="Custom",
+            )
+            self.project_state.setText("Blueprint refreshed")
+            LOGGER.info("Dataset blueprint tree refreshed from %s", root)
+        finally:
+            self._set_dataset_blueprint_refresh_busy(False)
 
     def _handle_default_data_tree_changed(self, item: Any, column: int) -> None:
         """Handle category and file toggles in the bundled data tree.
@@ -4983,87 +5026,43 @@ class MainWindow(QMainWindow):
             self.dataset_plan_preset.blockSignals(False)
 
     def _update_dataset_plan_total(self) -> None:
-        """Refresh the visible dataset blueprint total."""
+        """No-op retained for compatibility after blueprint percentage removal."""
 
-        if not hasattr(self, "dataset_plan_total_label"):
-            return
-        total = sum(self._dataset_plan_from_ui().values())
-        self.dataset_plan_total_label.setText(f"Total: {total:.1f}%")
-        self.dataset_plan_total_label.setProperty("state", "ok" if abs(total - 100.0) <= 0.1 else "warning")
-        self.dataset_plan_total_label.style().unpolish(self.dataset_plan_total_label)
-        self.dataset_plan_total_label.style().polish(self.dataset_plan_total_label)
+        return
 
     def normalize_dataset_plan(self) -> None:
-        """Scale high-level dataset blueprint values to 100 percent."""
+        """No-op retained for compatibility after blueprint percentage removal."""
 
-        values = self._dataset_plan_from_ui()
-        total = sum(values.values())
-        if total <= 0:
-            self._set_dataset_plan(dataset_plan_defaults(), "Balanced Tiny LLM")
-            if hasattr(self, "_mixture_weights_state"):
-                delattr(self, "_mixture_weights_state")
-            return
-        normalized = {key: value * 100.0 / total for key, value in values.items()}
-        self._set_dataset_plan(normalized, "Custom")
-        if hasattr(self, "_mixture_weights_state"):
-            delattr(self, "_mixture_weights_state")
-        LOGGER.info("Dataset blueprint normalized: %s", normalized)
+        return
 
     def apply_dataset_plan_preset(self, preset: str) -> None:
-        """Apply a named dataset blueprint preset.
+        """No-op retained for compatibility after blueprint percentage removal.
 
         Args:
             preset: Preset label from the Dataset Blueprint combo box.
         """
 
-        if preset == "Custom" or preset not in DATASET_DOMAIN_PRESETS:
-            return
-        self._set_dataset_plan(DATASET_DOMAIN_PRESETS[preset], preset)
-        if hasattr(self, "_mixture_weights_state"):
-            delattr(self, "_mixture_weights_state")
-        LOGGER.info("Dataset blueprint preset applied: %s", preset)
+        return
 
     def apply_dataset_plan_to_ingestion(self) -> None:
-        """Apply the high-level dataset blueprint as active mixture weights."""
+        """Clear ingestion mixture overrides (category percentages are disabled)."""
 
-        plan = self._dataset_plan_from_ui()
-        total = sum(plan.values())
-        if total <= 0:
-            plan = dataset_plan_defaults()
-            total = sum(plan.values())
-        normalized = {key: value * 100.0 / total for key, value in plan.items()}
-        mixture = {
-            **normalized,
-            "local_prose": 0.0,
-            "source_code": 0.0,
-            "online_base": 0.0,
-            "instruction": 0.0,
-            "conversation": 0.0,
-        }
-        self._set_mixture_weights(mixture)
+        self._set_mixture_weights({})
         if hasattr(self, "dataset_log"):
-            self.dataset_log.append("Dataset blueprint applied to ingestion mixture.")
+            self.dataset_log.append("Dataset blueprint applied: category percentages are disabled.")
         self.project_state.setText("Blueprint applied")
-        LOGGER.info("Dataset blueprint applied to ingestion mixture: plan=%s mixture=%s", normalized, mixture)
+        LOGGER.info("Dataset blueprint applied with category percentages disabled")
 
     def _mixture_weights_from_ui(self) -> dict[str, float]:
         """Return dataset mixture weights from the Ingest tab.
 
         Returns:
-            Mapping from mixture source family to percentage.
+            Empty mapping because category percentages are disabled.
         """
 
-        if not hasattr(self, "mixture_local_prose"):
-            if not hasattr(self, "_mixture_weights_state"):
-                self.apply_dataset_plan_to_ingestion()
-            return dict(getattr(self, "_mixture_weights_state", dataset_plan_defaults()))
-        return {
-            "local_prose": float(self.mixture_local_prose.value()),
-            "source_code": float(self.mixture_source_code.value()),
-            "online_base": float(self.mixture_online_base.value()),
-            "instruction": float(self.mixture_instruction.value()),
-            "conversation": float(self.mixture_conversation.value()),
-        }
+        if not hasattr(self, "_mixture_weights_state"):
+            self._mixture_weights_state = {}
+        return {}
 
     def _set_mixture_weights(self, weights: dict[str, Any]) -> None:
         """Restore dataset mixture weights.
@@ -5072,52 +5071,17 @@ class MainWindow(QMainWindow):
             weights: Saved mixture weights by source family.
         """
 
-        self._mixture_weights_state = dict(weights or {})
-        if not hasattr(self, "mixture_local_prose"):
-            return
-        defaults = {
-            **dataset_plan_defaults(),
-            "local_prose": 50.0,
-            "source_code": 30.0,
-            "online_base": 20.0,
-            "instruction": 0.0,
-            "conversation": 0.0,
-        }
-        values = {**defaults, **(weights or {})}
-        widgets = {
-            "local_prose": self.mixture_local_prose,
-            "source_code": self.mixture_source_code,
-            "online_base": self.mixture_online_base,
-            "instruction": self.mixture_instruction,
-            "conversation": self.mixture_conversation,
-        }
-        for key, widget in widgets.items():
-            try:
-                widget.setValue(float(values.get(key, defaults[key])))
-            except (TypeError, ValueError):
-                widget.setValue(defaults[key])
-        self._update_mixture_total()
+        self._mixture_weights_state = {}
 
     def _update_mixture_total(self) -> None:
-        """Refresh the visible dataset mixture total."""
+        """No-op retained for compatibility after mixture percentage removal."""
 
-        if not hasattr(self, "mixture_total_label"):
-            return
-        total = sum(self._mixture_weights_from_ui().values())
-        self.mixture_total_label.setText(f"Total: {total:.1f}%")
-        self.mixture_total_label.setProperty("state", "ok" if abs(total - 100.0) <= 0.1 else "warning")
-        self.mixture_total_label.style().unpolish(self.mixture_total_label)
-        self.mixture_total_label.style().polish(self.mixture_total_label)
+        return
 
     def _normalize_mixture_weights(self) -> None:
-        """Scale dataset mixture values so they total 100 percent."""
+        """No-op retained for compatibility after mixture percentage removal."""
 
-        weights = self._mixture_weights_from_ui()
-        total = sum(weights.values())
-        if total <= 0:
-            self._set_mixture_weights({"local_prose": 100.0})
-            return
-        self._set_mixture_weights({key: value * 100.0 / total for key, value in weights.items()})
+        return
 
     def _training_launch_target_value(self) -> str:
         """Return whether training should launch locally or remotely.
@@ -5155,13 +5119,13 @@ class MainWindow(QMainWindow):
                 "norm_type": "rmsnorm",
                 "position_encoding": "rope",
                 "mlp_type": "swiglu",
-                "rope_theta": 10000.0,
+                "rope_theta": self.rope_theta.value(),
             }
         return {
             "norm_type": "layernorm",
             "position_encoding": "learned",
             "mlp_type": "gelu",
-            "rope_theta": 10000.0,
+            "rope_theta": self.rope_theta.value(),
         }
 
     def _optimizer_value(self) -> str:
@@ -5529,7 +5493,12 @@ class MainWindow(QMainWindow):
             "embedding_size": self.n_embd,
             "head_count": self.n_head,
             "layer_count": self.n_layer,
-            "context_length": self.context_length,
+            # NOT self.context_length -- that is the Dataset tab's tokenizer
+            # window-size setting (DatasetConfig.context_length), an
+            # unrelated dataset-preparation parameter. _current_model_config()
+            # reads self.train_context_length for ModelConfig.context_length,
+            # which is the field resume-compatibility actually checks.
+            "context_length": self.train_context_length,
         }
         for key, widget in mappings.items():
             if key in model_config:
@@ -5542,11 +5511,27 @@ class MainWindow(QMainWindow):
                 self.dropout.setValue(float(model_config["dropout"]))
             except (TypeError, ValueError):
                 LOGGER.warning("Invalid dropout in checkpoint %s: %r", checkpoint_path, model_config["dropout"])
+        if "rope_theta" in model_config:
+            try:
+                self.rope_theta.setValue(float(model_config["rope_theta"]))
+            except (TypeError, ValueError):
+                LOGGER.warning("Invalid rope_theta in checkpoint %s: %r", checkpoint_path, model_config["rope_theta"])
+        if "bias" in model_config:
+            self.use_bias.setChecked(bool(model_config["bias"]))
         norm_type = str(model_config.get("norm_type", "layernorm")).lower()
         position_encoding = str(model_config.get("position_encoding", "learned")).lower()
         mlp_type = str(model_config.get("mlp_type", "gelu")).lower()
         if norm_type == "rmsnorm" or position_encoding == "rope" or mlp_type == "swiglu":
-            self._set_combo_text(self.architecture_style, "Modern LLM")
+            # Must match training_tab.py's actual combo item text exactly
+            # ("Llama-like") -- _set_combo_text() silently no-ops on a
+            # non-editable combo when the text doesn't match any item, so a
+            # wrong string here does not raise or log anything. It used to
+            # say "Modern LLM", which does not exist as an option: this
+            # left architecture_style un-synced while every other field
+            # (n_embd, n_head, n_layer, ...) synced correctly, guaranteeing
+            # a resume-compatibility mismatch on norm_type/position_encoding
+            # /mlp_type with no indication of why.
+            self._set_combo_text(self.architecture_style, "Llama-like")
         else:
             self._set_combo_text(self.architecture_style, "Classic GPT")
         attention_type = str(model_config.get("attention_type", "mha")).lower()
@@ -5607,7 +5592,27 @@ class MainWindow(QMainWindow):
         }.get(self.attention_backend.currentText(), "sdpa")
 
     def apply_training_profile(self) -> None:
-        """Apply the selected optimizer/scheduler profile."""
+        """Apply the selected optimizer/scheduler/regularization profile.
+
+        Each branch below explicitly sets every field it conceptually owns
+        (optimizer, scheduler, LR/regularization, precision/memory knobs,
+        batch shape, and early-stopping patience), even fields that happen
+        to match the previous profile's value. This is deliberate: profiles
+        must be idempotent when switched between, or a field set by a
+        previously applied profile (e.g. activation_checkpointing=True from
+        Low-memory) can silently survive into a later profile that never
+        mentions it, producing a configuration no single profile actually
+        intended.
+
+        Two categories of fields are deliberately NOT touched here:
+          - attention_type / kv_head_count: an architecture choice, not a
+            training-strategy choice. Low-memory sets these to
+            Grouped-query because that specific profile is about reducing
+            memory end-to-end; the other profiles leave whatever the user
+            has selected alone rather than silently reverting it.
+          - training_mode / peft_method / lora_* (Code fine-tune only):
+            these belong to the fine-tuning tab's widgets, not this tab's.
+        """
 
         profile = self.training_profile.currentText()
         if profile == "Low-memory":
@@ -5616,19 +5621,42 @@ class MainWindow(QMainWindow):
             self.learning_rate.setValue(0.0002)
             self.weight_decay.setValue(0.05)
             self.min_lr_ratio.setValue(0.05)
+            self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(1.0)
             self._set_combo_text(self.precision, "BF16" if torch.cuda.is_available() else "FP32")
+            self.use_amp.setChecked(True)
             self._set_combo_text(self.attention_type, "Grouped-query")
             self.kv_head_count.setValue(max(1, self.n_head.value() // 2))
             self.activation_checkpointing.setChecked(True)
+            # The two knobs that most directly control peak memory: shrink
+            # the batch and make up the lost effective batch size with
+            # gradient accumulation, and avoid extra data-loader worker
+            # processes competing for memory.
+            self.batch_size.setValue(4)
+            self.gradient_accumulation.setValue(4)
+            self.data_loader_workers.setValue(0)
+            self.warmup_steps.setValue(100)
+            self.dropout.setValue(0.1)
+            self.early_stopping_patience.setValue(3)
         elif profile == "Code fine-tune":
             self._set_combo_text(self.optimizer_name, "AdamW")
             self._set_combo_text(self.scheduler_name, "Cosine decay")
             self.learning_rate.setValue(0.00005)
             self.weight_decay.setValue(0.05)
             self.min_lr_ratio.setValue(0.1)
+            self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(0.5)
+            self._set_combo_text(self.precision, "FP16")
+            self.use_amp.setChecked(True)
+            self.activation_checkpointing.setChecked(False)
+            self.batch_size.setValue(16)
+            self.gradient_accumulation.setValue(1)
+            self.data_loader_workers.setValue(0)
+            self.warmup_steps.setValue(50)
             self.dropout.setValue(0.05)
+            # Fine-tuning generally needs less patience than a full
+            # pretraining run before validation loss plateaus meaningfully.
+            self.early_stopping_patience.setValue(2)
             self._set_combo_text(self.training_mode, "Fine-tune checkpoint")
             self._set_combo_text(self.peft_method, "LoRA adapters")
             self.lora_rank.setValue(8)
@@ -5641,15 +5669,36 @@ class MainWindow(QMainWindow):
             self.learning_rate.setValue(0.0001)
             self.weight_decay.setValue(0.1)
             self.min_lr_ratio.setValue(0.01)
+            self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(1.0)
+            # Lion is reported to be more sensitive to fp16 under/overflow
+            # than AdamW; prefer bf16 where available, fp32 otherwise.
+            self._set_combo_text(self.precision, "BF16" if torch.cuda.is_available() else "FP32")
+            self.use_amp.setChecked(True)
+            self.activation_checkpointing.setChecked(False)
+            self.batch_size.setValue(16)
+            self.gradient_accumulation.setValue(1)
+            self.data_loader_workers.setValue(0)
+            self.warmup_steps.setValue(100)
+            self.dropout.setValue(0.1)
+            self.early_stopping_patience.setValue(3)
         else:
             self._set_combo_text(self.optimizer_name, "AdamW")
             self._set_combo_text(self.scheduler_name, "Cosine decay")
             self.learning_rate.setValue(0.0003)
             self.weight_decay.setValue(0.1)
             self.min_lr_ratio.setValue(0.1)
+            self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(1.0)
             self._set_combo_text(self.precision, "FP16")
+            self.use_amp.setChecked(True)
+            self.activation_checkpointing.setChecked(False)
+            self.batch_size.setValue(16)
+            self.gradient_accumulation.setValue(1)
+            self.data_loader_workers.setValue(0)
+            self.warmup_steps.setValue(100)
+            self.dropout.setValue(0.1)
+            self.early_stopping_patience.setValue(3)
         self._update_training_mode_controls()
         self.refresh_model_estimate()
         self.training_log.append(f"Applied training profile: {profile}")
@@ -5826,6 +5875,7 @@ class MainWindow(QMainWindow):
             head_count=self.n_head.value(),
             layer_count=self.n_layer.value(),
             dropout=self.dropout.value(),
+            bias=self.use_bias.isChecked(),
             attention_type=self._attention_type_value(),
             kv_head_count=self.kv_head_count.value(),
             attention_backend=self._attention_backend_value(),
@@ -5886,6 +5936,7 @@ class MainWindow(QMainWindow):
             resume_from_checkpoint=resume_path if self.resume_training.isChecked() else None,
             require_compatible_resume=self.resume_safety.isChecked(),
             early_stopping=self.early_stopping.isChecked(),
+            early_stopping_patience=self.early_stopping_patience.value(),
         )
 
     def _current_training_vocab_size(self, data_dir: Path) -> int:
@@ -6030,7 +6081,15 @@ class MainWindow(QMainWindow):
                 self.resume_training_preview.setText("[BLOCK] Could not determine current dataset tokenizer vocabulary size.")
                 return
             model_config = self._current_model_config(vocab_size=vocab_size)
-            training_config = self._current_training_config(resume_path)
+            # Explicit override: this is the AI/Training tab's own "Check
+            # Resume" button, checking a pretrain checkpoint. Without this,
+            # training_mode falls back to reading the separate Fine-Tuning
+            # tab's mode combo (self.training_mode), which defaults to
+            # "Instruction fine-tune" on a fresh session -- resolving to
+            # "fine_tune" and making training_config.validate() below raise
+            # "fine_tune_from_checkpoint is required for fine_tune mode",
+            # a confusing error unrelated to what the user is checking.
+            training_config = self._current_training_config(resume_path, training_mode="pretrain")
             model_config.validate()
             training_config.validate()
             report = check_resume_compatibility(resume_path, model_config, training_config)
@@ -6181,7 +6240,11 @@ class MainWindow(QMainWindow):
         """Refresh model size, rough VRAM, and run history widgets."""
 
         model_config = self._current_model_config()
-        training_config = self._current_training_config()
+        # Same reasoning as preview_resume_compatibility: this is the
+        # AI/Training tab's shared "Model Estimate" card, not the
+        # Fine-Tuning tab's; pass an explicit override rather than
+        # inheriting the Fine-Tuning tab's mode combo by fallback.
+        training_config = self._current_training_config(training_mode="pretrain")
         data_dir = Path(self.train_data_dir.text())
         train_tokens = max(model_config.context_length * training_config.batch_size, 1)
         try:

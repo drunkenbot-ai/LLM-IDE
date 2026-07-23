@@ -12,12 +12,10 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
-    QLineEdit,
     QMenu,
     QPushButton,
     QScrollArea,
     QSizePolicy,
-    QTextEdit,
     QTreeWidget,
     QTreeWidgetItem,
     QVBoxLayout,
@@ -359,28 +357,19 @@ def file_token_vocab_stats(path: Path, sample_bytes: int = 256 * 1024) -> dict[s
         multiplier = size / max(len(raw), 1) if raw and size > len(raw) else 1.0
         return {
             "bytes": size,
+            "characters": int(round(len(text) * multiplier)),
             "tokens": int(round(len(pieces) * multiplier)),
             "vocab": int(round(len(vocab) * min(multiplier, 3.0))),
             "sampled": size > len(raw),
         }
-    return {"bytes": size, "tokens": 0, "vocab": 0, "sampled": False}
+    return {"bytes": size, "characters": 0, "tokens": 0, "vocab": 0, "sampled": False}
 
 
-def file_stats_text(path: Path) -> str:
-    """Return compact size/token/vocab text for the tree viewer."""
+def format_estimate(value: int, sampled: bool) -> str:
+    """Format a numeric estimate for the tree widget."""
 
-    try:
-        stats = file_token_vocab_stats(path)
-    except OSError:
-        return ""
-    size = float(stats["bytes"])
-    for unit in ("B", "KB", "MB", "GB"):
-        if size < 1024 or unit == "GB":
-            size_text = f"{size:.1f} {unit}" if unit != "B" else f"{size:.0f} B"
-            break
-        size /= 1024
-    prefix = "~" if stats.get("sampled") else ""
-    return f"{size_text} | {prefix}{int(stats['tokens']):,} tok | {prefix}{int(stats['vocab']):,} vocab"
+    prefix = "~" if sampled else ""
+    return f"{prefix}{value:,}"
 
 
 def dataset_plan_defaults(default_files: list[tuple[Path, str]] | None = None) -> dict[str, float]:
@@ -430,71 +419,26 @@ def build_dataset_plan_tab(window) -> QWidget:
     layout.setSpacing(12)
 
     title_row = QHBoxLayout()
-    title = QLabel("Dataset Blueprint")
+    title = QLabel("Dataset Sources")
     title.setObjectName("PageTitle")
     active_data_root = blueprint_data_root(window)
     default_files = iter_default_data_files(active_data_root)
-    plan_defaults = dataset_plan_defaults(default_files)
     window.blueprint_data_root = active_data_root
 
-    window.dataset_plan_total_label = QLabel("Total: 100.0%")
-    window.dataset_plan_total_label.setObjectName("Metric")
     window.dataset_plan_source_label = QLabel(f"Source: {active_data_root}")
     window.dataset_plan_source_label.setObjectName("Muted")
+    window.dataset_plan_refresh_button = QPushButton("Refresh")
+    window.dataset_plan_refresh_button.setMaximumWidth(110)
     title_row.addWidget(title)
     title_row.addSpacing(12)
-    title_row.addWidget(window.dataset_plan_total_label)
     title_row.addWidget(window.dataset_plan_source_label, 1)
+    title_row.addWidget(window.dataset_plan_refresh_button)
     title_row.addStretch(1)
     layout.addLayout(title_row)
-
-    preset_row = QHBoxLayout()
-    preset_row.setSpacing(10)
-    preset_label = QLabel("Recipe preset")
-    window.dataset_plan_preset = QComboBox()
-    window.dataset_plan_preset.addItems([*DATASET_DOMAIN_PRESETS.keys(), "Custom"])
-    window.dataset_plan_preset.setMinimumWidth(260)
-    window.dataset_plan_normalize_button = QPushButton("Normalize")
-    window.dataset_plan_apply_button = QPushButton("Apply To Ingestion")
-    preset_row.addWidget(preset_label)
-    preset_row.addWidget(window.dataset_plan_preset)
-    preset_row.addWidget(window.dataset_plan_normalize_button)
-    preset_row.addWidget(window.dataset_plan_apply_button)
-    preset_row.addStretch(1)
-    layout.addLayout(preset_row)
 
     body_grid = QGridLayout()
     body_grid.setHorizontalSpacing(14)
     body_grid.setVerticalSpacing(12)
-
-    domain_grid = QGridLayout()
-    domain_grid.setHorizontalSpacing(14)
-    domain_grid.setVerticalSpacing(6)
-    window.dataset_plan_domain_grid = domain_grid
-    window.dataset_plan_spins = {}
-    for index, (key, value) in enumerate(plan_defaults.items()):
-        spin = window._double_spin(0.0, 100.0, value, 1.0, 1)
-        spin.setMinimumWidth(92)
-        spin.setMaximumHeight(30)
-        spin.valueChanged.connect(window._dataset_plan_mark_custom)
-        spin.valueChanged.connect(window._update_dataset_plan_total)
-        window.dataset_plan_spins[key] = spin
-
-        cell = QWidget()
-        cell_layout = QHBoxLayout(cell)
-        cell_layout.setContentsMargins(0, 0, 0, 0)
-        cell_layout.setSpacing(8)
-        cell_label = QLabel(dataset_category_label(key))
-        cell_label.setMinimumWidth(112)
-        cell_layout.addWidget(cell_label)
-        cell_layout.addWidget(spin, 1)
-        row = index // 3
-        column = index % 3
-        domain_grid.addWidget(cell, row, column)
-
-    domain_card = window._card("TARGET DATA RECIPE", domain_grid)
-    domain_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-    body_grid.addWidget(domain_card, 0, 0, 1, 2)
 
     conversation_form = QFormLayout()
     window._configure_form(conversation_form)
@@ -538,82 +482,73 @@ def build_dataset_plan_tab(window) -> QWidget:
     window.dataset_stage.currentTextChanged.connect(window._update_online_dataset_stage_controls)
     conversation_form.addRow("Rows / set", window.conversation_sample_limit)
     conversation_card = window._card("OPTIONAL EXTERNAL / STRUCTURED DATA", conversation_form)
-    body_grid.addWidget(conversation_card, 1, 0)
+    conversation_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+    conversation_card.setMaximumHeight(250)
+    body_grid.addWidget(conversation_card, 0, 0)
 
     window.default_data_tree_updating = False
     window.default_data_tree = QTreeWidget()
-    window.default_data_tree.setHeaderLabels(["Category / file", "Stats"])
+    window.default_data_tree.setHeaderLabels(["Category / file", "Characters", "Vocab"])
     window.default_data_tree.setRootIsDecorated(True)
     window.default_data_tree.setAlternatingRowColors(False)
     window.default_data_tree.setMinimumHeight(260)
-    window.default_data_tree.setColumnWidth(0, 420)
+    window.default_data_tree.setColumnWidth(0, 360)
+    window.default_data_tree.setColumnWidth(1, 130)
+    window.default_data_tree.setColumnWidth(2, 130)
     window.default_data_actions = {}
     window.default_data_category_items = {}
+    window.default_data_tree.clear()
     grouped_files: dict[str, list[Path]] = {}
     for path, category in default_files:
         grouped_files.setdefault(category, []).append(path)
     for category in sorted(grouped_files, key=dataset_category_label):
-        category_item = QTreeWidgetItem([dataset_category_label(category), f"{len(grouped_files[category])} files"])
+        total_characters = 0
+        total_vocab = 0
+        category_sampled = False
+        category_item = QTreeWidgetItem([dataset_category_label(category), "0", "0"])
         category_item.setData(0, Qt.UserRole, {"kind": "category", "category": category})
         category_item.setFlags(category_item.flags() | Qt.ItemIsUserCheckable)
         category_item.setCheckState(0, Qt.Checked)
         window.default_data_tree.addTopLevelItem(category_item)
         window.default_data_category_items[category] = category_item
         for path in sorted(grouped_files[category], key=lambda item: item.name.lower()):
-            child = QTreeWidgetItem([path.name, file_stats_text(path)])
+            try:
+                stats = file_token_vocab_stats(path)
+            except OSError:
+                stats = {"characters": 0, "vocab": 0, "sampled": False}
+            sampled = bool(stats.get("sampled", False))
+            characters = int(stats.get("characters", 0))
+            vocab = int(stats.get("vocab", 0))
+            child = QTreeWidgetItem([path.name, format_estimate(characters, sampled), format_estimate(vocab, sampled)])
             child.setToolTip(0, str(path))
             child.setData(0, Qt.UserRole, {"kind": "file", "path": str(path), "category": category})
             child.setFlags(child.flags() | Qt.ItemIsUserCheckable)
             child.setCheckState(0, Qt.Checked)
             category_item.addChild(child)
             window.default_data_actions[str(path)] = child
+            total_characters += characters
+            total_vocab += vocab
+            category_sampled = category_sampled or sampled
+        category_item.setText(1, format_estimate(total_characters, category_sampled))
+        category_item.setText(2, format_estimate(total_vocab, category_sampled))
         category_item.setExpanded(False)
     if not window.default_data_actions:
-        window.default_data_tree.addTopLevelItem(QTreeWidgetItem(["No project/default data files were found.", ""]))
+        window.default_data_tree.addTopLevelItem(QTreeWidgetItem(["No project/default data files were found.", "", ""]))
     window.default_data_tree.itemChanged.connect(window._handle_default_data_tree_changed)
     default_layout = QVBoxLayout()
     default_layout.addWidget(window.default_data_tree)
     default_card = window._card("BUNDLED DEFAULT DATA", default_layout)
-    body_grid.addWidget(default_card, 1, 1)
+    body_grid.addWidget(default_card, 0, 1)
     body_grid.setColumnStretch(0, 1)
     body_grid.setColumnStretch(1, 1)
     layout.addLayout(body_grid)
-
-    guide = QTextEdit()
-    guide.setReadOnly(True)
-    guide.setMinimumHeight(230)
-    guide.setPlainText(
-        "Use this panel before ingestion to decide the desired training mix.\n\n"
-        "Recommended starting blend for a small general model:\n"
-        "- 20-25% stories for language flow and simple world modeling.\n"
-        "- 15-20% reasoning for step-by-step tasks and explanations.\n"
-        "- 10-15% social/emotional data for natural conversation tone.\n"
-        "- 10-15% factual knowledge for geography, science, history, and general facts.\n"
-        "- 5-10% mathematics for numeracy and symbolic patterns.\n"
-        "- Add code/technical data when you want coding ability.\n\n"
-        "Apply To Ingestion maps this richer recipe into the current ingestion families: "
-        "local prose, online base, instruction, conversation, and source code. Exact "
-        "domain enforcement will become stronger when files and online datasets are tagged "
-        "by topic in the next dataset-manager pass."
-    )
-    window._tip(
-        guide,
-        "Explains how the high-level domain recipe is converted into ingestion mixture weights.",
-    )
-    guide_layout = QVBoxLayout()
-    guide_layout.addWidget(guide)
-    guide_card = window._card("BLUEPRINT NOTES", guide_layout)
-    layout.addWidget(guide_card, 1)
-
-    window.dataset_plan_preset.currentTextChanged.connect(window.apply_dataset_plan_preset)
-    window.dataset_plan_normalize_button.clicked.connect(window.normalize_dataset_plan)
-    window.dataset_plan_apply_button.clicked.connect(window.apply_dataset_plan_to_ingestion)
-    window._tip(window.dataset_plan_preset, "Choose a starting dataset recipe for the model personality and target ability.")
-    window._tip(window.dataset_plan_normalize_button, "Scale all blueprint percentages so the total is exactly 100 percent.")
-    window._tip(window.dataset_plan_apply_button, "Copy this high-level recipe into the Ingestion tab mixture controls.")
+    window.dataset_plan_refresh_button.clicked.connect(window.refresh_dataset_blueprint_files)
+    window._tip(window.dataset_plan_refresh_button, "Reload this tree to include newly copied files and folders.")
     window._update_online_dataset_stage_controls()
-    window._update_dataset_plan_total()
 
     scroll.setWidget(content)
     outer.addWidget(scroll, 1)
+    window.dataset_plan_progress = window._thin_progress()
+    window.dataset_plan_progress.setVisible(False)
+    outer.addWidget(window.dataset_plan_progress)
     return page

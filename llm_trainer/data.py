@@ -453,6 +453,12 @@ def read_supported_document(
     """
 
     suffix = path.suffix.lower()
+    # Bundled code-training corpora may use .txt or .jsonl containers while
+    # still being intended for code-aware preparation.  Classify those files
+    # by their directory as well as by source-code extension.
+    in_code_training_folder = any(
+        part.lower() == "code_training" for part in path.parts
+    )
     if code_training_mode and suffix in SUPPORTED_CODE_SUFFIXES:
         text = path.read_text(encoding="utf-8", errors="ignore")
         text = clean_code(text, lowercase=lowercase) if preserve_indentation else clean_text(text, lowercase=lowercase)
@@ -467,6 +473,20 @@ def read_supported_document(
         text = read_jsonl(path)
     else:
         return None
+
+    if in_code_training_folder and code_training_mode:
+        text = clean_code(text, lowercase=lowercase)
+        if not text:
+            return None
+        language = next(
+            (
+                language
+                for extension, language in SUPPORTED_CODE_SUFFIXES.items()
+                if path.stem.lower().startswith(extension.lstrip("."))
+            ),
+            None,
+        )
+        return Document(path=path, text=text, kind="code", language=language)
 
     text = clean_text(text, lowercase=lowercase)
     if not text:

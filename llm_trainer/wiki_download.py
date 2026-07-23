@@ -24,7 +24,7 @@ from PySide6.QtGui import *
 # Cleanup Configuration
 # ============================================================
 
-WORDS_PER_CHUNK = 1200
+WORDS_PER_CHUNK = 2000
 
 REMOVE_SECTIONS = [
     "References",
@@ -67,7 +67,7 @@ class WikipediaDownloaderBackend:
     def __init__(self):
         self.api_url = "https://en.wikipedia.org/w/api.php"
         self.session = requests.Session()
-        self.min_request_interval = 1.0
+        self.min_request_interval = 2.0
         self.last_request_time = 0
         self.is_running = False
 
@@ -82,11 +82,12 @@ class WikipediaDownloaderBackend:
     def _make_request(self, params: Dict) -> Dict:
         """Make API request with rate limiting"""
         self._rate_limit()
+        print(params)
         try:
             response = self.session.get(
                 self.api_url,
                 params=params,
-                headers={'User-Agent': 'TinyLLM-Wikipedia-GUI/1.0'}
+                headers={'User-Agent': 'DrunkenBot-Wikipedia-GUI/1.0'}
             )
             response.raise_for_status()
             return response.json()
@@ -312,7 +313,7 @@ class WikipediaDownloaderGUI(QMainWindow):
 
     def init_ui(self):
         """Initialize the user interface"""
-        self.setWindowTitle("Wikipedia Dataset Downloader - TinyLLM")
+        self.setWindowTitle("Wikipedia Dataset Downloader - DrunkenBot")
         self.setGeometry(100, 100, 1100, 800)
 
         # Apply modern color scheme

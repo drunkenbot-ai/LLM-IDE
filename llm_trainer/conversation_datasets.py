@@ -65,10 +65,38 @@ CONVERSATION_DATASET_PRESETS: dict[str, ConversationDatasetPreset] = {
         "wikipedia_en",
         "Wikipedia EN 2023 (large encyclopedia)",
         "wikimedia/wikipedia",
-        "20231101.en",
+        "20250101.en",
         "train",
         "base",
         "Broad encyclopedia prose. Use a row limit unless you intentionally want a large download.",
+    ),
+    "openwebtext": ConversationDatasetPreset(
+        "openwebtext", "OpenWebText (~8M web documents)", "Skylion007/openwebtext",
+        None, "train", "base", "Broad web text for general language pretraining.",
+    ),
+    "bookcorpusopen": ConversationDatasetPreset(
+        "bookcorpusopen", "BookCorpusOpen (books)", "kmfoda/bookcorpus",
+        None, "train", "base", "Long-form literary text and narrative language.",
+    ),
+    "scientific_papers": ConversationDatasetPreset(
+        "scientific_papers", "Scientific Papers (ArXiv)", "scientific_papers",
+        "arxiv", "train", "base", "Scientific writing and technical vocabulary.",
+    ),
+    "pubmed_qa": ConversationDatasetPreset(
+        "pubmed_qa", "PubMed QA", "pubmed_qa", "pqa_labeled",
+        "train", "instruction", "Biomedical question answering.",
+    ),
+    "open_orca": ConversationDatasetPreset(
+        "open_orca", "OpenOrca (~1M instructions)", "Open-Orca/OpenOrca",
+        None, "train", "instruction", "Diverse instruction and reasoning answers.",
+    ),
+    "wizardlm_evol_instruct": ConversationDatasetPreset(
+        "wizardlm_evol_instruct", "WizardLM Evol-Instruct", "WizardLM/WizardLM_evol_instruct_V2_196k",
+        None, "train", "instruction", "Evolved multi-step instruction following.",
+    ),
+    "no_robots": ConversationDatasetPreset(
+        "no_robots", "No Robots (10K conversations)", "HuggingFaceH4/no_robots",
+        None, "train", "conversation", "High-quality multi-turn assistant conversations.",
     ),
     "fineweb_edu": ConversationDatasetPreset(
         "fineweb_edu",
@@ -259,8 +287,12 @@ def load_conversation_documents(
         for row_index, row in enumerate(rows):
             if should_stop and should_stop():
                 raise RuntimeError("Dataset preparation stopped by user.")
-            text = str(row.get("text") or "")
             kind = str(row.get("kind") or "conversation")
+            messages = row.get("messages")
+            if isinstance(messages, list):
+                text = _render_message_list(messages)
+            else:
+                text = str(row.get("text") or "")
             if not text:
                 continue
             preset_documents.append(
@@ -505,6 +537,21 @@ def _conversation_text_from_row(row: dict[str, Any]) -> tuple[str, str]:
     return "", "prose"
 
 
+def _chat_messages_from_text(text: str, kind: str) -> list[dict[str, str]]:
+    """Convert tagged extracted text into the canonical chat message shape."""
+    messages: list[dict[str, str]] = []
+    for line in text.splitlines():
+        if ": " not in line:
+            continue
+        role, content = line.split(": ", 1)
+        role_key = role.strip().lower()
+        if role_key in {"system", "user", "assistant"} and content.strip():
+            messages.append({"role": role_key, "content": content.strip()})
+    if kind == "instruction" and not any(item["role"] == "system" for item in messages):
+        messages.insert(0, {"role": "system", "content": "You are a helpful assistant."})
+    return messages
+
+
 def _render_message_list(messages: list[Any]) -> str:
     """Render common message-list schemas into role-prefixed turns."""
 
@@ -574,7 +621,13 @@ def _extract_preset_to_jsonl(
                     continue
                 if preset.stage == "code":
                     kind = "code"
-                file.write(json.dumps({"text": text, "kind": kind}, ensure_ascii=False) + "\n")
+                messages = _chat_messages_from_text(text, kind)
+                record: dict[str, Any] = {"kind": kind}
+                if messages:
+                    record["messages"] = messages
+                else:
+                    record["text"] = text
+                file.write(json.dumps(record, ensure_ascii=False) + "\n")
                 loaded += 1
                 if loaded % 1000 == 0:
                     print(f"{preset.label}: extracted {loaded:,}/{limit:,} sample(s).", flush=True)
