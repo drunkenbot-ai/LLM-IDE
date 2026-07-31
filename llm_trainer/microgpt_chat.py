@@ -32,7 +32,18 @@ class MicroGPTChatSession:
         self.model_dir = self.model_path.parent
         tokenizer_path = self.model_dir / "tokenizer.json"
         if not tokenizer_path.exists():
-            raise FileNotFoundError(f"Tokenizer not found beside checkpoint: {tokenizer_path}")
+            # Training checkpoints are stored in a child checkpoints folder,
+            # while the tokenizer is copied to the training output directory.
+            output_tokenizer = self.model_dir.parent / "tokenizer.json"
+            if output_tokenizer.exists():
+                tokenizer_path = output_tokenizer
+
+        if not tokenizer_path.exists():
+            raise FileNotFoundError(
+                "Tokenizer not found beside checkpoint or its training output folder: "
+                f"{self.model_path}. Expected {self.model_dir / 'tokenizer.json'} "
+                f"or {self.model_dir.parent / 'tokenizer.json'}."
+            )
         requested_device = device.lower().strip()
         self.device = "cuda" if requested_device == "auto" and torch.cuda.is_available() else requested_device
         if self.device == "cuda" and not torch.cuda.is_available():

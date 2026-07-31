@@ -1041,11 +1041,10 @@ def train_model(
         final_val_loss = checkpoint.get("val_loss")
         # Recompute total_steps to account for the resumed global_step so that
         # progress tracking, ETA, and the LR scheduler use a consistent target.
-        remaining_epochs = max(training_config.epochs - start_epoch, 0)
-        total_steps = global_step + steps_per_epoch * remaining_epochs
-        # Recreate the scheduler against the corrected total_steps and reload
-        # its state so the LR curve stays consistent with the checkpoint.
+        remaining_epochs = max(training_config.epochs - start_epoch, 1)
+        total_steps = max(total_steps, global_step + steps_per_epoch * remaining_epochs, global_step + 1,)
         scheduler = make_scheduler(optimizer, total_steps, training_config)
+        
         if "scheduler_state_dict" in checkpoint and compatibility.can_load_scheduler_state:
             scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
         emit_progress(progress, f"Checkpoint loaded at step {global_step}.", 8)

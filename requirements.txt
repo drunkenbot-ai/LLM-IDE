@@ -12,3 +12,4 @@ Pygments
 pyqtgraph
 psutil
 datasets
+cryptography
