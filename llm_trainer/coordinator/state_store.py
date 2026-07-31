@@ -16,7 +16,7 @@ def default_state_db_path() -> Path:
         Default SQLite database path.
     """
 
-    return Path.home() / ".micro_llm_creator" / "coordinator_state.sqlite3"
+    return Path.home() / ".drunkenbot_ide" / "coordinator_state.sqlite3"
 
 
 class JobStateStore:

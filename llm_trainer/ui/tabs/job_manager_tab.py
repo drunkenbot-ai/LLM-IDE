@@ -102,7 +102,7 @@ def build_job_manager_tab(window) -> QWidget:
     window._tip(window.coordinator_host, "Network address used by the coordinator API. Use 0.0.0.0 to accept workers from other machines.")
     window.coordinator_port = window._spin(1, 65535, 8765)
     window._tip(window.coordinator_port, "Coordinator API port. Remote workers connect to this port.")
-    window.coordinator_artifact_root = QLineEdit(str(Path.home() / ".micro_llm_creator" / "artifacts"))
+    window.coordinator_artifact_root = QLineEdit(str(Path.home() / ".drunkenbot_ide" / "artifacts"))
     window._tip(window.coordinator_artifact_root, "Folder where job input bundles and uploaded worker result bundles are stored.")
     window.coordinator_public_url = QLineEdit("http://127.0.0.1:8765")
     window._tip(window.coordinator_public_url, "URL workers use to reach this coordinator. Use this machine's LAN/IP address for remote machines.")

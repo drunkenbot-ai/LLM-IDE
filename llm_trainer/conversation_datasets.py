@@ -442,7 +442,7 @@ def _load_preset_rows_in_subprocess(
     if return_code != 0:
         raise RuntimeError(
             f"Hugging Face dataset loader exited with code {return_code} while loading {preset.label}. "
-            "Check micro_llm_creator.log and micro_llm_creator_faults.log."
+            "Check drunkenbot_ide.log and drunkenbot_ide_faults.log."
         )
     if not output_path.exists():
         raise RuntimeError(f"Hugging Face extraction did not create output: {output_path}")

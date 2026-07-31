@@ -64,7 +64,7 @@ class WorkerClientConfig:
     heartbeat_interval_seconds: int = 10
     execute_jobs: bool = False
     claim_once: bool = False
-    workspace_dir: Path = field(default_factory=lambda: Path.home() / ".micro_llm_creator" / "worker_workspace")
+    workspace_dir: Path = field(default_factory=lambda: Path.home() / ".drunkenbot_ide" / "worker_workspace")
 
 
 class CoordinatorHttpClient:

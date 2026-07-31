@@ -101,6 +101,8 @@ from llm_trainer.ui.tabs.training_tab import build_training_tab
 from llm_trainer.ui.tabs.export_tab import build_export_tab
 from llm_trainer.ui.tabs.fine_tuning_tab import build_fine_tuning_tab
 from llm_trainer.ui.tabs.job_manager_tab import build_job_manager_tab, set_table_rows
+from llm_trainer.license_client import load_stored_license_key
+from llm_trainer.ui.license_activation_dialog import LicenseActivationDialog, run_license_check_responsively
 
 try:
     import psutil
@@ -109,9 +111,19 @@ except ImportError:
 
 
 APP_NAME = "DrunkenBot LLM-IDE"
+# Bump on every release that should require a version-ceiling check against
+# licenses -- this is what license_client.check_license_at_launch compares
+# against a license's version_ceiling/grace_period_until.
+APP_VERSION = "1.0.0"
+# TODO: point at the real deployed cloud-service URL once it has one.
+# Overridable via env var so ops can point a build at a different
+# deployment (dev/staging/prod) without a code change or rebuild.
+# LICENSE_SERVER_URL = os.environ.get("DRUNKENBOT_LICENSE_SERVER_URL", "https://license.drunkenbot.ai")
+# LICENSE_SERVER_URL = "http://127.0.0.1:8000/"
+LICENSE_SERVER_URL = "https://drunkenbot.pythonanywhere.com"
 WINDOWS_APP_ID = "DrunkenBot.LLMIDE"
 LOGGER = logging.getLogger(__name__)
-APP_HOME_DIR = Path.home() / ".micro_llm_creator"
+APP_HOME_DIR = Path.home() / ".drunkenbot_ide"
 DEFAULT_CACHE_DIR = APP_HOME_DIR / "cache"
 DEFAULT_PROJECTS_DIR = APP_HOME_DIR / "projects"
 RECENT_PROJECTS_PATH = APP_HOME_DIR / "recent_projects.json"
@@ -2845,7 +2857,7 @@ class MainWindow(QMainWindow):
         fine_tune_dir = runs_dir / "fine_tune"
         export_dir = runs_dir / "export"
         return {
-            "schema": "micro_llm_creator_project",
+            "schema": "drunkenbot_ide_project",
             "version": 1,
             "project_name": "",
             "project_dir": "",
@@ -2952,7 +2964,7 @@ class MainWindow(QMainWindow):
             "distributed": {
                 "host": "0.0.0.0",
                 "port": 8765,
-                "artifact_root": str(Path.home() / ".micro_llm_creator" / "artifacts"),
+                "artifact_root": str(Path.home() / ".drunkenbot_ide" / "artifacts"),
                 "public_url": "http://127.0.0.1:8765",
             },
             "artifacts": {},
@@ -3076,7 +3088,7 @@ class MainWindow(QMainWindow):
                 # saved before this field existed.
                 created_at = str(existing_data.get("created_at") or existing_data.get("saved_at") or now_iso)
         return {
-            "schema": "micro_llm_creator_project",
+            "schema": "drunkenbot_ide_project",
             "version": 1,
             "project_name": project_name,
             "project_dir": str(project_dir),
@@ -3612,6 +3624,8 @@ class MainWindow(QMainWindow):
         if self.active_log is None or self.active_progress_bar is None:
             return
         LOGGER.error("Background task failed: %s", message)
+        if self.active_task_kind == "chat":
+            self.chat_status.setText(f"Chat: load failed - {message}")
         self._task_failed(message, self.active_log, self.active_progress_bar)
 
     def stop_active_task(self) -> None:
@@ -6930,6 +6944,7 @@ class MainWindow(QMainWindow):
             self.chat_progress,
             button=self.load_llm_button,
             busy_text="Loading Model",
+            task_kind="chat",
         )
 
     @Slot(object)
@@ -7203,6 +7218,62 @@ class MainWindow(QMainWindow):
             self.n_layer.setValue(8)
 
 
+def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
+    """Block app launch until a valid license is confirmed.
+
+    Checks the currently stored license key (if any). On failure, shows
+    :class:`LicenseActivationDialog` in a loop -- unlike the general
+    startup-validation flow elsewhere in ``main()``, there is deliberately
+    no "continue anyway" option here: an unlicensed launch is not a
+    degraded-but-usable state, it's the one thing this app must not do.
+
+    Args:
+        splash: Startup splash screen, used to show progress.
+
+    Returns:
+        True if the app is licensed to proceed, False if the user cancelled
+        activation and the app should exit.
+    """
+
+    splash.append_log("Checking license...")
+    QApplication.processEvents()
+
+    stored_key = load_stored_license_key()
+    if stored_key:
+        result = run_license_check_responsively(APP_VERSION, LICENSE_SERVER_URL)
+        if result.valid:
+            splash.append_log(
+                "✓ License valid"
+                + (" (offline grace period)" if result.used_offline_grace else "")
+            )
+            return True
+        initial_message = result.reason
+    else:
+        initial_message = "No license activated on this machine yet."
+
+    # A QSplashScreen-style window is designed to stay on top of other
+    # windows during startup -- which means it can end up covering a newly
+    # created dialog instead of the other way around. Hide it while the
+    # dialog is up rather than fight window-stacking order; it isn't doing
+    # anything useful to look at during activation anyway.
+    splash.hide()
+    try:
+        while True:
+            dialog = LicenseActivationDialog(APP_VERSION, LICENSE_SERVER_URL, initial_message)
+            dialog.setWindowIcon(MainWindow._static_app_icon())
+            dialog.show()
+            dialog.raise_()
+            dialog.activateWindow()
+            if dialog.exec() != QDialog.Accepted:
+                LOGGER.info("License activation cancelled by user; exiting.")
+                return False
+            splash.append_log("✓ License activated")
+            return True
+    finally:
+        splash.show()
+        splash.raise_()
+
+
 def main() -> None:
     """Launch the PySide6 desktop application."""
 
@@ -7222,6 +7293,9 @@ def main() -> None:
     splash.show()
     QTimer.singleShot(0, lambda: _apply_windows_taskbar_icon(splash))
     QApplication.processEvents()
+    if not _ensure_valid_license(splash):
+        splash.close()
+        return
     try:
         _run_startup_validations(splash)
     except Exception as exc:

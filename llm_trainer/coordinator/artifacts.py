@@ -15,7 +15,7 @@ def default_artifact_root() -> Path:
         Artifact root path.
     """
 
-    return Path.home() / ".micro_llm_creator" / "artifacts"
+    return Path.home() / ".drunkenbot_ide" / "artifacts"
 
 
 def create_job_artifact_bundle(

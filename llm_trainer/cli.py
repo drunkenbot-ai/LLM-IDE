@@ -383,7 +383,7 @@ def build_parser() -> argparse.ArgumentParser:
     worker_parser.add_argument("--heartbeat-interval", type=int, default=10)
     worker_parser.add_argument(
         "--workspace-dir",
-        default=str(Path.home() / ".micro_llm_creator" / "worker_workspace"),
+        default=str(Path.home() / ".drunkenbot_ide" / "worker_workspace"),
     )
     worker_parser.add_argument("--claim-once", action="store_true")
     worker_parser.add_argument("--execute", action="store_true")

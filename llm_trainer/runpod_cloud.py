@@ -58,7 +58,7 @@ def default_runpod_config_path(project_dir: Optional[Path] = None) -> Path:
 
     if project_dir is not None:
         return project_dir / "runpod_config.json"
-    return Path.home() / ".micro_llm_creator" / "runpod_config.json"
+    return Path.home() / ".drunkenbot_ide" / "runpod_config.json"
 
 
 def ensure_runpod_config(path: Path) -> Path:

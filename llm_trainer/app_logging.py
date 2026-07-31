@@ -10,8 +10,8 @@ import traceback
 from typing import Optional
 
 
-DEFAULT_LOG_DIR = Path.home() / ".micro_llm_creator" / "logs"
-DEFAULT_LOG_PATH = DEFAULT_LOG_DIR / "micro_llm_creator.log"
+DEFAULT_LOG_DIR = Path.home() / ".drunkenbot_ide" / "logs"
+DEFAULT_LOG_PATH = DEFAULT_LOG_DIR / "drunkenbot_ide.log"
 _FAULT_LOG_HANDLE: Optional[object] = None
 _CONFIGURED_PATH: Optional[Path] = None
 
@@ -111,6 +111,6 @@ def _enable_fault_logging(active_path: Path) -> None:
     global _FAULT_LOG_HANDLE
     if _FAULT_LOG_HANDLE is not None:
         return
-    fault_path = active_path.with_name("micro_llm_creator_faults.log")
+    fault_path = active_path.with_name("drunkenbot_ide_faults.log")
     _FAULT_LOG_HANDLE = fault_path.open("a", encoding="utf-8")
     faulthandler.enable(file=_FAULT_LOG_HANDLE, all_threads=True)

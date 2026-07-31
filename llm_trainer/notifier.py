@@ -62,7 +62,7 @@ def default_notifier_config_path(project_dir: Optional[Path] = None) -> Path:
 
     if project_dir is not None:
         return project_dir / "notifier_config.json"
-    return Path.home() / ".micro_llm_creator" / "notifier_config.json"
+    return Path.home() / ".drunkenbot_ide" / "notifier_config.json"
 
 
 def ensure_notifier_config(path: Path) -> Path:
