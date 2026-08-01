@@ -121,7 +121,7 @@ APP_VERSION = "1.0.0"
 # deployment (dev/staging/prod) without a code change or rebuild.
 # LICENSE_SERVER_URL = os.environ.get("DRUNKENBOT_LICENSE_SERVER_URL", "https://license.drunkenbot.ai")
 # LICENSE_SERVER_URL = "http://127.0.0.1:8000/"
-LICENSE_SERVER_URL = "https://drunkenbot.pythonanywhere.com"
+LICENSE_SERVER_URL = "https://drunkenbot.store"
 WINDOWS_APP_ID = "DrunkenBot.LLMIDE"
 LOGGER = logging.getLogger(__name__)
 APP_HOME_DIR = Path.home() / ".drunkenbot_ide"
