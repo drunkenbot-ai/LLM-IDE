@@ -520,20 +520,20 @@ general expenses of the service. The following table exhibits the
 expenditures of the government on account of the Indian service for the
 twelve years 1861 to 1872:--
 
-  Year.  Expenditures on Indian Account.
+Year.  Expenditures on Indian Account.
 
-  1861   $2,865,481.17
-  1862    2,327,948.37
-  1863    3,152,032.70
-  1864    2,629,975.97
-  1865    5,059,360.71
-  1866    3,295,729.32
-  1867    4,642,531.77
-  1868    4,100,682.32
-  1869    7,042,923.06
-  1870    3,407,938.15
-  1871    7,426,997.44
-  1872    7,061,728.82
+1861   $2,865,481.17
+1862    2,327,948.37
+1863    3,152,032.70
+1864    2,629,975.97
+1865    5,059,360.71
+1866    3,295,729.32
+1867    4,642,531.77
+1868    4,100,682.32
+1869    7,042,923.06
+1870    3,407,938.15
+1871    7,426,997.44
+1872    7,061,728.82
 
 Now, it must honestly be confessed, that the United-States Government,
 in such dealings with Indian tribes as have been recited, does not act a
@@ -4324,32 +4324,32 @@ by them respectively.
 The following table will exhibit the population of each of these tribes,
 as nearly as the same can be ascertained:--
 
-  Blackfeet, Bloods, and Piegans                        7,500
+Blackfeet, Bloods, and Piegans                        7,500
 
-  Assinaboines                                          4,790
+Assinaboines                                          4,790
 
-  Gros Ventres                                          1,100
+Gros Ventres                                          1,100
 
-  Santee, Yanktonais, Uncpapa, and Cut-Head Sioux,
+Santee, Yanktonais, Uncpapa, and Cut-Head Sioux,
     at Milk River agency                                2,625
 
-  River Crows                                           1,240
+River Crows                                           1,240
 
-  Mountain Crows                                        2,700
+Mountain Crows                                        2,700
 
-  Flatheads                                               460
+Flatheads                                               460
 
-  Pend d'Oreilles                                       1,000
+Pend d'Oreilles                                       1,000
 
-  Kootenays                                               320
+Kootenays                                               320
 
-  Shoshones, Bannocks, and Sheep-Eaters                   677
+Shoshones, Bannocks, and Sheep-Eaters                   677
 
-  Roving Sioux, commonly called Teton Sioux,
+Roving Sioux, commonly called Teton Sioux,
     including those gathered during 1872, at
     and near Fort Peck, (largely estimated)             8,000
                                                       -------
-  Estimated total                                      30,412
+Estimated total                                      30,412
 
 The number of northern Cheyennes and Arapahoes roaming in Montana, who,
 it is believed, have co-operated with the Sioux under "Sitting Bull,"

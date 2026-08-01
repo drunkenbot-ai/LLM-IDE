@@ -5,29 +5,15 @@ from __future__ import annotations
 import importlib
 import sys
 from threading import Thread
-from typing import Any, Optional
+from typing import Any
 
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication
+
+from llm_trainer.ui.startup_splash import StartupSplash
 
 
-class BootstrapSplash(QWidget):
-    """Show feedback while the heavyweight UI module is imported."""
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.setWindowTitle("DrunkenBot LLM-IDE")
-        self.setMinimumSize(420, 180)
-        layout = QVBoxLayout(self)
-        self.status = QLabel("Starting DrunkenBot LLM-IDE...\nLoading application components.")
-        self.status.setWordWrap(True)
-        layout.addWidget(self.status)
-
-    def append_log(self, message: str) -> None:
-        self.status.setText(f"{self.status.text()}\n{message}")
-
-
-def _load_app_module(result: dict[str, Any]) -> None:
+def _load_app(result: dict[str, Any]) -> None:
     try:
         result["module"] = importlib.import_module("llm_trainer.ui.app")
     except Exception as exc:
@@ -35,34 +21,29 @@ def _load_app_module(result: dict[str, Any]) -> None:
 
 
 def main() -> None:
-    """Start with a lightweight splash before importing ML/UI dependencies."""
-
     app = QApplication(sys.argv)
-    splash = BootstrapSplash()
+    splash = StartupSplash()
     splash.show()
     app.processEvents()
+    splash.append_log("Preparing application components...")
 
     result: dict[str, Any] = {}
-    splash.append_log("Preparing Python and ML dependencies...")
-    loader = Thread(target=_load_app_module, args=(result,), daemon=True)
+    loader = Thread(target=_load_app, args=(result,), daemon=True)
     loader.start()
-
     poll = QTimer()
 
-    def finish_import() -> None:
+    def continue_startup() -> None:
         if loader.is_alive():
             return
         poll.stop()
-        error: Optional[BaseException] = result.get("error")
-        if error is not None:
-            splash.append_log(f"Unable to load application: {error}")
+        if "error" in result:
+            splash.append_log(f"Unable to load application: {result['error']}")
             return
-        splash.close()
-        result["module"].main(app=app)
+        result["module"].main(app=app, splash=splash)
 
-    poll.timeout.connect(finish_import)
+    poll.timeout.connect(continue_startup)
     poll.start(50)
-    app.exec()
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

@@ -105,11 +105,11 @@ measured loose and packed in barrels:
                                                       Per cent
 Brand              Vol. Barrel   Vol. Packed   Vol. Loose   Increase
 Portland.          cu. ft.         cu. ft.      cu. ft.     in bulk
-  Giant              3.5            3.35         4.17        25
-  Atlas              3.45           3.21         3.75        18
-  Saylors            3.25           3.15         4.05        30
-  Alsen              3.22           3.16         4.19        33
-  Dyckerhoff         3.12           3.03         4.00        33
+Giant              3.5            3.35         4.17        25
+Atlas              3.45           3.21         3.75        18
+Saylors            3.25           3.15         4.05        30
+Alsen              3.22           3.16         4.19        33
+Dyckerhoff         3.12           3.03         4.00        33
 
 Mr. Clarence M. Foster is authority for the statement that Utica cement
 barrels measure 16-1/4 ins. across at the heads, 19½ ins. across the
@@ -519,19 +519,19 @@ was the cost of producing 200 cu. yds. per day:
 
                                         Per day.  Per cu. yd.
 
-  3 drillers at $2.75                     $ 8.25    $0.041
-  3 helpers at $1.75                        5.25     0.026
- 10 men barring out and sledging           15.00     0.075
- 14 men loading carts                      21.00     0.105
-  4 cart horses                             6.00     0.030
-  2 cart drivers                            3.00     0.015
-  2 men dumping carts and feeding crusher   3.00     0.015
-  1 fireman for drill boiler                2.50     0.013
-  1 engineman for crusher                   3.00     0.015
-  1 blacksmith                              3.00     0.015
-  1 blacksmith helper                       2.00     0.010
-  1 foreman                                 5.00     0.025
-  2 tons coal at $3.50                      7.00     0.035
+3 drillers at $2.75                     $ 8.25    $0.041
+3 helpers at $1.75                        5.25     0.026
+10 men barring out and sledging           15.00     0.075
+14 men loading carts                      21.00     0.105
+4 cart horses                             6.00     0.030
+2 cart drivers                            3.00     0.015
+2 men dumping carts and feeding crusher   3.00     0.015
+1 fireman for drill boiler                2.50     0.013
+1 engineman for crusher                   3.00     0.015
+1 blacksmith                              3.00     0.015
+1 blacksmith helper                       2.00     0.010
+1 foreman                                 5.00     0.025
+2 tons coal at $3.50                      7.00     0.035
 150 lbs. 40% dynamite at 15 cts.           22.50     0.113
                                           ------   -------
       Total                              $106.50    $0.533
@@ -895,7 +895,7 @@ determined for sands from different localities in the United States.
 
 TABLE II.--SHOWING GRANULOMETRIC COMPOSITIONS OF DIFFERENT SANDS.
 
-   Held by a Sieve.        A       B        C        E
+Held by a Sieve.        A       B        C        E
 No.  10                  35.3%
 No.  20                  32.1    12.8%     4.2%     11%
 No.  30                  14.6    49.0     12.5      14
@@ -914,7 +914,7 @@ Voids                    33%     39%      41.7%     31%
 TABLE III.--SHOWING MEASURED VOIDS IN SAND FROM DIFFERENT LOCALITIES.
 
                                               Percent
- Locality.                  Authority.         Voids.     Remarks.
+Locality.                  Authority.         Voids.     Remarks.
 
 Ohio River                  W. M. Hall          31         Washed
 Sandusky, O.                C. E. Sherman       40         Lake
@@ -955,12 +955,12 @@ Size.      Loading.           of Voids.
 1½ in.     15-ft. drop          46.8
 1½ in.     15-ft. drop          46.8
 1½ in.     Shovels              50.5
- ¾ in.     20-ft. drop          39.4
- ¾ in.     15-ft. drop          42.7
- ¾ in.     15-ft. drop          41.5
- ¾ in.     15-ft. drop          41.8
- ¾ in.     Shovels              45.2
- ¾ in.     Shovels              44.6
+¾ in.     20-ft. drop          39.4
+¾ in.     15-ft. drop          42.7
+¾ in.     15-ft. drop          41.5
+¾ in.     15-ft. drop          41.8
+¾ in.     Shovels              45.2
+¾ in.     Shovels              44.6
 3/8 in.    Shovels              41.0
 3/8 in.    Shovels              40.6
 3/8 in.    Shovels              41.0
@@ -981,7 +981,7 @@ VARIOUS COMMON ROCKS.
 --------------------+--------+------------------------------------------------
 Sabin               |  49.0  | Limestone, crusher run after screening out
                     |        |   1/8-in. and under.
-  "                 |  44.0  | Limsetone (1 part screenings mixed with
+"                 |  44.0  | Limsetone (1 part screenings mixed with
                     |        |   6 parts broken stone).
 Wm. M. Black        |  46.5  | Screened and washed, 2-ins. and under.
 J. J. R. Croes      |  47.5  | Gneiss, after screening out ¼-in. and under.
@@ -990,18 +990,18 @@ H. P. Broadman      |39 to 42| Chicago limestone, crusher run.
         "           |48 to 52|    "       "       screened into sizes.
 Wm. M. Hall         |  48.0  | Green River limestone, 2½-ins. and smaller
                     |        |   dust screened out.
-   "                |  50.0  | Hudson River trap, 2½-ins. and smaller,
+"                |  50.0  | Hudson River trap, 2½-ins. and smaller,
                     |        |   dust screened out.
 Wm. B. Fuller       |  47.6  | New Jersey trap, crusher run, 1/6 to 2.1 in.
 Geo. A. Kimball     |  49.5  | Roxbury conglomerate, ½ to 2½ ins.
 Myron S. Falk       |  48.0  | Limestone, ½ to 3 ins.
 W. H. Henby         |  43.0  |     "      2-in size.
-   "                |  46.0  |     "      1½-in size
+"                |  46.0  |     "      1½-in size
 Feret               |  53.4  | Stone, 1.6 to 2.4 ins.
-  "                 |  51.7  |   "    0.8 to 1.6 in.
-  "                 |  52.1  |   "    0.4 to 0.8 in.
+"                 |  51.7  |   "    0.8 to 1.6 in.
+"                 |  52.1  |   "    0.4 to 0.8 in.
 A. W. Dow           |  45.3  | Bluestone, 89% being 1½ to 2½ ins.
-   "                |  45.3  |     "      90% being 1/6 to 1½ in.
+"                |  45.3  |     "      90% being 1/6 to 1½ in.
 Taylor and Thompson |  54.5  | Trap, hard, 1 to 2½ ins.
     "               |  54.5  |   "    "    ½ to 1 in.
     "               |  45.0  |   "    "    0 to 2½ in.
@@ -1018,7 +1018,7 @@ DIFFERENT GRANULOMETRIC COMPOSITIONS.
                                        /--Per cent Voids in--\
 Passing a ring of   2.4"   1.6"  0.8"   Round        Broken
 Held by a ring      1.6"   0.8"  0.4"   Pebbles.     Stone.
-  Parts              1      0     0      40.0         53.4
+Parts              1      0     0      40.0         53.4
     "                0      1     0      38.8         51.7
     "                0      0     1      41.7         52.1
     "                1      1     0      35.8         50.5
@@ -1068,13 +1068,13 @@ determinations were made by Mr. Wm. M. Hall for mixtures of blue
 limestone and Ohio River washed gravel:
 
 Per cent.         Per cent.   Per cent.
- Stone.            Gravel.  Voids in Mix
+Stone.            Gravel.  Voids in Mix
 
-  100     with        0          48
-   80      "         20          44
-   70      "         30          41
-   60      "         40          38½
-   50      "         50          36
+100     with        0          48
+80      "         20          44
+70      "         30          41
+60      "         40          38½
+50      "         50          36
     0      "        100          35
 
 The dust was screened from the stone all of which passed a 2½-in. ring;
@@ -1082,11 +1082,11 @@ the gravel all passed a 1½-in. screen. Using the same sizes of gravel
 and Hudson River trap rock, the results were:
 
 Per cent.     Per cent.           Per cent.
- Trap.         Gravel.          Voids in Mix.
+Trap.         Gravel.          Voids in Mix.
 
-  100    with     0                  50
-   60     "      40                  38½
-   50     "      50                  36
+100    with     0                  50
+60     "      40                  38½
+50     "      50                  36
     0     "     100                  35
 
 The weight of a cubic foot of loose gravel or stone is not an accurate
@@ -1104,22 +1104,22 @@ TABLE VI.--SPECIFIC GRAVITY OF STONE. (Condensed from Merrill's "Stones
 for Building.")
 
 Trap, Boston, Mass.                            2.78
-  "   Duluth, Minn.                     2.8 to 3.0
-  "   Jersey City, N. J.                       3.03
-  "   Staten Island, N. Y.                     2.86
+"   Duluth, Minn.                     2.8 to 3.0
+"   Jersey City, N. J.                       3.03
+"   Staten Island, N. Y.                     2.86
 Gneiss, Madison Ave., N. Y.                    2.92
 Granite, New London, Conn.                     2.66
-   "     Greenwich, Conn.                      2.84
-   "     Vinalhaven, Me.                       2.66
-   "     Quincy, Mass.                         2.66
-   "     Barre, Vt.                            2.65
+"     Greenwich, Conn.                      2.84
+"     Vinalhaven, Me.                       2.66
+"     Quincy, Mass.                         2.66
+"     Barre, Vt.                            2.65
 Limestone, Joliet, Ill.                        2.56
     "      Quincy, Ill.                2.51 to 2.57
- Limestone, (oolitic) Bedford, Ind.    2.25 to 2.45
+Limestone, (oolitic) Bedford, Ind.    2.25 to 2.45
      "      Marquette, Mich.                   2.34
      "      Glens Falls, N.Y.                  2.70
      "      Lake Champlain, N. Y.              2.75
- Sandstone, Portland, Conn.                    2.64
+Sandstone, Portland, Conn.                    2.64
      "      Haverstraw, N. Y.                  2.13
      "      Medina, N. Y.                      2.41
      "      Potsdam, N. Y.                     2.60
@@ -1181,23 +1181,23 @@ FOR DIFFERENT SPECIFIC GRAVITIES.
 Specific per       per                 when Voids are
 Gravity. cu. ft.   cu. yd.   30%      35%      40%      45%      50%
 
-  1.0     62.355   1,684    1,178    1,094    1,010      926      842
-  2.0    124.7     3,367    2,357    2,187    2,020    1,852    1,684
-  2.1    130.9     3,536    2,475    2,298    2,121    1,945    1,768
-  2.2    137.2     3,704    2,593    2,408    2,222    2,037    1,852
-  2.3    143.4     3,872    2,711    2,517    2,323    2,130    1,936
-  2.4    149.7     4,041    2,828    2,626    2,424    2,222    2,020
-  2.5    155.9     4,209    2,946    2,736    2,525    2,315    2,105
-  2.6    162.1     4,377    3,064    2,845    2,626    2,408    2,189
-  2.7    168.4     4,546    3,182    2,955    2,727    2,500    2,273
-  2.8    174.6     4,714    3,300    3,064    2,828    2,593    2,357
-  2.9    180.9     4,882    3,418    3,174    2,929    2,685    2,441
-  3.0    187.1     5,051    3,536    3,283    3,030    2,778    2,526
-  3.1    193.3     5,219    3,653    3,392    3,131    2,871    2,609
-  3.2    199.5     5,388    3,771    3,502    3,232    2,963    2,694
-  3.3    205.8     5,556    3,889    3,611    3,333    3,056    2,778
-  3.4    212.0     5,724    4,007    3,721    3,434    3,148    2,862
-  3.5    218.3     5,893    4,125    3,830    3,535    3,241    2,947
+1.0     62.355   1,684    1,178    1,094    1,010      926      842
+2.0    124.7     3,367    2,357    2,187    2,020    1,852    1,684
+2.1    130.9     3,536    2,475    2,298    2,121    1,945    1,768
+2.2    137.2     3,704    2,593    2,408    2,222    2,037    1,852
+2.3    143.4     3,872    2,711    2,517    2,323    2,130    1,936
+2.4    149.7     4,041    2,828    2,626    2,424    2,222    2,020
+2.5    155.9     4,209    2,946    2,736    2,525    2,315    2,105
+2.6    162.1     4,377    3,064    2,845    2,626    2,408    2,189
+2.7    168.4     4,546    3,182    2,955    2,727    2,500    2,273
+2.8    174.6     4,714    3,300    3,064    2,828    2,593    2,357
+2.9    180.9     4,882    3,418    3,174    2,929    2,685    2,441
+3.0    187.1     5,051    3,536    3,283    3,030    2,778    2,526
+3.1    193.3     5,219    3,653    3,392    3,131    2,871    2,609
+3.2    199.5     5,388    3,771    3,502    3,232    2,963    2,694
+3.3    205.8     5,556    3,889    3,611    3,333    3,056    2,778
+3.4    212.0     5,724    4,007    3,721    3,434    3,148    2,862
+3.5    218.3     5,893    4,125    3,830    3,535    3,241    2,947
 
 In buying broken stone by the cubic yard it should be remembered that
 hauling in a wagon compacts the stone by shaking it down and reduces the
@@ -1229,7 +1229,7 @@ OF HAUL ON ORDINARILY GOOD ROAD IN WAGONS.
 [Transcriber's Note: Table split]
 
 -----------+------------+---------------------------------------------------+
-  Size.    |  Method of |                                                   |
+Size.    |  Method of |                                                   |
            |   Loading. |      Per cent Settlement for Hauling.             |
            |            +---------------------------------------------------+
            |            |100'|200'|300'|400'|500'|600'|700'|½ Mile|1 Mile   |
@@ -1255,7 +1255,7 @@ Screenings |15 ft. drop | 5.0| 9.6|10.2|10.2|10.4|10.4|10.4| 12.4 | ....    |
    [Footnote C: Same per cent of settlement for two-mile haul.]
 
 -----------+------------+-----------------
-  Size.    |  Method of |  Weight per
+Size.    |  Method of |  Weight per
            |   Loading. |  Cu. Yd. in Lbs.
            |            +-----------------
            |            | At    | At
@@ -1589,8 +1589,8 @@ Spc. Vol.|Barrels of Cement per Cubic Yard of Concrete for Mixtures of
 of bbl.  +-------+-------+-------+-------+-------+-------+------------
 cu. ft.  |  1-5  |  1-6  |  1-7  |  1-8  |  1-9  |  1-10 |  1-12
 ---------+-------+-------+-------+-------+-------+-------+------------
- 3.8     | 1.41  | 1.18  | 1.01  | 0.874 | 0.789 | 0.71  |  0.59
- 4.4     | 1.25  | 1.02  | 0.875 | 0.766 | 0.681 | 0.61  |  0.51
+3.8     | 1.41  | 1.18  | 1.01  | 0.874 | 0.789 | 0.71  |  0.59
+4.4     | 1.25  | 1.02  | 0.875 | 0.766 | 0.681 | 0.61  |  0.51
 ---------+-------+-------+-------+-------+-------+-------+------------
 
 ~PERCENTAGE OF WATER IN CONCRETE.~--Tests show that dry mixtures when
@@ -3400,10 +3400,10 @@ cubic yard:
 
                        -------------Stone----------
 Class. Excess Mortar.    1¼-2.      ½-1¼.    1/8-½.    Sand.  Cement.
-  A         7.5%       1,500        661½     333¼       804    434
-  B        12.5        1,433-1/3    637      318        858½   463
-  C        12.5        1,434        637      318½       859    474
-  D        15          1,402        623      312        884    484
+A         7.5%       1,500        661½     333¼       804    434
+B        12.5        1,433-1/3    637      318        858½   463
+C        12.5        1,434        637      318½       859    474
+D        15          1,402        623      312        884    484
 
 [Illustration: Fig. 37.--Apparatus Used for Weighing Concrete Materials
 at Barossa Dam.]
@@ -4662,8 +4662,8 @@ Feet.               Lbs.       Lbs.       Lbs.       Lbs.
 14                 .....         700        900      1,100
 12                   600         800      1,000      1,200
 10                   700         900      1,100      1,200
- 8                   850       1,050      1,200      1,200
- 6                 1,000       1,200      1,200      1,200
+8                   850       1,050      1,200      1,200
+6                 1,000       1,200      1,200      1,200
 
 In using this table it must be borne in mind that bracing both ways
 reduces the length of a long strut. For example, if a strut 24 ft. long
@@ -5550,7 +5550,7 @@ rings, lagging, concrete, power, light, labor, etc."
 From the above data the following figures of cost can be arrived at,
 assuming a 6-ft. caisson:
 
-  Labor.                                Per day.
+Labor.                                Per day.
 2 diggers in caisson, at $3.60            $ 7.20
 1 top man, at $3.20                         3.20
 1 mucker, at $2.40                          2.40
@@ -5572,7 +5572,7 @@ following:
 0.7 cu. yd. concrete at $5                             3.50
 Electric light                                         0.10
                                                      ------
-  Total                                              $10.00
+Total                                              $10.00
 
 If 3×6-in. lagging is used add 50 cts. per lin. ft. of caisson.
 
@@ -5692,37 +5692,37 @@ actual cost of molding and sinking a 26-ft. pile with bulb point and
 knee braces complete:
 
                                                                 Cost per
-  Forms--                                                          pile.
+Forms--                                                          pile.
 Lumber, 340 ft. B. M. @ $30                          $10.20
 Labor (carpenters @ $2.50 per day)                    12.00
 Oil, nails, oakum, bolts, clamps, etc.                 1.20
                                                     -------
                                                      $23.40       $ 3.90
 Times used                                                6
-  Reinforcement--
+Reinforcement--
 275 lbs. of plain ¾-in. steel rods @ 2 cts. per lb.  $ 5.50
 Preparing and setting, 4/10 ct. per lb.                1.10         6.60
-  Jet Pipe--
+Jet Pipe--
 26½ ft. of 2-in. pipe @ 10 cts. per ft. in place.                   2.65
-  Setting Forms--
+Setting Forms--
 6 men @ $2.50 per day = $15, set 4 piles                            3.75
-  Material--
+Material--
 90/100 Cu. yds. gravel @ $1.50 per yd.                 1.35
 45/100 cu. yds. sand @ $1.50 per yd.                    .67
 1.50 bbls. cement @ $1.60                              2.40         4.42
-  Labor--
+Labor--
 Concrete and labor foreman                             3.00
 6 laborers, mixing and placing by hand, $1.75
 each                                                  10.50
                                                     -------
                                                      $13.50         3.38
 Average number of piles concreted per day                 4
-  Removing Forms--
+Removing Forms--
 4 men @ $2.50 remove and clean in half day 4
-  columns                                                           1.25
+columns                                                           1.25
 1 man @ $2.25 plastering column with cement
-  grout (4 per day)                                                  .56
-  Jetting 10 ft. into Sand--
+grout (4 per day)                                                  .56
+Jetting 10 ft. into Sand--
 Foreman                                              $ 3.00
 4 men, $2.25 each, handling hose and traveler          9.00
                                                     -------
@@ -6007,7 +6007,7 @@ one 2½-in. pipe also 61 ft. long, 366 sq. ft., or 40.6 sq. yds. ½-in.
 mesh 14 B. & S. gage wire netting, and 2 cu. yds. loose concrete. Its
 cost for materials and labor was as follows:
 
-  Materials--
+Materials--
 Gravel, 28.8 cu. ft., at $1 per cu. yd.                   $ 1.05
 Sand, 19.8 cu. ft., at $1 per cu. yd.                        .73
 Cement, 3 bbls., at $1.60 per bbl.                          4.80
@@ -6016,9 +6016,9 @@ Rods, wire, etc., 1,826 lbs., at 2½ cts. per lb.           45.65
                                                         --------
       Total                                               $59.33
 Mixing 2 cu. yds. concrete, four men one hour, at 15 cts.
-  per hour                                                $ 0.60
+per hour                                                $ 0.60
 Placing concrete and netting, four men 30 mins., at 15
-  cts. per hour                                              .30
+cts. per hour                                              .30
 Winding pile, four men 20 mins., at 15 cts. per hour         .20
 Removing pile, four men 10 mins., at 15 cts. per hour        .10
                                                         --------
@@ -6095,18 +6095,18 @@ Broken trap rock, per cu. yd.                      0.81
 The cost of the concrete in place was as follows:
 
                                               12-in., per  6-in., per
-  Body Concrete--                                cu. yd.     cu. yd.
+Body Concrete--                                cu. yd.     cu. yd.
 Cement, at $1.98 per bbl.                        $2.546      $2.546
 Broken stone, at 81 cts. per cu. yd.              1.041       1.041
 Sand, at 17½ and 20 cts. per cu. yd.              0.225       0.257
 Receiving and storing materials at 11.6 cts. per
- cu. yd. and 8.4 cts. per bbl.                    0.149       0.180
+cu. yd. and 8.4 cts. per bbl.                    0.149       0.180
 Mixing, placing and ramming                       0.879       1.110
 Forms, lumber and labor                           0.477       0.950
 Superintendence and miscellaneous                 0.190       0.150
                                                  ------      ------
       Total                                      $5.507      $6.234
-  Concrete Pavement--
+Concrete Pavement--
 Materials                                        $2.97       $3.06
 Labor                                             4.63        4.72
                                                  ------     ------
@@ -6217,7 +6217,7 @@ worked, each mixing 64 batches of 0.75 cu. yd., or 48 cu. yds. of
 concrete per day at the following cost:
 
                                             Per      Per
-  Hand Mixing 9,000 Cu. Yds.--               day.  cu. yd.
+Hand Mixing 9,000 Cu. Yds.--               day.  cu. yd.
 6 men wheeling materials                  $ 7.50    $0.16
 8 men mixing                               10.00     0.21
 8 men wheeling away                        10.00     0.21
@@ -6243,7 +6243,7 @@ and placed 168 batches of 0.7 cu. yd., or 117.6 cu. yds. per day at the
 following cost:
 
                                                Per     Per
-   Machine Mixing 4,000 Cu. Yds.--             day.   cu. yd.
+Machine Mixing 4,000 Cu. Yds.--             day.   cu. yd.
 32 men at $1.25                                $40.00   $0.34
 1 pumpman                                        1.25    0.01
 1 teamster and horse                             2.00    0.02
@@ -6339,7 +6339,7 @@ cu. yd.
 
 The cost of these 9,614.4 cu. yds. of concrete in place was:
 
-  Hand Mixed and Placed by Derrick--  Per cu. yd.
+Hand Mixed and Placed by Derrick--  Per cu. yd.
 Labor mixing 1,777 cu. yds                $1,072
 Repairs, fuel, etc                         0.016
                                           -------
@@ -6349,7 +6349,7 @@ Fuel, tramways, etc.                       0.1958
                                           -------
 Total cost placing                        $0.7983
 
-  Machine Mixed and Placed by Chute--
+Machine Mixed and Placed by Chute--
 Labor mixing 7,837 cu. yds.                         $0.388
 Repairs, fuel, etc                                   0.046
                                                     ------
@@ -6358,7 +6358,7 @@ Labor placing 7,242 cu. yds                          0.414
 Fuel, tramways, etc.                                 0.045
                                                     ------
 Total cost placing                                  $0.459
-  Materials and Supplies 9,614 cu. yds.--
+Materials and Supplies 9,614 cu. yds.--
 Timbering                                           $0.145
 Cement                                               3.289
 Sand and gravel                                      1.073
@@ -6366,7 +6366,7 @@ Broken stone                                         0.536
 Cement testing, repairs, etc.                        0.223
                                                     ------
 Total                                               $5,266
-  Plant and Superintendence, 9,614 Cu. Yds.--
+Plant and Superintendence, 9,614 Cu. Yds.--
 Engineering, superintendence, repairs, etc.         $1,508
 20% cost of plant                                    0.165
                                                     ------
@@ -7958,7 +7958,7 @@ Plant charges, etc.               541  cu. yds.      1.06        576.00
     Total                         541  cu. yds.     $4.94     $2,676.00
 General expenses, 10%             541  cu. yds.       .49        267.00
                                  -------          ------      ---------
-   Grand total                    541  cu. yds.     $5.43     $2,943.00
+Grand total                    541  cu. yds.     $5.43     $2,943.00
 
               COST OF CONCRETE IN WORKING CHAMBERS.
                                    South Caisson. (1,435 cu. yds.)
@@ -7991,7 +7991,7 @@ General expenses, 10%            1,435 cu. yds.      1.16      1,667.00
 TABLE XVIII.--ITEMIZED COST OF CONCRETING NORTH CAISSON FOR BROOKLYN
 TOWER OF THE WILLIAMSBURG BRIDGE:
 
-   COST OF CONCRETING CAISSON ABOVE ROOF (5,692 cu. yds.)
+COST OF CONCRETING CAISSON ABOVE ROOF (5,692 cu. yds.)
 
     Materials.                     Quantity.        Rate.       Amount.
 Cement                           6,707½ bbls.      $1.57     $10,531.00
@@ -8063,11 +8063,11 @@ mixed and shoveled into wooden skips, hoisted 20 ft. by horsepower and
 dumped into the cylinder. The foreman worked on the mixing board and the
 men worked with great energy. The costs were as follows:
 
-  Item--                                      Per day.    Per cu. yd.
+Item--                                      Per day.    Per cu. yd.
 6 men wheeling materials and mixing at 15
-  cts. per hour                                 9.00         $0.45
+cts. per hour                                 9.00         $0.45
 2 men dumping skips and ramming at 15 cts.
-  per hour                                      3.00          0.15
+per hour                                      3.00          0.15
 1 team and driver at 40 cts. per hour           4.00          0.20
 1 foreman at 30 cts. per hour                   3.00          0.15
                                                -----          ----
@@ -8122,14 +8122,14 @@ The cost of the concrete work was as follows:
 Foreman             $3.40         5    $17.00   $0.04
 11 laborers          1.36-8/10   52    71.14      .15
                                                 -----
-   Total for unloading material                 $0.19
+Total for unloading material                 $0.19
                  Building Forms, Bins, Etc.
 Foreman              $3.40     18         $61.20   $0.14
 9 carpenters          2.25    166         373.50     .81
 New lumber, 23.7 M. ft.
-  at $17.80                               421.86     .92
+at $17.80                               421.86     .92
 Old lumber, 6 M. ft. at
-  $8.33                                    49.98     .11
+$8.33                                    49.98     .11
                                                    -----
     Total for building forms, bins, etc.           $1.98
 
@@ -8142,17 +8142,17 @@ Foreman                 $3.40        8    $27.20   $0.06
 Foreman                 $3.40        8    $27.20   $0.06
 11 laborers              1.36 3/10  79    107.68     .23
 Cofferdam lumber, 2.25
-  M. ft. at $20.00                         45.00     .09
+M. ft. at $20.00                         45.00     .09
                                                     ----
       Total for cofferdam concrete                 $0.38
                 Concrete Mixing and Placing.
 Foreman                 $3.40       30   $102.00   $0.22
 9 laborers               1.15 6/10 282    325.99     .71
 Cement, 452 bbls. at
-  $1.55                                   701.00    1.52
+$1.55                                   701.00    1.52
 Slag, 437 cu. yds. at $0.20                87.40     .19
 Sand, 220 cu. yds. at
-  $0.30                                    66.00     .14
+$0.30                                    66.00     .14
                                                    -----
        Total for mixing and placing                $2.78
            Taking Down Forms and Clearing Up.
@@ -8263,7 +8263,7 @@ and of erecting the steel superstructure are given in the following
 tabulation. Altogether there was about 2,300 cu. yds. of concrete in the
 substructure, most of which, as stated above, was a 1-3-5 mixture.
 
-  Machinery and Supplies.
+Machinery and Supplies.
 Concrete mixer, 20% of cost                          $ 152.10
 Supplies, freight, hauling, setting up                 505.04
                                                      --------
@@ -8283,7 +8283,7 @@ Supplies, freight, hauling, setting up                 243.65
       Total                                          $ 343.65
                                                      --------
       Grand total                                   $1,594.86
-  Cofferdams.
+Cofferdams.
 Materials, lumber and nails                         $1,285.26
 Freight and train haul                                 306.33
 Labor making piles                                     696.82
@@ -8301,13 +8301,13 @@ Labor driving piles                                    21.80
                                                     --------
 Total                                               $  57.67
 
-  Forms, Platforms and Runways.
+Forms, Platforms and Runways.
 Lumber, hardware, etc.                             $  224.59
 Freight and train haul.                                40.20
 Labor making, removing and placing.                   556.51
                                                    ---------
      Total                                         $  821.30
-  Concrete Materials.
+Concrete Materials.
 Cement, freight, unloading and storing.            $4,617.48
 Sand, freight, unloading, etc.                      1,336.05
 Broken stone, freight, unloading, etc.              2,026.92
@@ -8349,7 +8349,7 @@ To this has to be added $1,134.28, the cost of excavating the
 cofferdams. The total and unit costs of the different items of the
 concrete substructure work can now be summarized as follows:
 
-  Item.                           Total.     Per cu. yd.
+Item.                           Total.     Per cu. yd.
 Machinery and supplies           1,594.86       $ .69
 Cofferdams                       3,672.49        1.60
 Forms, etc                         821.30         .36
@@ -8396,7 +8396,7 @@ structures were built in the period from April, 1905, to May, 1907.
 
 The cost of materials and the wages paid labor were as follows:
 
-  Cement--
+Cement--
 Per barrel at structure, April, 1905              $1.25
 Per barrel at structure, April, 1907               1.92
 Average cost per barrel at mill                    1.42
@@ -8404,7 +8404,7 @@ Freight per barrel                                 0.21
 Hauling 1½ miles and storage                       0.12
 Average cost at structure                          1.75
 Average cost per cu. yd. concrete (1.1 bbls.)      1.93
-  Sand--
+Sand--
 Per cu. yd. at structure, April, 1905             $0.625
 Per cu. yd. at structure, April, 1907              0.75
 Average cost per cu. yd., river bank               0.30
@@ -8412,7 +8412,7 @@ Freight per cu. yd                                 0.22
 Hauling 1½ miles                                   0.20
 Average cost at structure                          0.72
 Average cost per cu. yd. concrete (½ cu. yd.)      0.36
-  Stone--
+Stone--
 Per cu. yd. at structure, April, 1905            $1.10
 Per cu. yd. at structure, April, 1907             1.75
 Average cost per cu. yd. at crusher               0.65
@@ -8631,7 +8631,7 @@ Cincinnati, O. The abutments were constructed at the street and the
 excavation was clay and shale. Labor received $1.75 per day. The cost of
 materials and labor per cubic yard of concrete in place was as follows:
 
-  Materials--                           Per cu. yd.
+Materials--                           Per cu. yd.
 376 bbls. cement at $1.70                     $1.48
 224 cu. yds. sand at $1.20                     0.64
 255 cu. yds. stone at $1.55                    1.00
@@ -8640,7 +8640,7 @@ Tools, hardware, etc.                          0.06
 
        Total materials                        $3.58
 
-  Labor--
+Labor--
 Clearing and excavating                       $1.12
 Mixing and placing concrete                    1.13
 Building forms, etc.                           0.25
@@ -8999,20 +8999,20 @@ per day:
 
                                      Per day.     Per cu. yd.
 
- 8 men loading stone into carts       $12.00       $ .12
- 2 men loading sand into carts          3.00         .03
- 1 cart hauling cement                  3.00         .03
- 8 carts hauling stone and sand        24.00         .24
- 4 men loading mixer                    6.00         .06
- 1 man dumping mixer                    1.50         .01
- 2 men handling buckets at mixer        3.00         .03
- 6 men dumping buckets and ramming      9.00         .09
+8 men loading stone into carts       $12.00       $ .12
+2 men loading sand into carts          3.00         .03
+1 cart hauling cement                  3.00         .03
+8 carts hauling stone and sand        24.00         .24
+4 men loading mixer                    6.00         .06
+1 man dumping mixer                    1.50         .01
+2 men handling buckets at mixer        3.00         .03
+6 men dumping buckets and ramming      9.00         .09
 12 men making forms at $2.50           30.00         .30
- 1 cable engineman                      3.00         .03
- 1 fireman                              2.00         .02
- 1 foreman                              6.00         .06
- 1 waterboy                             1.00         .01
- 1 ton coal for cableway and mixer      4.00         .04
+1 cable engineman                      3.00         .03
+1 fireman                              2.00         .02
+1 foreman                              6.00         .06
+1 waterboy                             1.00         .01
+1 ton coal for cableway and mixer      4.00         .04
                                      -------       -----
 Total                                $107.50       $1.07
 
@@ -9112,43 +9112,43 @@ the cost was as follows:
 
                         Typical   Wages per    Cost per
 General force:           force.    10 hrs.      cu. yd.
-  Superintendent            1.0     $5.00        $0.026
-  Blacksmith                1.1      2.75         0.016
-  Timekeeper                0.5      2.50         0.007
-  Watchman                  0.6      2.00         0.007
-  Waterboys                 3.9      1.00         0.022
+Superintendent            1.0     $5.00        $0.026
+Blacksmith                1.1      2.75         0.016
+Timekeeper                0.5      2.50         0.007
+Watchman                  0.6      2.00         0.007
+Waterboys                 3.9      1.00         0.022
 
 Wall force:
-  Foreman                   0.9      2.50         0.013
-  Laborers                  8.6      1.50         0.073
-  Tampers                   2.3      1.75         0.022
+Foreman                   0.9      2.50         0.013
+Laborers                  8.6      1.50         0.073
+Tampers                   2.3      1.75         0.022
 
 Mixer force:
-  Foreman                   1.2      2.50         0.017
-  Enginemen                 1.8      2.50         0.025
-  Laborers                  6.7      1.50         0.057
-  Pump runner               1.0      2.00         0.010
-  Mixing machines           1.7      1.25         0.012
+Foreman                   1.2      2.50         0.017
+Enginemen                 1.8      2.50         0.025
+Laborers                  6.7      1.50         0.057
+Pump runner               1.0      2.00         0.010
+Mixing machines           1.7      1.25         0.012
 
 Timber force:
-  Foreman                   0.6      2.50         0.008
-  Carpenters                4.7      2.50         0.057
-  Laborers                  1.2      1.50         0.010
-  Helpers                   5.3      2.50         0.075
+Foreman                   0.6      2.50         0.008
+Carpenters                4.7      2.50         0.057
+Laborers                  1.2      1.50         0.010
+Helpers                   5.3      2.50         0.075
 
 Hauling force:
-  Laborers                  2.6      1.75         0.026
-  Teams                     6.3      3.25         0.116
+Laborers                  2.6      1.75         0.026
+Teams                     6.3      3.25         0.116
 
 Crushing force:
-  Foreman                   0.5      2.50         0.007
-  Engineman                 1.7      2.50         0.023
-  Laborers                  3.5      1.50         0.032
-  Austin crushers           1.7      1.20         0.011
+Foreman                   0.5      2.50         0.007
+Engineman                 1.7      2.50         0.023
+Laborers                  3.5      1.50         0.032
+Austin crushers           1.7      1.20         0.011
 
 Loading stone:
-  Foreman                   1.7      2.50         0.023
-  Laborers                 32.9      1.50         0.280
+Foreman                   1.7      2.50         0.023
+Laborers                 32.9      1.50         0.280
                                                  ------
       Total for crushing, mixing and placing     $0.975
 
@@ -9369,16 +9369,16 @@ $1.50 per day, was as follows:
 1 man cleaning chute, mixer, etc.         1.50         0.006
 1 motorman or engineer                    3.00         0.012
                                        -------       -------
-  Total labor mixing                    $66.50        $0.266
+Total labor mixing                    $66.50        $0.266
 8 men pushing 2 cars                     12.00         0.048
 2 men cleaning track, etc.                3.00         0.012
 7 men spading concrete                   10.50         0.042
                                        -------       -------
-  Total labor transporting, placing    $ 25.50        $0.102
+Total labor transporting, placing    $ 25.50        $0.102
 1 foreman                                 5.00         0.020
 Electricity estimated                     7.00         0.028
                                        -------       -------
-  Total general                        $ 12.00        $0.048
+Total general                        $ 12.00        $0.048
            Grand total                 $104.00        $0.416
 
 It will be noted that the cost of shoveling and wheeling the broken
@@ -10952,7 +10952,7 @@ The cost of materials for curb and foundation were as follows:
 The cost of supplies and tools was as follows:
 
 1,000 ft. B. M. 2×12 boards charged off             $ 9.25
-  500 ft. B. M. 2×6 boards charged off                4.12
+500 ft. B. M. 2×6 boards charged off                4.12
 1,000 ft. B. M. 1×10 boards charged off              14.25
 ½-in. basswood                                        4.30
 ½ keg 3-in. nails                                     1.42
@@ -10966,7 +10966,7 @@ This total, when divided by 1,326 lin. ft. of curb, gives the cost per
 lineal foot as about 3 cts. We can now summarize as follows:
 
                                 Per lin.   P. C. of
-   Item.              Total.       ft.       total.
+Item.              Total.       ft.       total.
 Labor               $304.33        23         43
 Material             367.56        28         51
 Supplies              41.17         3          6
@@ -11423,7 +11423,7 @@ advantage. Complete records of cost were kept, but they were destroyed
 by fire, so that the only figures available on this point are the
 totals. These are as follows:
 
-  Item.               Totals.     Per lin. ft.
+Item.               Totals.     Per lin. ft.
 Labor                $21,129        $14.81
 Materials             13,939          9.77
                       -------      -------
@@ -11441,14 +11441,14 @@ mixed 1-3-5, being, we believe, unnecessarily rich in cement. The
 average amount of concrete placed in the walls per day was 50 cu. yds.
 
 Cost of Side Walls.
-  Materials--                                       Per cu. yd.
+Materials--                                       Per cu. yd.
 1.33 bbl. cement at $2.00                                 $2.66
 0.5 cu. yd. sand at 0.18                                   0.09
 0.75 cu. yd. stone at 0.55                                 0.41
                                                         -------
        Total                                              $3.16
 
-  Labor on concrete--
+Labor on concrete--
 0.01 day foreman at $5.00                                 $0.05
 0.03 day foreman at $3.00                                  0.09
 0.03 day engineman at $3.00                                0.09
@@ -11456,21 +11456,21 @@ Cost of Side Walls.
 -------                                                 -------
 0.42   Total                                              $0.84
 
-  Labor, removing timber, building forms, excavating, etc.--
+Labor, removing timber, building forms, excavating, etc.--
 0.02 day foreman at $5.00                                 $0.10
 0.05 day foreman at $3.00                                  0.15
 0.40 day laborer at $1.75                                  0.70
 -------                                                 -------
 0.47   Total                                              $0.95
 
-  Miscellaneous--
+Miscellaneous--
 0.02 day engineer and superintendent at $5.00             $0.10
 Falsework and forms, timber and iron                       0.07
 Tools, light, etc.                                         0.10
 Interest and depreciation of $1,800 plant at 20% per annum 0.09
 Train service, 0.03 day work train at $25                  0.75
 
-  Summary concrete side walls--                     Per cu. yd.
+Summary concrete side walls--                     Per cu. yd.
 Materials                                                 $3.16
 Labor on concrete                                          0.84
 Labor removing timber, etc.                                0.95
@@ -11488,41 +11488,41 @@ the crown. The arch averaged 1.2 cu. yds. per lin. ft. of tunnel. About
 1-3-5 and the cost was as follows:
 
                      Cost of Concrete Arch.
-  Materials--                                      Per cu. yd.
+Materials--                                      Per cu. yd.
 1.36 bbls. cement, $2.00                                 $2.72
 0.05 cu. yd. sand, 0.18                                   0.09
 0.75 cu. yd. stone, 0.55                                  0.41
                                                        -------
        Total                                             $3.22
 1.8 cu. yds. dry rock backing at 0.55                    $0.99
-  Labor on concrete--
+Labor on concrete--
 0.02 day foreman at $5.00                                $0.10
 0.12 day foreman at  3.00                                 0.36
 0.88 day laborer at  1.75                                 1.54
 -------           -------                               ------
 1.02   Total        $1.96                                $2.00
-  Labor placing 1.08 cu. yds. rock backing--
+Labor placing 1.08 cu. yds. rock backing--
 0.01 day foreman at $5.00                                $0.05
 0.51 day foreman at  3.00                                 0.15
 0.55 day laborer at  1.75                                 0.96
 -------           -------                              -------
 0.61   Total        $1.90                                $1.16
-  Labor removing timbers, forms, excavations, etc.--
+Labor removing timbers, forms, excavations, etc.--
 0.02 day foreman at  $5.00                               $0.10
 0.04 day foreman at   3.00                                0.12
 0.06 day carpenter at 2.50                                0.15
 0.40 day laborer at   1.75                                0.70
 -------            -------                             -------
 0.52   Total         $2.06                               $1.07
-   Train service--
+Train service--
 0.06 day at $25                                          $1.50
-  Miscellaneous--
+Miscellaneous--
 Engineering and superintendence.                           .07
 Falsework, timber and iron                                 .13
 Tools, light, etc                                          .12
 Interest and depreciation, $1,800 plant, 20% per annum    0.09
 
-  Summary concrete arch--
+Summary concrete arch--
 Concrete materials                                       $3.22
 Dry rock backing (1.8 c. y.)                              0.99
 Labor and concrete                                        2.00
@@ -11901,14 +11901,14 @@ _Two-Track Subway._--In this section of two-track subway there were
 8,827 cu. yds. of foundation concrete and 6,664 cu. yds. of concrete in
 wall and roof arches. The two classes of work cost as follows:
 
-  Foundations--                          Total.       Per cu. yd.
+Foundations--                          Total.       Per cu. yd.
 Labor mixing                            $ 4,669         $0.53
 Labor placing                             5,142          0.58
 Materials and plant                         211          0.02
 Cement, sand, stone, etc.                30,719          3.48
                                        --------       -------
      Total                              $40,741         $4.61
-  Roof and side walls--
+Roof and side walls--
 Labor mixing                            $ 5,444         $0.82
 Labor placing                             5,623          0.84
 Labor setting forms                      14,746          2.21
@@ -11925,13 +11925,13 @@ _Four-Track Subway._--On two sections of four-track subway the labor
 cost of mixing and placing concrete similarly divided was as follows:
 
                                   Section A.      Section B.
-  Foundations--                  Per cu. yd.      Per cu. yd.
+Foundations--                  Per cu. yd.      Per cu. yd.
 Labor mixing                         $0.97          $0.94
 Labor placing                         0.96           0.95
 Power                                 0.14           0.16
                                   --------       --------
      Total                           $2.07          $2.05
-  Roof and side walls--
+Roof and side walls--
 Labor mixing                         $0.79          $0.91
 Labor placing                         0.85           0.94
 Labor setting forms                   2.01           1.20
@@ -12034,7 +12034,7 @@ and 26 men placing. The average size of batch was 0.46 cu. yd. In 1904,
 20,000 cu. yds. were mixed in 190 days, worked with a gang of 19 men
 mixing; the gang placing consisted of 25 men. The cost was as follows:
 
-  Item.                            Total.  Per cu. yd.
+Item.                            Total.  Per cu. yd.
 2,950 days labor mixing          $ 4,870       24 cts.
 4,760 days labor placing           7,300       36 cts.
                                ---------      --------
@@ -12056,7 +12056,7 @@ average size of batch was 0.44 cu. yd. The average gangs were 13 men
 mixing and 11 men placing. The labor cost of 7,000 cu. yds. was as
 follows:
 
-  Item.                             Total.    Per cu. yd.
+Item.                             Total.    Per cu. yd.
 1,910 days labor mixing            $3,175       45 cts.
 1,740 days labor placing            2,660       38 cts.
                                   -------      --------
@@ -13183,7 +13183,7 @@ CONNECTICUT AVENUE BRIDGE.
                          |                   |  Per Superficial Foot of
                          |  Per Cubic Foot.  |     Showing Face.
                          +------+-----+------+-----+------+------+------+------
-   DESCRIPTION. |      | Num-|      |     |      |      |      |Number
+DESCRIPTION. |      | Num-|      |     |      |      |      |Number
                          |      | ber |      |     |Super-|      |Cost  |super.
 1: 2: 4½ Concrete Backing| Total|cubic|Total |Cost |ficial|Total |per   |ft. to
 1: 3 (Mortar Face).      |Number|feet |cubic |per  | feet |super-|super-|  one
@@ -13220,9 +13220,9 @@ Description.       |        |         +--------+------+-------+           |
 Class A, in Piers  | 1:2:4½ |   150   |  1.65  | 0.39 |  1.08 |  3.12     |
 Class A, in Arches | 1:2:4½ |   200   |  1.65  | 0.39 |  1.08 |  3.11     |
 Class B, in Piers  |        |         |        |      |       |           |
-  --Solid Work     | 1:3:6  |   160   |  1.40  | 0.42 |  1.23 |  3.05     |
+--Solid Work     | 1:3:6  |   160   |  1.40  | 0.42 |  1.23 |  3.05     |
 Class B, in Piers  |        |         |        |      |       |           |
-  --Hollow Work    | 1:3:6  |   110   |  1.40  | 0.42 |  1.23 |  3.05     |
+--Hollow Work    | 1:3:6  |   110   |  1.40  | 0.42 |  1.23 |  3.05     |
 Class B, in        |        |         |        |      |       |           |
 Spandrel Walls     | 1:3:6  |   110   |  1.40  | 0.42 |  1.23 |  3.05     |
 Class B, in        |        |         |        |      |       |           |
@@ -13246,9 +13246,9 @@ Class A, in Piers  |  0.09  |  0.21  |  0.30  |
                    |        |        |        |
 Class A, in Arches |  0.05  |  0.28  |  0.33  |
 Class B, in Piers  |        |        |        |
-  --Solid Work     |  0.09  |  0.18  |  0.27  |
+--Solid Work     |  0.09  |  0.18  |  0.27  |
 Class B, in Piers  |        |        |        |
-  --Hollow Work    |  0.11  |  0.36  |  0.47  |
+--Hollow Work    |  0.11  |  0.36  |  0.47  |
 Class B, in        |        |        |        |
 Spandrel Walls     |  0.11  |  0.40  |  0.51  |
 Class B, in        |        |        |        |
@@ -13270,9 +13270,9 @@ Class A, in Piers  |  0.17    |  0.05 |  0.16  |  0.38     |  $3.80      |
                    |          |       |        |           |             |
 Class A, in Arches |  0.08    |  0.03 |  0.10  |  0.21     |   3.66      |
 Class B, in Piers  |          |       |        |           |             |
-  --Solid Work     |  0.17    |  0.05 |  0.16  |  0.38     |   3.70      |
+--Solid Work     |  0.17    |  0.05 |  0.16  |  0.38     |   3.70      |
 Class B, in Piers  |          |       |        |           |             |
-  --Hollow Work    |  0.77    |  0.25 |  0.64  |  1.66     |   5.18      |
+--Hollow Work    |  0.77    |  0.25 |  0.64  |  1.66     |   5.18      |
 Class B, in        |          |       |        |           |             |
 Spandrel Walls     |  0.85    |  0.28 |  0.73  |  1.86     |   5.42      |
 Class B, in        |          |       |        |           |             |
@@ -13834,13 +13834,13 @@ Grand total                                      $8,844         $9.98
 Considering the abutment and wing wall work, comprising 594 cu. yds.,
 separately, the cost was as follows:
 
-  Forms:              Per cu. yd.
+Forms:              Per cu. yd.
 Materials                $1.20
 Labor                     1.09
                           -----
 
     Total                $2.29
-  Concrete:
+Concrete:
 Materials                $2.92
 Labor                     2.38
                           -----
@@ -13852,13 +13852,13 @@ Heating water and gravel $0.70
 Considering the arch span, comprising 290 cu. yds., separately, the cost
 was as follows:
 
-  Forms:             Per cu. yd.
+Forms:             Per cu. yd.
 Materials               $3.70
 Labor                    3.03
                          -----
 
     Total               $6.73
-  Concrete:
+Concrete:
 Materials               $3.22
 Labor                    3.57
 
@@ -14049,29 +14049,29 @@ No. of culvert           1        2        3        4        5        6
 Span of culvert        5 ft. 7.66 ft.   10 ft.   12 ft.   12 ft.   16 ft.
 Cu. yds. of concrete.   210      199      354      292      406      986
 Ratio of cement to
-  stone                1:5.5    1:6.5    1:5.8    1:5.8    1:6.1    1:6.5
+stone                1:5.5    1:6.5    1:5.8    1:5.8    1:6.1    1:6.5
 Increase of concrete
-  over stone           16.0%     9.9%     6.3%    12.3%     8.3%     5.3%
+over stone           16.0%     9.9%     6.3%    12.3%     8.3%     5.3%
 Bbls. cement per cu.
-  yd.                   1.02     0.90     1.06     1.01     1.00     1.09
+yd.                   1.02     0.90     1.06     1.01     1.00     1.09
 Cu. yds. sand per cu.
-  yd.                   0.43     0.49     0.44     0.46     0.46     0.47
+yd.                   0.43     0.49     0.44     0.46     0.46     0.47
 Cu. yds. stone per
-  cu. yd.               0.86     0.90     0.95     0.89     0.94     0.94
+cu. yd.               0.86     0.90     0.95     0.89     0.94     0.94
 Total  days  labor
-  (inc. foremen and
-  supt.)                 702      607      784      726      768    1,994
+(inc. foremen and
+supt.)                 702      607      784      726      768    1,994
 Av. wages per day
-  (inc. foremen and
-  supt.)               $1.61    $1.33    $1.59    $1.19    $1.47    $1.46
+(inc. foremen and
+supt.)               $1.61    $1.33    $1.59    $1.19    $1.47    $1.46
 Cost per cu. yd.--
-  Cement                2.18     1.94     2.27     1.82     2.11     2.01
-  Sand                  0.17     0.20     0.18     0.18     0.19     0.14
-  Stone                 0.52     0.52     0.47     0.54     0.47     0.58
-  Lumber                0.88     0.43     0.48     0.43     0.31     0.57
-  Unload, materials     0.23     0.17     0.18     0.18     0.16
-  Building forms        1.07     0.33     0.62     0.47     0.72     0.41
-  Mixing & placing      1.59     1.74     1.69     1.35     1.23     1.26
+Cement                2.18     1.94     2.27     1.82     2.11     2.01
+Sand                  0.17     0.20     0.18     0.18     0.19     0.14
+Stone                 0.52     0.52     0.47     0.54     0.47     0.58
+Lumber                0.88     0.43     0.48     0.43     0.31     0.57
+Unload, materials     0.23     0.17     0.18     0.18     0.16
+Building forms        1.07     0.33     0.62     0.47     0.72     0.41
+Mixing & placing      1.59     1.74     1.69     1.35     1.23     1.26
                       ------   ------   ------   ------    -----    -----
 
 Total per cu. yd.      $6.64    $5.33    $5.89    $4.97    $5.19    $4.97
@@ -14163,7 +14163,7 @@ Labor, not classified                        0.18
 Labor, excavating 40 cts. per cu. yd.        0.28
 Labor, back filling and tearing down forms   0.10
                                              -----
-  Total                                     $4.32
+Total                                     $4.32
 
 ~CULVERTS FOR NEW CONSTRUCTION, WABASH RY.~--The following data relate to
 culvert work carried out in constructing the Pittsburg extension of the
@@ -14188,7 +14188,7 @@ Item.                                   Per day.  Per cu. yd.
 4 men ramming concrete                     6.00          0.15
 4 men wheeling and bedding rubble stones   6.00          0.15
                                          ------         -----
-  Totals                                 $31.00         $0.78
+Totals                                 $31.00         $0.78
 
 Assuming 1/3 ton of coal per day at $3 per ton, we have 2 cts. more per
 cubic yard for fuel.
@@ -14209,7 +14209,7 @@ Item.                                   Per day.  Per cu. yd.
 2 men tamping concrete                     3.00          0.06
 1 foreman                                  3.00          0.06
                                          ------         -----
-  Totals                                 $24.50         $0.49
+Totals                                 $24.50         $0.49
 
 The cost of fuel would add about 3 cts. per cubic yard to this amount.
 
@@ -14241,7 +14241,7 @@ Cement                  307.53          1.01         2.34
 Forms                    12.00          0.04         0.09
                        -------         -----        -----
 
-  Total                $841.17         $2.75        $6.38
+Total                $841.17         $2.75        $6.38
 
 [Illustration: Fig. 171.--Small Culverts, Pennsylvania R. R.]
 
@@ -14266,7 +14266,7 @@ Changing trestle                         0.085
 Handling materials                       0.037
 Mixing and laying, av. 15½ cts. per hr.  1.440
                                         ------
-  Total per cu. yd                      $4.540
+Total per cu. yd                      $4.540
 
 There were 1,493 cu. yds. of concrete in the work. The excavation cost
 $463 and the total cost was $7,243.
@@ -14282,31 +14282,31 @@ Stone, 113.2 tons                    $.70    $ 79.24
 Sand, 46.8 yds.                       .55      25.74
 Cement, 137 bbls.                     .85     116.45
                                              -------
-  Total                                      $221.43
+Total                                      $221.43
 
 Lumber                                         52.50
 Rail and bolts                                 36.60
                                              -------
-  Total                                      $ 89.10
+Total                                      $ 89.10
 
                         Excavation.
 
 Labor, 189 hours at .15                      $ 28.35
 Foreman, 60 hours at .30                       18.00
                                              -------
-  Total                                      $ 46.35
+Total                                      $ 46.35
                       Concrete.
 
 Labor, 683 hours at .15                      $102.45
 Foreman, 130 hours at .30                      39.00
                                              -------
-  Total                                      $141.45
+Total                                      $141.45
 
 Forms.
 Carpenters, 313 hours at .225                $ 70.42
 Labor, 30 hours at .15                          4.50
                                              -------
-  Total                                      $ 74.92
+Total                                      $ 74.92
 
             Handling Materials.
 
@@ -14314,16 +14314,16 @@ Moving material, 245 hours at .15            $ 36.75
 Unloading material, 95 hours at .15            14.25
 Foreman, 20 hours at .30                        6.00
                                              -------
-  Total                                      $ 57.00
+Total                                      $ 57.00
 
-   Superintendence and Office.
+Superintendence and Office.
 
 Superintendent, 6 hours at .50               $  3.00
 Office                                         10.00
                                              -------
-  Total                                      $ 13.00
+Total                                      $ 13.00
                                              -------
-  Grand total                                $643.25
+Grand total                                $643.25
 
            Proportional Costs.
 
@@ -14340,18 +14340,18 @@ Building forms             74.92     .67       13.3
 Handling material          56.90     .50       09.0
 Superintendent and office  13.00     .12       02.2
                                    -----      ------
-  Total                            $5.28      100.00
+Total                            $5.28      100.00
 Excavation                 46.35    1.28
                          -------
-  Total                  $643.15
+Total                  $643.15
 
                   Contractor's Receipts.
 
 113 yds. concrete at $5.95                  $672.35
 36 yds. excavation at .30                     10.80
                                             -------
-  Total                                     $683.15
-  Total cost                                 643.15
+Total                                     $683.15
+Total cost                                 643.15
                                             -------
 Profit, 5.9% of contract price              $ 40.00
 
@@ -14441,7 +14441,7 @@ Setting up forms                    0.43
 Finishing                           0.09
 Tools, general and superintendence  0.43
                                    -----
-  Total per lineal foot            $5.95
+Total per lineal foot            $5.95
 
 The cost per cubic yard was thus $6.26. Wages were $1.75 per day.
 
@@ -14493,7 +14493,7 @@ pipes as follows:
 0.8 bbls. cement at $2.10                      1.68
 10 hours' labor at 28 cts.                     2.80
                                               -----
-  Total per pipe                              $7.32
+Total per pipe                              $7.32
 
 This gives a cost of $1.83 per lineal foot of pipe or practically $7 per
 cu. yd. of concrete. The pipe actually molded cost $2.50 per lin ft., or
@@ -15696,7 +15696,7 @@ that illustrated, equipped with a ½-cu. yd. Ransome mixer, will cost
 about $1,500 and will deliver 15 cu. yds. of concrete per hour. Mr. F.
 W. Daggett gives the following figures of the cost of operation:
 
-  Mixing Gang:
+Mixing Gang:
                      Total 1 hr.
 1 mixer foreman, also engineer, 25c.         $.25
 1 man charging mixer, 20c.                    .20
@@ -15706,7 +15706,7 @@ W. Daggett gives the following figures of the cost of operation:
 1 man helping up runway, 17½c.                .17½
 2 men carrying cement, 17½c.                  .35
 
-  Gang Placing Cement:
+Gang Placing Cement:
 
 1 foreman, 25c.                               .25
 9 men wheeling concrete, 17½c.               1.57½
@@ -15714,7 +15714,7 @@ W. Daggett gives the following figures of the cost of operation:
 1 man filling carts, 17½c.                    .17½
                                             ------
 
-  Total labor cost per hour                 $4.75
+Total labor cost per hour                 $4.75
 
 Fuel, etc.                                    .50
                                             ------
@@ -16090,7 +16090,7 @@ Tools                               0.59      0.05
 Moving scaffold                     2.94      0.25
 Moving mix board and rigging hoist  1.62      0.14
                                   ------     -----
-  Total cost of concrete          $96.79     $8.07
+Total cost of concrete          $96.79     $8.07
 
                                 Cost per       Cost cts. per
 Reinforcement.                   column.       lb. of bars.
@@ -16101,7 +16101,7 @@ Bolts for splicing and spacing      3.98           0.40
 Wire cross ties at 2½,  cts. lb.    1.39           0.14
 Labor forming 130 cross ties        1.13           0.11
                                   ------          -----
-  Total cost of iron and steel    $29.85          $2.91
+Total cost of iron and steel    $29.85          $2.91
 
               Summary of Cost.
 
@@ -16112,7 +16112,7 @@ Cutting out and removing brick      8.36           0.70
 Shoring floors and roof, labor      5.87           0.49
 Ditto for lumber used 3 times       3.44           0.29
                                  -------         ------
-  Total                          $144.31         $12.04
+Total                          $144.31         $12.04
 
 [Illustration: Fig. 225.--Girder Plan for 6-Story Building.]
 
@@ -16145,7 +16145,7 @@ Intermediate 3×4-in. posts, ft. B. M.     1,000
 Lagging, 1×6-in. boards, ft. B. M.        9,000
 Stringers, 3×4 ins., ft. B. M.            4,500
                                          ------
-  Total ft. B. M.                        33,800
+Total ft. B. M.                        33,800
 
 [Illustration: Fig. 226.--Column Form for 6-Story Building.]
 
@@ -16272,11 +16272,11 @@ B. M. per cu. yd. of concrete. The cost of the lumber was $1,520.86, and
 the cost of labor on the forms was $1,660.60, so that the cost of forms
 was:
 
-  Item.   Per cu. yd. Per M. ft. Per sq. ft.
+Item.   Per cu. yd. Per M. ft. Per sq. ft.
 Lumber      $1.74      $13.50     $0.038
 Labor        1.90       14.07      0.041
             -----      ------     ------
-  Total     $3.64      $27.57     $0.079
+Total     $3.64      $27.57     $0.079
 
 If the lumber had been used only once the cost per cubic yard would have
 been $5.38, and per M. ft. B. M., $41.07.
@@ -16300,7 +16300,7 @@ Aggregate, per cu. yd.                    0.88
 61 lbs. steel at 1.9 cts., per cu. yd.    1.15
 Lumber, 70 ft. B. M. at $27, per cu. yd.  1.74
                                          -----
-  Total per cu. yd.                      $5.65
+Total per cu. yd.                      $5.65
 
 The cost of labor per cubic yard was:
 
@@ -16316,7 +16316,7 @@ Coal, at $4.25 per ton, per cu. yd.         0.010
 Foreman, per cu. yd.                        0.133
 Teams and laying pipe line, per cu. yd.     0.087
                                            ------
-  Total, per cu. yd.                       $3.406
+Total, per cu. yd.                       $3.406
 
 Summarizing, we have the following cost per cubic yard:
 
@@ -16394,7 +16394,7 @@ the concrete in the forms so that no exact division of labor is
 possible. The organization of these gangs and the wages paid were as
 follows:
 
-  Derrick Gang:
+Derrick Gang:
 
 1 foreman, at 36 cts. per hour                  $ 3.94
 1 crabman, at 30 cts. per hour                    2.70
@@ -16403,25 +16403,25 @@ follows:
                                                 ------
 Total per 9-hour day                            $15.64
 
-  Assembling Gang:
+Assembling Gang:
 
 1 boss carpenter, at 47 cts. per hour           $ 4.23
 2 carpenters, at 36 cts. per hour                 6.48
 2 carpenters, at 30 cts. per hour                 5.40
 2 carpenters' helpers, at 25 cts. per hour        4.50
 4 men forming and placing reinforcing steel
-  and rethreading bolts, at 23 cts. per hour      8.28
+and rethreading bolts, at 23 cts. per hour      8.28
                                                 ------
-  Total per 9-hour day                          $28.89
+Total per 9-hour day                          $28.89
                                                 ------
-  Grand total                                   $44.53
+Grand total                                   $44.53
 
 These gangs assembled and erected the molds and concreted 80 columns in
 22 working days, including 2 days lost on account of cold weather, so
 that 4 columns were completed per day of 9 hours. We can subdivide the
 cost as follows:
 
-  Item.                            Per cu. yd.
+Item.                            Per cu. yd.
 
 Erecting forms and concreting          $0.81
 Assembling forms and reinforcement      1.56
@@ -16465,7 +16465,7 @@ The gang stripping forms was made up as follows:
 1 topman, at 27 cts. per hour        2.43
 2 bottom men, at 23 cts. per hour    4.14
                                    ------
-  Total per 9-hour day             $11.70
+Total per 9-hour day             $11.70
 
 [Illustration: Fig. 232.--Derrick for Stripping Wall Column Forms Shown
 by Fig. 230.]
@@ -16505,7 +16505,7 @@ Stripping Forms.]
 Summarizing the above figures we have the following cost per cubic yard
 of concrete in place:
 
-  Item.                           Per cu. yd.
+Item.                           Per cu. yd.
 Concrete materials                     $3.00
 Reinforcing steel                       0.73
 Forms, lumber and framing               1.30
@@ -16557,21 +16557,21 @@ as follows:
 4 braces 6×6 ins.×16 ft. = 490 ft. B. M. at $30.     14.70
 3 pieces 3×10 ins.×20 ft. = 150 ft. B. M. at $30      4.50
                                                        -------
-  Total lumber (1,996.5 ft. B. M.)                     $ 62.94
+Total lumber (1,996.5 ft. B. M.)                     $ 62.94
 
-  Accessories:
+Accessories:
 
 Bolts for trussing, 675 lbs. at 2 cts.                 $ 13.50
 Iron guy rope and clips                                   7.00
 Blocks                                                    8.00
 One coil of ¾-in. rope                                   28.00
                                                        -------
-  Total accessories                                    $ 56.50
+Total accessories                                    $ 56.50
 
-  Labor making one outfit:
+Labor making one outfit:
 2 men, 8 days, at $2.75 per 9 hrs.                     $ 44.00
                                                        -------
-  Grand total                                          $163.44
+Grand total                                          $163.44
 
 This sum covered the cost of forms for one side of the building 85 ft.
 long and containing 150 cu. yds. of concrete, hence the cost of forms
@@ -16587,7 +16587,7 @@ about as follows:
 6.3 men 6 hours at 15 cts.                      5.67
 1 foreman 6 hours at $4 per day                 2.00
                                               ------
-  Total per cu. yd.                           $16.07
+Total per cu. yd.                           $16.07
 
 Thus the cost of concrete in place was $16.07 ÷ 2.8 = $5.73 per cu. yd.
 Adding the cost of forms we get $5.73 + $1.10 = $6.83 per cu. yd. as the
@@ -16630,7 +16630,7 @@ Columns, reinforced                   450
 Floors and roof, reinforced         1,100
 Floor on ground, not reinforced       170
                                     -----
-  Total                             1,910
+Total                             1,910
 
 The amount of reinforcing metal used was 237 tons, distributed as
 follows:
@@ -16640,7 +16640,7 @@ Footings                42           442
 Columns                 20            90
 Floors and roof        175           318
                        ---           ---
-  Total and average    237           272
+Total and average    237           272
 
 This is equivalent to 2 per cent. of steel in 1,910 - 170 = 1,740 cu.
 yds.
@@ -16677,13 +16677,13 @@ floor were framed and erected in 8 to 10 days. The cost of forms for
 1,740 cu. yds. and 80,000 sq. ft. of concrete and per M. ft. B. M. was
 as follows:
 
-  Item.                        Per cu. yd. Per sq. ft. Per M. ft.
+Item.                        Per cu. yd. Per sq. ft. Per M. ft.
 Lumber                            $2.90       $0.064       $23.00
 Framing, erecting and removing.    2.00 }                   15.67
                                         }      0.057
 Handling lumber                    1.10 }                    8.70
                                    -----      ------       ------
-  Totals                           $6.00      $0.121       $47.37
+Totals                           $6.00      $0.121       $47.37
 
 [Illustration: Fig. 238.--Column and Floor Forms for Four-Story Garage.]
 
@@ -16700,11 +16700,11 @@ being concreted the first day and the floor being concreted the second
 day. The labor cost for mixing and placing concrete and for fabricating
 and setting reinforcement was as follows:
 
-  Item.                         Per cu. yd.
+Item.                         Per cu. yd.
 Mixing and placing concrete       $1.95
 Erecting and setting steel         2.05
                                   -----
-  Total                           $4.00
+Total                           $4.00
 
 The cost of concreting includes the cost of granolithic surface for the
 floor slabs. The girder reinforcement was made up into unit frames and
@@ -16720,7 +16720,7 @@ Labor on forms                     3.10
 Labor on concrete                  1.95
 Labor on steel                     2.05
                                   -----
-  Total                          $10.00
+Total                          $10.00
 
 This $10 total does not include the cost of the concrete nor of the
 steel.
@@ -16848,7 +16848,7 @@ construction:
 1 helper, 1 hr., at $0.175               0.175
 1-5 boss carpenter, 3 hrs., at $0.30     0.180
                                         ------
-  Total                                 $1.630
+Total                                 $1.630
 
 This gives a cost of $7.25 per M. ft. B. M. for erecting column forms.
 
@@ -16860,7 +16860,7 @@ bracing and setting six bolts was as follows:
 2 laborers, ½ hr., at $0.15            0.15
 ¼ boss carpenter, at $0.30             0.375
                                       ------
-  Total                               $4.775
+Total                               $4.775
 
 This gives a cost of $4.35 per M. ft. B. M. for erecting girder forms.
 
@@ -16899,7 +16899,7 @@ Total                            $2.15
 The actual cost of mixing the concrete and delivering it to the cars was
 as follows:
 
-  Item.                 Per cu. yd.
+Item.                 Per cu. yd.
 1 foreman, at 20 cts per hour                 $0.0300
 3 men shoveling stone, at 15 cts. per hour     0.0675
 3 men filling hopper, at 15 cts. per hour      0.0675
@@ -16922,15 +16922,15 @@ Total cost, per cu. yd.                    $2.458
 The cost, then, per column or girder molded, assuming that it was
 necessary to erect a full form, was about as follows:
 
-  Columns:
+Columns:
 2 cu. yds. concrete, at $2.46          $ 4.92
 675 lbs. steel, at 2½ cts.              16.77
 Erecting steel, at 0.22 ct. per lb.      1.50
 Erecting forms                           1.63
                                        ------
-  Total                                $24.82
+Total                                $24.82
 
-  Girders:
+Girders:
 5 cu. yds. concrete, at $2.46          $12.30
 2,260 lbs. steel, at 2½ cts.         56.50
 Erecting steel, at 0.08 ct. per lb.      1.80
@@ -16972,18 +16972,18 @@ or $1.57 per cu. yd. of concrete.
 
 The cost of girders and columns in place was thus about as follows:
 
-  Columns:     Per unit.     Per cu. yd.
+Columns:     Per unit.     Per cu. yd.
 Molding          $25.00       $12.50
 Erecting           5.25         2.63
                  ------       ------
-  Totals         $30.25       $15.13
+Totals         $30.25       $15.13
 
-  Girders:
+Girders:
 
 Molding          $75.00       $15.00
 Erecting           7.87         1.57
                  ------       ------
-  Totals         $82.87       $16.57
+Totals         $82.87       $16.57
 
 [Illustration: Fig. 245.--View Showing Method of Handling Roof Slabs.]
 
@@ -16997,34 +16997,34 @@ ends. Each slab contained 0.925 cu. yd. of concrete and about 116¾ lbs.
 of reinforcement. The cost of molding one roof slab, including
 materials, forms and labor, was as follows:
 
-  Materials:                     Per slab.      Per cu. yd.
+Materials:                     Per slab.      Per cu. yd.
 1 bbl. cement, at $1                $1.000        $1.081
 1.06 tons stone, at $0.60            0.636         0.687
 116¾ lbs. steel, at 2¼ cts.          2.647         2.862
                                     ------        ------
-  Total                             $4.283        $4.630
+Total                             $4.283        $4.630
 
-  Forms:
+Forms:
 Lumber and making                   $0.104       $0.112
 92 sq. ft. paper, at 33-1/3
 cts. per 500 sq. ft.                 0.055        0.059
 Labor erecting and removing          0.5625       0.608
                                     -------      ------
-  Total                             $0.7215      $0.779
+Total                             $0.7215      $0.779
 
-  Mixing, Hauling and Placing:
+Mixing, Hauling and Placing:
 Mixing                              $0.222       $0.240
 Hauling                              0.025        0.027
 Placing concrete and steel           0.170        0.183
                                     ------       ------
-  Total                             $0.417       $0.450
+Total                             $0.417       $0.450
 
-  General Expenses:
+General Expenses:
 Housing and heating                 $0.700       $0.757
 Superintendence, power, etc. (10%)   0.612        0.661
                                     ------       ------
-  Total                             $1.312       $1.418
-  Grand totals                      $6.7335      $7.277
+Total                             $1.312       $1.418
+Grand totals                      $6.7335      $7.277
 
 The roof slabs were raised from the casting beds by means of the
 locomotive crane and hooks, as shown by Fig. 245, and loaded onto cars;
@@ -17036,7 +17036,7 @@ men erected from 18 to 20 slabs per 10-hour day. With average wages at
 21 cts. per hour the cost of erection was (15 × $2.10) ÷ 19 = $1.66 per
 slab, or $1.79 per cu. yd. The total cost of slabs in place was thus:
 
-  Item.    Per slab.      Per cu. yd.
+Item.    Per slab.      Per cu. yd.
 Molding       $6.73         $7.27
 Erecting       1.66          1.79
               -----         -----
@@ -17226,8 +17226,8 @@ run, however, a fair average being 20 blocks per hour, or 200 per ten
 hours, which was the day worked. We have then the cost of making blocks
 as follows:
 
- 1 foreman, at $2.50                               $ 2.50
- 5 helpers, at $2                                   10.00
+1 foreman, at $2.50                               $ 2.50
+5 helpers, at $2                                   10.00
 13 barrels cement, at $2                            26.00
 10 cu. yds. sand and gravel, at $1                  10.00
 Interest and depreciation on machine                 2.00
@@ -17304,8 +17304,8 @@ wall cost $10.55 Per cu. yd. of concrete.
 Newberry. The average weights of three sizes of hollow blocks are as
 follows:
 
-  Size, ins.             P. C. Hollow Space.    Weight, lbs.
- 8×9×32                      33-1/3            120
+Size, ins.             P. C. Hollow Space.    Weight, lbs.
+8×9×32                      33-1/3            120
 10×9×32                      33-1/3            150
 12×9×32                      33-1/3            180
 
@@ -17454,7 +17454,7 @@ which cost 74.2 cts. per foot, and 1 cu. ft. of brick arch which cost
 $12.07 per cu. yd., or 44.2 cts. per lineal foot of sewer. The invert
 required 4 cu. ft. of concrete per foot, which cost as follows:
 
-  Item.                             Per cu. yd.
+Item.                             Per cu. yd.
 Portland cement at $2.15 per bbl.     $2.292
 Labor mixing and placing               3.017
 Cost of forms                          0.187
@@ -17462,7 +17462,7 @@ Labor screening gravel                 0.471
 Carting                                0.592
 Miscellaneous                          0.146
                                       ------
-  Total                               $6.705
+Total                               $6.705
 
 The cost of the invert was thus $1.002 per lin. ft. of sewer.
 
@@ -17579,23 +17579,23 @@ reinforcement or grading.
                                Day.    Cost.        Cost.    Lin. Ft.   Yd.
        { Laying track for
        {  steering alligator  $ 5.00   $ 71.48     $ 43.98   $0.0670   $0.16
- 4 men { Moving and erecting
+4 men { Moving and erecting
        {  superstructure        5.00    299.94      358.44    0.3821    0.93
- 4 men Moving plates           10.00    202.50      253.44    0.2646    0.65
+4 men Moving plates           10.00    202.50      253.44    0.2646    0.65
 Repairs to alligator                     58.50        2.50    0.0354    0.08
- 1 man Bending rings            2.50     32.87       59.87    0.0538    0.13
- 2 men Placing reinforcement    5.00    126.94      138.13    0.1538    0.38
+1 man Bending rings            2.50     32.87       59.87    0.0538    0.13
+2 men Placing reinforcement    5.00    126.94      138.13    0.1538    0.38
 12 men Mixing and placing
          concrete              30.00    709.68      949.74    0.9631    2.34
- 1 man Watering finished pipe.  2.50     45.00       78.27    0.0716    0.17
- 1 man Painting and
-   brush-coating inside         2.50     96.50      117.37    0.1241    0.31
+1 man Watering finished pipe.  2.50     45.00       78.27    0.0716    0.17
+1 man Painting and
+brush-coating inside         2.50     96.50      117.37    0.1241    0.31
        Blacksmith's work                 30.00       25.00    0.0319    0.08
- 1 man Whim                     2.50     23.87       28.75    0.0306    0.07
- 1 man Screening and hauling
+1 man Whim                     2.50     23.87       28.75    0.0306    0.07
+1 man Screening and hauling
          sand and gravel        2.50    183.13      300.00    0.2804    0.68
                                      ---------   ---------   -------   -----
-  Total                              $1,880.41   $2,335.49   $2.4584   $5.98
+Total                              $1,880.41   $2,335.49   $2.4584   $5.98
 
 ~CONDUITS, TORRESDALE FILTERS, PHILADELPHIA, PA.~--At the Torresdale plant
 of Philadelphia filtration system the clear water conduits are
@@ -17860,7 +17860,7 @@ the concrete-steel conduit above described:
 25 cu. ft. stone                          1.10
 26 sq. ft. expanded metal, at 3 cts.      0.78
 Loading and hauling materials 2,000 ft.
-  to the mixing board (team at $4.50)     0.50
+to the mixing board (team at $4.50)     0.50
 Labor mixing, placing, and ramming        1.38
 Labor moving forms                        0.60
                                          -----
@@ -17907,7 +17907,7 @@ Cost of Labor on 6-ft. Conduit:
 1 man placing expanded metal at $2.        2.00         0.04
 1 man placing expanded metal at $1.50      1.50         0.03
                                          ------        -----
-  Total labor on concrete                $64.90        $1.35
+Total labor on concrete                $64.90        $1.35
 
 Cost of Labor Moving Forms:
 
@@ -17915,15 +17915,15 @@ Cost of Labor Moving Forms:
 4 carpenters placing forms            $13.00        $0.27
 2 helpers placing forms                 4.00         0.08
 1 carpenter putting up boards
-  for outside forms                     2.75         0.06
+for outside forms                     2.75         0.06
 1 helper putting up boards
-  for outside forms                     2.25         0.05
+for outside forms                     2.25         0.05
 2 helpers putting up boards
-  for outside forms                     3.50         0.07
+for outside forms                     3.50         0.07
 1 team hauling timber                   4.50         0.09
 1 helper hauling lumber                 1.75         0.04
                                       ------        -----
-  Total labor moving                  $31.75        $0.66
+Total labor moving                  $31.75        $0.66
 
 It will be noted that it required two men to bend and place the 700
 lbs., or 1,260 sq. ft., of expanded metal required for 63 lin. ft. of
@@ -17991,13 +17991,13 @@ sewer was built per 10-hour day, working only part of the time on actual
 concreting. The disposition of the force mixing and laying concrete and
 the wages were as follows:
 
-  Item.                                Per day.
+Item.                                Per day.
 Six wheelers, at 18.5 cts. per hour      $11.10
 One mixer, at 22.5 cts. per hour           2.25
 One dumper, at 18.5 cts. per hour          1.85
 Four placers, at 22.5 cts. per hour        9.00
                                          ------
-  Total                                  $24.20
+Total                                  $24.20
 
 There were 0.594 cu. yd. of concrete per lineal foot of sewer and its
 cost is given as follows:
@@ -18115,11 +18115,11 @@ cts. per hour. Records kept on 265 ft. of invert, or, theoretically,
                                       Per       Per
                                     lin. ft.  cu. yd.
 Labor, setting and moving
-  forms, 42 hours, at 25 cts.          $0.05    $0.67
+forms, 42 hours, at 25 cts.          $0.05    $0.67
 Labor, mixing, placing and wheeling
-  concrete, 179 hours, at 25 cts.       0.16     2.19
+concrete, 179 hours, at 25 cts.       0.16     2.19
                                        -----    -----
-  Total labor cost                     $0.21    $2.86
+Total labor cost                     $0.21    $2.86
 
 With the ordinary 1-3-5 mixture the cost of materials would run about as
 follows:
@@ -18129,7 +18129,7 @@ Cement, 0.96 bbl., at $2.           $1.92
 Sand, 0.47 cu. yd., at $1.13         0.53
 Stone, 0.78 cu. yd., at $1.88        1.47
                                     -----
-  Total cost materials              $3.92
+Total cost materials              $3.92
 
 Two men were worked in the trench, one alternately ramming the concrete
 into place and working the jack, and the other shaping the trench ahead
@@ -18227,7 +18227,7 @@ Per cu. yd.
 .044 cu. yd. sand at 75 cts.      0.33
 1 cu. yd. broken stone at $1      1.00
                                  -----
-  Total concrete materials       $3.67
+Total concrete materials       $3.67
 
 There were 1,600 cu. yds. of concrete placed at a cost of for:
 
@@ -18236,7 +18236,7 @@ Mixing and placing              $1,180      $0.7375
 Forms                            2,000       1.25
 Moving forms                       400       0.25
                                 ------      -------
-  Total for forms and labor     $3,580      $2.2375
+Total for forms and labor     $3,580      $2.2375
 
 For reinforcing the concrete 86,600 lbs. of steel, or about 55 lbs. per
 cu. yd. were used. The cost of placing and bending this steel was as
@@ -18249,7 +18249,7 @@ Cost of bending      52      0.06   ct.
 We can now summarize the cost of the concrete work proper of this sewer
 as follows:
 
-  Items.                         Per cu. yd.
+Items.                         Per cu. yd.
 Cement, sand and stone                 $3.67
 55 lbs. steel at 2 cts.                 1.10
 Forms, labor and materials              1.25
@@ -18258,7 +18258,7 @@ Placing steel at 0.1986 ct. per lb.     0.11
 Bending steel at 0.06 ct. per lb.       0.03
 Moving forms                            0.25
                                        -----
-  Total labor and materials            $7.15
+Total labor and materials            $7.15
 
 To get the total cost of the sewer proper we must add the cost of the
 vitrified brick invert paving. There were 71 cu. yds. of this paving and
@@ -18300,24 +18300,24 @@ lagging before placing the concrete for the arch, which is 6 ins. thick.
 The cost per 100 ft. of this sewer was as follows (prices being assumed
 for cement and labor):
 
-  Bottom concrete.               Cost per 100 ft.
+Bottom concrete.               Cost per 100 ft.
 18.5 bbls. cement, at $1.50          $ 27.75
 2.7 cu. yds. sand, at $1.00.            2.70
 15 cu. yds. stone, at $1.00            15.00
 17 days labor, at $1.50                25.50
 
-  Bottom concrete.              Cost per 100 ft.
+Bottom concrete.              Cost per 100 ft.
 25.25 bbls. cement, at $1.50           37.85
 7.5 cu. yds. sand, at $1.00             7.50
 22 days labor, at $1.50                33.00
 
-  Sewer Arch.
+Sewer Arch.
 26 bbls. cement, at $1.50              39.00
 3.9 cu. yds. sand, at $1.00             3.90
 13.6 cu. yds. stone, at $1.00          13.60
 21 days labor, at $1.50                31.50
                                      -------
-  Cost per 100 ft.                   $237.30
+Cost per 100 ft.                   $237.30
 
 [Illustration: Fig. 264.--Sewer at Cleveland, Ohio.]
 
@@ -18407,7 +18407,7 @@ in greatest dimension."
 _Cost._--A number of records of cost of constructing short sections of
 the sewer described are given by Mr. Parmley, as follows:
 
-  Labor placing anchor bars.                   Per day.
+Labor placing anchor bars.                   Per day.
 1 man, at $3.50                                   $3.50
 1 man, at $1.75                                    1.75
 4 hours carrying steel at 20 cts.                  0.80
@@ -18437,7 +18437,7 @@ Cost of single ring brick lining at sides:
 1/3 time man lowering at $2.25                        0.75
 3 men wheeling sand, filling buckets and dumping      5.25
                                                     ------
-  Total labor for 40 lin. ft. of sewer              $19.45
+Total labor for 40 lin. ft. of sewer              $19.45
 Quantity of brick masonry laid, cu. yd.               6.38
 Labor per cu. yd.                                     3.05
 
@@ -18452,7 +18452,7 @@ An account was kept of labor performed on 85 lin. ft. of arch work, or
                                                     $21.00
 No. cu. yd. placed daily                             25.64
 Labor per cu. yd.                                     0.82
-  Placing centering and arch bars:
+Placing centering and arch bars:
 2 men at $1.75                                       $3.50
 1 man at $3.50                                        3.50
                                                      -----
@@ -18498,7 +18498,7 @@ Labor on arch concrete:
 
 Daily progress was 13 1-6 ft.
 
-  The force employed was:
+The force employed was:
 7 men making concrete, at $1.75      $12.25
 1 man plastering the center            1.75
 1 man mixing mortar                    2.00
@@ -18619,7 +18619,7 @@ Cost of forms (distributed over 1,800 ft. of sewer)     0.082
 40 sq. ft. expanded metal at 4¼ cts.                    1.700
 Labor plastering invert                                 0.070
                                                        ------
-  Cost per ft., or per cu. yd.                         $6.111
+Cost per ft., or per cu. yd.                         $6.111
 
 "The forms for the invert were made of 2-in. rough hemlock boards cut
 out 4 ins. less diameter than the diameter of the sewer, except for 18
@@ -18793,7 +18793,7 @@ Supervision, freight, hauling 5.6 tons concrete      9.38
 Labor placing cover, 3 hrs. at 15 cts.               0.45
 Labor placing walls, 20 hrs. at 15 cts.              3.00
                                                    ------
-  Total, exclusive of iron cover                   $43.50
+Total, exclusive of iron cover                   $43.50
 
 ~CEMENT PIPE, CONSTRUCTED IN PLACE.~--In constructing 8-in. cement sewer
 for the Foster Armstrong Piano Co.'s works at Rochester, N. Y., a gang
@@ -18816,7 +18816,7 @@ was the itemized cost per day, 300 ft. of pipe laid:
 3.3 cu. yds. sand at 85 cts.         2.80
 Water                                0.15
                                    ------
-  Total for 300 lin. ft.           $19.90
+Total for 300 lin. ft.           $19.90
 
 This is equivalent to 6.63 cts. per lin. ft. of pipe.
 
@@ -18976,11 +18976,11 @@ Then:
 This gave the following cement costs per lineal foot:
 
 Diameter, Thickness,    Cost
-  ins.       ins.     per foot.
-   6         1¼       $0.0571
-   8         1¼        0.0730
-  10         1-3/8     0.0998
-  12         1½        0.1278
+ins.       ins.     per foot.
+6         1¼       $0.0571
+8         1¼        0.0730
+10         1-3/8     0.0998
+12         1½        0.1278
 
 The sand cost was based on 15 cts. per cubic yard for loading, and a
 haul of two miles of 1 cu. yd. to the load, making five trips per day,
@@ -19195,7 +19195,7 @@ props, all the forming was used three times. The lumber cost:
 400 ft. B. M. at $24      $ 9.60
 8,000 ft. B. M. at $18    144.00
                          -------
-  Total                  $153.60
+Total                  $153.60
 
 [Illustration: Fig. 276.--Column Construction for 75,000-Gallon
 Reservoir.]
@@ -19214,7 +19214,7 @@ Lumber                     $2.54
 Framing and erecting        2.77
 Tearing down                 .54
                            -----
-  Total                    $5.85
+Total                    $5.85
 
 This cost is for the yardage of 60.4 on which forms were actually used.
 For the total yardage in the tank the cost was:
@@ -19223,7 +19223,7 @@ Lumber                     $1.85
 Framing and erecting        2.01
 Tearing down                 .40
                            -----
-  Total                    $4.26
+Total                    $4.26
 
 The common labor cost of assisting to erect the forms was 15 per cent of
 the total. Nothing is allowed for foreman, for the contractor acted as
@@ -19265,7 +19265,7 @@ down cost 61 cts. per cubic yard. A summary would show:
 Framing and erecting   $4.19      $2.35    $1.83
 Tearing down             .47        .47      .61
                        -----      -----    -----
-  Total                $4.66      $2.82    $2.44
+Total                $4.66      $2.82    $2.44
 
 The greater cost of the columns forms over the girders and top was due
 to the fact that the columns forms were handled almost exclusively by
@@ -19373,7 +19373,7 @@ Forms, 100 ft. B. M., @ $18.30     1.85
 Labor on forms                     2.41
 Labor on concrete and steel        2.65
                                  ------
-  Total                          $15.62
+Total                          $15.62
 
 The cost of a foreman is not included in this, as the contractor looked
 after the men himself.
@@ -19446,7 +19446,7 @@ Labor and materials of final waterproofing      1,240.00
 Tools                                              48.75
 General expense                                   210.00
                                                ---------
-  Total                                        $3,602.52
+Total                                        $3,602.52
 
 ~COVERED RESERVOIR, AT FORT MEADE, SOUTH DAKOTA.~--The following account
 of the method and cost of constructing a 500,000-gallon reservoir is
@@ -19577,12 +19577,12 @@ The steel was, therefore, about 0.8%.
 Volume of material in structure exclusive of roof slab     648.35 cu. yds.
 Volume of material in roof slab                             61.93 cu. yds.
                                                            ------
-  Total                                                    710.28 cu. yds.
+Total                                                    710.28 cu. yds.
 
 The cost of the structure per cubic yard of concrete, exclusive of the
 roof slab, was as follows:
 
-  Item.                          Per cu. yd.
+Item.                          Per cu. yd.
 Crushed stone                        $ 3.168
 Sand                                    .842
 Cement                                 3.859
@@ -19590,12 +19590,12 @@ Reinforcement                          4.959
 Labor, mixing and placing concrete     1.721
 Forms, labor and material              2.960
                                      -------
-  Total                              $17.509
+Total                              $17.509
 
 In constructing the roof slab the expanded metal reinforcement raised
 the unit cost. For this portion of the work the costs were:
 
-  Item.                        Per cu. yd.
+Item.                        Per cu. yd.
 Expanded metal reinforcement    $ 5.241
 Other items, same as above       12.550
                                 -------
@@ -19620,7 +19620,7 @@ Cement      26.4 cts.
 Sand         2.6 cts.
 Labor       15.4 cts.
             -----
-  Total     44.4 cts.
+Total     44.4 cts.
 
 The cost of outside waterproofing was 4 cts. per square yard,
 distributed as follows:
@@ -19628,7 +19628,7 @@ distributed as follows:
 Material    2.5 cts.
 Labor       1.5 cts
             ---
-  Total     4.0 cts.
+Total     4.0 cts.
 
 While some of the cost items are apparently high when compared with the
 cost of similar work in other places, it should be remembered that the
@@ -19903,7 +19903,7 @@ Mixing, per cu. yd. of concrete            0.40
 Placing, per cu. yd. of concrete           2.20
 Forms, per cu. yd. of concrete             2.65
                                          ------
-  Total per cu. yd. of concrete          $13.95
+Total per cu. yd. of concrete          $13.95
 
 ~GAS HOLDER TANK, DES MOINES, IOWA.~--The tank was 84 ft. in diameter and
 21 ft. 5 ins. deep. It had a horizontal floor 16 ins. thick 5 ft. below
@@ -20115,7 +20115,7 @@ concrete for the floor was mixed rather wet and rammed until it quaked;
 on the sides a drier mixture was necessary to prevent flow. The cost of
 the lining concrete was as follows:
 
-  Bottom Layer on Floor: 1-2-5 Mixture:
+Bottom Layer on Floor: 1-2-5 Mixture:
 1.25 bbls. natural cement at $1.08           $1.350
 0.34 cu. yd. sand at $1.02                    0.347
 0.86 cu. yd. stone at $1.57                   1.350
@@ -20124,9 +20124,9 @@ Labor, on forms                               0.100
 Labor mixing and placing                      1.170
 Labor general expenses                        0.080
                                              ------
-  Total                                      $4.487
+Total                                      $4.487
 
-  Bottom Layer on Sides: 1-2½-6½ Mixture:
+Bottom Layer on Sides: 1-2½-6½ Mixture:
 1.08 bbl. Portland cement at $1.53           $1.652
 0.37 cu. yd. sand at $1.02                    0.377
 0.96 cu. yd. stone at $1.57                   1.507
@@ -20135,9 +20135,9 @@ Labor, on forms.                              0.121
 Labor, mixing and placing                     1.213
 Labor, general expenses                       0.177
                                              ------
-  Total                                      $5.063
+Total                                      $5.063
 
-  Top Layer on Floor and Sides: 1-2½-4 Mixture:
+Top Layer on Floor and Sides: 1-2½-4 Mixture:
 1.37 bbls. Portland cement at $1.53          $2.09
 0.47 cu. yd. sand at $1.02                    0.48
 0.75 cu. yd. stone at $1.57                   1.17
@@ -20146,7 +20146,7 @@ Labor, on forms                               0.26
 Labor, mixing and placing                     1.530
 Labor, general expenses                       0.150
                                              ------
-  Total                                       $5.93
+Total                                       $5.93
 
 The side finish with 1-2½-4 concrete of 3/8-in. stone cost $0.154 per
 sq. yd. 1 in. thick. This work was done by a gang of 3 plasterers and 3
@@ -20161,13 +20161,13 @@ appeared and had to be grouted. Three gangs, each consisting of 1
 plasterer and 1 helper, did the plastering, each gang laying about 700
 sq. yds. per day. The cost of the plaster layer was as follows:
 
-  Item.         Per 100 sq. ft.   Per sq. yd.   Per cu. yd.
+Item.         Per 100 sq. ft.   Per sq. yd.   Per cu. yd.
 Cement at $1.53     $1.15           $0.103        $7.42
 Sand at $1.02        0.13            0.012         0.86
 Burlap               0.02            0.002         0.14
 Labor                0.92            0.083         6.00
                     -----           ------       ------
-  Totals            $2.22           $0.200       $14.42
+Totals            $2.22           $0.200       $14.42
 
 It will be noted that it took over 5 bbls. of cement per cubic yard, and
 that the labor cost was $6 per cubic yard.
@@ -20404,12 +20404,12 @@ Laborers                 9     days     1.75         0.21
 Rails and cars.          2-2/9 days     0.40         0.02
 Loam                    27-5/9 cu. yds. 1.25         0.46
                                                     -----
-  Total, 75 cu. yds.                                $1.38
+Total, 75 cu. yds.                                $1.38
 
 Estimated proportionate
-  charge for installing plant and holidays          $0.28
+charge for installing plant and holidays          $0.28
                                                     -----
-  Grand total                                       $1.66
+Grand total                                       $1.66
 
 Installing Plant.
 
@@ -20433,7 +20433,7 @@ Kerosene                  30   gal.     0.11         3.30
 Oil                        4   gal.     0.25         1.00
 Spikes                   220   lbs.     0.05        11.00
                                                   -------
-  Total                                           $723.03
+Total                                           $723.03
 
 The cost of the concrete work in the lower and upper layers can be still
 further detailed as shown below:
@@ -20441,22 +20441,22 @@ further detailed as shown below:
 Lower Layer Concrete.
 95.5 cu. yds., 1-2½-6½ concrete.
 
-  Materials:                                    Rate. Per cu. yd.
+Materials:                                    Rate. Per cu. yd.
 Atlas cement                      1.11 bbl.     $1.35       $1.50
 Sand                               .39 cu. yd.   1.10        0.43
 Broken stone (.97 cu. yd.)        1.23 tons      1.35        1.66
 Miscellaneous, plant, coal, etc.                             1.28
 
-  Labor:
+Labor:
 Mixing and placing                                          $2.09
 Carpenter work on forms at $24.00 per M.                      .34
                                                             -----
-  Total per cu. yd. in place                                $7.30
+Total per cu. yd. in place                                $7.30
 
 Upper Layer Concrete.
 129.2 cu. yds., 1-1¼-1¼-4 concrete.
 
-  Materials:                                    Rate. Per cu. yd.
+Materials:                                    Rate. Per cu. yd.
 Atlas cement                      1.37 bbl.     $1.35       $1.85
 Sand                               .24 cu. yd.   1.10        0.26
 Stone dust (.25 cu. yd.)           .32 ton       1.50        0.48
@@ -20464,11 +20464,11 @@ Broken stone (.75 cu. yd.)         .96 ton       1.35        1.30
 Lumber                            0.31 M. ft.   21.00        0.65
 Miscellaneous, plant, etc.                                   1.32
 
-  Labor:
+Labor:
 Mixing and placing                                           1.85
 Carpenter work on forms at $21.00 per M.                     0.66
                                                             -----
-  Total per cu. yd. in place                                $8.37
+Total per cu. yd. in place                                $8.37
 
 The following approximate labor costs are also given: Transporting,
 erecting and removing derrick, $260.85. Equivalent time: Foreman, 6
@@ -20492,7 +20492,7 @@ Back filling                    103.27
 Installing plant                716.03
 Transportation and holidays     209.77
                              ---------
-  Grand total                $3,503.66
+Grand total                $3,503.66
 
 ~LINING JEROME PARK RESERVOIR.~--The bottom of the reservoir that was
 lined covered 250 acres, and the concrete lining was 6 ins. thick. The
@@ -20515,7 +20515,7 @@ and forth a good surface was secured. The gang mixing and placing
 consisted of 20 men for each mixer and 18 gangs laid approximately 1½
 acres per 10-hour day. The gang organization and wages were as follows:
 
-   Item.                                          Per 10 hours.
+Item.                                          Per 10 hours.
 4 men shoveling stone at $1.50                       $ 6.00
 2 men wheeling sand at $1.50                           3.00
 2 men delivering cement at $1.50                       3.00
@@ -20581,26 +20581,26 @@ the stone and the two turned over three times with shovels. The concrete
 was rammed until the mortar flushed to the surface. The following costs
 cover various periods as follows:
 
-  Two Days Work (101 cu. yds.):         Total.   Per cu. yd.
+Two Days Work (101 cu. yds.):         Total.   Per cu. yd.
 27 laborers, 2 days, at $1.25            $72.90      $0.7217
 1 foreman, 2 days, at $2.50                5.00       0.0495
                                          ------      -------
         Total                            $77.90      $0.7712
 
-  One Month's Work (1,302 cu. yds.):
+One Month's Work (1,302 cu. yds.):
 642 days, laborers, at $1.35           $ 866.70      $0.6649
 17 days, water boy, at $0.60              10.20       0.0078
 22 days, foreman, at $2.50                55.00       0.0421
                                          ------      -------
         Total                           $931.90      $0.7148
 
-  Two Days Work (101 cu. yds.):         Total.   Per cu. yd.
+Two Days Work (101 cu. yds.):         Total.   Per cu. yd.
 27 laborers, 2 days, at $1.25            $72.90      $0.7217
 1 foreman, 2 days, at $2.50                5.00       0.0495
                                          ------      -------
         Total                            $77.90      $0.7712
 
-  One Month's Work (1,302 cu. yds.):
+One Month's Work (1,302 cu. yds.):
 642 days, laborers, at $1.35           $ 866.70      $0.6649
 17 days, water boy, at $0.60              10.20       0.0078
 22 days, foreman, at $2.50                55.00       0.0421
@@ -20652,7 +20652,7 @@ mason brushing and troweling the surface. The cost of the work, not
 including the old hoop iron or the old lumber used in forms, was as
 follows:
 
-  Item.                          Total.  Per cu. yd.
+Item.                          Total.  Per cu. yd.
 Cement                          $100.00        $2.62
 Gravel and sand                   35.00         0.92
 1 20-rod roll of fencing           5.20         0.01
@@ -20660,7 +20660,7 @@ New lumber                        18.00         0.47
 100 days labor at $1.75          175.00         4.60
 7 days mason troweling at $3.50   24.50         0.64
                                 -------        -----
-  Total, 38.2 cu. yds.          $357.70        $9.26
+Total, 38.2 cu. yds.          $357.70        $9.26
 
 The external area of the silo is 1,950 sq. ft., which makes the cost of
 brushing and troweling 1¼ cts. per sq. ft. There were about 2,300 ft. B.
@@ -20693,7 +20693,7 @@ Measuring, mixing and loading                                $0.20
 Transporting by rail and cables                               0.12
 Laying and tamping floors and walls including setting forms   0.22
                                                              -----
-  Total                                                      $0.54
+Total                                                      $0.54
 
 The cost of laying and tamping the concrete on the vaulting was 14 cts.
 per cu. yd. The vaulting is a groined arch 6 ins. thick at the crown and
@@ -20714,7 +20714,7 @@ Laborers, 3,447 hrs. at 15 cts.                      517.05
 Painters, 577 hrs. at 15 cts.                         86.55
 Teaming, 324 hrs. at 40 cts.                         121.60
                                                   ---------
-  Total labor building centers, 313 M. at $6.37   $1,973.87
+Total labor building centers, 313 M. at $6.37   $1,973.87
 
 Materials for centers covering 62,560 sq. ft.
 
@@ -20722,7 +20722,7 @@ Materials for centers covering 62,560 sq. ft.
 3,700 lbs. nails, at 3 cts.                          111.00
 8 bbls. tar, at $3                                    24.00
                                                   ---------
-  Total                                           $5,835.00
+Total                                           $5,835.00
 
 These centers covered two filters, each having an area of 121-1/3×258
 ft. There were six more filters of the same size, for which the same
@@ -20737,7 +20737,7 @@ Team, 430 hrs. at 40 cts.                                   172.00
 3,000 lbs. nails, at 3 cts.                                  90.00
                                                          ---------
 
-  Total cost of moving centers to cover 196,660 sq. ft.  $7,629.30
+Total cost of moving centers to cover 196,660 sq. ft.  $7,629.30
 
 [Illustration: Fig. 287.--Forms for Constructing Grain Elevator Bins.]
 
@@ -21290,11 +21290,11 @@ $0.0255 each.
 
 The cost of drilling and blasting was as follows:
 
-  Item.                        Per mile.  Per lin. ft.  Per cu. yd.
+Item.                        Per mile.  Per lin. ft.  Per cu. yd.
 Labor, drilling                 $ 89.76         $0.017       $0.085
 Blasting labor and materials.    285.12          0.054        0.268
                                 -------         ------       ------
-  Total drilling and blasting.  $374.88         $0.071       $0.353
+Total drilling and blasting.  $374.88         $0.071       $0.353
 
 [Illustration: Fig. 304.--Bench Monument, Chicago, Ill.]
 
@@ -21304,7 +21304,7 @@ as follows, per cubic yard:
 Dynamite and exploders     $0.192
 Labor                       0.076
                            ------
-  Total                    $0.268
+Total                    $0.268
 
 Two cubic yards of concrete were blasted per pound of dynamite.
 
@@ -21345,7 +21345,7 @@ Brace irons per set          2.50
 40 lbs. cement at 1½ cts.    0.60
 Sand                         0.15
                             -----
-  Total cost                $4.10
+Total cost                $4.10
 
 Two men at $2 per day each set five bases in eight hours, making the
 cost of setting 80 cts. per base. The bases were sunk to a depth of 3
@@ -21368,7 +21368,7 @@ post is given as follows:
 1/3 hour carpenter changing letters at 25 cts.     0.08
 Coloring cement                                    0.02
                                                   -----
-  Total                                           $0.82
+Total                                           $0.82
 
 ~BONDING NEW CONCRETE TO OLD.~--Concrete which has set hard has a surface
 skin or glaze to which fresh concrete will not adhere strongly unless
@@ -21412,7 +21412,7 @@ Width over all                         3' 6"
 Length over all on trucks             10' 6"
 Capacity per hour, cu. yds.         25 to 75
 Horsepower, engine                         2
-  Weight:
+Weight:
 On trucks, without power, lbs.         1,700
 On trucks, steam engine                2,000
 On trucks, gas engine                  2,200
@@ -21422,7 +21422,7 @@ On trucks, steam engine and boiler     2,500
 Table XXIII--Sizes, Capacities and Weights of Scheiffler Proportioning
 Mixers. The Hartwick Machinery Co., Jackson, Mich.
 
-  Mixer Number.                            No. 2.   No. 2½.    No. 3.
+Mixer Number.                            No. 2.   No. 2½.    No. 3.
 Dimensions of hopper, ins.                  55×33     53×33     60×40
 Height, from ground to top of hopper, ins.     43        43        48
 Width over all on trucks, ins.                 46        46        46
@@ -21430,7 +21430,7 @@ Length over all on trucks, ins.               126       126       132
 Hourly capacity in cubic yards                5-6         8     12-15
 Horsepower required, gasoline engine            2         3         4
 Horsepower required, steam engine.                        3         4
-  Weights:
+Weights:
 On trucks, without power, lbs.              2,400     2,900     3,300
 On trucks, gasoline engine, lbs.            3,000     3,600     4,500
 On trucks, steam engine, lbs.               2,800     3,330     4,000
@@ -21484,21 +21484,21 @@ Weight trucks, eng. and boiler |            |          |
 Table XXV--Sizes, Capacities and Weights of Snell Mixers.
 R. Z. Snell Mfg. Co., South Bend, Ind.
 
-  Mixer Number.                 No. 0.     No. 1.     No. 2.   No. 3.
+Mixer Number.                 No. 0.     No. 1.     No. 2.   No. 3.
 Size batch, cu. ft.                  3          7         11       24
 Capacity per hour, cu. yds.          2½         5          8       20
 Speed revs. per min.                30         30         25       19
-  Weight on Skids:
+Weight on Skids:
 With pulley, lbs.                  480        800        900    2,000
 With engine, lbs.                  800      1,550      2,050    3,500
 With eng. and boiler, lbs.                  2,170      2,900    4,000
-  Weight on Wheels:
+Weight on Wheels:
 With engine, lbs.                1,100      2,200      3,450    4,700
 With engine and boiler, lbs.                3,570      4,750    5,200
-  Engine:
+Engine:
 Size cylinder, ins.                4×6       3½×4½       4×5      5×6½
 Rated horsepower                   1½         4          5        6
-  Boiler:
+Boiler:
 Size, ins.                                   24×60      26×60    30×60
 Rated horsepower                              5          6        8
 Outside dimensions on skids     2'9"×4'    3'4"×5'6"    4'×6'    6'×9'
@@ -21508,21 +21508,21 @@ Total height on skids            3'8"        4'6"        5'       5'6"
 Table XXVI--Sizes, Capacities and Horsepower of Ransome Mixers.
 Ransome Concrete Machinery Co., Dunellen, N. J.
 
-  Mixer number.             No. 1.    No. 2.   No. 3.   No. 4.
+Mixer number.             No. 1.    No. 2.   No. 3.   No. 4.
 Size batch, cu. ft.       10 to 14       20       30        40
 Capacity per hr., cu. yds.      10       20       30        40
 Speed, Revs. per min.           16       15       14½       14
-  Weight on Skids:
+Weight on Skids:
 Pulley or gear, lbs.          3,300    3,650    5,900    7,400
 With engine, lbs.             4,600    5,050    7,700    9,250
 With engine and boiler, lbs.  6,450    8,700   12,200   14,700
-  Weight on Wheels:
+Weight on Wheels:
 With engine, lbs.             5,100    5,550    8,200    9,750
 With engine and boiler, lbs.  6,950    9,200   12,700   15,000
-  Engines:
+Engines:
 Size cylinder, ins.            6×6      7×7      8×8      9×9
 Rated horsepower                7       10       14       20
-  Boiler:
+Boiler:
 Size, ins.                    36×69   42×75    42×87    48×93
 Rated horsepower               10       15       20       30
 
@@ -21530,26 +21530,26 @@ Rated horsepower               10       15       20       30
 Table XXVII--Sizes, Capacities and Horsepowers of Chicago Improved Cube
 Mixers. Municipal Engineering and Contracting Co., Chicago, Ill.
 
-  Mixer                            No.     No.       No.     No.     No.    No.
-  number.                "Handy."   6.     11.       17.     22.     33.    64.
+Mixer                            No.     No.       No.     No.     No.    No.
+number.                "Handy."   6.     11.       17.     22.     33.    64.
 Size batch, cu. ft.           2½    6      11        17      22      33     64
 Capacity per hr., cu. yds.    5½   13      24        40      50      70    120
 Speed, revs. per min.        24    20      18        17      16      15     12
-  Weight on Skids:
+Weight on Skids:
 Pulley or gear, lbs.       1,000  1,900   2,800     5,000   7,000   9,600 19,000
 With engine, lbs.          2,500  3,600   6,100     8,200  12,000
 With eng. and boiler, lbs. 3,100  4,300   7,800    10,000  16,000
-  Weight on Wheels:
+Weight on Wheels:
 With engine, lbs.          1,400  3,200   4,500     7,100   9,500  15,000
 With eng. and boiler, lbs.        4,000   6,000     8,800  10,300  17,000
-  Engine:
+Engine:
 Size cylinder, ins.               4×4     6×6       6½×7    7×8     8×9
 Rated horsepower             2      3       6         8      12      15     30
 Boiler, rated horsepower            4       8        10      15      18     35
 Width over all            4'-5"    5'-10"  7'-1"     7'-8"   8'-6"  9'-8"
 Length over all           4'-10"   6'-9"   8'-0"     8'-10" 10'-2" 13'-6"
 Height bot. sill to
-  charging hopper         3'-4¼"   3'-5"   3'-10"    4'-7"  5'-0"   5'-9"
+charging hopper         3'-4¼"   3'-5"   3'-10"    4'-7"  5'-0"   5'-9"
 Additional height on
 wheels                    9-7/8" 1'-5-1/8" 1'-5-1/8" 6-3/8"  5½"
 
@@ -21557,25 +21557,25 @@ wheels                    9-7/8" 1'-5-1/8" 1'-5-1/8" 6-3/8"  5½"
 Table XXVIII--Sizes, Capacities and Horsepowers of Cropp Mixers.
 A. J. Cropp, Concrete Machinery, Chicago, Ill.
 
-  Mixer number.            No. 0.   No. 1.   No. 2.   No. 3.   No. 4.
+Mixer number.            No. 0.   No. 1.   No. 2.   No. 3.   No. 4.
 Size batch, cu. ft.       7 to 8       10       13       16       20
 Cap. per hr., cu. yds.        15       20       25       30       40
 Speed, revs. per min.         12       10       10       10       10
-  Weight on Skids:
+Weight on Skids:
 With engine, lbs.           1,375    1,650    1,700    1,975    2,100
 With eng. and boiler, lbs.  2,575    2,950    3,000    3,775    3,900
-  Weight on Wheels:
+Weight on Wheels:
 With engine, lbs.           1,775    2,050    2,200    2,475    2,600
 With eng. and boiler, lbs.  2,900    3,350    3,400    4,250    4,350
-  Engine:
+Engine:
 Size cylinder, ins.         4×4        5×5      5×5      6×6      6×6
 Rated horsepower              3        5        5        7        7
-  Boiler:
+Boiler:
 Size inside               24"×4'   24"×6'   24"×6'   30"×6'   30"×6'
 Rated horsepower              4        6        6        9        9
 Out. dimensions on skids     40"      40"      40"      48"      48"
 Total height                 50"      56"      56"      56"      62"
-  Height fr. ground on trucks:
+Height fr. ground on trucks:
 Charging, ins.               20       20       20       20       20
 Discharging, ins.            30       30       30       30       30
 
@@ -21590,9 +21590,9 @@ Standard charge in cu. ft.  cement             ½         1         1         2
 Total unmixed batch in cu. ft                 5         8½        13        26
 Mixed concrete per batch, loose in cu. ft.    3½         6         9        18
 Cubic yards of unmixed material per hour,
-  45 batches per hour                         8         14        21        42
+45 batches per hour                         8         14        21        42
 Cubic yards of mixed concrete per hour,
-  45 batches per hour                         6         10        15        30
+45 batches per hour                         6         10        15        30
 Minimum horsepower required                   2          4         6         8
 Revolutions of driving pulley per min       200        190       185       170
 Revolutions of drum per min                  20         18        15        13
@@ -21623,12 +21623,12 @@ Speed of intermediate shaft                  132       108       75         75
 Weight of mixer on skids                   1,800     2,800    5,200      5,500
 Weight of mixer on skids, with steam eng.  2,300     3,550    6,500      7,000
 Weight of mixer on skids, with steam
-  engine and boiler                        3,300     5,000    8,000      9,300
+engine and boiler                        3,300     5,000    8,000      9,300
 Weight of mixer on skids, gasoline
-  engine and housing                       3,000     4,400    7,500      8,600
+engine and housing                       3,000     4,400    7,500      8,600
 Weight of trucks with pole                   400       600      850        950
 Weight of automatic loading bucket
-  complete                                   500       700    1,000      1,100
+complete                                   500       700    1,000      1,100
 Weight of mixing through complete            200       250      400        400
 
 
@@ -21638,27 +21638,27 @@ Contractors' Supply & Equipment Co., Chicago, Ill.
 Mixer number.                No. 0.   No. 1.   No. 2.  No. 2½.  No. 4.    No. 5.
 
 Stand. charge cu. ft. Cement    1        1        2        2         3         4
-  "      "     "   "  Sand      2½       4        6        7½       10½       14
-  "      "     "   "  Stone     5        8       12       15        21        28
+"      "     "   "  Sand      2½       4        6        7½       10½       14
+"      "     "   "  Stone     5        8       12       15        21        28
 Total unmixed per batch,
-  cu. ft.                       8½      13       20       24½       34½       46
+cu. ft.                       8½      13       20       24½       34½       46
 Mixed material per batch
-  (loose), cu. ft.              6        9       13½      16½       22        30
+(loose), cu. ft.              6        9       13½      16½       22        30
 Cubic  yards  mixed  per
-  hour, up to                   9       20       30       39        46        62
+hour, up to                   9       20       30       39        46        62
 Power required--H.P.            4        6        8       10        15        19
 Revs. per minute of
-  driving pulley              218      180      173      162       160       125
+driving pulley              218      180      173      162       160       125
 Diameter and face of
-  driving pulley, ins.      20×4½  24×5½  28×5½  28×6½  36×6½    48×7½
+driving pulley, ins.      20×4½  24×5½  28×5½  28×6½  36×6½    48×7½
 Weight on skids with
-  pulley only, lbs.         1,740    2,500    3,600    4,400     6,200     7,900
+pulley only, lbs.         1,740    2,500    3,600    4,400     6,200     7,900
 Weight on truck with
-  pulley or gears, lbs.     2,200    3,650    4,750    5,500     7,400      ....
+pulley or gears, lbs.     2,200    3,650    4,750    5,500     7,400      ....
 Weight  on  truck  with
-  steam eng. & boil., lbs.  3,750    5,600    7,200    8,600    11,400      ....
+steam eng. & boil., lbs.  3,750    5,600    7,200    8,600    11,400      ....
 Weight on truck with
-  gasoline engine, lbs      4,000    5,100    7,400    9,300      ....      ....
+gasoline engine, lbs      4,000    5,100    7,400    9,300      ....      ....
 
 
 TABLE XXXII--SIZES, WEIGHTS AND CAPACITIES OF POLYGON MIXER.
@@ -21723,23 +21723,23 @@ CONCRETE FOR VARIOUS PERCENTAGES OF REINFORCEMENT.
 
 Per cent            Lbs. steel         Lbs. steel
 of steel.           Per cu. ft.         Per cu. yd.
-   0.20                1.00                27.0
-   0.25                1.25                33.8
-   0.30                1.50                40.5
-   0.35                1.75                47.3
-   0.40                2.00                54.0
-   0.45                2.25                60.8
-   0.50                2.50                67.5
-   0.55                2.75                74.3
-   0.60                3.00                81.0
-   0.65                3.25                87.5
-   0.70                3.50                94.5
-   0.75                3.75               101.3
-   0.80                4.00               108.0
-   0.85                4.25               114.8
-   0.90                4.50               121.5
-   0.95                4.75               128.3
-   1.00                5.00               135.0
+0.20                1.00                27.0
+0.25                1.25                33.8
+0.30                1.50                40.5
+0.35                1.75                47.3
+0.40                2.00                54.0
+0.45                2.25                60.8
+0.50                2.50                67.5
+0.55                2.75                74.3
+0.60                3.00                81.0
+0.65                3.25                87.5
+0.70                3.50                94.5
+0.75                3.75               101.3
+0.80                4.00               108.0
+0.85                4.25               114.8
+0.90                4.50               121.5
+0.95                4.75               128.3
+1.00                5.00               135.0
 
 
 TABLE XXXIV--WEIGHTS OF ROUND AND SQUARE BARS OF DIMENSIONS COMMONLY
@@ -21806,31 +21806,31 @@ TABLE XXXVII--WEIGHTS OF DEFORMED BARS OF DIMENSIONS COMMONLY USED FOR
 REINFORCED CONCRETE.
 
 Size.     Weight, lbs.     Area.       Size     Weight, lbs.     Area
- ins.      per ft.        sq. ins.      ins.      per ft.      sq. ins.
+ins.      per ft.        sq. ins.      ins.      per ft.      sq. ins.
 
 [Illustration: Ransome Twisted Bar.]  [Illustration: New Style Corrugated Bar.]
 
-  ¼          0.212         0.063          ¼         0.24          0.06
-  ½          0.85          0.25           ½         0.85          0.25
+¼          0.212         0.063          ¼         0.24          0.06
+½          0.85          0.25           ½         0.85          0.25
 5/8          1.32          0.319         5/8        1.33          0.39
-  ¾          1.91          0.563          ¾         1.91          0.56
+¾          1.91          0.563          ¾         1.91          0.56
 7/8          2.6           0.765         7/8        2.60          0.77
 1            3.4           1.000         1          3.40          1.00
 1¼           5.3           1.563         1¼         5.30          1.56
 
  [Illustration: Diamond Bar.]        [Illustration: Universal Corrugated Bar.]
-  ½          0.85          0.25         ¼×1       0.73          0.19
+½          0.85          0.25         ¼×1       0.73          0.19
 5/8          1.33          0.39      5/16×1¼      1.18          0.32
-  ¾          1.91          0.56       3/8×1-3/8   1.35          0.41
+¾          1.91          0.56       3/8×1-3/8   1.35          0.41
 7/8          2.60          0.76       3/8×1¾      1.97          0.54
 1            3.40          1.00       3/8×2       2.27          0.65
 1¼           5.31          1.56       3/8×2½      2.85          0.80
 
-  --No. 1 Mill--  [Illustration: Thatcher Bulb Bar.]   --No. 2 Mill.--
-  ¼          0.16          0.047         ...        ...           ...
-  ½          0.61          0.18            ½        0.58          0.17
+--No. 1 Mill--  [Illustration: Thatcher Bulb Bar.]   --No. 2 Mill.--
+¼          0.16          0.047         ...        ...           ...
+½          0.61          0.18            ½        0.58          0.17
 5/8          0.95          0.28          5/8        0.92          0.27
-  ¾          1.39          0.41            ¾        1.34          0.39
+¾          1.39          0.41            ¾        1.34          0.39
 7/8          1.87          0.55          7/8        1.79          0.53
 1            2.42          0.71          1          2.32          0.68
 1¼           3.74          1.10          1¼         3.55          1.04
@@ -21841,7 +21841,7 @@ Size.     Weight, lbs.     Area.       Size     Weight, lbs.     Area
 [Illustration: Monolith Bar.]    [Illustration: Twisted Lug Bar.]
 
 0.4          0.55          0.25            ¼        0.222         0.625
-  ½          0.85          0.32            ½        0.87          0.250
+½          0.85          0.32            ½        0.87          0.250
 ...          ....          ....          5/8        1.35          0.3906
 ...          ....          ....            ¾        1.94          0.5625
 0.8          2.18          0.64          7/8        2.64          0.7656
@@ -22164,15 +22164,15 @@ Labor:
 83 hours waterboy at 6 cts.            4.98
 Add for superintendence 15%           30.13
                                     -------
-  Total labor                       $231.01
-  Materials:
+Total labor                       $231.01
+Materials:
 900 lbs. Olean soap at 4-1/3 cts.   $ 39.00
 210 lbs. alum at 3 cts.                6.30
 6 10-in. whitewash brushes at $2.25   13.50
 6 stable brushes at $1.25              7.50
                                     -------
-  Total materials                   $ 66.30
-  Total labor and materials         $297.31
+Total materials                   $ 66.30
+Total labor and materials         $297.31
 
 This covered 131,634 sq. ft., hence the cost of the two coats of soap
 and alum was $2.26 per 1,000 sq. ft., or 0.23 ct. per sq. ft.
@@ -22220,7 +22220,7 @@ waterproofing was:
 60 hours mixing at 15 cts.                9.00
 Freight, express and haulage             11.50
                                         ------
-  Total for 74,800 sq. ft.              $71.18
+Total for 74,800 sq. ft.              $71.18
 
 This gives a cost of 95 cts. per 1,000 sq. ft., or less than 0.1 ct. per
 sq. ft. It was found that if less than 2 parts of sand to 1 part of
@@ -22360,18 +22360,18 @@ alternative was allowed of placing the waterproofing layer between a
 two sections of the work the actual cost of waterproofing was as
 follows:
 
-  98,074 sq. yds. Single-Ply Felt.    Per sq. yd.
+98,074 sq. yds. Single-Ply Felt.    Per sq. yd.
 Labor laying                                $0.05
 Materials and plant                          0.10
                                             ------
-  Total                                     $0.15
+Total                                     $0.15
 
-  1,337 cu. yds. Brick in Asphalt:    Per cu. yd.
+1,337 cu. yds. Brick in Asphalt:    Per cu. yd.
 
 Labor laying                                $6.32
 Materials and plant                         11.48
                                             ------
-  Total                                    $17.80
+Total                                    $17.80
 
 
 

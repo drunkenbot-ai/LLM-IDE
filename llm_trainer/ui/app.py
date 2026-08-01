@@ -84,6 +84,7 @@ from llm_trainer.training_service import run_training_job
 from llm_trainer.ui.chat_widgets import ChatMessageWidget
 from llm_trainer.ui.markdown_renderer import markdown_to_html
 from llm_trainer.ui.workers import ProcessTaskWorker, TaskWorker
+from llm_trainer.ui.startup_splash import StartupSplash
 from llm_trainer.ui.tabs.benchmark_tab import build_benchmark_tab
 from llm_trainer.ui.tabs.chat_tab import build_chat_tab
 from llm_trainer.ui.tabs.dataset_tab import build_dataset_tab
@@ -120,7 +121,7 @@ APP_VERSION = "1.0.0"
 # deployment (dev/staging/prod) without a code change or rebuild.
 # LICENSE_SERVER_URL = os.environ.get("DRUNKENBOT_LICENSE_SERVER_URL", "https://license.drunkenbot.ai")
 # LICENSE_SERVER_URL = "http://127.0.0.1:8000/"
-LICENSE_SERVER_URL = "https://drunkenbot.pythonanywhere.com"
+LICENSE_SERVER_URL = "https://drunkenbot.store"
 WINDOWS_APP_ID = "DrunkenBot.LLMIDE"
 LOGGER = logging.getLogger(__name__)
 APP_HOME_DIR = Path.home() / ".drunkenbot_ide"
@@ -560,7 +561,7 @@ def _run_startup_validations(splash: StartupValidationSplash) -> None:
             "Checking required imports",
             lambda: [importlib.import_module(module_name) for module_name in required_modules],
         ),
-        ("Running test suite", lambda: _run_startup_tests(repo_root, tests_root)),
+        ("Running test suite", lambda: _run_startup_tests(repo_root, tests_root, splash.append_log)),
     ]
 
     splash.set_checks([label for label, _ in steps])
@@ -579,7 +580,7 @@ def _run_startup_validations(splash: StartupValidationSplash) -> None:
     splash.append_log("All startup validations passed.")
 
 
-def _run_startup_tests(repo_root: Path, tests_root: Path) -> None:
+def _run_startup_tests(repo_root: Path, tests_root: Path, on_test: Optional[Any] = None) -> None:
     """Run repository tests and raise on failure."""
 
     if not tests_root.exists():
@@ -591,20 +592,31 @@ def _run_startup_tests(repo_root: Path, tests_root: Path) -> None:
         "discover",
         "-s",
         "tests",
+        "-v",
         "-p",
         "test_*.py",
     ]
-    result = subprocess.run(
+    process = subprocess.Popen(
         command,
         cwd=str(repo_root),
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         text=True,
         encoding="utf-8",
         errors="replace",
-        check=False,
     )
-    if result.returncode != 0:
-        output = (result.stdout + "\n" + result.stderr).strip()
+    output_lines: list[str] = []
+    assert process.stdout is not None
+    for line in process.stdout:
+        clean_line = line.strip()
+        if clean_line:
+            output_lines.append(clean_line)
+            if on_test is not None and clean_line.startswith("test"):
+                on_test(f"Test: {clean_line}")
+            QApplication.processEvents()
+    return_code = process.wait()
+    if return_code != 0:
+        output = "\n".join(output_lines).strip()
         tail = "\n".join(output.splitlines()[-25:])
         raise RuntimeError(f"Startup tests failed.\n{tail}")
 
@@ -7274,9 +7286,10 @@ def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
         splash.raise_()
 
 
-def main(app: Optional[QApplication] = None) -> None:
+def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = None) -> None:
     """Launch the PySide6 desktop application."""
 
+    owns_app = app is None
     log_file = setup_logging()
     qInstallMessageHandler(qt_message_handler)
     LOGGER.info("Starting %s. Log file: %s", APP_NAME, log_file)
@@ -7288,7 +7301,7 @@ def main(app: Optional[QApplication] = None) -> None:
     app = app or QApplication(sys.argv)
     app.setFont(QFont("Arial", 10))
     app.setWindowIcon(MainWindow._static_app_icon())
-    splash = StartupValidationSplash()
+    splash = splash or StartupValidationSplash()
     splash.setWindowIcon(MainWindow._static_app_icon())
     splash.show()
     QTimer.singleShot(0, lambda: _apply_windows_taskbar_icon(splash))
@@ -7315,13 +7328,13 @@ def main(app: Optional[QApplication] = None) -> None:
             return
         LOGGER.warning("User chose to continue after failed startup validation.")
     splash.close()
-    window = MainWindow()
     chooser = ProjectChoiceDialog()
     chooser.setWindowIcon(MainWindow._static_app_icon())
     QTimer.singleShot(0, lambda: _apply_windows_taskbar_icon(chooser))
     if chooser.exec() != QDialog.Accepted:
         LOGGER.info("Startup closed at project selection screen")
         return
+    window = MainWindow()
     try:
         if chooser.choice == "new":
             base_dir = QFileDialog.getExistingDirectory(
@@ -7363,7 +7376,8 @@ def main(app: Optional[QApplication] = None) -> None:
     interrupt_timer.start(200)
     window.interrupt_timer = interrupt_timer
     signal.signal(signal.SIGINT, lambda *_: QTimer.singleShot(0, window.request_shutdown_from_signal))
-    sys.exit(app.exec())
+    if owns_app:
+        sys.exit(app.exec())
 
 
 if __name__ == "__main__":

@@ -111,16 +111,16 @@ This feature of the series-wound motor makes it especially adapted to
 street railway work.
 
 
-  WESTINGHOUSE
-  No. 69 RAILWAY MOTOR
-  500 VOLTS
+WESTINGHOUSE
+No. 69 RAILWAY MOTOR
+500 VOLTS
 
-  GEAR RATIO, 14 TO 68.      WHEELS, 33″
+GEAR RATIO, 14 TO 68.      WHEELS, 33″
 
-  CONTINUOUS CAPACITY, 25 AMPERES AT 300 VOLTS,
-  OR 23 AMPERES AT 400 VOLTS.
+CONTINUOUS CAPACITY, 25 AMPERES AT 300 VOLTS,
+OR 23 AMPERES AT 400 VOLTS.
 
-  Fig. 4. Characteristic Curves of Railway Motor.]
+Fig. 4. Characteristic Curves of Railway Motor.]
 
 The efficiency curve shows the motor to have an efficiency of about 83
 per cent with gears. Much other information may be obtained by a proper
@@ -131,7 +131,7 @@ very little effect on the fields. The neutral points between fields are
 consequently shifted very little and it is therefore not necessary to
 shift the brushes when the motor is reversed.
 
-  Railway Motors.
+Railway Motors.
 
 =Armature Winding.= The armature winding is what is commonly known
 as the series or wave winding, shown developed in the paper on
@@ -159,13 +159,17 @@ magnetic flux between different poles will cause a different amount of
 current to flow in the various paths through the armature.
 
 ========+======+=====+=====+======+======+======+======+========+=========+=======+==========+=========+=====+=======
-Type of |Horse |Amp- |Speed|Total |Slots.|Cond- |Commu-| Weight |Armature | Gears |Commutator| Pinion  |Dia- |Length.
- Motor. |Power.|eres.|Full |Field |      |uctors|tator |complete|Complete.|  and  | Bearing. |Bearing. |meter|
+Type of |Horse |Amp- |Speed|Total |Slots.|Cond- |Commu-| Weight |Armature | Gears |Commutator|
+Pinion  |Dia- |Length.
+Motor. |Power.|eres.|Full |Field |      |uctors|tator |complete|Complete.|  and  | Bearing.
+|Bearing. |meter|
         |      |     |Load.|Turns.|      | per  |Bars. |  with  |         |Casing.|          |         |Arma-|
         |      |     |     |      |      | slot |      | Gears. |         |       |  Inches. | Inches. |ture.|
 --------+------+-----+-----+------+------+------+------+--------+---------+-------+-----+----+----+----+-----+-------
-General |      |     |     |      |      |      |      |        |         |       |     |    |    |    |     |
-Electric|      |     |     |      |      |      |      |        |         |       |     |    |    |    |     |
+General |      |     |     |      |      |      |      |        |         |       |     |    |    |
+|     |
+Electric|      |     |     |      |      |      |      |        |         |       |     |    |    |
+|     |
      51 |  82  |     | 640 |  56  |  37  |  12  | 111  |  3875  |   953   |  338  |  3  | 5¾ | 3¼ | 8¼ | 16  | 10½
      52 |  27  |     | 640 | 155.5|  29  |  24  |  87  |  1725  |   357   |  265  |  2½ | 6⅜ | 2¾ | 7¾ | 11  |  9
      57 |  52  |     | 470 | 110  |  33  |  18  |  99  |  2972  |   704   |  340  |  2⅝ | 6⅜ | 3¼ | 8¾ | 14  | 12
@@ -176,8 +180,10 @@ Electric|      |     |     |      |      |      |      |        |         |     
 --------+------+-----+-----+------+------+------+------+--------+---------+-------+-----+----+----+----+-----+-------
 
 --------+------+-----+-----+------+------+------+------+--------+---------+-------+-----+----+----+----+-----+-------
-Westing-|      |     |     |      |      |      |      |        |         |       |     |    |    |    |     |
- house  |      |     |     |      |      |      |      |        |         |       |     |    |    |    |     |
+Westing-|      |     |     |      |      |      |      |        |         |       |     |    |    |
+|     |
+house  |      |     |     |      |      |      |      |        |         |       |     |    |    |
+|     |
      68 |  40  |     |     |      |  55  |  12  | 109  |  2280  |   505   |  330  |  2¾ | 6¾ | 3  | 7¾ | 14  |  8
      69 |  30  |     |     |      |  35  |      | 105  |  1950  |   385   |  330  |  2¾ | 6  | 2¾ | 7  | 13  |  6¾
      76 |  75  |     |     |      |  39  |      | 117  |  3840  |   505   |  860  |  3¼ | 8  | 3½ | 9  | 16½ |
@@ -435,7 +441,7 @@ of which is mounted an armature, direct, no gears being used, Figs.
 method of mounting the armature, the shape of the pole pieces, and
 Section of New York Central Locomotive.]
 
-  General Electric Company.]
+General Electric Company.]
 
 The mounting of the armature upon the driving axle and the motor fields
 on the truck frame makes it necessary to have flat pole pieces in order
@@ -712,10 +718,10 @@ service one motor or a pair of motors if defective, and allowing the
 car to proceed with the good motor or motors.
 
 
-  THREE-WIRE GENERATORS.
+THREE-WIRE GENERATORS.
 
-  Pittsburgh, Cincinnati, Chicago and St. Louis Railroad, Columbus,
-  Ohio.]
+Pittsburgh, Cincinnati, Chicago and St. Louis Railroad, Columbus,
+Ohio.]
 
 
                         MULTIPLE-UNIT CONTROL.
@@ -968,12 +974,12 @@ tests made on Brooklyn cars as follows:
 Doors. |Windows.|Contents|Outside.|Average|Watts.|   Amperes
        |        | cu. ft.|        |in car.|      |at 500 volts.
 -------+--------+--------+--------+-------+------+-------------
-   2   |   12   |  850½  |   28   |  55   | 2295 |   4.6
-   2   |   12   |  850½  |    7   |  39   | 2325 |   4.6
-   2   |   12   |  808½  |   28   |  49   | 2180 |   4.3
-   2   |   12   |  913½  |   35   |  52   | 2745 |   4.5
-   4   |   16   | 1012   |    7   |  46   | 3038 |   6.
-   4   |   16   | 1012   |   28   |  54   | 3160 |   6.3
+2   |   12   |  850½  |   28   |  55   | 2295 |   4.6
+2   |   12   |  850½  |    7   |  39   | 2325 |   4.6
+2   |   12   |  808½  |   28   |  49   | 2180 |   4.3
+2   |   12   |  913½  |   35   |  52   | 2745 |   4.5
+4   |   16   | 1012   |    7   |  46   | 3038 |   6.
+4   |   16   | 1012   |   28   |  54   | 3160 |   6.3
 -------+--------+--------+--------+-------+------+-------------
 
 When not watched carefully considerable current may be wasted by
@@ -1431,7 +1437,7 @@ to build tracks that will accommodate wheels approaching the M. C. B.
 standard of steam roads. A few roads have adopted wheel treads and
 flanges very near to the M. C. B. standard.
 
-  Westinghouse Air Brake Co.]
+Westinghouse Air Brake Co.]
 
 =Brake Rigging.= The brake rigging on a single-truck car may be
 arranged in a variety of ways, but should be such that a nearly equal
@@ -1731,9 +1737,9 @@ therefore, be possible to stop much more quickly than with any form of
 brake depending upon the coefficient of friction between the wheels and
 track.
 
-  AND TRUCKS.
+AND TRUCKS.
 
-  Westinghouse Air Brake Co.]
+Westinghouse Air Brake Co.]
 
 =Track Brakes.= Track brakes have been used to some extent on very
 hilly electric roads. These have a shoe fastened to the truck frame,
@@ -1993,24 +1999,24 @@ readily noticeable. New cars go through an elaborate painting process.
 The time required is from two to three weeks. The following scheme may
 be regarded as an example of a good process:
 
-  A coat of primer is given the car the first day. On the third
-  day all irregularities are puttied up smooth. On the fourth and
-  fifth days a heavy primer is applied, one coat on each day. A
-  coat of filler is given on the sixth day and allowed to harden
-  the following day. The next paint applied is termed a guide coat.
-  This is of a color different from the preceding ones and serves
-  as a guide for the rubbers, who on the following day go over the
-  car with mineral wool, fine sandpaper, or pumice stone, and rub it
-  until the guide coat is worn away. This assures an even and smooth
-  surface. On the tenth day the car is allowed to stand. A coat of
-  the color desired is applied, one on each of the following three
-  days. On the fourteenth and fifteenth days the car is striped
-  with the desired ornaments and lettered. This is usually done in
-  aluminum or gold leaf. The car is then given three coats of varnish
-  on alternate days, and the work is completed. The best practice
-  brings the cars in once each year to be revarnished.
+A coat of primer is given the car the first day. On the third
+day all irregularities are puttied up smooth. On the fourth and
+fifth days a heavy primer is applied, one coat on each day. A
+coat of filler is given on the sixth day and allowed to harden
+the following day. The next paint applied is termed a guide coat.
+This is of a color different from the preceding ones and serves
+as a guide for the rubbers, who on the following day go over the
+car with mineral wool, fine sandpaper, or pumice stone, and rub it
+until the guide coat is worn away. This assures an even and smooth
+surface. On the tenth day the car is allowed to stand. A coat of
+the color desired is applied, one on each of the following three
+days. On the fourteenth and fifteenth days the car is striped
+with the desired ornaments and lettered. This is usually done in
+aluminum or gold leaf. The car is then given three coats of varnish
+on alternate days, and the work is completed. The best practice
+brings the cars in once each year to be revarnished.
 
-  J. G. White & Co.]
+J. G. White & Co.]
 
 
 
@@ -2659,16 +2665,16 @@ certain points along the line. This load will manifestly depend on the
 size and number of cars in operation, grades and many local conditions.
 
 
-  Drop in rail
+Drop in rail
     section          3.1 Volts      2.1 Volts       1.05 Volts
-  Total drop in
+Total drop in
     rail             3.1   ”         5.2  ”         6.25   ”
-  Drop in trolley   20.5   ”        20.5  ”        20.5    ”
-  Drop in feeder    36.4   ”        34.3  ”        33.25   ”
-  Resistance
+Drop in trolley   20.5   ”        20.5  ”        20.5    ”
+Drop in feeder    36.4   ”        34.3  ”        33.25   ”
+Resistance
     feeder            .728 Ohms       .686 Ohms      .665 Ohms
-  Feet per ohm      7253           23000          39700
-  Size of wire     No. 1         250,000 C. M.  420,000 C. M.]
+Feet per ohm      7253           23000          39700
+Size of wire     No. 1         250,000 C. M.  420,000 C. M.]
 
 The following example will show the method pursued. The figures
 resulting from the calculations are placed immediately below the
@@ -3879,11 +3885,11 @@ particularly to the K type of controller with two-motor equipment.
                           OPEN-CIRCUIT TESTS.
 
 No current:
-  On 1st point,
+On 1st point,
     Open circuit but not located.
-  On 1st point multiple,
+On 1st point multiple,
     Motors most probably O. K.
-  On series-resistance points after trying 1st point multiple,
+On series-resistance points after trying 1st point multiple,
     Open circuit outside controller and equipment wiring.
 
 With an open anywhere between trolley and ground no current will flow
@@ -3943,26 +3949,26 @@ Rather than blow fuses as frequently as indicated it would in most
 cases be better to place a lamp bank across the open circuit breaker
 and note the flow of the current by the lights.
 
-  =Fuse Blows=:
+=Fuse Blows=:
     I. When overhead is thrown on may be due to:
       1. Grounded controller blow-out coil.
       2. Grounded trolley wire or cable.
       3. Grounded lightning arrester.
-   II. On first point:
+II. On first point:
       1. Grounded resistance near R 1.
       2. Grounded controller cylinder.
       3. Bridging between the insulated sections of cylinder.
-  III. Near last point series:
+III. Near last point series:
       1. Grounded resistance near R 3, R 4 and R 5.
       2. No. 1 motor grounded.
-   IV. Near last point multiple:
+IV. Near last point multiple:
       1. No. 2 motor grounded.
       2. Bridging between lower sections of cylinder.
       3. Armature defective.
 
                                 CASE I.
 
-  =Fuse Blows= when overhead is thrown on:
+=Fuse Blows= when overhead is thrown on:
       1. Grounded controller blow-out coil.
       2. Grounded trolley wire or cable.
       3. Grounded lightning arrester.
@@ -3977,7 +3983,7 @@ once that lightning has grounded the blow-out coil of the controller.
 
                                CASE II.
 
-  =Fuse Blows= on first point:
+=Fuse Blows= on first point:
       1. Grounded resistance near R 1.
       2. Grounded controller cylinder.
       3. Bridging between sections of cylinder.
@@ -4029,11 +4035,11 @@ by cutting out first one and then the other.
 With a lamp bank at hand tests for grounded armature can be made as
 follows:
 
-  Throw the reverse on center. Attach one terminal of the lamp bank
-  to the trolley. Put the other terminal on the commutator of the
-  armature to be tested. No current shows the armature O. K. If
-  current flows remove brushes and try again, to be certain that the
-  ground is not in the leads.
+Throw the reverse on center. Attach one terminal of the lamp bank
+to the trolley. Put the other terminal on the commutator of the
+armature to be tested. No current shows the armature O. K. If
+current flows remove brushes and try again, to be certain that the
+ground is not in the leads.
 
 
                        FIELD TESTS FOR GROUNDS.
@@ -4124,9 +4130,9 @@ wheels is dropped by a hand-operated drop section of track. A new pair
 is then elevated into position. This saves jacking up one end of the
 car.
 
-  NEW HAVEN & HARTFORD RAILROAD CO.
+NEW HAVEN & HARTFORD RAILROAD CO.
 
-  Note the two pantograph bow trolleys for collecting the current.]
+Note the two pantograph bow trolleys for collecting the current.]
 
 
 
@@ -4216,7 +4222,7 @@ use of alternating current on the trolley wire with all its advantages,
 and yet sacrifices few, if any, of the advantages of the direct-current
 series motor on the car.
 
-  TRANSFORMERS.
+TRANSFORMERS.
 
 The three-phase current is delivered to the transformers where it is
 stepped down to the voltage required for the rotary converter. In
@@ -4343,7 +4349,7 @@ galvanized steel messenger or supporting cable, from which the trolley
 wire is suspended at intervals of about 10 feet, thus keeping it at a
 uniform distance above the track.
 
-  Multiple-Unit System as Applied to Single-Phase Work.]
+Multiple-Unit System as Applied to Single-Phase Work.]
 
 The multiple-unit system of control can be used in connection with
 single-phase motors, this being the scheme which has been in use for
@@ -4385,7 +4391,7 @@ is used on any section of the trolley line. The voltage on this
 transmission line will depend upon the existing conditions, and can be
 figured out like any other problem in power transmission.
 
-  Shoes.]
+Shoes.]
 
 Three-phase generators would ordinarily be used, as less copper is
 required to supply a given amount of power. The common frequency is 25
@@ -4449,7 +4455,7 @@ the terminal tracks of the New York Central road, on direct current
 taken from the trolley. From Woodlawn, N. Y., to Stamford, Conn., the
 road will be operated on the single-phase system.
 
-  Quill.]
+Quill.]
 
 The equipment is being supplied by the Westinghouse Co. The current
 is generated by revolving-field type turbine-driven alternators.
