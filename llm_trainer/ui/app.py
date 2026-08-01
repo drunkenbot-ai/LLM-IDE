@@ -561,7 +561,7 @@ def _run_startup_validations(splash: StartupValidationSplash) -> None:
             "Checking required imports",
             lambda: [importlib.import_module(module_name) for module_name in required_modules],
         ),
-        ("Running test suite", lambda: _run_startup_tests(repo_root, tests_root)),
+        ("Running test suite", lambda: _run_startup_tests(repo_root, tests_root, splash.append_log)),
     ]
 
     splash.set_checks([label for label, _ in steps])
@@ -580,7 +580,7 @@ def _run_startup_validations(splash: StartupValidationSplash) -> None:
     splash.append_log("All startup validations passed.")
 
 
-def _run_startup_tests(repo_root: Path, tests_root: Path) -> None:
+def _run_startup_tests(repo_root: Path, tests_root: Path, on_test: Optional[Any] = None) -> None:
     """Run repository tests and raise on failure."""
 
     if not tests_root.exists():
@@ -592,20 +592,31 @@ def _run_startup_tests(repo_root: Path, tests_root: Path) -> None:
         "discover",
         "-s",
         "tests",
+        "-v",
         "-p",
         "test_*.py",
     ]
-    result = subprocess.run(
+    process = subprocess.Popen(
         command,
         cwd=str(repo_root),
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         text=True,
         encoding="utf-8",
         errors="replace",
-        check=False,
     )
-    if result.returncode != 0:
-        output = (result.stdout + "\n" + result.stderr).strip()
+    output_lines: list[str] = []
+    assert process.stdout is not None
+    for line in process.stdout:
+        clean_line = line.strip()
+        if clean_line:
+            output_lines.append(clean_line)
+            if on_test is not None and clean_line.startswith("test"):
+                on_test(f"Test: {clean_line}")
+            QApplication.processEvents()
+    return_code = process.wait()
+    if return_code != 0:
+        output = "\n".join(output_lines).strip()
         tail = "\n".join(output.splitlines()[-25:])
         raise RuntimeError(f"Startup tests failed.\n{tail}")
 
