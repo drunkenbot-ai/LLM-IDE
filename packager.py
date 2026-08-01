@@ -85,20 +85,23 @@ def build(*, clean: bool, runtime_dir: Path | None = None) -> Path:
             if (ROOT / "runtime_launcher.py").exists()
             else []
         ),
-        str(ROOT / "run_app.py"),
+        str(ROOT / "runtime_launcher.py"),
     ]
     subprocess.run(command, cwd=ROOT, check=True)
 
     bundle = dist_dir / APP_NAME
-    if runtime_dir is not None:
-        if not runtime_dir.is_dir():
-            raise RuntimeError(f"Runtime directory does not exist: {runtime_dir}")
-        shutil.copytree(runtime_dir, bundle / "runtime", dirs_exist_ok=True)
-    elif target == "windows":
+    if runtime_dir is None or not runtime_dir.is_dir():
         raise RuntimeError(
-            "Windows installers require --runtime-dir pointing to a bundled "
-            "64-bit Python 3.12 runtime."
+            "Installers require --runtime-dir pointing to a prepared private Python runtime."
         )
+    shutil.copytree(runtime_dir, bundle / "runtime", dirs_exist_ok=True)
+    shutil.copy2(ROOT / "run_app.py", bundle / "run_app.py")
+    shutil.copytree(
+        ROOT / "llm_trainer",
+        bundle / "llm_trainer",
+        ignore=shutil.ignore_patterns("default_data", "__pycache__", "*.pyc"),
+        dirs_exist_ok=True,
+    )
     if target == "windows":
         installer = OUTPUT_ROOT / f"{APP_NAME}-{architecture}-Setup.exe"
         iscc = shutil.which("ISCC.exe") or shutil.which("iscc")
