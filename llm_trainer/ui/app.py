@@ -2387,7 +2387,10 @@ class MainWindow(QMainWindow):
             Logo path.
         """
 
-        return Path(__file__).resolve().parents[2] / "drunken_bot_logo_small.png"
+        candidates = [Path(__file__).resolve().parents[2] / "drunken_bot_logo_small.png"]
+        if hasattr(sys, "_MEIPASS"):
+            candidates.insert(0, Path(sys._MEIPASS) / "drunken_bot_logo_small.png")
+        return next((path for path in candidates if path.exists()), candidates[0])
 
     @staticmethod
     def _app_logo_pixmap(size: int = 64) -> QPixmap:
