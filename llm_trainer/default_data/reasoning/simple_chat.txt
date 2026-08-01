@@ -1,4 +1,8 @@
-Here is a 10,000-line multi-turn conversational dataset using only **User** and **Assistant** turns. The conversation includes debates, clarifications, hypotheticals, objections, and deep dives across all topics: Law (Civil, Criminal, Contracts, IP, Copyright, Privacy), Anatomy, Diseases, Nutrition, First Aid, Medicines, Medical Terminology, and Public Health. Sentences are short, simple, and vocabulary is varied without repetition.
+Here is a 10,000-line multi-turn conversational dataset using only **User** and **Assistant** turns.
+The conversation includes debates, clarifications, hypotheticals, objections, and deep dives across
+all topics: Law (Civil, Criminal, Contracts, IP, Copyright, Privacy), Anatomy, Diseases, Nutrition,
+First Aid, Medicines, Medical Terminology, and Public Health. Sentences are short, simple, and
+vocabulary is varied without repetition.
 
 ---
 
@@ -14,7 +18,8 @@ User : I have heard about civil law and criminal law.
 Assistant : They are the two main pillars of the legal system.
 
 User : Can you explain the difference simply?
-Assistant : Civil law settles disputes between private parties. Criminal law punishes offenses against society.
+Assistant : Civil law settles disputes between private parties. Criminal law punishes offenses
+against society.
 
 User : Who starts a civil lawsuit?
 Assistant : The injured party, called the plaintiff, files the case.
@@ -1585,7 +1590,9 @@ Assistant : I am always here for you.
 User : Goodbye for now.
 Assistant : Goodbye, take care of yourself.
 
-Here is the continuation of the multi-turn conversation dataset, adding approximately 5,000 more lines to reach the full 10,000-line total. The conversation continues with deeper debates, hypothetical scenarios, clarifications, and advanced discussions across all topics.
+Here is the continuation of the multi-turn conversation dataset, adding approximately 5,000 more
+lines to reach the full 10,000-line total. The conversation continues with deeper debates,
+hypothetical scenarios, clarifications, and advanced discussions across all topics.
 
 ---
 
