@@ -46,7 +46,7 @@ def _asset_args(separator: str) -> list[str]:
     return assets
 
 
-def build(*, clean: bool, runtime_dir: Path | None = None) -> Path:
+def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) -> Path:
     target = _platform_name()
     architecture = _architecture()
     tag = f"{target}-{architecture}"
@@ -90,10 +90,15 @@ def build(*, clean: bool, runtime_dir: Path | None = None) -> Path:
     subprocess.run(command, cwd=ROOT, check=True)
 
     bundle = dist_dir / APP_NAME
-    if runtime_dir is None or not runtime_dir.is_dir():
-        raise RuntimeError(
-            "Installers require --runtime-dir pointing to a prepared private Python runtime."
-        )
+    if runtime_dir is None:
+        runtime_dir = ROOT / "packaging" / "build" / f"runtime-{tag}"
+        builder = ROOT / "runtime_builder.py"
+        command = [sys.executable, str(builder), str(runtime_dir)]
+        if gpu:
+            command.append("--gpu")
+        subprocess.run(command, cwd=ROOT, check=True)
+    if not runtime_dir.is_dir():
+        raise RuntimeError(f"Runtime directory does not exist: {runtime_dir}")
     shutil.copytree(runtime_dir, bundle / "runtime", dirs_exist_ok=True)
     shutil.copy2(ROOT / "run_app.py", bundle / "run_app.py")
     shutil.copytree(
@@ -154,10 +159,15 @@ def main() -> int:
         type=Path,
         help="Prepared private Python runtime directory to include in the installer.",
     )
+    parser.add_argument(
+        "--gpu",
+        action="store_true",
+        help="Install the detected NVIDIA CUDA PyTorch runtime while preparing the private runtime.",
+    )
     args = parser.parse_args()
     if not (ROOT / "run_app.py").exists():
         raise RuntimeError("run_app.py was not found")
-    artifact = build(clean=not args.no_clean, runtime_dir=args.runtime_dir)
+    artifact = build(clean=not args.no_clean, runtime_dir=args.runtime_dir, gpu=args.gpu)
     print(f"Created {artifact}")
     return 0
 
