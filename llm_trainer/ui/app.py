@@ -7274,7 +7274,7 @@ def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
         splash.raise_()
 
 
-def main(app: Optional[QApplication] = None) -> None:
+def main() -> None:
     """Launch the PySide6 desktop application."""
 
     log_file = setup_logging()
@@ -7285,7 +7285,7 @@ def main(app: Optional[QApplication] = None) -> None:
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(WINDOWS_APP_ID)
         except Exception:
             LOGGER.exception("Could not set Windows app user model ID")
-    app = app or QApplication(sys.argv)
+    app = QApplication(sys.argv)
     app.setFont(QFont("Arial", 10))
     app.setWindowIcon(MainWindow._static_app_icon())
     splash = StartupValidationSplash()
