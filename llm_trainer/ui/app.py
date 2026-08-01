@@ -84,6 +84,7 @@ from llm_trainer.training_service import run_training_job
 from llm_trainer.ui.chat_widgets import ChatMessageWidget
 from llm_trainer.ui.markdown_renderer import markdown_to_html
 from llm_trainer.ui.workers import ProcessTaskWorker, TaskWorker
+from llm_trainer.ui.startup_splash import StartupSplash
 from llm_trainer.ui.tabs.benchmark_tab import build_benchmark_tab
 from llm_trainer.ui.tabs.chat_tab import build_chat_tab
 from llm_trainer.ui.tabs.dataset_tab import build_dataset_tab
@@ -7274,7 +7275,7 @@ def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
         splash.raise_()
 
 
-def main() -> None:
+def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = None) -> None:
     """Launch the PySide6 desktop application."""
 
     log_file = setup_logging()
@@ -7285,10 +7286,10 @@ def main() -> None:
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(WINDOWS_APP_ID)
         except Exception:
             LOGGER.exception("Could not set Windows app user model ID")
-    app = QApplication(sys.argv)
+    app = app or QApplication(sys.argv)
     app.setFont(QFont("Arial", 10))
     app.setWindowIcon(MainWindow._static_app_icon())
-    splash = StartupValidationSplash()
+    splash = splash or StartupValidationSplash()
     splash.setWindowIcon(MainWindow._static_app_icon())
     splash.show()
     QTimer.singleShot(0, lambda: _apply_windows_taskbar_icon(splash))
