@@ -46,7 +46,7 @@ def _asset_args(separator: str) -> list[str]:
     return assets
 
 
-def build(*, clean: bool) -> Path:
+def build(*, clean: bool, runtime_dir: Path | None = None) -> Path:
     target = _platform_name()
     architecture = _architecture()
     tag = f"{target}-{architecture}"
@@ -90,6 +90,15 @@ def build(*, clean: bool) -> Path:
     subprocess.run(command, cwd=ROOT, check=True)
 
     bundle = dist_dir / APP_NAME
+    if runtime_dir is not None:
+        if not runtime_dir.is_dir():
+            raise RuntimeError(f"Runtime directory does not exist: {runtime_dir}")
+        shutil.copytree(runtime_dir, bundle / "runtime", dirs_exist_ok=True)
+    elif target == "windows":
+        raise RuntimeError(
+            "Windows installers require --runtime-dir pointing to a bundled "
+            "64-bit Python 3.12 runtime."
+        )
     if target == "windows":
         installer = OUTPUT_ROOT / f"{APP_NAME}-{architecture}-Setup.exe"
         iscc = shutil.which("ISCC.exe") or shutil.which("iscc")
@@ -137,10 +146,15 @@ def build(*, clean: bool) -> Path:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--no-clean", action="store_true", help="Keep previous PyInstaller intermediates.")
+    parser.add_argument(
+        "--runtime-dir",
+        type=Path,
+        help="Prepared private Python runtime directory to include in the installer.",
+    )
     args = parser.parse_args()
     if not (ROOT / "run_app.py").exists():
         raise RuntimeError("run_app.py was not found")
-    artifact = build(clean=not args.no_clean)
+    artifact = build(clean=not args.no_clean, runtime_dir=args.runtime_dir)
     print(f"Created {artifact}")
     return 0
 
