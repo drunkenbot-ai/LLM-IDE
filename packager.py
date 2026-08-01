@@ -80,6 +80,11 @@ def build(*, clean: bool) -> Path:
         "--specpath",
         str(work_dir),
         *_asset_args(separator),
+        *(
+            ["--add-data", f"{ROOT / 'runtime_launcher.py'}{separator}."]
+            if (ROOT / "runtime_launcher.py").exists()
+            else []
+        ),
         str(ROOT / "run_app.py"),
     ]
     subprocess.run(command, cwd=ROOT, check=True)
