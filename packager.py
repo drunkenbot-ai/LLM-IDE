@@ -46,6 +46,23 @@ def _asset_args(separator: str) -> list[str]:
     return assets
 
 
+def _find_inno_compiler() -> str | None:
+    candidates = [
+        shutil.which("ISCC.exe"),
+        shutil.which("iscc"),
+        os.environ.get("ISCC_EXE"),
+        os.environ.get("INNO_SETUP_PATH"),
+        r"C:\Program Files\Inno Setup 7\ISCC.exe",
+        r"C:\Program Files (x86)\Inno Setup 7\ISCC.exe",
+        r"C:\Program Files\Inno Setup 6\ISCC.exe",
+        r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
+    ]
+    for candidate in candidates:
+        if candidate and Path(candidate).is_file():
+            return candidate
+    return None
+
+
 def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) -> Path:
     target = _platform_name()
     architecture = _architecture()
@@ -109,7 +126,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
     )
     if target == "windows":
         installer = OUTPUT_ROOT / f"{APP_NAME}-{architecture}-Setup.exe"
-        iscc = shutil.which("ISCC.exe") or shutil.which("iscc")
+        iscc = _find_inno_compiler()
         if not iscc:
             raise RuntimeError(
                 "Inno Setup (ISCC.exe) is required for Windows installers. "
