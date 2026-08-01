@@ -7327,13 +7327,13 @@ def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = N
             return
         LOGGER.warning("User chose to continue after failed startup validation.")
     splash.close()
-    window = MainWindow()
     chooser = ProjectChoiceDialog()
     chooser.setWindowIcon(MainWindow._static_app_icon())
     QTimer.singleShot(0, lambda: _apply_windows_taskbar_icon(chooser))
     if chooser.exec() != QDialog.Accepted:
         LOGGER.info("Startup closed at project selection screen")
         return
+    window = MainWindow()
     try:
         if chooser.choice == "new":
             base_dir = QFileDialog.getExistingDirectory(
