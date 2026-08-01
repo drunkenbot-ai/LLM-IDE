@@ -7289,6 +7289,7 @@ def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
 def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = None) -> None:
     """Launch the PySide6 desktop application."""
 
+    owns_app = app is None
     log_file = setup_logging()
     qInstallMessageHandler(qt_message_handler)
     LOGGER.info("Starting %s. Log file: %s", APP_NAME, log_file)
@@ -7375,7 +7376,8 @@ def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = N
     interrupt_timer.start(200)
     window.interrupt_timer = interrupt_timer
     signal.signal(signal.SIGINT, lambda *_: QTimer.singleShot(0, window.request_shutdown_from_signal))
-    sys.exit(app.exec())
+    if owns_app:
+        sys.exit(app.exec())
 
 
 if __name__ == "__main__":
