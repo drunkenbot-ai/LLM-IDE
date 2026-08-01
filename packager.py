@@ -67,6 +67,10 @@ def build(*, clean: bool) -> Path:
         "--clean",
         "--onedir",
         "--windowed",
+        "--hidden-import",
+        "llm_trainer.ui.app",
+        "--collect-submodules",
+        "llm_trainer",
         "--name",
         APP_NAME,
         "--distpath",
@@ -84,28 +88,34 @@ def build(*, clean: bool) -> Path:
     if target == "windows":
         installer = OUTPUT_ROOT / f"{APP_NAME}-{architecture}-Setup.exe"
         iscc = shutil.which("ISCC.exe") or shutil.which("iscc")
-        if iscc:
-            script = work_dir / "installer.iss"
-            script.write_text(
-                "\n".join(
-                    [
-                        "[Setup]",
-                        f'AppName={APP_NAME}',
-                        f'OutputBaseFilename={APP_NAME}-{architecture}-Setup',
-                        f'DefaultDirName={{autopf}}\\{APP_NAME}',
-                        f'OutputDir={OUTPUT_ROOT}',
-                        "Uninstallable=no",
-                        "[Files]",
-                        f'Source: "{bundle}\\*"; DestDir: "{{app}}"; Flags: recursesubdirs ignoreversion',
-                        "[Icons]",
-                        f'Name: "{{autoprograms}}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"',
-                    ]
-                ),
-                encoding="utf-8",
+        if not iscc:
+            raise RuntimeError(
+                "Inno Setup (ISCC.exe) is required for Windows installers. "
+                "Install Inno Setup and rerun the packager."
             )
-            subprocess.run([iscc, str(script)], check=True)
-            return installer
-        archive = OUTPUT_ROOT / f"{APP_NAME}-{architecture}.zip"
+        script = work_dir / "installer.iss"
+        script.write_text(
+            "\n".join(
+                [
+                    "[Setup]",
+                    f'AppName={APP_NAME}',
+                    f'OutputBaseFilename={APP_NAME}-{architecture}-Setup',
+                    f'DefaultDirName={{autopf}}\\{APP_NAME}',
+                    f'OutputDir={OUTPUT_ROOT}',
+                    "Uninstallable=yes",
+                    "Compression=lzma2",
+                    "SolidCompression=yes",
+                    "[Files]",
+                    f'Source: "{bundle}\\*"; DestDir: "{{app}}"; Flags: recursesubdirs ignoreversion',
+                    "[Icons]",
+                    f'Name: "{{autoprograms}}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"',
+                    f'Name: "{{commondesktop}}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"',
+                ]
+            ),
+            encoding="utf-8",
+        )
+        subprocess.run([iscc, str(script)], check=True)
+        return installer
     elif target == "macos":
         archive = OUTPUT_ROOT / f"{APP_NAME}-macos-{architecture}.zip"
     else:
