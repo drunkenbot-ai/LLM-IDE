@@ -10,7 +10,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from contextlib import redirect_stderr, redirect_stdout
 from dataclasses import dataclass
 
 
@@ -59,6 +58,9 @@ def choose_runtime(system: str | None = None, driver_major: int | None = None) -
     return RuntimeChoice("cpu", f"NVIDIA driver {driver_major} is too old for supported CUDA wheels")
 
 
+_SETUP_LOG = None
+
+
 def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
     subprocess.run(
         [
@@ -71,6 +73,9 @@ def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
             TORCH_INDEXES[choice.profile],
         ],
         check=True,
+        stdout=_SETUP_LOG,
+        stderr=subprocess.STDOUT,
+        text=True,
     )
 
 
@@ -91,15 +96,21 @@ def main() -> int:
     parser.add_argument("--ensure", action="store_true")
     args = parser.parse_args()
     log_path = Path(__file__).resolve().parent / "runtime_setup.log"
-    with log_path.open("a", encoding="utf-8") as log, redirect_stdout(log), redirect_stderr(log):
-        print(f"Runtime setup starting with Python {sys.version}")
-        choice = choose_runtime()
-        print(f"Selected {choice.profile}: {choice.reason}")
-        if args.ensure:
-            choice = ensure_runtime(args.python, Path(__file__).resolve().parent)
-        elif not args.dry_run:
-            install_runtime(args.python, choice)
-        print(f"Runtime setup completed: {choice.profile}")
+    with log_path.open("a", encoding="utf-8") as log:
+        global _SETUP_LOG
+        _SETUP_LOG = log
+        try:
+            print(f"Runtime setup starting with Python {sys.version}", file=log, flush=True)
+            choice = choose_runtime()
+            print(f"Selected {choice.profile}: {choice.reason}", file=log, flush=True)
+            if args.ensure:
+                choice = ensure_runtime(args.python, Path(__file__).resolve().parent)
+            elif not args.dry_run:
+                install_runtime(args.python, choice)
+            print(f"Runtime setup completed: {choice.profile}", file=log, flush=True)
+        except Exception as exc:
+            print(f"Runtime setup failed: {exc!r}", file=log, flush=True)
+            raise
     return 0
 
 
