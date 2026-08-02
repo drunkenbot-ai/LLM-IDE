@@ -37,7 +37,7 @@ def launch(root: Path) -> int:
     if setup_result.returncode != 0:
         raise RuntimeError(
             "Hardware runtime setup failed. Run runtime_setup.py manually "
-            "from the installation folder to see the detailed installer error."
+            f"from the installation folder. Detailed log: {root / 'runtime_setup.log'}"
         )
     return subprocess.call([str(interpreter), str(script)], cwd=root, env=environment)
 
