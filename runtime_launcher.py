@@ -28,16 +28,25 @@ def launch(root: Path) -> int:
         raise RuntimeError(f"Runtime setup is missing: {setup_script}")
     environment = os.environ.copy()
     environment["DRUNKENBOT_APP_ROOT"] = str(root)
+    setup_kwargs: dict[str, object] = {
+        "cwd": root,
+        "env": environment,
+        "check": False,
+    }
+    if platform.system() == "Windows":
+        setup_kwargs["creationflags"] = subprocess.CREATE_NEW_CONSOLE
     setup_result = subprocess.run(
         [str(interpreter), str(setup_script), "--ensure"],
-        cwd=root,
-        env=environment,
-        check=False,
+        **setup_kwargs,
     )
     if setup_result.returncode != 0:
+        log_path = root / "runtime_setup.log"
+        details = ""
+        if log_path.exists():
+            details = "\n".join(log_path.read_text(encoding="utf-8", errors="replace").splitlines()[-12:])
         raise RuntimeError(
-            "Hardware runtime setup failed. Run runtime_setup.py manually "
-            f"from the installation folder. Detailed log: {root / 'runtime_setup.log'}"
+            f"Hardware runtime setup failed (exit code {setup_result.returncode}).\n"
+            f"Detailed log: {log_path}\n{details}"
         )
     return subprocess.call([str(interpreter), str(script)], cwd=root, env=environment)
 
