@@ -105,6 +105,13 @@ def ensure_runtime(python_executable: str, root: Path) -> RuntimeChoice:
         text=True,
         check=False,
     )
+    print(
+        f"Torch verification exit code: {verification.returncode}\n"
+        f"Torch verification output: {verification.stdout.strip()}\n"
+        f"Torch verification error: {verification.stderr.strip()}",
+        file=_SETUP_LOG,
+        flush=True,
+    )
     if verification.returncode != 0:
         raise RuntimeError(f"Torch verification failed: {verification.stderr.strip()}")
     marker.write_text(choice.profile, encoding="utf-8")
@@ -118,7 +125,7 @@ def main() -> int:
     parser.add_argument("--ensure", action="store_true")
     args = parser.parse_args()
     log_path = Path(__file__).resolve().parent / "runtime_setup.log"
-    with log_path.open("a", encoding="utf-8") as log:
+    with log_path.open("w", encoding="utf-8") as log:
         global _SETUP_LOG
         _SETUP_LOG = log
         try:
