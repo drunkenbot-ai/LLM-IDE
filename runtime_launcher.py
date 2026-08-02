@@ -41,6 +41,16 @@ def launch(root: Path) -> int:
     )
     if setup_result.returncode != 0:
         log_path = root / "runtime_setup.log"
+        verification = subprocess.run(
+            [str(interpreter), "-c", "import torch; print(torch.__version__)"],
+            cwd=root,
+            env=environment,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if verification.returncode == 0:
+            return subprocess.call([str(interpreter), str(script)], cwd=root, env=environment)
         details = ""
         if log_path.exists():
             details = "\n".join(log_path.read_text(encoding="utf-8", errors="replace").splitlines()[-12:])
