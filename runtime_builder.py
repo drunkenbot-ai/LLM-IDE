@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
@@ -25,6 +26,10 @@ def main() -> int:
     subprocess.run([str(python), "-m", "pip", "install", "-r", str(requirements)], check=True)
     if args.gpu:
         subprocess.run([str(python), str(ROOT / "runtime_setup.py")], check=True)
+    for cache_name in ("__pycache__", "pip", "setuptools", "wheel"):
+        for path in runtime.rglob(cache_name):
+            if path.is_dir():
+                shutil.rmtree(path, ignore_errors=True)
     return 0
 
 
