@@ -21,6 +21,9 @@ def main() -> int:
     runtime = args.output.resolve()
     subprocess.run([sys.executable, "-m", "venv", str(runtime)], check=True)
     python = runtime / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
+    pip_check = subprocess.run([str(python), "-m", "pip", "--version"], check=False)
+    if pip_check.returncode != 0:
+        subprocess.run([str(python), "-m", "ensurepip", "--upgrade"], check=True)
     subprocess.run([str(python), "-m", "pip", "install", "--upgrade", "pip"], check=True)
     requirements = ROOT / "requirements.txt"
     filtered = runtime / "requirements-base.txt"
