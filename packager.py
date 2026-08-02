@@ -170,7 +170,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
                     "var ResultCode: Integer;",
                     "begin",
                     "  if CurStep = ssPostInstall then begin",
-                    "    if not Exec(ExpandConstant('{app}\\runtime\\Scripts\\python.exe'), ExpandConstant('\"{app}\\runtime_setup.py\" --ensure'), '', ExpandConstant('{app}'), SW_HIDE, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then",
+                    "    if not Exec(ExpandConstant('{app}\\runtime\\Scripts\\python.exe'), '\"' + ExpandConstant('{app}\\runtime_setup.py') + '\" --ensure', '', ExpandConstant('{app}'), SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then",
                     "      begin MsgBox('Hardware runtime setup failed. See runtime_setup.log in the installation folder.', mbError, MB_OK); Abort; end;",
                     "  end;",
                     "end;",
