@@ -19,12 +19,16 @@ def private_python(root: Path) -> Path:
 def launch(root: Path) -> int:
     interpreter = private_python(root)
     script = root / "run_app.py"
+    setup_script = root / "runtime_setup.py"
     if not interpreter.exists():
         raise RuntimeError(f"Private Python runtime is missing: {interpreter}")
     if not script.exists():
         raise RuntimeError(f"Application entry point is missing: {script}")
+    if not setup_script.exists():
+        raise RuntimeError(f"Runtime setup is missing: {setup_script}")
     environment = os.environ.copy()
     environment["DRUNKENBOT_APP_ROOT"] = str(root)
+    subprocess.run([str(interpreter), str(setup_script), "--ensure"], cwd=root, env=environment, check=True)
     return subprocess.call([str(interpreter), str(script)], cwd=root, env=environment)
 
 

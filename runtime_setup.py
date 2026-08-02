@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 from dataclasses import dataclass
 
 
@@ -18,6 +19,7 @@ TORCH_INDEXES = {
     "cu121": "https://download.pytorch.org/whl/cu121",
     "cu124": "https://download.pytorch.org/whl/cu124",
 }
+PROFILE_FILE = "torch-runtime-profile.txt"
 
 
 @dataclass(frozen=True)
@@ -71,14 +73,27 @@ def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
     )
 
 
+def ensure_runtime(python_executable: str, root: Path) -> RuntimeChoice:
+    choice = choose_runtime()
+    marker = root / PROFILE_FILE
+    if marker.exists() and marker.read_text(encoding="utf-8").strip() == choice.profile:
+        return choice
+    install_runtime(python_executable, choice)
+    marker.write_text(choice.profile, encoding="utf-8")
+    return choice
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--python", default=sys.executable, help="Private packaged Python executable.")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--ensure", action="store_true")
     args = parser.parse_args()
     choice = choose_runtime()
     print(f"Selected {choice.profile}: {choice.reason}")
-    if not args.dry_run:
+    if args.ensure:
+        choice = ensure_runtime(args.python, Path(__file__).resolve().parent)
+    elif not args.dry_run:
         install_runtime(args.python, choice)
     return 0
 

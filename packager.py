@@ -114,6 +114,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
         raise RuntimeError(f"Runtime directory does not exist: {runtime_dir}")
     shutil.copytree(runtime_dir, bundle / "runtime", dirs_exist_ok=True)
     shutil.copy2(ROOT / "run_app.py", bundle / "run_app.py")
+    shutil.copy2(ROOT / "runtime_setup.py", bundle / "runtime_setup.py")
     shutil.copytree(
         ROOT / "llm_trainer",
         bundle / "llm_trainer",

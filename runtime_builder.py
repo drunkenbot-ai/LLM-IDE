@@ -23,9 +23,16 @@ def main() -> int:
     python = runtime / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
     subprocess.run([str(python), "-m", "pip", "install", "--upgrade", "pip"], check=True)
     requirements = ROOT / "requirements.txt"
-    subprocess.run([str(python), "-m", "pip", "install", "-r", str(requirements)], check=True)
-    if args.gpu:
-        subprocess.run([str(python), str(ROOT / "runtime_setup.py")], check=True)
+    filtered = runtime / "requirements-base.txt"
+    filtered.write_text(
+        "\n".join(
+            line for line in requirements.read_text(encoding="utf-8").splitlines()
+            if line.strip().lower() not in {"torch", "torch==", "torchvision"}
+        ) + "\n",
+        encoding="utf-8",
+    )
+    subprocess.run([str(python), "-m", "pip", "install", "-r", str(filtered)], check=True)
+    filtered.unlink()
     for cache_name in ("__pycache__", "pip", "setuptools", "wheel"):
         for path in runtime.rglob(cache_name):
             if path.is_dir():
