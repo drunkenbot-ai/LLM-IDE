@@ -12,7 +12,7 @@ import sys
 
 def private_python(root: Path) -> Path:
     if platform.system() == "Windows":
-        return root / "runtime" / "python.exe"
+        return root / "runtime" / "Scripts" / "python.exe"
     return root / "runtime" / "bin" / "python"
 
 
@@ -29,4 +29,5 @@ def launch(root: Path) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(launch(Path(__file__).resolve().parent))
+    application_root = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
+    raise SystemExit(launch(application_root))
