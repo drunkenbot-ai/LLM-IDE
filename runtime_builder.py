@@ -36,7 +36,7 @@ def main() -> int:
     )
     subprocess.run([str(python), "-m", "pip", "install", "-r", str(filtered)], check=True)
     filtered.unlink()
-    for cache_name in ("__pycache__", "pip", "setuptools", "wheel"):
+    for cache_name in ("__pycache__",):
         for path in runtime.rglob(cache_name):
             if path.is_dir():
                 shutil.rmtree(path, ignore_errors=True)

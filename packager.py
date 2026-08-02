@@ -46,6 +46,19 @@ def _asset_args(separator: str) -> list[str]:
     return assets
 
 
+def _prepare_icon(work_dir: Path) -> Path | None:
+    source = ROOT / "drunken_bot_logo_small.png"
+    if not source.exists():
+        return None
+    icon = work_dir / "drunken_bot_logo_small.ico"
+    try:
+        from PIL import Image
+        Image.open(source).convert("RGBA").save(icon, format="ICO", sizes=[(256, 256), (128, 128), (64, 64), (32, 32), (16, 16)])
+    except ImportError:
+        return None
+    return icon
+
+
 def _find_inno_compiler() -> str | None:
     candidates = [
         shutil.which("ISCC.exe"),
@@ -74,6 +87,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
         shutil.rmtree(dist_dir, ignore_errors=True)
     work_dir.mkdir(parents=True, exist_ok=True)
     dist_dir.mkdir(parents=True, exist_ok=True)
+    icon_path = _prepare_icon(work_dir)
 
     separator = ";" if target == "windows" else ":"
     command = [
@@ -84,6 +98,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
         "--clean",
         "--onedir",
         "--windowed",
+        *(["--icon", str(icon_path)] if icon_path else []),
         "--name",
         APP_NAME,
         "--distpath",
@@ -143,13 +158,13 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
                     "Uninstallable=yes",
                     "Compression=lzma2",
                     "SolidCompression=yes",
-                    f'UninstallDisplayIcon={{app}}\\drunken_bot_logo_small.png',
+                    *( [f'UninstallDisplayIcon={{app}}\\drunken_bot_logo_small.ico'] if icon_path else [] ),
                     "[Files]",
                     f'Source: "{bundle}\\*"; DestDir: "{{app}}"; Flags: recursesubdirs ignoreversion',
-                    f'Source: "{ROOT / "drunken_bot_logo_small.png"}"; DestDir: "{{app}}"; Flags: ignoreversion',
+                    *( [f'Source: "{icon_path}"; DestDir: "{{app}}"; Flags: ignoreversion'] if icon_path else [] ),
                     "[Icons]",
-                    f'Name: "{{autoprograms}}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.png"',
-                    f'Name: "{{commondesktop}}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.png"',
+                    *( [f'Name: "{{autoprograms}}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.ico"'] if icon_path else [] ),
+                    *( [f'Name: "{{commondesktop}}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.ico"'] if icon_path else [] ),
                 ]
             ),
             encoding="utf-8",
