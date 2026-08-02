@@ -68,7 +68,7 @@ def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
         item for item in environment.get("PATH", "").split(os.pathsep)
         if "mingw" not in item.lower() and "scoop" not in item.lower()
     )
-    subprocess.run(
+    process = subprocess.Popen(
         [
             python_executable,
             "-m",
@@ -78,12 +78,19 @@ def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
             "--index-url",
             TORCH_INDEXES[choice.profile],
         ],
-        check=True,
-        stdout=_SETUP_LOG,
+        stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
         env=environment,
+        bufsize=1,
     )
+    assert process.stdout is not None
+    for line in process.stdout:
+        print(line, end="", file=sys.stdout, flush=True)
+        print(line, end="", file=_SETUP_LOG, flush=True)
+    return_code = process.wait()
+    if return_code:
+        raise subprocess.CalledProcessError(return_code, process.args)
 
 
 def ensure_runtime(python_executable: str, root: Path) -> RuntimeChoice:
@@ -115,15 +122,19 @@ def main() -> int:
         global _SETUP_LOG
         _SETUP_LOG = log
         try:
+            print(f"Runtime setup starting with Python {sys.version}", flush=True)
             print(f"Runtime setup starting with Python {sys.version}", file=log, flush=True)
             choice = choose_runtime()
+            print(f"Selected {choice.profile}: {choice.reason}", flush=True)
             print(f"Selected {choice.profile}: {choice.reason}", file=log, flush=True)
             if args.ensure:
                 choice = ensure_runtime(args.python, Path(__file__).resolve().parent)
             elif not args.dry_run:
                 install_runtime(args.python, choice)
+            print(f"Runtime setup completed: {choice.profile}", flush=True)
             print(f"Runtime setup completed: {choice.profile}", file=log, flush=True)
         except Exception as exc:
+            print(f"Runtime setup failed: {exc!r}", flush=True)
             print(f"Runtime setup failed: {exc!r}", file=log, flush=True)
             raise
     return 0
