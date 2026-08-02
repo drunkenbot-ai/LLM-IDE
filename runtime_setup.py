@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import platform
 import re
 import shutil
@@ -62,6 +63,11 @@ _SETUP_LOG = None
 
 
 def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
+    environment = os.environ.copy()
+    environment["PATH"] = os.pathsep.join(
+        item for item in environment.get("PATH", "").split(os.pathsep)
+        if "mingw" not in item.lower() and "scoop" not in item.lower()
+    )
     subprocess.run(
         [
             python_executable,
@@ -76,6 +82,7 @@ def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
         stdout=_SETUP_LOG,
         stderr=subprocess.STDOUT,
         text=True,
+        env=environment,
     )
 
 
@@ -85,6 +92,14 @@ def ensure_runtime(python_executable: str, root: Path) -> RuntimeChoice:
     if marker.exists() and marker.read_text(encoding="utf-8").strip() == choice.profile:
         return choice
     install_runtime(python_executable, choice)
+    verification = subprocess.run(
+        [python_executable, "-c", "import torch; print(torch.__version__)"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if verification.returncode != 0:
+        raise RuntimeError(f"Torch verification failed: {verification.stderr.strip()}")
     marker.write_text(choice.profile, encoding="utf-8")
     return choice
 
