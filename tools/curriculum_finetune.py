@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 try:
     from .curriculum_shared import *
 except ImportError:
@@ -459,6 +458,5 @@ def instruction_fine_tune_blocks(count: int, topic: str) -> list[str]:
             f"{closers[closer_i]} (variant {turn})"
         )
     return blocks
-
 
 

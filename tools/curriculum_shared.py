@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 NAMES = [
     "Mina", "Ravi", "Lena", "Omar", "Sara", "Tara", "Jin", "Ada",
     "Leo", "Nia", "Sam", "Priya",
@@ -196,4 +198,3 @@ def write_blocks(path: Path, blocks: list[str], min_unique_ratio: float = 0.9) -
     temp_path = path.with_suffix(path.suffix + ".tmp")
     temp_path.write_text("\n\n".join(blocks).strip() + "\n", encoding="utf-8")
     temp_path.replace(path)
-
