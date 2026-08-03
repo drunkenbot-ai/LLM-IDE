@@ -19,7 +19,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT_ROOT = ROOT / "packaging" / "artifacts"
-APP_NAME = "DrunkenBot-LLM-IDE"
+APP_NAME = "DrunkenBot-IDE"
 
 
 def _architecture() -> str:

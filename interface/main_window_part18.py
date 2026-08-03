@@ -8,6 +8,8 @@ globals().update({name: value for name, value in vars(_app).items() if not name.
 
 class MainWindowPart18:
     def export_llama_adapter(self) -> None:
+        if not bool(QApplication.instance().property("license_valid")):
+            return
         """Create a directly loadable Llama-family package when compatible."""
 
         self.export_log.append("Creating Llama-compatible adapter package...")
@@ -23,6 +25,8 @@ class MainWindowPart18:
         self.export_status.setText("Export: Llama adapter ready")
 
     def convert_hf_to_gguf(self) -> None:
+        if not bool(QApplication.instance().property("license_valid")):
+            return
         """Convert an HF-compatible model folder to GGUF through llama.cpp."""
 
         model_dir_text = self.export_model_dir.text().strip()
@@ -90,6 +94,5 @@ class MainWindowPart18:
             self.n_embd.setValue(512)
             self.n_head.setValue(8)
             self.n_layer.setValue(8)
-
 
 

@@ -15,7 +15,7 @@ class StartupSplash(QDialog):
 
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle("DrunkenBot LLM-IDE")
+        self.setWindowTitle("DrunkenBot-IDE")
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setModal(True)
         self.setMinimumSize(560, 760)
@@ -42,7 +42,7 @@ class StartupSplash(QDialog):
         else:
             logo.setPixmap(pixmap.scaled(118, 118, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             logo.setAlignment(Qt.AlignCenter)
-        title = QLabel("DrunkenBot LLM-IDE")
+        title = QLabel("DrunkenBot-IDE")
         title.setObjectName("Title")
         title.setFont(QFont("Arial", 22))
         header.addWidget(logo)
