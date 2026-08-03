@@ -95,22 +95,22 @@ GRINDING APPARATUS.--Emery wheel, cloth and paper, paper, flour emery,
 polishing powders, laps and buffs, and polishing sticks.
 
 
- _A. Lathe Bed_
- _B. Rack Gear_
- _C. Live Center_
- _D. Dead Center_
- _E. Dead Spindle_
- _F. Face Plate_
- _G. Feed Screw_
- _H. Train of Gears_
- _I. Head Stock_
- _J. Mandrel_
- _K. Cone Pulley_
- _L. Angle Plate for Tool Holder_
- _M. Tool Post_
- _N. Tail Stock_
- _O. Wheel for Slide Rest Mechanism_
- _P. Locking Lever for Tail Stock._]
+_A. Lathe Bed_
+_B. Rack Gear_
+_C. Live Center_
+_D. Dead Center_
+_E. Dead Spindle_
+_F. Face Plate_
+_G. Feed Screw_
+_H. Train of Gears_
+_I. Head Stock_
+_J. Mandrel_
+_K. Cone Pulley_
+_L. Angle Plate for Tool Holder_
+_M. Tool Post_
+_N. Tail Stock_
+_O. Wheel for Slide Rest Mechanism_
+_P. Locking Lever for Tail Stock._]
 
 Forge, anvils, tongs, swages, punches, bolt tools, hot and cold chisels,
 blow-pipe, soldering iron, hard and soft solders, borax, spirits of
@@ -1214,10 +1214,10 @@ Fig. 62. GEARS.--This is something every boy ought to know about. Fig.
 for a pair when both are of the same diameter.
 
 
- _Outside Fig. 58. Belt Lacing_
- _Fig. 59. Belt Lacing_
- _Fig. 60. Belt Lacing_
- _Fig. 61. Belt Lacing_]
+_Outside Fig. 58. Belt Lacing_
+_Fig. 59. Belt Lacing_
+_Fig. 60. Belt Lacing_
+_Fig. 61. Belt Lacing_]
 
 MITER GEARS.--In Fig. 63 we have a pair of miter gears, one being larger
 than the other. Remember this distinction.
@@ -1258,12 +1258,12 @@ varied. The end of the bar has a series of holes (G) for a pencil, so
 that the size of the ellipse may also be changed.
 
 
- _Fig. 63. Miter Gears_
- _Fig. 64. Crown Wheel_
- _Fig. 65. Grooved Friction Gears_
- _Fig. 66. Valve_
- _Fig. 67. Cone Pulleys_
- _Fig. 68. Universal Joint_]
+_Fig. 63. Miter Gears_
+_Fig. 64. Crown Wheel_
+_Fig. 65. Grooved Friction Gears_
+_Fig. 66. Valve_
+_Fig. 67. Cone Pulleys_
+_Fig. 68. Universal Joint_]
 
 Fig. 70. ESCAPEMENTS.--Various forms of escapements may be made, but the
 object of all is the same. The device is designed to permit a wheel to
@@ -1301,11 +1301,11 @@ for such a variety of purposes, that we merely give a few samples to
 show what is meant by the term.
 
 
- _Fig. 70. Escapement_
- _Fig. 71. Device for Holding Wheel_
- _Fig. 72. Rack and Pinion_
- _Fig. 73. Mutilated Gears_
- _Fig. 74. Shaft Coupling_]
+_Fig. 70. Escapement_
+_Fig. 71. Device for Holding Wheel_
+_Fig. 72. Rack and Pinion_
+_Fig. 73. Mutilated Gears_
+_Fig. 74. Shaft Coupling_]
 
 Fig. 74. SIMPLE SHAFT COUPLING.--Prepare two similarly formed discs (A,
 B), which are provided with hubs so they may be keyed to the ends of the
@@ -1348,13 +1348,13 @@ shafts the work is much facilitated, particularly in thick or hard
 material.
 
 
- _Fig. 75. Clutches_
- _Fig. 76. Ball and Socket Joints_
- _Fig. 77. Fastening Ball_
- _Fig. 78. Tripping Devices_
- _Fig. 79. Anchor Bolt_
- _Fig. 80. Lazy Tongs._
- _Fig. 81. Disc Shears._]
+_Fig. 75. Clutches_
+_Fig. 76. Ball and Socket Joints_
+_Fig. 77. Fastening Ball_
+_Fig. 78. Tripping Devices_
+_Fig. 79. Anchor Bolt_
+_Fig. 80. Lazy Tongs._
+_Fig. 81. Disc Shears._]
 
 Fig. 82. WABBLE SAW.--This is a most simple and useful tool, as it will
 readily and quickly saw out a groove so that it is undercut. The saw is
@@ -1373,11 +1373,11 @@ is capable of many modifications, and it can be easily adapted for any
 particular work desired.
 
 
- _Fig. 83. Continuous Crank Motion_
- _Fig. 84. Continuous Feed_
- _Fig. 85. Crank Motion_
- _Fig. 86. Ratchet Head_
- _Fig. 87. Bench Clamp_]
+_Fig. 83. Continuous Crank Motion_
+_Fig. 84. Continuous Feed_
+_Fig. 85. Crank Motion_
+_Fig. 86. Ratchet Head_
+_Fig. 87. Bench Clamp_]
 
 Fig. 85. CRANK MOTION.--By the structure shown, namely, a slotted lever
 (A), a quick return can be made with the lever. B indicates the fulcrum.
@@ -1395,13 +1395,13 @@ rear ends of the dogs, will force the forward ends together, and thus
 clamp it firmly for planing or other purposes.
 
 
- _Fig. 88. Helico-Volute Spring_
- _Fig. 89. Double Helico-Volute_
- _Fig. 90. Helical Spring_
- _Fig. 91. Single Volute Helix-Spring_
- _Fig. 92. Flat Spiral or Convolute_
- _Fig. 93. Eccentric Rod and Strap_
- _Fig. 94. Anti-Dead Center for Foot-Lathes_]
+_Fig. 88. Helico-Volute Spring_
+_Fig. 89. Double Helico-Volute_
+_Fig. 90. Helical Spring_
+_Fig. 91. Single Volute Helix-Spring_
+_Fig. 92. Flat Spiral or Convolute_
+_Fig. 93. Eccentric Rod and Strap_
+_Fig. 94. Anti-Dead Center for Foot-Lathes_]
 
 Fig. 88. HELICO-VOLUTE SPRING.--This is a form of spring for tension
 purposes. The enlarged cross-section of the coil in its middle portion,
@@ -1903,7 +1903,7 @@ shaped pocket as shown in Fig. 101. The addition of the inner lines,
 like D, quickly dispelled the suggestion of the cube.
 
 
- Forms of Cubical Outlines_]
+Forms of Cubical Outlines_]
 
 "But," he remarked, "I want to use the thinnest metal, like sheets of
 tin; and you show them thick by adding the inner lines."
@@ -2872,7 +2872,7 @@ AND INCHES
 
 ------------------------------------------
 ------------+--------------+--------------
-   Length   |    Inches    |    Feet
+Length   |    Inches    |    Feet
 ------------+--------------+--------------
 Millimeter  |       0.039  |      0.003
 Centimeter  |       0.393  |      0.032
@@ -3731,25 +3731,25 @@ lbs.
 ==========+===================+==========+===================
           |                   |          |
           | Weight in Pounds  |          | Weight in Pounds
- Sizes in |                   | Sizes in |
-  Inches  +---------+---------+  Inches  +---------+---------
+Sizes in |                   | Sizes in |
+Inches  +---------+---------+  Inches  +---------+---------
           |  Round  | Square  |          |  Round  | Square
 ----------+---------+---------+----------+---------+---------
-   1/16   |   .110  |   .013  |  1-1/16  |  3.014  |  3.400
-   1/8    |   .042  |   .053  |  1-1/8   |  3.379  |  3.838
-   3/16   |   .094  |   .119  |  1-3/16  |  3.766  |  4.303
-   1/4    |   .167  |   .212  |  1-1/4   |  4.173  |  4.795
-   5/16   |   .261  |   .333  |  1-5/16  |  4.600  |  5.312
-   3/8    |   .375  |   .478  |  1-3/8   |  5.049  |  5.857
-   7/16   |   .511  |   .651  |  1-7/16  |  5.518  |  6.428
-   1/2    |   .667  |   .850  |  1-1/2   |  6.008  |  7.650
-   9/16   |   .845  |  1.026  |  1-9/16  |  6.520  |  7.650
-   5/8    |  1.043  |  1.328  |  1-5/8   |  7.051  |  8.301
-  11/16   |  1.262  |  1.608  |  1-11/16 |  7.604  |  8.978
-   3/4    |  1.502  |  1.913  |  1-3/4   |  8.178  | 10.41
-  13/16   |  1.773  |  2.245  |  1-13/16 |  8.773  | 11.17
-   7/8    |  2.044  |  2.603  |  1-7/8   |  9.388  | 11.95
-  15/16   |  2.347  |  2.989  |  1-15/16 | 10.02   | 12.76
+1/16   |   .110  |   .013  |  1-1/16  |  3.014  |  3.400
+1/8    |   .042  |   .053  |  1-1/8   |  3.379  |  3.838
+3/16   |   .094  |   .119  |  1-3/16  |  3.766  |  4.303
+1/4    |   .167  |   .212  |  1-1/4   |  4.173  |  4.795
+5/16   |   .261  |   .333  |  1-5/16  |  4.600  |  5.312
+3/8    |   .375  |   .478  |  1-3/8   |  5.049  |  5.857
+7/16   |   .511  |   .651  |  1-7/16  |  5.518  |  6.428
+1/2    |   .667  |   .850  |  1-1/2   |  6.008  |  7.650
+9/16   |   .845  |  1.026  |  1-9/16  |  6.520  |  7.650
+5/8    |  1.043  |  1.328  |  1-5/8   |  7.051  |  8.301
+11/16   |  1.262  |  1.608  |  1-11/16 |  7.604  |  8.978
+3/4    |  1.502  |  1.913  |  1-3/4   |  8.178  | 10.41
+13/16   |  1.773  |  2.245  |  1-13/16 |  8.773  | 11.17
+7/8    |  2.044  |  2.603  |  1-7/8   |  9.388  | 11.95
+15/16   |  2.347  |  2.989  |  1-15/16 | 10.02   | 12.76
     1     |  2.670  |  3.400  |  2       | 10.68   | 13.60
 ----------+---------+---------+----------+---------+---------
 
@@ -3757,24 +3757,24 @@ WEIGHT OF FLAT STEEL BARS.
 
 =========+=============================================================
 Thickness|
-   in    |                             Width
- Inches  |
+in    |                             Width
+Inches  |
 ---------+------+------+------+------+------+------+-----+------+------
-   1/16  |  .212|  .265|  .32 |  .372|  .425|  .477|  .53|  .588|  .63
-   1/8   |  .425|  .53 |  .64 |  .745|  .85 |  .955| 1.06| 1.17 | 1.27
-   3/16  |  .638|  .797|  .957| 1.11 | 1.28 | 1.44 | 1.59| 1.75 | 1.91
-   1/4   |  .85 | 1.06 | 1.28 | 1.49 | 1.70 | 1.91 | 2.12| 2.34 | 2.55
-   5/16  | 1.06 | 1.33 | 1.59 | 1.86 | 2.12 | 2.39 | 2.65| 2.92 | 3.19
-   3/8   | 1.28 | 1.59 | 1.92 | 2.23 | 2.55 | 2.87 | 3.19| 3.51 | 3.83
-   7/16  | 1.49 | 1.85 | 2.23 | 2.60 | 2.98 | 3.35 | 3.72| 4.09 | 4.46
-   1/2   | 1.70 | 2.12 | 2.55 | 2.98 | 3.40 | 3.83 | 4.25| 4.67 | 5.10
-   9/16  | 1.92 | 2.39 | 2.87 | 3.35 | 3.83 | 4.30 | 4.78| 5.26 | 5.74
-   5/8   | 2.12 | 2.65 | 3.19 | 3.72 | 4.25 | 4.78 | 5.31| 5.84 | 6.38
-  11/16  | 2.34 | 2.92 | 3.51 | 4.09 | 4.67 | 5.26 | 5.84| 6.43 | 7.02
-   3/4   | 2.55 | 3.19 | 3.83 | 4.47 | 5.10 | 5.75 | 6.38| 7.02 | 7.65
-  13/16  | 2.76 | 3.45 | 4.14 | 4.48 | 5.53 | 6.21 | 6.90| 7.60 | 8.29
-   7/8   | 2.98 | 3.72 | 4.47 | 5.20 | 5.95 | 6.69 | 7.44| 8.18 | 8.93
-  15/16  | 3.19 | 3.99 | 4.78 | 5.58 | 6.38 | 7.18 | 7.97| 8.77 | 9.57
+1/16  |  .212|  .265|  .32 |  .372|  .425|  .477|  .53|  .588|  .63
+1/8   |  .425|  .53 |  .64 |  .745|  .85 |  .955| 1.06| 1.17 | 1.27
+3/16  |  .638|  .797|  .957| 1.11 | 1.28 | 1.44 | 1.59| 1.75 | 1.91
+1/4   |  .85 | 1.06 | 1.28 | 1.49 | 1.70 | 1.91 | 2.12| 2.34 | 2.55
+5/16  | 1.06 | 1.33 | 1.59 | 1.86 | 2.12 | 2.39 | 2.65| 2.92 | 3.19
+3/8   | 1.28 | 1.59 | 1.92 | 2.23 | 2.55 | 2.87 | 3.19| 3.51 | 3.83
+7/16  | 1.49 | 1.85 | 2.23 | 2.60 | 2.98 | 3.35 | 3.72| 4.09 | 4.46
+1/2   | 1.70 | 2.12 | 2.55 | 2.98 | 3.40 | 3.83 | 4.25| 4.67 | 5.10
+9/16  | 1.92 | 2.39 | 2.87 | 3.35 | 3.83 | 4.30 | 4.78| 5.26 | 5.74
+5/8   | 2.12 | 2.65 | 3.19 | 3.72 | 4.25 | 4.78 | 5.31| 5.84 | 6.38
+11/16  | 2.34 | 2.92 | 3.51 | 4.09 | 4.67 | 5.26 | 5.84| 6.43 | 7.02
+3/4   | 2.55 | 3.19 | 3.83 | 4.47 | 5.10 | 5.75 | 6.38| 7.02 | 7.65
+13/16  | 2.76 | 3.45 | 4.14 | 4.48 | 5.53 | 6.21 | 6.90| 7.60 | 8.29
+7/8   | 2.98 | 3.72 | 4.47 | 5.20 | 5.95 | 6.69 | 7.44| 8.18 | 8.93
+15/16  | 3.19 | 3.99 | 4.78 | 5.58 | 6.38 | 7.18 | 7.97| 8.77 | 9.57
     1    | 3.40 | 4.25 | 5.10 | 5.95 | 6.80 | 7.65 | 8.50| 9.35 |10.20
 ---------+------+------+------+------+------+------+-----+------+------
 
@@ -3782,11 +3782,11 @@ AVOIRDUPOIS WEIGHT.
 
 For Merchandise of all kinds.
 
-   16 Drams (dr.) make            1 Ounce (oz.)
-   16 Ounces make                 1 Pound (pd.)
-   25 Pounds make                 1 Quarter (qr.)
+16 Drams (dr.) make            1 Ounce (oz.)
+16 Ounces make                 1 Pound (pd.)
+25 Pounds make                 1 Quarter (qr.)
     4 Quarters, or 100 lbs., make 1 Hundredweight (cwt.)
-   20 Hundredweights make         1 Ton (T.)
+20 Hundredweights make         1 Ton (T.)
 2,240 Pounds make                 1 Long ton (L. T.)
 
 
@@ -3804,8 +3804,8 @@ APOTHECARIES WEIGHT.
 For Drugs, Medicals and Chemicals.
 
 20 Grains (gr.) make     1 Scruple (sc.)
- 3 Scruples make         1 Dram (dr.)
- 8 Drams make            1 Ounce (oz.)
+3 Scruples make         1 Dram (dr.)
+8 Drams make            1 Ounce (oz.)
 12 Ounces make           1 Pound (pd.)
 
 LINEAR MEASURE.
@@ -3899,21 +3899,21 @@ pounds.
 Aluminum                |  15,000 |   12,000
 Brass, cast             |  24,000 |   30,000
 Bronze, gun metal       |  32,000 |   20,000
-  "     manganese       |  60,000 |  120,000
-  "      phosphor       |  50,000 |   ......
+"     manganese       |  60,000 |  120,000
+"      phosphor       |  50,000 |   ......
 Copper, cast            |  24,000 |   40,000
-  "     wire annealed.  |  36,000 |   ......
-  "       " unannealed  |  60,000 |   ......
+"     wire annealed.  |  36,000 |   ......
+"       " unannealed  |  60,000 |   ......
 Iron, cast              |  15,000 |   ......
-  "     "  annealed     |  60,000 |   80,000
-  "     "  unannealed   |  80,000 |   ......
-  "   wrought           |  48,000 |   46,000
+"     "  annealed     |  60,000 |   80,000
+"     "  unannealed   |  80,000 |   ......
+"   wrought           |  48,000 |   46,000
 Lead, cast              |   2,000 |   ......
 Steel castings          |  70,000 |   70,000
-  "   plow              | 270,000 |   ......
-  "   structural        |  60,000 |   60,000
-  "   wire annealed     |  80,000 |   ......
-  "   crucible          | 180,000 |   ......
+"   plow              | 270,000 |   ......
+"   structural        |  60,000 |   60,000
+"   wire annealed     |  80,000 |   ......
+"   crucible          | 180,000 |   ......
 Tin                     |   3,800 |    6,000
 ------------------------+---------+-------------
 
@@ -3930,9 +3930,9 @@ Common salt, 1 part; snow 1 part               |   32    |     -.4
 Calcium chloride, 3 parts; snow 1 part         |   32    |     -27
 Calcium chloride, 2 parts; snow 1 part         |   32    |     -44
 Sal ammoniac, 5 parts; salt-peter 5 parts;     |         |
-  water 16 parts.                              |   50    |     -10
+water 16 parts.                              |   50    |     -10
 Sal ammoniac, 1 part; salt-peter 1 part;       |         |
-  water 1 part                                 |   46    |     -11
+water 1 part                                 |   46    |     -11
 Ammonium nitrate, 1 part; water 1 part         |   50    |      -3
 Potassium hydrate, 4 parts; snow 3 parts       |   32    |     -35
 -----------------------------------------------+---------+------------

@@ -17,7 +17,8 @@ checkpoints, exporting model artifacts, and testing local GGUF models in a
 streamed Markdown chat interface.
 
 
-Requires Python 3.9 or newer.
+For development, use Python 3.12 or newer. Distribution builds include a
+private Python runtime and do not require Python on the user's machine.
 
 Launch the desktop app:
 
@@ -39,6 +40,36 @@ chmod +x run_app.py
 
 If direct execution prints `Permission denied`, use `python3 run_app.py` or run
 the `chmod` command above once after cloning.
+
+The splash screen performs startup validation and reports each test name while
+the suite runs. The project selector is shown before the full main window is
+constructed, so choosing a project does not wait for the entire IDE UI to load.
+
+## Building a distributable installer
+
+Install PyInstaller and Inno Setup, then run the packaging command from a
+Python 3.12+ development environment:
+
+```bash
+python packager.py
+```
+
+Use `python packager.py --gpu` to prepare a CUDA-enabled private runtime when
+an NVIDIA driver is detected. The installer bundles the application, private
+runtime, third-party dependencies, fonts, and images. It intentionally excludes
+`llm_trainer/default_data`, which is training corpus data and is not required by
+the installed application.
+
+See [build.md](build.md) for prerequisites, runtime profiles, architecture
+limitations, and troubleshooting.
+
+## Licensing and privacy
+
+At launch, the application validates licenses through
+`https://drunkenbot.store/license/validate`. A signed offline grace receipt may
+be used when the service is temporarily unavailable. The application stores its
+license data, logs, and machine identifier under the user's
+`.drunkenbot_ide` directory.
 
 ## First backend commands
 

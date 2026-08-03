@@ -692,7 +692,8 @@ Four plus four plus four equals twelve, which is three times four.
 Five plus five plus five equals fifteen, which is three times five.
 
 Repeated subtraction is the same as division.
-Fifteen minus three equals twelve, minus three equals nine, minus three equals six, minus three equals three, minus three equals zero.
+Fifteen minus three equals twelve, minus three equals nine, minus three equals six, minus three
+equals three, minus three equals zero.
 You subtracted three five times, so fifteen divided by three equals five.
 
 The commutative property says order does not matter for addition and multiplication.
@@ -701,7 +702,8 @@ Four times five equals five times four.
 
 The associative property says grouping does not matter for addition and multiplication.
 Two plus three plus four can be grouped as two plus three plus four or two plus three plus four.
-Two times three times four can be grouped as two times three times four or two times three times four.
+Two times three times four can be grouped as two times three times four or two times three times
+four.
 
 The distributive property says multiplication distributes over addition.
 Two times three plus four equals two times three plus two times four.
@@ -807,11 +809,13 @@ The number one hundred five has a zero in the tens place.
 The number two thousand three has zeros in the hundreds and tens places.
 
 A fact family shows related addition and subtraction facts.
-For three, four, and seven, the facts are three plus four equals seven and four plus three equals seven.
+For three, four, and seven, the facts are three plus four equals seven and four plus three equals
+seven.
 Also, seven minus four equals three and seven minus three equals four.
 
 A fact family for multiplication and division uses the same three numbers.
-For three, four, and twelve, the facts are three times four equals twelve and four times three equals twelve.
+For three, four, and twelve, the facts are three times four equals twelve and four times three
+equals twelve.
 Also, twelve divided by four equals three and twelve divided by three equals four.
 
 The number zero is neither positive nor negative.
@@ -887,7 +891,8 @@ If a twenty-dollar item has a five percent tax, you pay twenty-one dollars.
 
 A discount is a percentage taken off the price.
 If a fifty-dollar item has a twenty percent discount, you save ten dollars and pay forty dollars.
-If a one hundred-dollar item has a thirty percent discount, you save thirty dollars and pay seventy dollars.
+If a one hundred-dollar item has a thirty percent discount, you save thirty dollars and pay seventy
+dollars.
 
 Simple interest is a percentage of money earned or paid.
 If you save one hundred dollars at five percent interest, you earn five dollars.
@@ -922,7 +927,8 @@ If a prism has length five, width three, and height two, the volume is thirty.
 
 The volume of a cylinder is pi times radius squared times height.
 If a cylinder has radius two and height five, the volume is about sixty-two point eight.
-If a cylinder has radius three and height four, the volume is about one hundred thirteen point zero four.
+If a cylinder has radius three and height four, the volume is about one hundred thirteen point zero
+four.
 
 The volume of a cone is one third times pi times radius squared times height.
 If a cone has radius two and height six, the volume is about twenty-five point one two.
@@ -933,7 +939,8 @@ If a sphere has radius three, the volume is about one hundred thirteen point zer
 If a sphere has radius six, the volume is about nine hundred four point three two.
 
 Exponential growth happens when something grows by a percentage.
-One hundred dollars growing at ten percent per year becomes one hundred ten, then one hundred twenty-one.
+One hundred dollars growing at ten percent per year becomes one hundred ten, then one hundred
+twenty-one.
 Exponential decay happens when something decreases by a percentage.
 One hundred dollars losing ten percent per year becomes ninety, then eighty-one.
 
@@ -945,9 +952,11 @@ An odd and odd number added together gives an even number.
 Three plus five equals eight.
 
 A prime number has exactly two factors, one and itself.
-The first ten prime numbers are two, three, five, seven, eleven, thirteen, seventeen, nineteen, twenty-three, and twenty-nine.
+The first ten prime numbers are two, three, five, seven, eleven, thirteen, seventeen, nineteen,
+twenty-three, and twenty-nine.
 A composite number has more than two factors.
-The first ten composite numbers are four, six, eight, nine, ten, twelve, fourteen, fifteen, sixteen, and eighteen.
+The first ten composite numbers are four, six, eight, nine, ten, twelve, fourteen, fifteen, sixteen,
+and eighteen.
 
 A factor pair is a pair of numbers that multiply to a given number.
 The factor pairs of twelve are one and twelve, two and six, and three and four.
@@ -1118,14 +1127,16 @@ The answer to a division problem is the quotient.
 
 A dividend is the number being divided.
 A divisor is the number you are dividing by.
-In twelve divided by three equals four, twelve is the dividend, three is the divisor, and four is the quotient.
+In twelve divided by three equals four, twelve is the dividend, three is the divisor, and four is
+the quotient.
 
 A remainder is what is left over after division.
 Thirteen divided by four equals three with a remainder of one.
 Fifteen divided by six equals two with a remainder of three.
 Seventeen divided by five equals three with a remainder of two.
 
-Counting by tens from one hundred gives one hundred ten, one hundred twenty, one hundred thirty, one hundred forty, one hundred fifty.
+Counting by tens from one hundred gives one hundred ten, one hundred twenty, one hundred thirty, one
+hundred forty, one hundred fifty.
 Counting by hundreds gives one hundred, two hundred, three hundred, four hundred, five hundred.
 
 Even numbers end with zero, two, four, six, or eight.

@@ -32,7 +32,13 @@ chmod +x run_app.py
 ./run_app.py
 ```
 
-Minimum supported Python version is Python 3.9.
+For source development, use Python 3.12 or newer. Packaged installers include
+their own private Python runtime and do not require Python to be installed
+system-wide.
+
+For installer builds, see [build.md](build.md). The installer excludes the
+bundled `llm_trainer/default_data` training corpus; projects receive only the
+training data that you explicitly copy or add.
 
 The app has five main work areas:
 
@@ -41,6 +47,24 @@ The app has five main work areas:
 - `Bench`: run repeatable benchmark prompts against a trained checkpoint.
 - `X`: export and quantize model artifacts.
 - `Chat`: load a GGUF model and chat with it locally.
+
+During startup, the existing splash screen shows validation progress and the
+name of each test being run. License validation occurs before the project
+selector. The selector opens before the full IDE main window is constructed.
+
+### Packaged GPU setup
+
+The installer can prepare a private PyTorch runtime for supported NVIDIA
+drivers. It uses `nvidia-smi` to select a pinned CUDA wheel and falls back to
+CPU when no compatible NVIDIA driver is found. The CUDA toolkit and system
+Python are not required. GPU acceleration for GGUF chat still requires a
+compatible `llama-cpp-python` build.
+
+### License validation
+
+Launch validation uses `https://drunkenbot.store/license/validate`. Keep the
+machine online for first activation. If the service is temporarily unreachable,
+the application can use a valid signed offline grace receipt.
 
 ## 2. Recommended Workflow
 
