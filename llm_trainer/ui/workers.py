@@ -104,6 +104,13 @@ class TaskWorker(QObject):
         return bool(self.stop_event and self.stop_event.is_set())
 
 
+class WorkerSignalBridge(QObject):
+    """Relay worker results through the GUI thread."""
+
+    finished = Signal(object)
+    failed = Signal(str)
+
+
 class ProcessTaskWorker(QObject):
     """Background worker that isolates heavy tasks in a child process."""
 

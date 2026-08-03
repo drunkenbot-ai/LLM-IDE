@@ -37,8 +37,13 @@ their own private Python runtime and do not require Python to be installed
 system-wide.
 
 For installer builds, see [build.md](build.md). The installer excludes the
-bundled `llm_trainer/default_data` training corpus; projects receive only the
+bundled `engine/default_data` training corpus; projects receive only the
 training data that you explicitly copy or add.
+
+The application code is organized into `engine/` (non-Qt data, training, and
+worker services) and `interface/` (the Qt desktop UI). Existing
+`llm_trainer.*` imports and `python -m llm_trainer.cli` remain compatibility
+aliases, but new code should import from the canonical packages.
 
 The app has five main work areas:
 

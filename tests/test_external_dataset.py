@@ -7,7 +7,7 @@ import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
-from llm_trainer.external_dataset import (
+from engine.external_dataset import (
     DatasetManifest,
     install_categories,
     is_newer_version,
@@ -58,11 +58,37 @@ class ExternalDatasetTests(unittest.TestCase):
                 destination.write_bytes(archive.read_bytes())
 
             destination = root / "installed"
-            with patch("llm_trainer.external_dataset._download", side_effect=copy_archive):
+            with patch("engine.external_dataset._download", side_effect=copy_archive):
                 install_categories(manifest, destination, manifest_url="https://example.test/release/manifest.json")
 
             self.assertEqual((destination / "base_training" / "example.txt").read_text(), "example")
             self.assertEqual((destination / "version.txt").read_text(), "1.0.0\n")
+
+    def test_install_skips_existing_category_at_same_version(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            destination = root / "installed"
+            category_dir = destination / "base_training"
+            category_dir.mkdir(parents=True)
+            (category_dir / "existing.txt").write_text("keep", encoding="utf-8")
+            (destination / "version.txt").write_text("1.0.0\n", encoding="utf-8")
+            manifest = DatasetManifest.from_json({
+                "dataset_id": "owner/repo",
+                "version": "1.0.0",
+                "categories": [{
+                    "name": "base_training",
+                    "archive": "base.zip",
+                    "size_bytes": 1,
+                    "file_count": 1,
+                    "sha256": "0" * 64,
+                }],
+            })
+
+            with patch("engine.external_dataset._download") as download:
+                install_categories(manifest, destination, categories=["base_training"])
+
+            download.assert_not_called()
+            self.assertEqual((category_dir / "existing.txt").read_text(encoding="utf-8"), "keep")
 
 
 if __name__ == "__main__":

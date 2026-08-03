@@ -4,8 +4,8 @@ import unittest
 
 import torch
 
-from llm_trainer.config import ModelConfig
-from llm_trainer.model import MicroGPT
+from engine.config import ModelConfig
+from engine.model import MicroGPT
 
 
 def _build_model(position_encoding: str) -> MicroGPT:

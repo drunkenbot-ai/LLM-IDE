@@ -47,7 +47,7 @@ def build_live_training_tab(window) -> QWidget:
 
     header = QHBoxLayout()
     title = window._page_title("Model Training Live")
-    live_badge = QLabel("● LIVE")
+    live_badge = QLabel("[*] LIVE")
     live_badge.setObjectName("Metric")
     window.live_epoch_metric = window._metric_chip("Epoch: -", "Current epoch and total epochs.")
     window.live_step_metric = window._metric_chip("Step: -", "Current optimizer step and total planned steps.")
@@ -84,12 +84,12 @@ def build_live_training_tab(window) -> QWidget:
     left_column.setSpacing(10)
 
     status_layout = QVBoxLayout()
-    window.live_model_status = QLabel("◇ Model: Transformer decoder")
-    window.live_layer_status = QLabel("▣ Layers: -")
-    window.live_head_status = QLabel("◎ Heads: -")
-    window.live_hidden_status = QLabel("▤ Hidden size: -")
-    window.live_batch_status = QLabel("▥ Batch size: -")
-    window.live_context_status = QLabel("▢ Context: -")
+    window.live_model_status = QLabel("Model: Transformer decoder")
+    window.live_layer_status = QLabel("Layers: -")
+    window.live_head_status = QLabel("Heads: -")
+    window.live_hidden_status = QLabel("Hidden size: -")
+    window.live_batch_status = QLabel("Batch size: -")
+    window.live_context_status = QLabel("Context: -")
     for label in (
         window.live_model_status,
         window.live_layer_status,

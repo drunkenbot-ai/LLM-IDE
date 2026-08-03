@@ -3,8 +3,8 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from llm_trainer.data import Document
-from llm_trainer.dataset_mixture import (
+from engine.data import Document
+from engine.dataset_mixture import (
     _apply_dataset_mixture,
     _deduplicate_documents,
     _filter_repetitive_documents,

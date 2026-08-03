@@ -6,9 +6,9 @@ import unittest
 import torch
 from pathlib import Path
 
-from llm_trainer.config import ModelConfig, TrainingConfig
-from llm_trainer.training import train_model
-from llm_trainer.model import MicroGPT
+from engine.config import ModelConfig, TrainingConfig
+from engine.training import train_model
+from engine.model import MicroGPT
 
 
 def _run_training(train_tokens: list[int], gradient_accumulation: int, batch_size: int) -> int:

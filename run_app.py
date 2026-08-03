@@ -7,13 +7,13 @@ import sys
 
 from PySide6.QtWidgets import QApplication
 
-from llm_trainer.ui.startup_splash import StartupSplash
+from interface.startup_splash import StartupSplash
 
 
 def _load_app(result: dict[str, object]) -> None:
     """Load the application module on the Qt thread for startup tests."""
     try:
-        result["module"] = importlib.import_module("llm_trainer.ui.app")
+        result["module"] = importlib.import_module("interface.app")
     except Exception as exc:
         result["error"] = exc
 
