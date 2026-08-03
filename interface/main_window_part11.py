@@ -8,6 +8,8 @@ globals().update({name: value for name, value in vars(_app).items() if not name.
 
 class MainWindowPart11:
     def prepare_dataset(self) -> None:
+        if not bool(QApplication.instance().property("license_valid")):
+            self.context_length.setValue(min(self.context_length.value(), 1000))
         """Collect dataset options and start dataset preparation."""
 
         config = self._dataset_config_from_ui()
@@ -282,6 +284,11 @@ class MainWindowPart11:
 
         if not hasattr(self, "dataset_stage"):
             return
+        if not bool(QApplication.instance().property("license_valid")):
+            self.include_conversation_datasets.setChecked(False)
+            self.include_conversation_datasets.setEnabled(False)
+            if hasattr(self, "external_dataset_download_button"):
+                self.external_dataset_download_button.setEnabled(False)
         stage = self._dataset_stage_value()
         allowed = set(CONVERSATION_DATASET_PRESETS)
         include_online = self.include_conversation_datasets.isChecked()
@@ -422,5 +429,3 @@ class MainWindowPart11:
             for path, item in self.default_data_actions.items()
             if item.checkState(0) == Qt.Checked
         ]
-
-

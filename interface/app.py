@@ -119,7 +119,7 @@ except ImportError:
     psutil = None
 
 
-APP_NAME = "DrunkenBot LLM-IDE"
+APP_NAME = "DrunkenBot-IDE"
 # Bump on every release that should require a version-ceiling check against
 # licenses -- this is what license_client.check_license_at_launch compares
 # against a license's version_ceiling/grace_period_until.
@@ -195,34 +195,30 @@ def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
                 "[OK] License valid"
                 + (" (offline grace period)" if result.used_offline_grace else "")
             )
+            QApplication.instance().setProperty("license_valid", True)
             return True
         initial_message = result.reason
     else:
         initial_message = "No license activated on this machine yet."
 
-    # A QSplashScreen-style window is designed to stay on top of other
-    # windows during startup -- which means it can end up covering a newly
-    # created dialog instead of the other way around. Hide it while the
-    # dialog is up rather than fight window-stacking order; it isn't doing
-    # anything useful to look at during activation anyway.
     splash.hide()
     try:
-        while True:
-            dialog = LicenseActivationDialog(APP_VERSION, LICENSE_SERVER_URL, initial_message)
-            dialog.setWindowIcon(MainWindow._static_app_icon())
-            dialog.show()
-            dialog.raise_()
-            dialog.activateWindow()
-            if dialog.exec() != QDialog.Accepted:
-                LOGGER.info("License activation cancelled by user; exiting.")
-                QApplication.instance().setProperty("startup_aborted", True)
-                return False
+        dialog = LicenseActivationDialog(APP_VERSION, LICENSE_SERVER_URL, initial_message)
+        dialog.setWindowIcon(MainWindow._static_app_icon())
+        if dialog.exec() == QDialog.Accepted and dialog.result_info is not None:
+            QApplication.instance().setProperty("license_valid", True)
             splash.append_log("[OK] License activated")
             return True
+        if dialog.trial_requested:
+            QApplication.instance().setProperty("license_valid", False)
+            splash.append_log("[TRIAL] User selected trial version")
+            return True
+        LOGGER.info("License activation cancelled by user; exiting.")
+        QApplication.instance().setProperty("startup_aborted", True)
+        return False
     finally:
         splash.show()
         splash.raise_()
-
 
 def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = None) -> None:
     """Launch the PySide6 desktop application."""

@@ -382,6 +382,9 @@ class MainWindowPart17:
         self._add_chat_message("user" if role.lower() in {"you", "user"} else "assistant", content)
 
     def create_bundle(self) -> None:
+        if not bool(QApplication.instance().property("license_valid")):
+            self.export_log.append("Export Bay is available only in the licensed version.")
+            return
         """Create a portable model export bundle."""
 
         self.export_log.append("Creating model bundle...")
@@ -397,6 +400,8 @@ class MainWindowPart17:
         self.export_status.setText("Export: bundle created")
 
     def quantize_model(self) -> None:
+        if not bool(QApplication.instance().property("license_valid")):
+            return
         """Create a quantized FP16 checkpoint when selected."""
 
         mode = self.quant_mode.currentText()
@@ -418,6 +423,8 @@ class MainWindowPart17:
         self.export_status.setText("Export: FP16 checkpoint ready")
 
     def export_hf_package(self) -> None:
+        if not bool(QApplication.instance().property("license_valid")):
+            return
         """Create an HF-style MicroGPT package."""
 
         self.export_log.append("Creating HF-style MicroGPT package...")
@@ -432,5 +439,4 @@ class MainWindowPart17:
         self.export_log.append(f"HF package created: {result}")
         self.export_log.append("Note: this package is MicroGPT model_type, not a llama.cpp-supported Llama model.")
         self.export_status.setText("Export: HF package ready")
-
 

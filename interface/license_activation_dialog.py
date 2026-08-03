@@ -105,8 +105,9 @@ class LicenseActivationDialog(QDialog):
         self._app_version = app_version
         self._server_url = server_url
         self.result_info: LicenseCheckResult | None = None
+        self.trial_requested = False
 
-        self.setWindowTitle("Activate DrunkenBot LLM-IDE")
+        self.setWindowTitle("Activate DrunkenBot-IDE")
         self.setModal(True)
         self.setMinimumWidth(480)
 
@@ -132,7 +133,10 @@ class LicenseActivationDialog(QDialog):
         self._activate_button.clicked.connect(self._on_activate_clicked)
         self._exit_button = QPushButton("Exit")
         self._exit_button.clicked.connect(self.reject)
+        self._trial_button = QPushButton("Open Trial Version")
+        self._trial_button.clicked.connect(self._open_trial)
         button_row.addWidget(self._activate_button)
+        button_row.addWidget(self._trial_button)
         button_row.addWidget(self._exit_button)
         layout.addLayout(button_row)
 
@@ -161,6 +165,11 @@ class LicenseActivationDialog(QDialog):
             return
 
         self._show_status(result.reason)
+
+    def _open_trial(self) -> None:
+        """Close the dialog and request restricted trial mode."""
+        self.trial_requested = True
+        self.accept()
 
     def _show_status(self, message: str) -> None:
         """Display a status/error message in the dialog.

@@ -15,7 +15,11 @@ class MainWindowPart1:
         LOGGER.info("Creating %s main window", APP_NAME)
         if QApplication.instance():
             QApplication.instance().setFont(QFont("Arial", 10))
-        self.setWindowTitle(APP_NAME)
+        licensed = bool(QApplication.instance().property("license_valid"))
+        self.setWindowTitle(
+            f"{APP_NAME} {APP_VERSION} "
+            f"({'licensed' if licensed else 'Trial Version'})"
+        )
         self.setWindowIcon(self._app_icon())
         self._windows_icon_handles: list[int] = []
         self.resize(1240, 820)
@@ -372,7 +376,11 @@ class MainWindowPart1:
         if hasattr(self, "side_rail"):
             self.side_rail.hide()
         self._switch_page(8)
-        self.setWindowTitle("DrunkenBot - Chat")
+        licensed = bool(QApplication.instance().property("license_valid"))
+        self.setWindowTitle(
+            f"{APP_NAME} {APP_VERSION} "
+            f"({'licensed' if licensed else 'Trial Version'})"
+        )
         self.resize(980, 760)
 
     def resizeEvent(self, event: Any) -> None:

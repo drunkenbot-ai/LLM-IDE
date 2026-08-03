@@ -4,6 +4,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QApplication,
     QComboBox,
     QFormLayout,
     QHBoxLayout,
@@ -84,6 +85,10 @@ def build_export_tab(window) -> QWidget:
     window.gguf_convert_button = QPushButton("Convert HF to GGUF")
     window._tip(window.gguf_convert_button, "Run llama.cpp convert_hf_to_gguf.py for model_core/hf_model when the architecture is supported by llama.cpp.")
     window.gguf_convert_button.clicked.connect(window.convert_hf_to_gguf)
+    window.export_buttons = [bundle_button, quant_button, hf_button, llama_button, window.gguf_convert_button]
+    if not bool(QApplication.instance().property("license_valid")):
+        for button in window.export_buttons:
+            button.setEnabled(False)
     bundle_button.setMaximumWidth(220)
     quant_button.setMaximumWidth(220)
     hf_button.setMaximumWidth(220)
@@ -116,4 +121,3 @@ def build_export_tab(window) -> QWidget:
     window.export_progress = window._thin_progress()
     outer.addWidget(window.export_progress)
     return page
-

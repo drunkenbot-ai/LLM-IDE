@@ -6,6 +6,7 @@ from typing import Any
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QApplication,
     QCheckBox,
     QComboBox,
     QFormLayout,
@@ -265,6 +266,8 @@ def build_dataset_plan_tab(window) -> QWidget:
     window.external_dataset_download_button = QPushButton("Download latest dataset")
     window._tip(window.external_dataset_download_button, "Download, verify, and extract the latest dataset release into the install folder.")
     window.external_dataset_download_button.clicked.connect(window.download_latest_external_dataset)
+    trial_mode = not bool(QApplication.instance().property("license_valid"))
+    window.external_dataset_download_button.setEnabled(not trial_mode)
     external_form.addRow("Install folder", window._path_row(window.external_dataset_dir, directory=True))
     external_form.addRow("Status", window.external_dataset_version)
     external_form.addRow("", window.external_dataset_download_button)
@@ -287,6 +290,7 @@ def build_dataset_plan_tab(window) -> QWidget:
     window.dataset_stage.setMaximumWidth(240)
     window.include_conversation_datasets = QCheckBox("Online")
     window.include_conversation_datasets.setChecked(False)
+    window.include_conversation_datasets.setEnabled(not trial_mode)
     purpose_row = QWidget()
     purpose_layout = QHBoxLayout(purpose_row)
     purpose_layout.setContentsMargins(0, 0, 0, 0)
@@ -320,6 +324,7 @@ def build_dataset_plan_tab(window) -> QWidget:
     conversation_form.addRow("Custom HF dataset", window.custom_huggingface_dataset)
     window.custom_huggingface_download = QPushButton("Download custom dataset")
     window.custom_huggingface_download.clicked.connect(window._download_custom_huggingface_dataset)
+    window.custom_huggingface_download.setEnabled(not trial_mode)
     window._tip(window.custom_huggingface_download, "Enable the custom dataset and download it during the next dataset preparation run.")
     conversation_form.addRow("", window.custom_huggingface_download)
     window.conversation_sample_limit = window._spin(0, 2_000_000, 20000)
@@ -455,4 +460,3 @@ def populate_default_data_tree(window: Any, root: Path) -> None:
         tree.blockSignals(False)
     if not window.default_data_actions:
         tree.addTopLevelItem(QTreeWidgetItem(["No project/default data files were found.", "", ""]))
-
