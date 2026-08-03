@@ -4,7 +4,7 @@ import unittest
 from threading import Lock
 from typing import Any, Iterator
 
-from llm_trainer.llama_chat import LlamaChatSession
+from engine.llama_chat import LlamaChatSession
 
 
 class _FakeLlama:

@@ -5,10 +5,20 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from llm_trainer.ui.app import _run_startup_tests
+from PySide6.QtWidgets import QApplication
+
+from interface.app import _run_startup_tests
+from interface.startup import ProjectChoiceDialog
 
 
 class StartupTestsReportingTests(unittest.TestCase):
+    def test_project_choice_dialog_constructs_after_ui_module_split(self) -> None:
+        app = QApplication.instance() or QApplication([])
+        dialog = ProjectChoiceDialog()
+        self.assertIsNotNone(dialog)
+        dialog.close()
+        app.processEvents()
+
     def test_verbose_test_names_are_reported_to_splash_callback(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -25,7 +35,7 @@ class StartupTestsReportingTests(unittest.TestCase):
             process.wait.return_value = 0
             reported: list[str] = []
 
-            with patch("llm_trainer.ui.app.subprocess.Popen", return_value=process) as popen:
+            with patch("interface.app.subprocess.Popen", return_value=process) as popen:
                 _run_startup_tests(root, tests_root, reported.append)
 
             command = popen.call_args.args[0]

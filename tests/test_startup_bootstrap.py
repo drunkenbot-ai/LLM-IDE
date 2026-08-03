@@ -11,7 +11,7 @@ class StartupBootstrapTests(unittest.TestCase):
         result: dict[str, object] = {}
         with patch("run_app.importlib.import_module", return_value="loaded") as importer:
             run_app._load_app(result)
-        importer.assert_called_once_with("llm_trainer.ui.app")
+        importer.assert_called_once_with("interface.app")
         self.assertEqual(result["module"], "loaded")
 
     def test_import_errors_are_reported(self) -> None:

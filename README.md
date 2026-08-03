@@ -16,6 +16,10 @@ creating tokenizers, training small GPT-style language models, benchmarking
 checkpoints, exporting model artifacts, and testing local GGUF models in a
 streamed Markdown chat interface.
 
+The source is split into the non-Qt `engine/` submodule and the Qt desktop
+`interface/` package. The dependency direction is one-way: `engine/` never
+imports `interface/`.
+
 
 For development, use Python 3.12 or newer. Distribution builds include a
 private Python runtime and do not require Python on the user's machine.
@@ -74,22 +78,28 @@ license data, logs, and machine identifier under the user's
 
 ## First backend commands
 
+The non-Qt command-line engine is available directly:
+
+```powershell
+python -m engine.cli --help
+```
+
 Prepare text/PDF/JSONL files:
 
 ```powershell
-python -m llm_trainer.cli prepare --input_dir .\examples\tiny_corpus --output_dir .\runs\tiny_data --context_length 16
+python -m engine.cli prepare --input_dir .\examples\tiny_corpus --output_dir .\runs\tiny_data --context_length 16
 ```
 
 Prepare programming PDFs plus source files in code-aware mode:
 
 ```powershell
-python -m llm_trainer.cli prepare --input_dir .\examples\tiny_corpus --output_dir .\runs\code_data --context_length 128 --code_training_mode
+python -m engine.cli prepare --input_dir .\examples\tiny_corpus --output_dir .\runs\code_data --context_length 128 --code_training_mode
 ```
 
 For large corpora, enable faster preview/build scanning:
 
 ```powershell
-python -m llm_trainer.cli prepare --input_dir .\my_big_data --output_dir .\runs\big_data --fast_scan_mode
+python -m engine.cli prepare --input_dir .\my_big_data --output_dir .\runs\big_data --fast_scan_mode
 ```
 
 `--fast_scan_mode` uses cheaper file fingerprints and cached preview statistics,
@@ -98,7 +108,7 @@ which is significantly faster on very large datasets.
 To reduce false duplicate matches in fast mode, add strict verification:
 
 ```powershell
-python -m llm_trainer.cli prepare --input_dir .\my_big_data --output_dir .\runs\big_data --fast_scan_mode --strict_duplicate_verification --fast_scan_sample_bytes 65536
+python -m engine.cli prepare --input_dir .\my_big_data --output_dir .\runs\big_data --fast_scan_mode --strict_duplicate_verification --fast_scan_sample_bytes 65536
 ```
 
 `--strict_duplicate_verification` only runs full SHA-256 hashing on suspected
@@ -111,7 +121,7 @@ tries to extract code-like blocks from PDFs/text.
 Train a very small smoke-test model:
 
 ```powershell
-python -m llm_trainer.cli train --data_dir .\runs\tiny_data --output_dir .\runs\tiny_model --epochs 1 --batch_size 2 --context_length 16 --embedding_size 32 --head_count 4 --layer_count 2 --device cpu --no_resume
+python -m engine.cli train --data_dir .\runs\tiny_data --output_dir .\runs\tiny_model --epochs 1 --batch_size 2 --context_length 16 --embedding_size 32 --head_count 4 --layer_count 2 --device cpu --no_resume
 ```
 
 Training saves checkpoints in the model folder and can resume from the latest
@@ -163,12 +173,18 @@ contains a real Hugging Face-compatible `hf_model` directory.
 For MicroGPT checkpoints, use the HF-style package export first:
 
 ```bash
-python -m llm_trainer.cli export-hf --model_dir runs/model
+python -m engine.cli export-hf --model_dir runs/model
 ```
 
 That creates `runs/model/hf_model` with config, weights, tokenizer metadata,
 lineage, and a README. It is portable MicroGPT packaging, not a claim that the
 checkpoint is already a llama.cpp-supported Llama/Mistral/Gemma model.
+
+Before submitting changes, run the package-boundary check:
+
+```powershell
+python tools/check_dependency_boundaries.py
+```
 
 ## Current IDE Features
 

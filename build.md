@@ -39,8 +39,10 @@ python packager.py --gpu
 ```
 
 The packager creates a private runtime, installs the pinned dependencies,
-builds the launcher bundle, copies application assets and fonts, runs Inno
-Setup, and writes the installer to `packaging/artifacts/`.
+builds the launcher bundle, copies `engine/` and `interface/` directly along
+with application assets and fonts, runs Inno Setup, and writes the installer to
+`packaging/artifacts/`. The historical `llm_trainer/` compatibility package is
+kept in the source tree but is not the primary packaged application path.
 
 The CUDA build detects the NVIDIA driver using `nvidia-smi`. It selects the
 supported PyTorch wheel index and falls back to CPU when no compatible driver
@@ -61,6 +63,10 @@ Use `--no-clean` to retain PyInstaller intermediates while troubleshooting.
 The installer includes the private Python runtime, application code, third
 party packages, fonts, logo images, and other application assets. Training corpus data is not bundled; users download or select it through the
 Dataset Sources page after installation.
+
+Run `python tools/check_dependency_boundaries.py` before packaging to verify
+that the non-Qt engine does not import the desktop interface and that new
+interface code does not depend on the legacy package.
 
 Build intermediates and installers are written under `packaging/` and are
 ignored by Git.
