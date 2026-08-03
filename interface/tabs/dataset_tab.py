@@ -4,6 +4,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QApplication,
     QCheckBox,
     QComboBox,
     QFormLayout,
@@ -111,7 +112,8 @@ def build_dataset_tab(window) -> QWidget:
     window._tip(window.auto_vocab_label, "The actual vocabulary size selected after reading the corpus.")
     window.min_frequency = window._spin(1, 1000, 2)
     window._tip(window.min_frequency, "Minimum token frequency for tokenizer training. Higher values remove rare fragments and can reduce noise.")
-    window.context_length = window._spin(16, 1000, 128)
+    context_max = 1000 if not bool(QApplication.instance().property("license_valid")) else 1_000_000
+    window.context_length = window._spin(16, context_max, 128)
     window._tip(window.context_length, "Number of tokens per training sequence. Longer context lets the model learn longer dependencies but uses more memory.")
     window.validation_split = window._double_spin(0.0, 0.5, 0.1, 0.01, 3)
     window._tip(window.validation_split, "Fraction of tokens held out for validation. Validation helps detect overfitting during training.")

@@ -55,7 +55,11 @@ def _prepare_icon(work_dir: Path) -> Path | None:
         from PIL import Image
         Image.open(source).convert("RGBA").save(icon, format="ICO", sizes=[(256, 256), (128, 128), (64, 64), (32, 32), (16, 16)])
     except ImportError:
-        return None
+        bundled_icon = ROOT / "interface" / "drunkenbot_llm_ide.ico"
+        if bundled_icon.exists():
+            shutil.copy2(bundled_icon, icon)
+        else:
+            return None
     return icon
 
 
