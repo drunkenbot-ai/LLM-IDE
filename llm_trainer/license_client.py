@@ -47,7 +47,8 @@ LICENSE_KEY_FILE = LICENSE_DIR / "license_key.txt"
 GRACE_CACHE_FILE = LICENSE_DIR / "grace_receipt.json"
 MACHINE_ID_FILE = LICENSE_DIR / "machine_id.txt"
 
-_REQUEST_TIMEOUT_SECONDS = 8.0
+_REQUEST_TIMEOUT_SECONDS = 15.0
+_ONLINE_VALIDATION_ATTEMPTS = 5
 
 
 @dataclass
@@ -281,30 +282,27 @@ def _validate_online(license_key: str, app_version: str, server_url: str) -> Opt
         },
         method="POST",
     )
-    try:
-        context = ssl.create_default_context(cafile=certifi.where())
-
-        with urllib.request.urlopen(
-                request,
-                timeout=_REQUEST_TIMEOUT_SECONDS,
-                context=context,
-        ) as response:
-            return json.loads(response.read().decode("utf-8"))
-
-    except urllib.error.HTTPError as e:
-        print("HTTP Error:", e.code)
-        print(e.read().decode())
-        return None
-
-    except urllib.error.URLError as e:
-        print("URL Error:", e.reason)
-        return None
-
-    except Exception:
-        traceback.print_exc()
-        return None
-    except Exception:
-        return None
+    context = ssl.create_default_context(cafile=certifi.where())
+    for attempt in range(1, _ONLINE_VALIDATION_ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(
+                    request,
+                    timeout=_REQUEST_TIMEOUT_SECONDS,
+                    context=context,
+            ) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            print("HTTP Error:", e.code)
+            print(e.read().decode())
+            return None
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            print(f"License server attempt {attempt}/{_ONLINE_VALIDATION_ATTEMPTS} failed: {e}")
+            if attempt < _ONLINE_VALIDATION_ATTEMPTS:
+                time.sleep(min(2.0 * attempt, 8.0))
+        except Exception:
+            traceback.print_exc()
+            return None
+    return None
 
 
 def check_license_at_launch(app_version: str, server_url: str) -> LicenseCheckResult:

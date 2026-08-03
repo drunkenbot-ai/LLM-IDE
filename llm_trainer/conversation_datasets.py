@@ -270,6 +270,17 @@ def load_conversation_documents(
         if should_stop and should_stop():
             raise RuntimeError("Dataset preparation stopped by user.")
         preset = CONVERSATION_DATASET_PRESETS.get(dataset_id)
+        if preset is None and dataset_id.startswith("hf_custom:"):
+            custom_path = dataset_id.removeprefix("hf_custom:")
+            preset = ConversationDatasetPreset(
+                dataset_id=dataset_id,
+                label=f"Custom Hugging Face dataset ({custom_path})",
+                hf_path=custom_path,
+                config_name=None,
+                split="train",
+                stage="base",
+                description="User-provided Hugging Face dataset.",
+            )
         if preset is None:
             _emit(progress, f"Skipping unknown conversation dataset: {dataset_id}")
             LOGGER.warning("Skipping unknown conversation dataset: %s", dataset_id)

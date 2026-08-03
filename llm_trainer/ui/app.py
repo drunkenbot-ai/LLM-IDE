@@ -5,6 +5,7 @@ from datetime import datetime
 import html
 import importlib
 import json
+from functools import partial
 import logging
 import math
 import os
@@ -38,6 +39,8 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QListWidget,
     QListWidgetItem,
+    QTreeWidget,
+    QTreeWidgetItem,
     QMainWindow,
     QMessageBox,
     QProgressBar,
@@ -81,6 +84,12 @@ from llm_trainer.telemetry_store import initialize_store, insert_metric, latest_
 from llm_trainer.training import check_resume_compatibility, latest_checkpoint
 from llm_trainer.training_planning import estimate_training_resources, format_bytes
 from llm_trainer.training_service import run_training_job
+from llm_trainer.external_dataset import (
+    DEFAULT_MANIFEST_URL,
+    download_latest_dataset,
+    is_newer_version,
+    load_manifest,
+)
 from llm_trainer.ui.chat_widgets import ChatMessageWidget
 from llm_trainer.ui.markdown_renderer import markdown_to_html
 from llm_trainer.ui.workers import ProcessTaskWorker, TaskWorker
@@ -89,13 +98,12 @@ from llm_trainer.ui.tabs.benchmark_tab import build_benchmark_tab
 from llm_trainer.ui.tabs.chat_tab import build_chat_tab
 from llm_trainer.ui.tabs.dataset_tab import build_dataset_tab
 from llm_trainer.ui.tabs.dataset_plan_tab import (
-    DATASET_DOMAIN_DEFAULTS,
-    DATASET_DOMAIN_PRESETS,
     build_dataset_plan_tab,
     default_data_root,
     default_data_stage,
     dataset_plan_defaults,
     iter_default_data_files,
+    populate_default_data_tree,
 )
 from llm_trainer.ui.tabs.live_tab import build_live_training_tab
 from llm_trainer.ui.tabs.training_tab import build_training_tab
@@ -2614,16 +2622,17 @@ class MainWindow(QMainWindow):
             if choice != QMessageBox.Yes:
                 return
 
-        if self.chat_session is not None and hasattr(self.chat_session, "reset"):
-            self.chat_session.reset()
-        self.chat_session = None
         base_dir = QFileDialog.getExistingDirectory(
             self,
             "Choose folder where the new project will be created",
             self._project_dialog_start_dir(),
         )
         if not base_dir:
+            self.project_state.setText("Project creation cancelled")
             return
+        if self.chat_session is not None and hasattr(self.chat_session, "reset"):
+            self.chat_session.reset()
+        self.chat_session = None
         project_name = self.search_box.text().strip() or "MicroLLMProject"
         try:
             self._create_project_at(project_name, Path(base_dir))
@@ -2670,7 +2679,7 @@ class MainWindow(QMainWindow):
         self._apply_project_state(self._default_project_state())
         self.search_box.setText(project_name)
         self._apply_project_workspace_paths(project_dir)
-        self._refresh_dataset_blueprint_source(project_dir / "training_data")
+        self._reset_dataset_blueprint_source(project_dir / "training_data")
         self._apply_project_runtime_environment(project_dir)
         self._refresh_notification_manager(project_dir)
         if hasattr(self, "runpod_api_key"):
@@ -2682,9 +2691,26 @@ class MainWindow(QMainWindow):
         LOGGER.info("New project created: %s", project_file)
         self.dataset_log.append(f"Started a new project: {project_file}")
         self.dataset_log.append(f"Project workspace: {project_dir}")
-        self.dataset_log.append(f"Default training data copied: {copied_count} file(s)")
+        self.dataset_log.append(
+            "Bundled training data is no longer included; use Dataset Sources to download or select a dataset."
+        )
         self.dataset_log.append(f"Notifier config: {project_dir / 'notifier_config.json'}")
         return project_file
+
+    def _reset_dataset_blueprint_source(self, data_root: Path) -> None:
+        """Reset the current Dataset Sources tree without replacing its widget."""
+        self.blueprint_data_root = Path(data_root)
+        if hasattr(self, "external_dataset_dir"):
+            self.external_dataset_dir.setText(str(data_root))
+        if hasattr(self, "dataset_plan_source_label"):
+            self.dataset_plan_source_label.setText(f"Source: {data_root}")
+        if hasattr(self, "default_data_tree"):
+            self.default_data_tree.clear()
+            self.default_data_actions.clear()
+            self.default_data_category_items.clear()
+            self.default_data_tree.addTopLevelItem(
+                QTreeWidgetItem(["No project data files were found.", "", ""])
+            )
 
     def _open_project_file(self, project_file: Path) -> None:
         """Open and activate a project file.
@@ -2748,38 +2774,10 @@ class MainWindow(QMainWindow):
         ensure_runpod_config(project_dir / "runpod_config.json")
 
     def _ensure_project_training_data(self, project_dir: Path) -> int:
-        """Copy bundled default data into the project training-data folder.
-
-        Existing files are left untouched so user edits are not overwritten.
-
-        Args:
-            project_dir: Project root folder.
-
-        Returns:
-            Number of files copied.
-        """
-
-        source_root = default_data_root()
+        """Create the project training-data folder without bundling corpus files."""
         target_root = project_dir / "training_data"
         target_root.mkdir(parents=True, exist_ok=True)
-        if not source_root.exists():
-            return 0
-        copied = 0
-        for source in source_root.rglob("*"):
-            if not source.is_file():
-                continue
-            try:
-                relative = source.relative_to(source_root)
-            except ValueError:
-                continue
-            target = target_root / relative
-            if target.exists():
-                continue
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, target)
-            copied += 1
-        LOGGER.info("Project default training data copied: project=%s files=%s", project_dir, copied)
-        return copied
+        return 0
 
     def _refresh_dataset_blueprint_source(
         self,
@@ -2801,10 +2799,21 @@ class MainWindow(QMainWindow):
             self.blueprint_data_root = Path(data_root)
             return
         self.blueprint_data_root = Path(data_root)
+        if hasattr(self, "default_data_tree"):
+            selected = saved_paths if saved_paths is not None else self._selected_default_data_paths()
+            populate_default_data_tree(self, self.blueprint_data_root)
+            self._set_selected_default_data_paths(selected)
+            if saved_plan is not None:
+                self._set_dataset_plan(saved_plan, preset)
+            self.dataset_plan_source_label.setText(f"Source: {self.blueprint_data_root}")
+            return
         current_index = self.pages.currentIndex()
         old_page = self.pages.widget(0)
+        old_page.hide()
+        QApplication.processEvents()
         new_page = self._build_dataset_plan_tab()
         self.pages.removeWidget(old_page)
+        old_page.setParent(None)
         old_page.deleteLater()
         self.pages.insertWidget(0, new_page)
         if saved_plan is not None:
@@ -2814,6 +2823,151 @@ class MainWindow(QMainWindow):
         elif self.current_project_file is not None:
             self._set_selected_default_data_paths(None)
         self.pages.setCurrentIndex(current_index)
+
+    def download_latest_external_dataset(self) -> None:
+        """Download the latest managed dataset into the selected install folder."""
+        destination = Path(self.external_dataset_dir.text()).expanduser()
+        try:
+            manifest = load_manifest()
+        except Exception as exc:
+            self.external_dataset_version.setText(f"Could not load dataset options: {exc}")
+            return
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Select dataset components")
+        dialog.setMinimumWidth(480)
+        dialog_layout = QVBoxLayout(dialog)
+        dialog_layout.addWidget(QLabel(f"Dataset version {manifest.version}"))
+        version_selector = QComboBox()
+        version_selector.addItem(manifest.version, DEFAULT_MANIFEST_URL)
+        installed_version_file = destination / "version.txt"
+        if installed_version_file.is_file():
+            installed_version = installed_version_file.read_text(encoding="utf-8").strip()
+            if installed_version and installed_version != manifest.version:
+                version_selector.addItem(
+                    installed_version,
+                    f"https://github.com/drunkenbot-ai/dataset/releases/download/dataset-v{installed_version}/manifest.json",
+                )
+        dialog_layout.addWidget(QLabel("Dataset version"))
+        dialog_layout.addWidget(version_selector)
+        component_tree = QTreeWidget()
+        component_tree.setHeaderLabels(["Component", "Files"])
+        for category in manifest.categories:
+            if category.file_count <= 0:
+                continue
+            item = QTreeWidgetItem([category.name, str(category.file_count)])
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            existing = destination / category.name
+            has_existing = existing.exists() and any(existing.rglob("*"))
+            item.setCheckState(0, Qt.Checked if has_existing else Qt.Unchecked)
+            component_tree.addTopLevelItem(item)
+        dialog_layout.addWidget(component_tree)
+        buttons = QHBoxLayout()
+        download_button = QPushButton("Download selected")
+        cancel_button = QPushButton("Cancel")
+        buttons.addStretch(1)
+        buttons.addWidget(cancel_button)
+        buttons.addWidget(download_button)
+        dialog_layout.addLayout(buttons)
+        cancel_button.clicked.connect(dialog.reject)
+        download_button.clicked.connect(dialog.accept)
+        if dialog.exec() != QDialog.Accepted:
+            return
+        categories = [
+            component_tree.topLevelItem(index).text(0)
+            for index in range(component_tree.topLevelItemCount())
+            if component_tree.topLevelItem(index).checkState(0) == Qt.Checked
+        ]
+        if not categories:
+            self.external_dataset_version.setText("Select at least one dataset component.")
+            return
+
+        self.dataset_log.append(f"Downloading latest external dataset to {destination}...")
+        self.external_dataset_version.setText("Downloading latest dataset...")
+        self.dataset_plan_progress.setVisible(True)
+        self._run_task(
+            partial(download_latest_dataset, manifest_url=version_selector.currentData()),
+            (destination, categories),
+            self._external_dataset_download_finished,
+            self.dataset_log,
+            self.dataset_plan_progress,
+            with_progress=True,
+            button=self.external_dataset_download_button,
+            busy_text="Downloading dataset",
+            task_kind="dataset_download",
+        )
+
+    def _refresh_external_dataset_status(self) -> None:
+        """Restore the installed dataset version from the selected folder."""
+        if not hasattr(self, "external_dataset_dir"):
+            return
+        version_file = Path(self.external_dataset_dir.text()).expanduser() / "version.txt"
+        if not version_file.is_file():
+            self.external_dataset_version.setText("Installed version: not installed")
+            self.external_dataset_download_button.setEnabled(True)
+            return
+        try:
+            version = version_file.read_text(encoding="utf-8").strip()
+        except OSError:
+            version = ""
+        if version:
+            has_dataset_files = any(
+                path.is_file() and path.name not in {"version.txt", "manifest.json"}
+                for path in Path(self.external_dataset_dir.text()).expanduser().rglob("*")
+            )
+            if not has_dataset_files:
+                self.external_dataset_version.setText("Installed version: not installed")
+                self.external_dataset_download_button.setEnabled(True)
+                return
+            self.external_dataset_version.setText(f"Installed version: {version}")
+            try:
+                latest = load_manifest()
+            except Exception as exc:
+                LOGGER.warning("Could not check for a newer dataset release: %s", exc)
+                self.external_dataset_download_button.setEnabled(True)
+                return
+            installed_root = Path(self.external_dataset_dir.text()).expanduser()
+            missing_components = [
+                category.name
+                for category in latest.categories
+                if category.file_count > 0
+                and not (
+                    (installed_root / category.name).exists()
+                    and any((installed_root / category.name).rglob("*"))
+                )
+            ]
+            if is_newer_version(latest.version, version):
+                self.external_dataset_version.setText(
+                    f"Installed version: {version} (update available: {latest.version})"
+                )
+                self.external_dataset_download_button.setEnabled(True)
+            elif missing_components:
+                self.external_dataset_version.setText(
+                    f"Installed version: {version} ({len(missing_components)} components missing)"
+                )
+                self.external_dataset_download_button.setEnabled(True)
+            else:
+                self.external_dataset_download_button.setEnabled(False)
+        else:
+            self.external_dataset_version.setText("Installed version: not installed")
+            self.external_dataset_download_button.setEnabled(True)
+
+    @Slot(object)
+    def _external_dataset_download_finished(self, manifest: Any) -> None:
+        """Apply the downloaded dataset as the active source vault."""
+        self.dataset_log.append(f"Installed external dataset version {manifest.version}.")
+        self.external_dataset_version.setText(f"Installed version: {manifest.version}")
+        self.external_dataset_download_button.setEnabled(False)
+        self.dataset_plan_progress.setVisible(False)
+        self._refresh_dataset_blueprint_source(
+            Path(self.external_dataset_dir.text()),
+            saved_plan=self._dataset_plan_from_ui(),
+            preset=(
+                self.dataset_plan_preset.currentText()
+                if hasattr(self, "dataset_plan_preset")
+                else "Balanced Tiny LLM"
+            ),
+        )
+        self.input_dir.setText(self.external_dataset_dir.text())
 
     def _refresh_notification_manager(self, project_dir: Optional[Path] = None) -> None:
         """Load notification settings for the current project.
@@ -3138,6 +3292,7 @@ class MainWindow(QMainWindow):
                 "domain_plan_preset": self.dataset_plan_preset.currentText() if hasattr(self, "dataset_plan_preset") else "Balanced Tiny LLM",
                 "domain_plan": self._dataset_plan_from_ui(),
                 "default_data_paths": [str(path) for path in self._selected_default_data_paths()],
+                "external_dataset_dir": self.external_dataset_dir.text() if hasattr(self, "external_dataset_dir") else "",
                 "auto_vocab": self.auto_vocab.isChecked(),
                 "manual_vocab_size": self.manual_vocab_size.value(),
                 "include_conversation_datasets": self.include_conversation_datasets.isChecked(),
@@ -3272,13 +3427,16 @@ class MainWindow(QMainWindow):
         self.fine_tune_output_dir.setText(str(paths.get("fine_tune_output", "")))
 
         self._set_dataset_plan(
-            dict(dataset.get("domain_plan", DATASET_DOMAIN_DEFAULTS)),
+            dict(dataset.get("domain_plan", {})),
             str(dataset.get("domain_plan_preset", "Balanced Tiny LLM")),
         )
         saved_default_data_paths = dataset.get("default_data_paths")
         self._set_selected_default_data_paths(
             list(saved_default_data_paths) if saved_default_data_paths is not None else None
         )
+        if hasattr(self, "external_dataset_dir") and dataset.get("external_dataset_dir"):
+            self.external_dataset_dir.setText(str(dataset["external_dataset_dir"]))
+        self._refresh_external_dataset_status()
         self.auto_vocab.setChecked(bool(dataset.get("auto_vocab", True)))
         self.manual_vocab_size.setValue(int(dataset.get("manual_vocab_size", self.manual_vocab_size.value())))
         include_conversation = bool(dataset.get("include_conversation_datasets", False))
@@ -3650,6 +3808,9 @@ class MainWindow(QMainWindow):
         LOGGER.error("Background task failed: %s", message)
         if self.active_task_kind == "chat":
             self.chat_status.setText(f"Chat: load failed - {message}")
+        elif self.active_task_kind == "dataset_download":
+            self.external_dataset_version.setText(f"Download failed: {message}")
+            self.dataset_plan_progress.setVisible(False)
         self._task_failed(message, self.active_log, self.active_progress_bar)
 
     def stop_active_task(self) -> None:
@@ -4138,6 +4299,14 @@ class MainWindow(QMainWindow):
             if isinstance(event, dict) and event.get("percent") is not None:
                 last_percent = event.get("percent")
                 event = {**event, "percent": None}
+            if (
+                isinstance(notification_event, dict)
+                and self.active_task_kind == "dataset_download"
+                and notification_event.get("button_text")
+                and self.active_button is not None
+            ):
+                self.active_button_text = str(notification_event["button_text"])
+                self.active_button.setText(self.active_button_text)
             self._handle_progress(event, self.active_log, self.active_progress_bar)
             if isinstance(notification_event, dict):
                 self._notify_progress(notification_event)
@@ -4281,13 +4450,10 @@ class MainWindow(QMainWindow):
             Selected paths suitable for the requested stage.
         """
 
-        allowed_stage_files = []
-        root = self.blueprint_data_root
-        for path in self._selected_default_data_paths():
-            file_stage = default_data_stage(path, root)
-            if file_stage == "base" or file_stage == stage:
-                allowed_stage_files.append(path)
-        return allowed_stage_files
+        # Folder selection is the workflow configuration.  Do not apply a
+        # second hardcoded stage filter here; the Dataset Sources tree already
+        # contains exactly the files selected by the user.
+        return self._selected_default_data_paths()
 
     @staticmethod
     def _split_path_list(text: str) -> list[Path]:
@@ -4745,12 +4911,7 @@ class MainWindow(QMainWindow):
             Dataset stage identifier.
         """
 
-        return {
-            "Base pretraining": "base",
-            "Instruction fine-tune": "instruction",
-            "Conversation fine-tune": "conversation",
-            "Code fine-tune": "code",
-        }.get(self.dataset_stage.currentText(), "base")
+        return self.dataset_stage.currentText().strip().lower().replace(" ", "_") or "base"
 
     def _set_dataset_stage(self, stage: str) -> None:
         """Set the dataset stage combo from an internal stage value.
@@ -4759,16 +4920,11 @@ class MainWindow(QMainWindow):
             stage: Dataset stage identifier.
         """
 
-        self._set_combo_by_data(
-            self.dataset_stage,
-            stage,
-            {
-                "base": "Base pretraining",
-                "instruction": "Instruction fine-tune",
-                "conversation": "Conversation fine-tune",
-                "code": "Code fine-tune",
-            },
-        )
+        index = self.dataset_stage.findText(stage, Qt.MatchFixedString)
+        if index < 0:
+            self.dataset_stage.addItem(stage)
+            index = self.dataset_stage.count() - 1
+        self.dataset_stage.setCurrentIndex(index)
         self._update_online_dataset_stage_controls()
 
     def _update_online_dataset_stage_controls(self) -> None:
@@ -4777,7 +4933,7 @@ class MainWindow(QMainWindow):
         if not hasattr(self, "dataset_stage"):
             return
         stage = self._dataset_stage_value()
-        allowed = set(dataset_ids_for_stage(stage))
+        allowed = set(CONVERSATION_DATASET_PRESETS)
         include_online = self.include_conversation_datasets.isChecked()
         for dataset_id, action in getattr(self, "conversation_dataset_actions", {}).items():
             visible = dataset_id in allowed
@@ -4789,19 +4945,10 @@ class MainWindow(QMainWindow):
             self.conversation_dataset_button.setEnabled(include_online)
         self.conversation_sample_limit.setEnabled(include_online)
         self._update_conversation_dataset_button_text()
-        stage_name = dataset_stage_label(stage)
-        if include_online:
-            self.conversation_datasets_status.setText(f"{stage_name}: choose online datasets from the dropdown.")
-        elif stage == "base":
-            self.conversation_datasets_status.setText(
-                "Base pretraining: all online source types are available; balance them with Dataset Mixture."
-            )
-        elif stage == "instruction":
-            self.conversation_datasets_status.setText("Instruction fine-tune: Alpaca/Dolly/SlimOrca are available here. TinyStories is hidden.")
-        elif stage == "conversation":
-            self.conversation_datasets_status.setText("Conversation fine-tune: chat datasets are available here. TinyStories is hidden.")
-        else:
-            self.conversation_datasets_status.setText("Code fine-tune: CodeAlpaca/Magicoder/Evol CodeAlpaca are available here.")
+        self.conversation_datasets_status.setText(
+            f"{self.dataset_stage.currentText()}: choose optional online datasets."
+            if include_online else "Choose optional online datasets, or use local folders only."
+        )
 
     def _selected_conversation_datasets(self) -> list[str]:
         """Return selected built-in conversation dataset IDs.
@@ -4810,12 +4957,28 @@ class MainWindow(QMainWindow):
             Selected dataset identifiers.
         """
 
-        allowed = set(dataset_ids_for_stage(self._dataset_stage_value()))
-        return [
+        allowed = set(CONVERSATION_DATASET_PRESETS)
+        selected = [
             dataset_id
             for dataset_id, action in getattr(self, "conversation_dataset_actions", {}).items()
             if dataset_id in allowed and action.isChecked() and self.include_conversation_datasets.isChecked()
         ]
+        custom = self.custom_huggingface_dataset.text().strip()
+        if custom and self.include_conversation_datasets.isChecked():
+            selected.append(f"hf_custom:{custom}")
+        return selected
+
+    def _download_custom_huggingface_dataset(self) -> None:
+        """Enable the entered Hugging Face dataset for the next preparation run."""
+        value = self.custom_huggingface_dataset.text().strip()
+        if not value:
+            self.conversation_datasets_status.setText("Enter a Hugging Face dataset ID or URL first.")
+            return
+        self.include_conversation_datasets.setChecked(True)
+        self.conversation_datasets_status.setText(
+            f"Custom dataset queued: {value}. It will download during dataset preparation."
+        )
+        self._update_conversation_dataset_button_text()
 
     def _set_selected_conversation_datasets(self, dataset_ids: list[str]) -> None:
         """Restore selected conversation dataset actions.
@@ -4829,6 +4992,10 @@ class MainWindow(QMainWindow):
         for dataset_id, action in getattr(self, "conversation_dataset_actions", {}).items():
             action.setChecked(dataset_id in selected and dataset_id in allowed)
             action.setEnabled(self.include_conversation_datasets.isChecked() and dataset_id in allowed)
+        if hasattr(self, "custom_huggingface_dataset"):
+            self.custom_huggingface_dataset.setText(
+                next((value[10:] for value in dataset_ids if value.startswith("hf_custom:")), "")
+            )
         if hasattr(self, "conversation_sample_limit"):
             self.conversation_sample_limit.setEnabled(self.include_conversation_datasets.isChecked())
         self._update_conversation_dataset_button_text()
@@ -4953,6 +5120,7 @@ class MainWindow(QMainWindow):
         """Reload the Dataset Blueprint file tree from disk."""
 
         root = getattr(self, "blueprint_data_root", default_data_root())
+        self._refresh_external_dataset_status()
         selected_paths = [str(path) for path in self._selected_default_data_paths()]
         self._set_dataset_blueprint_refresh_busy(True)
         QApplication.processEvents()
@@ -5042,7 +5210,7 @@ class MainWindow(QMainWindow):
                     widget.setValue(0.0)
                 widget.blockSignals(False)
             self.dataset_plan_preset.blockSignals(True)
-            if preset in DATASET_DOMAIN_PRESETS or preset == "Custom":
+            if preset == "Custom":
                 self.dataset_plan_preset.setCurrentText(preset)
             else:
                 self.dataset_plan_preset.setCurrentText("Custom")
@@ -7290,6 +7458,7 @@ def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
             dialog.activateWindow()
             if dialog.exec() != QDialog.Accepted:
                 LOGGER.info("License activation cancelled by user; exiting.")
+                QApplication.instance().setProperty("startup_aborted", True)
                 return False
             splash.append_log("✓ License activated")
             return True
@@ -7320,6 +7489,9 @@ def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = N
     QApplication.processEvents()
     if not _ensure_valid_license(splash):
         splash.close()
+        if not owns_app:
+            app.quit()
+            app.setProperty("startup_aborted", True)
         return
     try:
         _run_startup_validations(splash)
@@ -7337,50 +7509,63 @@ def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = N
             QMessageBox.No,
         )
         if proceed != QMessageBox.Yes:
+            if not owns_app:
+                app.quit()
+                app.setProperty("startup_aborted", True)
             return
         LOGGER.warning("User chose to continue after failed startup validation.")
     splash.close()
-    chooser = ProjectChoiceDialog()
-    chooser.setWindowIcon(MainWindow._static_app_icon())
-    QTimer.singleShot(0, lambda: _apply_windows_taskbar_icon(chooser))
-    if chooser.exec() != QDialog.Accepted:
-        LOGGER.info("Startup closed at project selection screen")
-        return
-    window = MainWindow()
-    try:
-        if chooser.choice == "new":
-            base_dir = QFileDialog.getExistingDirectory(
-                None,
-                "Choose folder where the new project will be created",
-                str(DEFAULT_PROJECTS_DIR),
-            )
-            if not base_dir:
-                return
-            project_name, ok = QInputDialog.getText(None, "Project name", "Enter project name:", text="MicroLLMProject")
-            if not ok:
-                return
-            project_name = project_name.strip() or "MicroLLMProject"
-            window._create_project_at(project_name, Path(base_dir))
-        elif chooser.choice == "open":
-            project_file, _ = QFileDialog.getOpenFileName(
-                None,
-                "Open Micro LLM project",
-                str(DEFAULT_PROJECTS_DIR),
-                "Micro LLM project (project.json *.json);;All files (*)",
-            )
-            if not project_file:
-                return
-            window._open_project_file(Path(project_file))
-        elif chooser.choice == "recent":
-            if chooser.selected_project_file is None:
-                return
-            window._open_project_file(chooser.selected_project_file)
-        elif chooser.choice == "test_local_llm":
-            window.show_chat_only_mode()
-    except Exception as exc:
-        LOGGER.exception("Project setup failed during startup")
-        QMessageBox.critical(None, "Project setup failed", f"Could not complete project setup.\n\n{exc}")
-        return
+    while True:
+        chooser = ProjectChoiceDialog()
+        chooser.setWindowIcon(MainWindow._static_app_icon())
+        QTimer.singleShot(0, lambda dialog=chooser: _apply_windows_taskbar_icon(dialog))
+        if chooser.exec() != QDialog.Accepted:
+            LOGGER.info("Startup closed at project selection screen")
+            if not owns_app:
+                app.quit()
+                app.setProperty("startup_aborted", True)
+            return
+        window = MainWindow()
+        try:
+            if chooser.choice == "new":
+                base_dir = QFileDialog.getExistingDirectory(
+                    None,
+                    "Choose folder where the new project will be created",
+                    str(DEFAULT_PROJECTS_DIR),
+                )
+                if not base_dir:
+                    window.deleteLater()
+                    continue
+                project_name, ok = QInputDialog.getText(None, "Project name", "Enter project name:", text="MicroLLMProject")
+                if not ok:
+                    window.deleteLater()
+                    continue
+                project_name = project_name.strip() or "MicroLLMProject"
+                window._create_project_at(project_name, Path(base_dir))
+            elif chooser.choice == "open":
+                project_file, _ = QFileDialog.getOpenFileName(
+                    None,
+                    "Open Micro LLM project",
+                    str(DEFAULT_PROJECTS_DIR),
+                    "Micro LLM project (project.json *.json);;All files (*)",
+                )
+                if not project_file:
+                    window.deleteLater()
+                    continue
+                window._open_project_file(Path(project_file))
+            elif chooser.choice == "recent":
+                if chooser.selected_project_file is None:
+                    window.deleteLater()
+                    continue
+                window._open_project_file(chooser.selected_project_file)
+            elif chooser.choice == "test_local_llm":
+                window.show_chat_only_mode()
+        except Exception as exc:
+            LOGGER.exception("Project setup failed during startup")
+            QMessageBox.critical(None, "Project setup failed", f"Could not complete project setup.\n\n{exc}")
+            window.deleteLater()
+            continue
+        break
     window.show()
     QTimer.singleShot(0, window.apply_windows_taskbar_icon)
     interrupt_timer = QTimer()
