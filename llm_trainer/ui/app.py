@@ -561,8 +561,11 @@ def _run_startup_validations(splash: StartupValidationSplash) -> None:
             "Checking required imports",
             lambda: [importlib.import_module(module_name) for module_name in required_modules],
         ),
-        ("Running test suite", lambda: _run_startup_tests(repo_root, tests_root, splash.append_log)),
     ]
+    if tests_root.is_dir():
+        steps.append(("Running test suite", lambda: _run_startup_tests(repo_root, tests_root, splash.append_log)))
+    else:
+        splash.append_log("Repository tests are not included in this packaged installation; skipping test suite.")
 
     splash.set_checks([label for label, _ in steps])
     splash.append_log(f"Workspace: {repo_root}")
@@ -2387,9 +2390,15 @@ class MainWindow(QMainWindow):
             Logo path.
         """
 
-        candidates = [Path(__file__).resolve().parents[2] / "drunken_bot_logo_small.png"]
+        candidates = [
+            Path(__file__).resolve().parents[2] / "drunken_bot_logo_small.png",
+            Path(__file__).resolve().parents[3] / "drunken_bot_logo_small.png",
+        ]
         if hasattr(sys, "_MEIPASS"):
             candidates.insert(0, Path(sys._MEIPASS) / "drunken_bot_logo_small.png")
+        app_root = os.environ.get("DRUNKENBOT_APP_ROOT")
+        if app_root:
+            candidates.insert(0, Path(app_root) / "drunken_bot_logo_small.png")
         return next((path for path in candidates if path.exists()), candidates[0])
 
     @staticmethod
