@@ -62,6 +62,30 @@ def choose_runtime(system: str | None = None, driver_major: int | None = None) -
 _SETUP_LOG = None
 
 
+def _log_path(root: Path) -> Path:
+    """Choose a writable setup-log location on installed systems."""
+    system = platform.system()
+    if system == "Windows":
+        platform_log = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
+    elif system == "Darwin":
+        platform_log = Path.home() / "Library" / "Logs"
+    else:
+        platform_log = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
+    candidates = [
+        platform_log / "DrunkenBot-IDE" / "runtime_setup.log",
+        root / "runtime_setup.log",
+    ]
+    for candidate in candidates:
+        try:
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            with candidate.open("a", encoding="utf-8"):
+                pass
+            return candidate
+        except OSError:
+            continue
+    raise OSError("Could not create a writable runtime setup log.")
+
+
 def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
     environment = os.environ.copy()
     environment["PATH"] = os.pathsep.join(
@@ -124,7 +148,10 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--ensure", action="store_true")
     args = parser.parse_args()
-    log_path = Path(__file__).resolve().parent / "runtime_setup.log"
+    configured_log = os.environ.get("DRUNKENBOT_RUNTIME_SETUP_LOG")
+    log_path = Path(configured_log) if configured_log else _log_path(Path(__file__).resolve().parent)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    os.environ["DRUNKENBOT_RUNTIME_SETUP_LOG"] = str(log_path)
     with log_path.open("w", encoding="utf-8") as log:
         global _SETUP_LOG
         _SETUP_LOG = log
