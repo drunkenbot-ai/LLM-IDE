@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 try:
     from .curriculum_shared import *
 except ImportError:
@@ -393,6 +392,5 @@ def code_blocks(count: int) -> list[str]:
             "This example teaches variables and arithmetic."
         )
     return blocks
-
 
 
