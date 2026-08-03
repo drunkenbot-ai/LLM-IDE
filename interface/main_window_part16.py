@@ -312,6 +312,8 @@ class MainWindowPart16:
         return True
 
     def start_training(self) -> None:
+        if not bool(QApplication.instance().property("license_valid")):
+            self.train_context_length.setValue(min(self.train_context_length.value(), 1000))
         """Collect training options and start model training."""
 
         launch_target = self._training_launch_target_value()
@@ -387,5 +389,4 @@ class MainWindowPart16:
             busy_text="Training",
             task_kind="training",
         )
-
 

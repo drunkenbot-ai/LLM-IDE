@@ -19,7 +19,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT_ROOT = ROOT / "packaging" / "artifacts"
-APP_NAME = "DrunkenBot-LLM-IDE"
+APP_NAME = "DrunkenBot-IDE"
 
 
 def _architecture() -> str:
@@ -164,7 +164,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
                     f'Source: "{bundle}\\*"; DestDir: "{{app}}"; Flags: recursesubdirs ignoreversion',
                     *( [f'Source: "{icon_path}"; DestDir: "{{app}}"; Flags: ignoreversion'] if icon_path else [] ),
                     "[Icons]",
-                    *( ['Name: "{autoprograms}\\drunkenBot-IDE\\DrunkenBot-LLM-IDE"; Filename: "{app}\\DrunkenBot-LLM-IDE.exe"; IconFilename: "{app}\\drunken_bot_logo_small.ico"'] if icon_path else [] ),
+                    *( [f'Name: "{{autoprograms}}\\{APP_NAME}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.ico"'] if icon_path else [] ),
                     *( [f'Name: "{{commondesktop}}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.ico"'] if icon_path else [] ),
                     "[Run]",
                     'Filename: "{app}\\runtime\\Scripts\\python.exe"; Parameters: """{app}\\runtime_setup.py"" --ensure"; WorkingDir: "{app}"; Flags: waituntilterminated; StatusMsg: "Installing hardware runtime. See runtime_setup.log for details..."',

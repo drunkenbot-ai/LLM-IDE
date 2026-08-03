@@ -34,7 +34,7 @@ from .startup_validation import (
 )
 
 
-APP_NAME = "DrunkenBot LLM-IDE"
+APP_NAME = "DrunkenBot-IDE"
 WINDOWS_APP_ID = "DrunkenBot.LLMIDE"
 LOGGER = logging.getLogger(__name__)
 APP_HOME_DIR = Path.home() / ".drunkenbot_ide"
@@ -353,7 +353,7 @@ class ProjectChoiceDialog(QDialog):
 
         body = QLabel(
             "Startup checks are complete.\n"
-            "Choose how you want to begin with DrunkenBot LLM-IDE."
+            "Choose how you want to begin with DrunkenBot-IDE."
         )
         body.setObjectName("Body")
         body.setAlignment(Qt.AlignLeft)
