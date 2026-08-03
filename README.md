@@ -57,8 +57,9 @@ python packager.py
 Use `python packager.py --gpu` to prepare a CUDA-enabled private runtime when
 an NVIDIA driver is detected. The installer bundles the application, private
 runtime, third-party dependencies, fonts, and images. It intentionally excludes
-`llm_trainer/default_data`, which is training corpus data and is not required by
-the installed application.
+Training corpus data is not bundled with the installed application. Use the
+Dataset Sources page to download the current external dataset release or select
+an existing source folder.
 
 See [build.md](build.md) for prerequisites, runtime profiles, architecture
 limitations, and troubleshooting.

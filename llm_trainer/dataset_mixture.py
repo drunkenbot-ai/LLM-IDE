@@ -11,38 +11,7 @@ from .data import Document, SUPPORTED_CODE_SUFFIXES
 
 LOGGER = logging.getLogger(__name__)
 
-MIXTURE_LABELS = {
-    "stories": "Stories",
-    "reasoning": "Reasoning",
-    "social_emotional": "Social / emotions",
-    "factual_knowledge": "Facts / knowledge",
-    "mathematics": "Mathematics",
-    "code_technical": "Code / technical",
-    "language_basics": "Language basics",
-    "structured_qa": "Structured Q&A",
-    "safety_uncertainty": "Safety / uncertainty",
-    "general_prose": "General prose",
-    "local_prose": "Local prose",
-    "source_code": "Source code",
-    "online_base": "Online base",
-    "instruction": "Instruction",
-    "conversation": "Conversation",
-}
-
-DOMAIN_MIXTURE_FAMILIES = {
-    "stories",
-    "reasoning",
-    "social_emotional",
-    "factual_knowledge",
-    "mathematics",
-    "code_technical",
-    "language_basics",
-    "structured_qa",
-    "safety_uncertainty",
-    "general_prose",
-}
-
-AGGREGATE_MIXTURE_FAMILIES = {"local_prose", "source_code", "online_base", "instruction", "conversation"}
+AGGREGATE_MIXTURE_FAMILIES: set[str] = set()
 MIXTURE_CHUNK_CHARS = 25_000
 # A default corpus must not gain apparent scale by repeating a tiny template.
 # This threshold is deliberately conservative: it only applies once a document
@@ -50,63 +19,6 @@ MIXTURE_CHUNK_CHARS = 25_000
 MAX_REPETITIVE_UNIT_RATIO = 0.35
 MIN_REPETITION_CHECK_UNITS = 20
 MIN_REPETITION_CHECK_CHARS = 2_000
-
-GENERIC_DEFAULT_DATA_FOLDERS = {"base_training", "code_training", "generated_curriculum"}
-
-DEFAULT_STAGE_CATEGORY_FOLDERS = {
-    "fine_tune_instruction": "instruction",
-    "fine_tune_conversation": "conversation",
-    "fine_tune_code": "code_technical",
-}
-
-CATEGORY_ALIASES = {
-    "story": "stories",
-    "stories": "stories",
-    "reason": "reasoning",
-    "reasoning": "reasoning",
-    "why": "reasoning",
-    "emotion": "social_emotional",
-    "emotions": "social_emotional",
-    "social": "social_emotional",
-    "conversation": "social_emotional",
-    "dialog": "social_emotional",
-    "dialogue": "social_emotional",
-    "geography": "factual_knowledge",
-    "science": "factual_knowledge",
-    "biology": "factual_knowledge",
-    "physics": "factual_knowledge",
-    "chemistry": "factual_knowledge",
-    "astronomy": "factual_knowledge",
-    "weather": "factual_knowledge",
-    "earth": "factual_knowledge",
-    "history": "factual_knowledge",
-    "facts": "factual_knowledge",
-    "knowledge": "factual_knowledge",
-    "math": "mathematics",
-    "mathematics": "mathematics",
-    "code": "code_technical",
-    "coding": "code_technical",
-    "computer": "code_technical",
-    "computers": "code_technical",
-    "cs": "code_technical",
-    "programming": "code_technical",
-    "technical": "code_technical",
-    "language": "language_basics",
-    "grammar": "language_basics",
-    "qa": "structured_qa",
-    "question": "structured_qa",
-    "answers": "structured_qa",
-    "safety": "safety_uncertainty",
-    "ethics": "safety_uncertainty",
-    "honesty": "safety_uncertainty",
-    "fairness": "safety_uncertainty",
-    "uncertainty": "safety_uncertainty",
-    "everyday": "general_prose",
-    "health": "general_prose",
-    "finance": "general_prose",
-    "jobs": "general_prose",
-    "prose": "general_prose",
-}
 
 
 def _emit(progress: Optional[Callable[[Any], None]], message: str, percent: Optional[int] = None) -> None:
@@ -125,43 +37,25 @@ def _slugify_category(value: str) -> str:
 
 
 def _mixture_label(category: str) -> str:
-    return MIXTURE_LABELS.get(category, category.replace("_", " ").title())
-
-
-def _category_from_text(value: str) -> Optional[str]:
-    tokens = [token for token in re.split(r"[^a-z0-9]+", value.lower()) if token]
-    for token in tokens:
-        if token in CATEGORY_ALIASES:
-            return CATEGORY_ALIASES[token]
-    return None
+    return category.replace("_", " ").title()
 
 
 def _default_data_category(path: Path) -> Optional[str]:
     parts_lower = [part.lower() for part in path.parts]
     data_roots = ("default_data", "training_data")
     root_indices = [parts_lower.index(root) for root in data_roots if root in parts_lower]
-    if not root_indices:
-        return None
-    default_index = max(root_indices)
-    relative_parts = path.parts[default_index + 1 :]
-    relative_lower = [part.lower() for part in relative_parts]
-    for folder, category in DEFAULT_STAGE_CATEGORY_FOLDERS.items():
-        if folder in relative_lower[:-1]:
-            return category
-    if path.suffix.lower() in SUPPORTED_CODE_SUFFIXES or "code_training" in parts_lower:
-        return "code_technical"
-    for parent in reversed(relative_parts[:-1]):
-        category = _category_from_text(parent)
-        if category:
-            return category
-    stem_category = _category_from_text(path.stem)
-    if stem_category:
-        return stem_category
-    for parent in reversed(relative_parts[:-1]):
-        slug = _slugify_category(parent)
-        if slug and slug not in GENERIC_DEFAULT_DATA_FOLDERS:
-            return slug
-    return "general_prose"
+    if root_indices:
+        default_index = max(root_indices)
+        relative_parts = path.parts[default_index + 1 :]
+    else:
+        # Prepared documents can come from any user-selected root.  In that
+        # case the containing folder is the only reliable folder metadata.
+        relative_parts = path.parts
+    # Categories are configured by directory layout.  The first directory
+    # under the configured training-data root owns all nested files.
+    if len(relative_parts) > 1:
+        return _slugify_category(relative_parts[0])
+    return None
 
 
 def _deduplicate_documents(documents: list[Document]) -> tuple[list[Document], dict[str, Any]]:
@@ -473,12 +367,8 @@ def _apply_dataset_mixture(
 
 __all__ = [
     "MIXTURE_LABELS",
-    "DOMAIN_MIXTURE_FAMILIES",
     "AGGREGATE_MIXTURE_FAMILIES",
     "MIXTURE_CHUNK_CHARS",
-    "GENERIC_DEFAULT_DATA_FOLDERS",
-    "DEFAULT_STAGE_CATEGORY_FOLDERS",
-    "CATEGORY_ALIASES",
     "_apply_dataset_mixture",
     "_filter_repetitive_documents",
     "MAX_REPETITIVE_UNIT_RATIO",

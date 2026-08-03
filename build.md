@@ -59,8 +59,8 @@ Use `--no-clean` to retain PyInstaller intermediates while troubleshooting.
 ## Included and excluded files
 
 The installer includes the private Python runtime, application code, third
-party packages, fonts, logo images, and other application assets. The
-`llm_trainer/default_data` training corpus is explicitly excluded.
+party packages, fonts, logo images, and other application assets. Training corpus data is not bundled; users download or select it through the
+Dataset Sources page after installation.
 
 Build intermediates and installers are written under `packaging/` and are
 ignored by Git.
