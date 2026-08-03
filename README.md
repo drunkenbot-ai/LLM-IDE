@@ -16,11 +16,9 @@ creating tokenizers, training small GPT-style language models, benchmarking
 checkpoints, exporting model artifacts, and testing local GGUF models in a
 streamed Markdown chat interface.
 
-The source is split into the non-Qt `engine/` package and the Qt desktop
-`interface/` package. Historical `llm_trainer/` import paths remain available
-for compatibility; new application and test code should use the canonical
-packages. The dependency direction is one-way: `engine/` never imports
-`interface/`, and `interface/` never imports `llm_trainer/`.
+The source is split into the non-Qt `engine/` submodule and the Qt desktop
+`interface/` package. The dependency direction is one-way: `engine/` never
+imports `interface/`.
 
 
 For development, use Python 3.12 or newer. Distribution builds include a
@@ -86,8 +84,7 @@ The non-Qt command-line engine is available directly:
 python -m engine.cli --help
 ```
 
-`python -m llm_trainer.cli` remains a compatibility alias for existing
-automation. Prepare text/PDF/JSONL files:
+Prepare text/PDF/JSONL files:
 
 ```powershell
 python -m engine.cli prepare --input_dir .\examples\tiny_corpus --output_dir .\runs\tiny_data --context_length 16

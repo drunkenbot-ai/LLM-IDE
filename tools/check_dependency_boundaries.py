@@ -44,10 +44,7 @@ def _imports(path: Path) -> list[tuple[int, str]]:
 def find_violations(root: Path) -> list[BoundaryViolation]:
     """Find imports that violate the engine/interface dependency boundary."""
 
-    rules = (
-        ("engine", "interface"),
-        ("interface", "llm_trainer"),
-    )
+    rules = (("engine", "interface"),)
     violations: list[BoundaryViolation] = []
     for package_name, forbidden_root in rules:
         package_root = root / package_name
@@ -86,8 +83,7 @@ def main() -> int:
             print(f"  {violation.path}:{violation.line}: {violation.imported}")
         return 1
     print(
-        "Dependency boundaries are clean: engine -> interface and "
-        "interface -> llm_trainer are forbidden."
+        "Dependency boundaries are clean: engine cannot import interface."
     )
     return 0
 
