@@ -4,8 +4,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from llm_trainer.config import DatasetConfig
-from llm_trainer.dataset_preview import scan_dataset_preview
+from engine.config import DatasetConfig
+from engine.dataset_preview import scan_dataset_preview
 
 
 class DatasetPreviewFastScanTests(unittest.TestCase):

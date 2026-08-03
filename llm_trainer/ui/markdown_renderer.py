@@ -175,7 +175,7 @@ def code_block_html(label: str, highlighted_html: str, raw_code: str) -> str:
     return (
         "<div class='codeblock'>"
         f"<div class='codebar'>{escape_html(label or 'Code')}"
-        f"<a class='copylink' href='copycode:{quote(raw_code)}'>⧉ Copy</a></div>"
+        f"<a class='copylink' href='copycode:{quote(raw_code)}'>Copy</a></div>"
         f"<div class='codebody'><pre><code>{highlighted_html}</code></pre></div>"
         "</div>"
     )
@@ -400,4 +400,3 @@ def guess_code_language(lines: list[str]) -> str:
     if any(marker in joined for marker in ("def ", "import ", "print(", "self.")):
         return "python"
     return "text"
-

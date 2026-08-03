@@ -233,6 +233,9 @@ def install_categories(
         ordered_names = sorted(selected_names)
         for category_index, name in enumerate(ordered_names, start=1):
             category = by_name[name]
+            if _category_is_installed(destination, category.name, manifest.version):
+                LOGGER.info("Skipping already-installed dataset category %s", name)
+                continue
             archive = staging / category.archive
             LOGGER.info("Downloading dataset category %s", name)
             archive_progress = (
@@ -272,6 +275,24 @@ def install_categories(
             shutil.rmtree(backup)
     LOGGER.info("Installed dataset version %s at %s", manifest.version, destination)
     return destination
+
+
+def _category_is_installed(destination: Path, category_name: str, version: str) -> bool:
+    """Return whether a category is already installed at the requested version.
+
+    Args:
+        destination: Managed dataset root.
+        category_name: Category directory name.
+        version: Manifest version required by the caller.
+
+    Returns:
+        True when the category directory exists and the installed version matches.
+    """
+    category_path = destination / category_name
+    version_path = destination / "version.txt"
+    if not category_path.is_dir() or not version_path.is_file():
+        return False
+    return version_path.read_text(encoding="utf-8").strip() == version
 
 
 def download_latest_dataset(

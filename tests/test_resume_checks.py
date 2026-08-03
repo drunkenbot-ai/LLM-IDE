@@ -7,8 +7,8 @@ from pathlib import Path
 
 import torch
 
-from llm_trainer.config import ModelConfig, TrainingConfig
-from llm_trainer.resume_checks import _resume_checkpoint_for, _validate_resume_compatibility
+from engine.config import ModelConfig, TrainingConfig
+from engine.resume_checks import _resume_checkpoint_for, _validate_resume_compatibility
 
 
 class ResumeChecksTests(unittest.TestCase):

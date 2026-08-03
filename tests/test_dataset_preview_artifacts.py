@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from llm_trainer.dataset_preview import _has_prepared_token_artifacts
+from engine.dataset_preview import _has_prepared_token_artifacts
 
 
 class DatasetPreviewArtifactsTests(unittest.TestCase):

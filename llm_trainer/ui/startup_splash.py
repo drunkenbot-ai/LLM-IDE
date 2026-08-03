@@ -82,6 +82,20 @@ class StartupSplash(QDialog):
         self._checks = {label: "pending" for label in checks}
         self._render_checks()
 
+    def add_check(self, label: str) -> None:
+        """Add a dynamically discovered check to the checklist.
+
+        Args:
+            label: Human-readable check name.
+        """
+        if label in self._checks:
+            self._checks[label] = "running"
+            self._render_checks()
+            return
+        self._check_order.append(label)
+        self._checks[label] = "running"
+        self._render_checks()
+
     def update_step(self, text: str, index: int, total: int) -> None:
         self.status.setText(text)
         self.progress.setValue(int(index / max(total, 1) * 100))
@@ -103,7 +117,7 @@ class StartupSplash(QDialog):
         for label in self._check_order:
             state = self._checks.get(label, "pending")
             escaped = html.escape(label)
-            marker = {"done": "✓", "running": "●", "failed": "✗"}.get(state, "•")
+            marker = {"done": "[OK]", "running": "[*]", "failed": "[FAIL]"}.get(state, "-")
             color = {"done": "#ffffff", "running": "#e2cfaa", "failed": "#ff9a9a"}.get(state, "#bdbdbd")
             rows.append(f"<li style='color:{color};'>{marker} {escaped}</li>")
         rows.append("</ul>")

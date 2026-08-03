@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from llm_trainer.training import TokenDataset
+from engine.training import TokenDataset
 
 
 class TokenDatasetStrideTests(unittest.TestCase):
