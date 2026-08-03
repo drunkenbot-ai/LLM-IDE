@@ -50,29 +50,39 @@ def launch(root: Path) -> int:
         "cwd": root,
         "env": environment,
         "check": False,
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+        "text": True,
     }
-    if platform.system() == "Windows":
-        setup_kwargs["creationflags"] = subprocess.CREATE_NEW_CONSOLE
     setup_result = subprocess.run(
         [str(interpreter), str(setup_script), "--ensure"],
         **setup_kwargs,
     )
-    if setup_result.returncode != 0:
-        verification = subprocess.run(
-            [str(interpreter), "-c", "import torch; print(torch.__version__)"],
-            cwd=root,
-            env=environment,
-            capture_output=True,
-            text=True,
-            check=False,
+    with log_path.open("a", encoding="utf-8") as log:
+        if setup_result.stdout:
+            log.write("\n[Launcher] Runtime setup output:\n")
+            log.write(setup_result.stdout)
+            log.flush()
+    verification = subprocess.run(
+        [str(interpreter), "-c", "import torch; print(torch.__version__)"],
+        cwd=root,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    with log_path.open("a", encoding="utf-8") as log:
+        log.write(
+            "\n[Launcher] Torch verification: "
+            f"exit={verification.returncode} "
+            f"stdout={verification.stdout.strip()!r} "
+            f"stderr={verification.stderr.strip()!r}\n"
         )
-        if verification.returncode == 0:
-            return subprocess.call([str(interpreter), str(script)], cwd=root, env=environment)
-        details = ""
-        if log_path.exists():
-            details = "\n".join(log_path.read_text(encoding="utf-8", errors="replace").splitlines()[-12:])
+    if setup_result.returncode != 0 or verification.returncode != 0:
+        details = "\n".join(log_path.read_text(encoding="utf-8", errors="replace").splitlines()[-30:])
         raise RuntimeError(
-            f"Hardware runtime setup failed (exit code {setup_result.returncode}).\n"
+            f"Hardware runtime setup failed (setup exit code {setup_result.returncode}, "
+            f"verification exit code {verification.returncode}).\n"
             f"Detailed log: {log_path}\n{details}"
         )
     return subprocess.call([str(interpreter), str(script)], cwd=root, env=environment)
