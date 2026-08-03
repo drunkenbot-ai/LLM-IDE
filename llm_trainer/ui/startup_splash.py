@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import html
+import os
+import sys
 from pathlib import Path
 
 from PySide6.QtCore import QEvent, Qt
@@ -23,7 +25,16 @@ class StartupSplash(QDialog):
         header = QHBoxLayout()
         logo = QLabel()
         logo.setFixedSize(128, 128)
-        pixmap = QPixmap(str(Path(__file__).resolve().parents[2] / "drunken_bot_logo_small.png"))
+        logo_candidates = [
+            Path(__file__).resolve().parents[2] / "drunken_bot_logo_small.png",
+            Path(__file__).resolve().parents[3] / "drunken_bot_logo_small.png",
+        ]
+        if hasattr(sys, "_MEIPASS"):
+            logo_candidates.insert(0, Path(sys._MEIPASS) / "drunken_bot_logo_small.png")
+        app_root = os.environ.get("DRUNKENBOT_APP_ROOT")
+        if app_root:
+            logo_candidates.insert(0, Path(app_root) / "drunken_bot_logo_small.png")
+        pixmap = QPixmap(str(next((path for path in logo_candidates if path.exists()), logo_candidates[0])))
         if pixmap.isNull():
             logo.setText("DB")
             logo.setAlignment(Qt.AlignCenter)

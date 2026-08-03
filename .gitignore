@@ -32,6 +32,10 @@ MANIFEST
 *.manifest
 *.spec
 
+# Local packaging outputs (training corpus is never copied here)
+packaging/build/
+packaging/artifacts/
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
