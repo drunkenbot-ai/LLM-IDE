@@ -4,6 +4,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
+    QApplication,
     QCheckBox,
     QComboBox,
     QFormLayout,
@@ -113,7 +114,8 @@ def build_training_tab(window) -> QWidget:
     window._tip(window.attention_window, "Sliding attention window. 0 uses full context; higher values restrict attention to recent tokens.")
     window.n_layer = window._spin(1, 64, 4)
     window._tip(window.n_layer, "Transformer layer count. More layers improve capacity and reasoning patterns but slow training.")
-    window.train_context_length = window._spin(16, 1000, 128)
+    context_max = 1000 if not bool(QApplication.instance().property("license_valid")) else 4096
+    window.train_context_length = window._spin(16, context_max, 128)
     window._tip(window.train_context_length, "Training context length in tokens. Must fit your GPU/CPU memory.")
     window.dropout = window._double_spin(0.0, 0.9, 0.1, 0.01, 3)
     window._tip(window.dropout, "Dropout regularization. Higher values reduce overfitting but can slow learning.")
