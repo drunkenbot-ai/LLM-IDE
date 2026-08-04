@@ -25,6 +25,11 @@ from PySide6.QtWidgets import (
 from engine.conversation_datasets import CONVERSATION_DATASET_PRESETS
 from interface.charts import DatasetBarChartWidget
 
+try:
+    import psutil
+except ImportError:
+    psutil = None
+
 
 def build_dataset_tab(window) -> QWidget:
     """Build the dataset preparation page.
@@ -125,7 +130,10 @@ def build_dataset_tab(window) -> QWidget:
         "file's full text in memory while processing it. Lower this if you are extracting many very large "
         "files (e.g. multi-gigabyte dumps) and see high memory use.",
     )
-    window.tokenizer_training_max_gb = window._double_spin(0.0, 256.0, 2.0, 0.5, 1)
+    available_gb = 2.0
+    if psutil is not None:
+        available_gb = max(0.5, round(psutil.virtual_memory().available * 0.8 / (1024**3), 1))
+    window.tokenizer_training_max_gb = window._double_spin(0.0, 256.0, available_gb, 0.5, 1)
     window._tip(
         window.tokenizer_training_max_gb,
         "Maximum corpus size (in GiB) shown to the tokenizer trainer when learning vocabulary. The trainer "

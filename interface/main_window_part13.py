@@ -342,6 +342,12 @@ class MainWindowPart13:
         self.max_eval_batches.setValue(min(self.max_eval_batches.maximum(), max(0, eval_batches)))
         self.save_interval.setValue(min(self.save_interval.maximum(), max(1, save_interval)))
         self.data_loader_workers.setValue(min(self.data_loader_workers.maximum(), workers // worker_divisor))
+        patience = {"Low-memory": 4, "Code fine-tune": 2, "Experimental Lion": 3, "Stable LLM": 3}.get(profile, 3)
+        if eval_interval >= 200:
+            patience += 1
+        if eval_batches <= 16:
+            patience += 1
+        self.early_stopping_patience.setValue(min(self.early_stopping_patience.maximum(), patience))
 
     def apply_training_profile(self) -> None:
         """Apply the selected optimizer/scheduler/regularization profile.
