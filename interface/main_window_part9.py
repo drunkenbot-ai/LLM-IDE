@@ -213,6 +213,8 @@ class MainWindowPart9:
         if step is None:
             return
         step_int = int(step)
+        if self.pages.currentIndex() != self.live_page_index:
+            return
         self._record_live_metric(event)
         learning_rate = self._finite_metric(event.get("learning_rate"))
         grad_norm = self._finite_metric(event.get("grad_norm"))

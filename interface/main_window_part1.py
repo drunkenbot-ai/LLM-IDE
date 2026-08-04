@@ -317,6 +317,7 @@ class MainWindowPart1:
         self.pages.addWidget(self._build_dataset_tab())
         self.pages.addWidget(self._build_training_tab())
         self.pages.addWidget(self._build_fine_tuning_tab())
+        self.live_page_index = self.pages.count()
         self.pages.addWidget(self._build_live_training_tab())
         self.pages.addWidget(self._build_job_manager_tab())
         self.pages.addWidget(self._build_benchmark_tab())
