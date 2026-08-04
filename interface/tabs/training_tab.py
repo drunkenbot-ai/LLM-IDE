@@ -350,6 +350,7 @@ def build_training_tab(window) -> QWidget:
     window.training_grad_metric = window._metric_chip("Grad: -", "Current gradient norm.")
     window.training_vram_metric = window._metric_chip("VRAM: -", "Current CUDA memory usage when training on GPU.")
     window.training_eta_metric = window._metric_chip("ETA: -", "Estimated time remaining based on recent optimizer steps.")
+    window.training_elapsed_metric = window._metric_chip("Total time: -", "Total elapsed time for the training run.")
     window.model_size_metric = window._metric_chip("Model: -", "Estimated model parameter count and checkpoint size.")
     window.vram_estimate_metric = window._metric_chip("VRAM est: -", "Rough training VRAM estimate for selected architecture and batch.")
     window.parameter_breakdown_metric = window._metric_chip(

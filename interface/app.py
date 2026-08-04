@@ -21,7 +21,7 @@ from threading import Event, Thread
 from typing import Any, Optional, Union
 
 import torch
-from PySide6.QtCore import QObject, QEvent, QPoint, Qt, QThread, QTimer, Slot, qInstallMessageHandler
+from PySide6.QtCore import QObject, QEvent, QPoint, QSize, Qt, QThread, QTimer, Slot, qInstallMessageHandler
 from PySide6.QtGui import QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap, QPolygon
 from PySide6.QtGui import QFontDatabase
 from PySide6.QtWidgets import (
