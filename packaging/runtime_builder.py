@@ -19,8 +19,8 @@ def main() -> int:
     parser.add_argument("--gpu", action="store_true", help="Install the CUDA runtime selected by runtime_setup.py.")
     args = parser.parse_args()
     runtime = args.output.resolve()
-    # Force a real interpreter copy. Some CI Python installations expose a
-    # launcher that points at the runner's temporary hostedtoolcache path.
+    # Keep macOS/Linux defaults, but force a real Windows interpreter copy:
+    # hosted runners may otherwise create a launcher tied to hostedtoolcache.
     venv_command = [sys.executable, "-m", "venv"]
     if sys.platform == "win32":
         venv_command.append("--copies")
