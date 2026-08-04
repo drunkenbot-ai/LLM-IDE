@@ -55,10 +55,10 @@ Install PyInstaller and Inno Setup, then run the packaging command from a
 Python 3.12+ development environment:
 
 ```bash
-python packager.py
+python packaging/packager.py
 ```
 
-Use `python packager.py --gpu` to prepare a CUDA-enabled private runtime when
+Use `python packaging/packager.py --gpu` to prepare a CUDA-enabled private runtime when
 an NVIDIA driver is detected. The installer bundles the application, private
 runtime, third-party dependencies, fonts, and images. It intentionally excludes
 Training corpus data is not bundled with the installed application. Use the
