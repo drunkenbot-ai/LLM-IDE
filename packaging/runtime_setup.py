@@ -88,6 +88,7 @@ def _log_path(root: Path) -> Path:
 
 def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
     environment = os.environ.copy()
+    environment["PYTHONNOUSERSITE"] = "1"
     environment["PATH"] = os.pathsep.join(
         item for item in environment.get("PATH", "").split(os.pathsep)
         if "mingw" not in item.lower() and "scoop" not in item.lower()
@@ -152,6 +153,7 @@ def main() -> int:
     log_path = Path(configured_log) if configured_log else _log_path(Path(__file__).resolve().parent)
     log_path.parent.mkdir(parents=True, exist_ok=True)
     os.environ["DRUNKENBOT_RUNTIME_SETUP_LOG"] = str(log_path)
+    os.environ["PYTHONNOUSERSITE"] = "1"
     with log_path.open("w", encoding="utf-8") as log:
         global _SETUP_LOG
         _SETUP_LOG = log
