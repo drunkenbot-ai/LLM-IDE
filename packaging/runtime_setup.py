@@ -99,6 +99,7 @@ def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
             "-m",
             "pip",
             "install",
+            "--no-warn-script-location",
             f"torch=={TORCH_VERSION}",
             "--index-url",
             TORCH_INDEXES[choice.profile],
