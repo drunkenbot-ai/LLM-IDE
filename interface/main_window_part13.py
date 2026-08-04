@@ -297,7 +297,6 @@ class MainWindowPart13:
             "Grouped-query": "gqa",
             "Multi-query": "mqa",
         }.get(self.attention_type.currentText(), "mha")
-
     def _attention_backend_value(self) -> str:
         """Return the selected attention backend identifier.
 
@@ -309,13 +308,11 @@ class MainWindowPart13:
             "SDPA / Flash when available": "sdpa",
             "Manual": "manual",
         }.get(self.attention_backend.currentText(), "sdpa")
-
     def _profile_architecture_scale(self) -> float:
         context = max(8, self.context_length.value())
         embedding = max(1, self.embedding_size.value())
         layers = max(1, self.n_layer.value())
         return max(0.5, min(8.0, (context / 512) * (embedding / 256) * (layers / 6)))
-
     def _apply_profile_runtime_defaults(self, profile: str) -> None:
         scale = self._profile_architecture_scale()
         cpu_count = max(1, os.cpu_count() or 1)
@@ -368,7 +365,6 @@ class MainWindowPart13:
         self.early_stopping_patience.setValue(min(self.early_stopping_patience.maximum(), patience))
         epochs = {"Low-memory": 5, "Code fine-tune": 3, "Experimental Lion": 4, "Stable LLM": 5}.get(profile, 5)
         self.epochs.setValue(min(self.epochs.maximum(), epochs))
-
     def apply_training_profile(self) -> None:
         """Apply the selected optimizer/scheduler/regularization profile.
 
@@ -481,7 +477,6 @@ class MainWindowPart13:
         self._update_training_mode_controls()
         self.refresh_model_estimate()
         self.training_log.append(f"Applied training profile: {profile}")
-
     def _tokenizer_strategy_reuses(self) -> bool:
         """Return whether current tokenizer strategy ignores vocabulary controls.
 
