@@ -209,6 +209,8 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
                     "[Icons]",
                     *( [f'Name: "{{autoprograms}}\\{APP_NAME}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.ico"'] if icon_path else [] ),
                     *( [f'Name: "{{commondesktop}}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.ico"'] if icon_path else [] ),
+                    "[UninstallDelete]",
+                    'Type: filesandordirs; Name: "{app}"',
                     "[Run]",
                     'Filename: "{app}\\runtime\\python.exe"; Parameters: """{app}\\runtime_setup.py"" --ensure"; WorkingDir: "{app}"; Flags: waituntilterminated; StatusMsg: "Installing hardware runtime. See runtime_setup.log for details..."',
                     "[Code]",
