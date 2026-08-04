@@ -27,7 +27,7 @@ def setup_log_path(root: Path) -> Path:
 
 def private_python(root: Path) -> Path:
     if platform.system() == "Windows":
-        return root / "runtime" / "Scripts" / "python.exe"
+        return root / "runtime" / "python.exe"
     return root / "runtime" / "bin" / "python"
 
 
