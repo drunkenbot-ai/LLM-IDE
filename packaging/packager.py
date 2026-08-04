@@ -81,6 +81,16 @@ def _find_inno_compiler() -> str | None:
     return None
 
 
+def _require_path(path: Path, *, directory: bool = False) -> Path:
+    """Return an absolute path and fail before invoking a native packager."""
+    path = path.resolve()
+    valid = path.is_dir() if directory else path.is_file()
+    if not valid:
+        kind = "directory" if directory else "file"
+        raise RuntimeError(f"Required {kind} does not exist: {path}")
+    return path
+
+
 def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) -> Path:
     target = _platform_name()
     architecture = _architecture()
@@ -122,7 +132,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
     ]
     subprocess.run(command, cwd=ROOT, check=True)
 
-    bundle = dist_dir / APP_NAME
+    bundle = _require_path(dist_dir / APP_NAME, directory=True)
     if runtime_dir is None:
         runtime_dir = PACKAGING_ROOT / "build" / f"runtime-{tag}"
         builder = PACKAGING_ROOT / "runtime_builder.py"
@@ -130,11 +140,10 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
         if gpu:
             command.append("--gpu")
         subprocess.run(command, cwd=ROOT, check=True)
-    if not runtime_dir.is_dir():
-        raise RuntimeError(f"Runtime directory does not exist: {runtime_dir}")
+    runtime_dir = _require_path(runtime_dir, directory=True)
     shutil.copytree(runtime_dir, bundle / "runtime", dirs_exist_ok=True)
-    shutil.copy2(ROOT / "run_app.py", bundle / "run_app.py")
-    shutil.copy2(PACKAGING_ROOT / "runtime_setup.py", bundle / "runtime_setup.py")
+    shutil.copy2(_require_path(ROOT / "run_app.py"), bundle / "run_app.py")
+    shutil.copy2(_require_path(PACKAGING_ROOT / "runtime_setup.py"), bundle / "runtime_setup.py")
     for package_name in ("engine", "interface"):
         shutil.copytree(
             ROOT / package_name,
@@ -143,14 +152,22 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
             dirs_exist_ok=True,
         )
     if target == "windows":
-        installer = OUTPUT_ROOT / f"{APP_NAME}-{architecture}-Setup.exe"
+        # Keep compiler output outside the PyInstaller source tree.  This avoids
+        # Inno treating a partially-created output as another wildcard source.
+        installer_output_dir = OUTPUT_ROOT / "installers"
+        installer_output_dir.mkdir(parents=True, exist_ok=True)
+        installer = installer_output_dir / f"{APP_NAME}-{architecture}-Setup.exe"
         iscc = _find_inno_compiler()
         if not iscc:
             raise RuntimeError(
                 "Inno Setup (ISCC.exe) is required for Windows installers. "
                 "Install Inno Setup and rerun the packager."
             )
-        script = work_dir / "installer.iss"
+        script = _require_path(work_dir, directory=True) / "installer.iss"
+        bundle = _require_path(bundle, directory=True)
+        if icon_path is not None:
+            icon_path = _require_path(icon_path)
+        _require_path(installer_output_dir, directory=True)
         script.write_text(
             "\n".join(
                 [
@@ -160,7 +177,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
                     "AppPublisher=DrunkenBot",
                     f'OutputBaseFilename={APP_NAME}-{architecture}-Setup',
                     f'DefaultDirName={{autopf}}\\{APP_NAME}',
-                    f'OutputDir={OUTPUT_ROOT}',
+                    f'OutputDir={installer_output_dir}',
                     "Uninstallable=yes",
                     "Compression=lzma2",
                     "SolidCompression=yes",
