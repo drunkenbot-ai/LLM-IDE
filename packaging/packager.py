@@ -183,7 +183,10 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
                     "SolidCompression=yes",
                     *( [f'UninstallDisplayIcon={{app}}\\drunken_bot_logo_small.ico'] if icon_path else [] ),
                     "[Files]",
-                    f'Source: "{bundle}\\*"; DestDir: "{{app}}"; Flags: recursesubdirs ignoreversion',
+                    # PyTorch wheels contain very deep dist-info license trees.
+                    # They are metadata only and can exceed Inno's source-path
+                    # limits on Windows, so do not copy them into the installer.
+                    f'Source: "{bundle}\\*"; DestDir: "{{app}}"; Flags: recursesubdirs ignoreversion; Excludes: "runtime\\Lib\\site-packages\\*.dist-info\\licenses\\*;runtime\\Lib\\site-packages\\*.dist-info\\license\\*"',
                     *( [f'Source: "{icon_path}"; DestDir: "{{app}}"; Flags: ignoreversion'] if icon_path else [] ),
                     "[Icons]",
                     *( [f'Name: "{{autoprograms}}\\{APP_NAME}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.ico"'] if icon_path else [] ),
