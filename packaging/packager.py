@@ -91,6 +91,24 @@ def _require_path(path: Path, *, directory: bool = False) -> Path:
     return path
 
 
+def _remove_deep_license_dirs(runtime_root: Path) -> None:
+    """Remove wheel license trees that can exceed Windows MAX_PATH."""
+    candidates: list[Path] = []
+    for root, dirs, _ in os.walk(runtime_root):
+        root_path = Path(root)
+        if root_path.name.lower().endswith(".dist-info"):
+            candidates.extend(
+                root_path / name
+                for name in dirs
+                if name.lower() in {"licenses", "license"}
+            )
+    for candidate in candidates:
+        deletion_path = candidate.resolve()
+        if sys.platform == "win32":
+            deletion_path = Path("\\\\?\\" + str(deletion_path))
+        shutil.rmtree(deletion_path, ignore_errors=False)
+
+
 def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) -> Path:
     target = _platform_name()
     architecture = _architecture()
@@ -142,6 +160,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
         subprocess.run(command, cwd=ROOT, check=True)
     runtime_dir = _require_path(runtime_dir, directory=True)
     shutil.copytree(runtime_dir, bundle / "runtime", dirs_exist_ok=True)
+    _remove_deep_license_dirs(bundle / "runtime" / "Lib" / "site-packages")
     shutil.copy2(_require_path(ROOT / "run_app.py"), bundle / "run_app.py")
     shutil.copy2(_require_path(PACKAGING_ROOT / "runtime_setup.py"), bundle / "runtime_setup.py")
     for package_name in ("engine", "interface"):
