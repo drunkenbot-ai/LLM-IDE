@@ -243,6 +243,9 @@ class MainWindowPart9:
             self.training_vram_metric.setText(f"VRAM: {float(vram_allocated):.2f} GB")
         if eta_seconds is not None:
             self.training_eta_metric.setText(f"ETA: {self._format_duration(float(eta_seconds))}")
+        elapsed_seconds = self._finite_metric(event.get("elapsed_seconds"))
+        if elapsed_seconds is not None:
+            self.training_elapsed_metric.setText(f"Total time: {self._format_duration(float(elapsed_seconds))}")
             if update_fine_tune and hasattr(self, "fine_tune_eta_metric"):
                 self.fine_tune_eta_metric.setText(f"ETA: {self._format_duration(float(eta_seconds))}")
         if learning_rate is not None or grad_norm is not None:
@@ -427,4 +430,3 @@ class MainWindowPart9:
         if psutil is None:
             return None
         return float(psutil.virtual_memory().percent)
-
