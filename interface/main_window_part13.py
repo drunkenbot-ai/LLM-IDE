@@ -76,6 +76,11 @@ class MainWindowPart13:
         self.lora_alpha.setEnabled(lora_enabled)
         self.lora_dropout.setEnabled(lora_enabled)
         self.lora_targets.setEnabled(lora_enabled)
+        if not lora_enabled:
+            self.lora_rank.setValue(8)
+            self.lora_alpha.setValue(16.0)
+            self.lora_dropout.setValue(0.05)
+            self._set_combo_text(self.lora_targets, "Attention projections")
         self.refresh_fine_tune_workflow()
 
     def _current_dataset_summary(self) -> dict[str, Any]:
