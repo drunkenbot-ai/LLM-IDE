@@ -162,14 +162,13 @@ class MainWindowPart5:
         """
 
         candidates = [
-            Path(__file__).resolve().parents[1] / "drunken_bot_logo_small.png",
-            Path(__file__).resolve().parents[2] / "drunken_bot_logo_small.png",
+            Path(__file__).resolve().parent / "drunken_bot_logo_small.png",
         ]
         if hasattr(sys, "_MEIPASS"):
             candidates.insert(0, Path(sys._MEIPASS) / "drunken_bot_logo_small.png")
         app_root = os.environ.get("DRUNKENBOT_APP_ROOT")
         if app_root:
-            candidates.insert(0, Path(app_root) / "drunken_bot_logo_small.png")
+            candidates.insert(0, Path(app_root) / "interface" / "drunken_bot_logo_small.png")
         return next((path for path in candidates if path.exists()), candidates[0])
 
     @staticmethod

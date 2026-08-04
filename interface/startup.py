@@ -144,7 +144,7 @@ def _logo_font_family() -> Optional[str]:
     global _LOGO_FONT_FAMILY
     if _LOGO_FONT_FAMILY is not None:
         return _LOGO_FONT_FAMILY
-    font_path = Path(__file__).resolve().parents[1] / "fonts" / "Blue-Whale Heavy.otf"
+    font_path = Path(__file__).resolve().parent / "fonts" / "Blue-Whale Heavy.otf"
     if not font_path.exists():
         _LOGO_FONT_FAMILY = ""
         return None

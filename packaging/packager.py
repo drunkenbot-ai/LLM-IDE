@@ -17,7 +17,8 @@ import subprocess
 import sys
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
+PACKAGING_ROOT = ROOT / "packaging"
 OUTPUT_ROOT = ROOT / "packaging" / "artifacts"
 APP_NAME = "DrunkenBot-IDE"
 
@@ -39,7 +40,7 @@ def _platform_name() -> str:
 
 def _asset_args(separator: str) -> list[str]:
     assets: list[str] = []
-    for relative in ("drunken_bot_logo_small.png", "fonts", "interface/icons"):
+    for relative in ("interface/drunken_bot_logo_small.png", "interface/fonts", "interface/icons"):
         source = ROOT / relative
         if source.exists():
             assets.extend(["--add-data", f"{source}{separator}{relative}"])
@@ -47,7 +48,7 @@ def _asset_args(separator: str) -> list[str]:
 
 
 def _prepare_icon(work_dir: Path) -> Path | None:
-    source = ROOT / "drunken_bot_logo_small.png"
+    source = ROOT / "interface" / "drunken_bot_logo_small.png"
     if not source.exists():
         return None
     icon = work_dir / "drunken_bot_logo_small.ico"
@@ -84,7 +85,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
     target = _platform_name()
     architecture = _architecture()
     tag = f"{target}-{architecture}"
-    work_dir = ROOT / "packaging" / "build" / tag
+    work_dir = PACKAGING_ROOT / "build" / tag
     dist_dir = OUTPUT_ROOT / tag
     if clean:
         shutil.rmtree(work_dir, ignore_errors=True)
@@ -113,18 +114,18 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
         str(work_dir),
         *_asset_args(separator),
         *(
-            ["--add-data", f"{ROOT / 'runtime_launcher.py'}{separator}."]
-            if (ROOT / "runtime_launcher.py").exists()
+            ["--add-data", f"{PACKAGING_ROOT / 'runtime_launcher.py'}{separator}."]
+            if (PACKAGING_ROOT / "runtime_launcher.py").exists()
             else []
         ),
-        str(ROOT / "runtime_launcher.py"),
+        str(PACKAGING_ROOT / "runtime_launcher.py"),
     ]
     subprocess.run(command, cwd=ROOT, check=True)
 
     bundle = dist_dir / APP_NAME
     if runtime_dir is None:
-        runtime_dir = ROOT / "packaging" / "build" / f"runtime-{tag}"
-        builder = ROOT / "runtime_builder.py"
+        runtime_dir = PACKAGING_ROOT / "build" / f"runtime-{tag}"
+        builder = PACKAGING_ROOT / "runtime_builder.py"
         command = [sys.executable, str(builder), str(runtime_dir)]
         if gpu:
             command.append("--gpu")
@@ -133,7 +134,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
         raise RuntimeError(f"Runtime directory does not exist: {runtime_dir}")
     shutil.copytree(runtime_dir, bundle / "runtime", dirs_exist_ok=True)
     shutil.copy2(ROOT / "run_app.py", bundle / "run_app.py")
-    shutil.copy2(ROOT / "runtime_setup.py", bundle / "runtime_setup.py")
+    shutil.copy2(PACKAGING_ROOT / "runtime_setup.py", bundle / "runtime_setup.py")
     for package_name in ("engine", "interface"):
         shutil.copytree(
             ROOT / package_name,
