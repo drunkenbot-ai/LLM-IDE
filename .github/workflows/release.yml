@@ -30,6 +30,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Use latest engine main
+        run: |
+          git -C engine fetch origin main
+          git -C engine checkout --detach origin/main
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
