@@ -42,6 +42,7 @@ def launch(root: Path) -> int:
     if not setup_script.exists():
         raise RuntimeError(f"Runtime setup is missing: {setup_script}")
     environment = os.environ.copy()
+    environment["PYTHONNOUSERSITE"] = "1"
     environment["DRUNKENBOT_APP_ROOT"] = str(root)
     log_path = setup_log_path(root)
     log_path.parent.mkdir(parents=True, exist_ok=True)
