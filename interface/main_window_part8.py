@@ -292,7 +292,7 @@ class MainWindowPart8:
             Safe folder name.
         """
 
-        return re.sub(r"[^A-Za-z0-9_.-]+", "_", project_name).strip("._") or "MicroLLMProject"
+        return re.sub(r"[^A-Za-z0-9_.-]+", "_", project_name).strip("._") or "DrunkenBotProject"
 
     @staticmethod
     def _read_json_if_exists(path: Path) -> Optional[Any]:
