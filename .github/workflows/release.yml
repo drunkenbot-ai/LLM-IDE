@@ -59,7 +59,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: installer-${{ matrix.artifact }}
-          path: packaging/artifacts/*
+          path: |
+            packaging/artifacts/*.exe
+            packaging/artifacts/*.zip
+            packaging/artifacts/*.tar.gz
           if-no-files-found: error
 
   release:
