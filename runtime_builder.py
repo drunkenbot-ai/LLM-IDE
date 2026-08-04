@@ -19,7 +19,12 @@ def main() -> int:
     parser.add_argument("--gpu", action="store_true", help="Install the CUDA runtime selected by runtime_setup.py.")
     args = parser.parse_args()
     runtime = args.output.resolve()
-    subprocess.run([sys.executable, "-m", "venv", str(runtime)], check=True)
+    # Force a real interpreter copy. Some CI Python installations expose a
+    # launcher that points at the runner's temporary hostedtoolcache path.
+    venv_command = [sys.executable, "-m", "venv"]
+    if sys.platform == "win32":
+        venv_command.append("--copies")
+    subprocess.run([*venv_command, str(runtime)], check=True)
     python = runtime / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
     pip_check = subprocess.run([str(python), "-m", "pip", "--version"], check=False)
     if pip_check.returncode != 0:
