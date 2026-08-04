@@ -171,9 +171,8 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
             dirs_exist_ok=True,
         )
     if target == "windows":
-        # Keep compiler output outside the PyInstaller source tree.  This avoids
-        # Inno treating a partially-created output as another wildcard source.
-        installer_output_dir = OUTPUT_ROOT / "installers"
+        # Keep compiler output outside the PyInstaller source tree.
+        installer_output_dir = OUTPUT_ROOT
         installer_output_dir.mkdir(parents=True, exist_ok=True)
         installer = installer_output_dir / f"{APP_NAME}-{architecture}-Setup.exe"
         iscc = _find_inno_compiler()
