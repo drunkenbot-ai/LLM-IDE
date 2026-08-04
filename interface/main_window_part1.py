@@ -342,8 +342,8 @@ class MainWindowPart1:
         icon_path = Path(__file__).resolve().parent / "icons" / icon_name
         if icon_path.is_file():
             button.setIcon(QIcon(str(icon_path)))
-        button.setIconSize(QSize(32, 32))
-        button.setMinimumHeight(44)
+        button.setIconSize(QSize(40, 40))
+        button.setMinimumHeight(52)
         button.setToolTip(tooltip)
         button.setAccessibleName(tooltip)
         button.setObjectName("NavButton")
