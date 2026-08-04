@@ -8,6 +8,7 @@ from . import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
+
 class MainWindowPart13:
     def _training_mode_value(self) -> str:
         """Return the selected training mode identifier.
@@ -310,7 +311,13 @@ class MainWindowPart13:
         }.get(self.attention_backend.currentText(), "sdpa")
     def _profile_architecture_scale(self) -> float:
         context = max(8, self.context_length.value())
-        embedding = max(1, self.embedding_size.value())
+        try:
+            # embedding = max(1, self.embedding_size.value())
+            embedding = max(1, self.n_embd.value())
+        except Exception as err:
+            LOGGER.error(err)
+            embedding = 1/256
+            pass
         layers = max(1, self.n_layer.value())
         return max(0.5, min(8.0, (context / 512) * (embedding / 256) * (layers / 6)))
     def _apply_profile_runtime_defaults(self, profile: str) -> None:

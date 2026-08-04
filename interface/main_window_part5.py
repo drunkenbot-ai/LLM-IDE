@@ -338,7 +338,7 @@ class MainWindowPart5:
     def save_project(self) -> None:
         """Save the current project settings into a named project folder."""
 
-        project_name = self.search_box.text().strip() or "MicroLLMProject"
+        project_name = self.search_box.text().strip() or "DrunkenBotProject"
         safe_name = self._safe_project_name(project_name)
         if self.current_project_file is None:
             base_dir = QFileDialog.getExistingDirectory(self, "Choose parent folder for project", self._project_dialog_start_dir())
@@ -395,7 +395,7 @@ class MainWindowPart5:
         if self.chat_session is not None and hasattr(self.chat_session, "reset"):
             self.chat_session.reset()
         self.chat_session = None
-        project_name = self.search_box.text().strip() or "MicroLLMProject"
+        project_name = self.search_box.text().strip() or "DrunkenBotProject"
         try:
             self._create_project_at(project_name, Path(base_dir))
         except Exception as exc:

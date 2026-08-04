@@ -123,7 +123,7 @@ APP_NAME = "DrunkenBot-IDE"
 # Bump on every release that should require a version-ceiling check against
 # licenses -- this is what license_client.check_license_at_launch compares
 # against a license's version_ceiling/grace_period_until.
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.4.0"
 # TODO: point at the real deployed cloud-service URL once it has one.
 # Overridable via env var so ops can point a build at a different
 # deployment (dev/staging/prod) without a code change or rebuild.
@@ -289,18 +289,18 @@ def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = N
                 if not base_dir:
                     window.deleteLater()
                     continue
-                project_name, ok = QInputDialog.getText(None, "Project name", "Enter project name:", text="MicroLLMProject")
+                project_name, ok = QInputDialog.getText(None, "Project name", "Enter project name:", text="DrunkenBotProject")
                 if not ok:
                     window.deleteLater()
                     continue
-                project_name = project_name.strip() or "MicroLLMProject"
+                project_name = project_name.strip() or "DrunkenBotProject"
                 window._create_project_at(project_name, Path(base_dir))
             elif chooser.choice == "open":
                 project_file, _ = QFileDialog.getOpenFileName(
                     None,
-                    "Open Micro LLM project",
+                    "Open DrunkenBot LLM project",
                     str(DEFAULT_PROJECTS_DIR),
-                    "Micro LLM project (project.json *.json);;All files (*)",
+                    "DrunkenBot LLM project (project.json *.json);;All files (*)",
                 )
                 if not project_file:
                     window.deleteLater()
