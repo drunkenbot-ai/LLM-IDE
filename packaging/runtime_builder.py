@@ -11,6 +11,30 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+HOSTEDTOOLCACHE_MARKER = b"hostedtoolcache"
+
+
+def _copy_windows_runtime(runtime: Path) -> Path:
+    """Copy the complete Python installation so the runtime is self-contained."""
+    source = Path(sys.base_prefix).resolve()
+    if source == runtime or source in runtime.parents:
+        raise RuntimeError(f"Cannot copy Python installation into itself: {source}")
+    shutil.copytree(source, runtime, dirs_exist_ok=True)
+    return runtime / "python.exe"
+
+
+def _validate_windows_runtime(runtime: Path, python: Path) -> None:
+    """Reject Windows runtimes that retain a hosted runner interpreter path."""
+    candidates = [python, *runtime.glob("pyvenv.cfg"), *runtime.glob("*._pth")]
+    candidates.extend(runtime.glob("*.pth"))
+    for path in candidates:
+        if not path.is_file():
+            continue
+        if HOSTEDTOOLCACHE_MARKER in path.read_bytes().lower():
+            raise RuntimeError(
+                f"Generated Windows runtime contains a hostedtoolcache reference in {path}. "
+                "Use a self-contained Python installation instead of a hosted runner launcher."
+            )
 
 
 def main() -> int:
@@ -19,13 +43,12 @@ def main() -> int:
     parser.add_argument("--gpu", action="store_true", help="Install the CUDA runtime selected by runtime_setup.py.")
     args = parser.parse_args()
     runtime = args.output.resolve()
-    # Keep macOS/Linux defaults, but force a real Windows interpreter copy:
-    # hosted runners may otherwise create a launcher tied to hostedtoolcache.
-    venv_command = [sys.executable, "-m", "venv"]
     if sys.platform == "win32":
-        venv_command.append("--copies")
-    subprocess.run([*venv_command, str(runtime)], check=True)
-    python = runtime / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
+        python = _copy_windows_runtime(runtime)
+        _validate_windows_runtime(runtime, python)
+    else:
+        subprocess.run([sys.executable, "-m", "venv", str(runtime)], check=True)
+        python = runtime / "bin/python"
     pip_check = subprocess.run([str(python), "-m", "pip", "--version"], check=False)
     if pip_check.returncode != 0:
         subprocess.run([str(python), "-m", "ensurepip", "--upgrade"], check=True)
