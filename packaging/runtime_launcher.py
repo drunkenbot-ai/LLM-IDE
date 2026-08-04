@@ -79,7 +79,12 @@ def launch(root: Path) -> int:
             f"stdout={verification.stdout.strip()!r} "
             f"stderr={verification.stderr.strip()!r}\n"
         )
-    if setup_result.returncode != 0 or verification.returncode != 0:
+        if setup_result.returncode != 0 and verification.returncode == 0:
+            log.write(
+                f"[Launcher] Runtime setup returned non-zero (exit {setup_result.returncode}); "
+                "continuing with the already-verified bundled torch.\n"
+            )
+    if verification.returncode != 0:
         details = "\n".join(log_path.read_text(encoding="utf-8", errors="replace").splitlines()[-30:])
         raise RuntimeError(
             f"Hardware runtime setup failed (setup exit code {setup_result.returncode}, "
