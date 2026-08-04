@@ -39,7 +39,7 @@ def _platform_name() -> str:
 
 def _asset_args(separator: str) -> list[str]:
     assets: list[str] = []
-    for relative in ("drunken_bot_logo_small.png", "fonts"):
+    for relative in ("drunken_bot_logo_small.png", "fonts", "interface/icons"):
         source = ROOT / relative
         if source.exists():
             assets.extend(["--add-data", f"{source}{separator}{relative}"])

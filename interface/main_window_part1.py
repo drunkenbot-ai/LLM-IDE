@@ -272,16 +272,15 @@ class MainWindowPart1:
         rail_layout = QVBoxLayout(rail)
         rail_layout.setContentsMargins(12, 18, 12, 18)
         rail_layout.setSpacing(12)
-        self.dataset_plan_nav = self._nav_button("PLAN")
-        self.dataset_nav = self._nav_button("IN")
-        self.training_nav = self._nav_button("AI")
-        self.training_nav.setText("AI")
-        self.fine_tune_nav = self._nav_button("FT")
-        self.live_nav = self._nav_button("LIVE")
-        self.jobs_nav = self._nav_button("JOB")
-        self.benchmark_nav = self._nav_button("Bench")
-        self.export_nav = self._nav_button("X")
-        self.chat_nav = self._nav_button("Chat")
+        self.dataset_plan_nav = self._nav_button("Dataset Blueprint", "plan_tab_icon.png")
+        self.dataset_nav = self._nav_button("Ingestion", "ingestion_tab_icon.png")
+        self.training_nav = self._nav_button("Training", "AI_tab_icon.png")
+        self.fine_tune_nav = self._nav_button("Fine-tuning", "fine_tune_tab.png")
+        self.live_nav = self._nav_button("Live training", "live_tab_icon.png")
+        self.jobs_nav = self._nav_button("Job manager", "job_tab_icon.png")
+        self.benchmark_nav = self._nav_button("Benchmarks", "benchmark_tab_icon.png")
+        self.export_nav = self._nav_button("Export", "export_tab_icon.png")
+        self.chat_nav = self._nav_button("Chat", "chat_tab_icon.png")
         self._tip(self.dataset_plan_nav, "Open Dataset Blueprint: plan the target data mix before ingestion.")
         self._tip(self.dataset_nav, "Open dataset preparation: load text/PDF files and build tokenizer data.")
         self._tip(self.training_nav, "Open model training: configure architecture and optimization settings.")
@@ -329,7 +328,7 @@ class MainWindowPart1:
         root.addLayout(body, 1)
         return shell
 
-    def _nav_button(self, text: str) -> QPushButton:
+    def _nav_button(self, tooltip: str, icon_name: str) -> QPushButton:
         """Create a left-rail navigation button.
 
         Args:
@@ -339,7 +338,12 @@ class MainWindowPart1:
             Configured navigation button.
         """
 
-        button = QPushButton(text)
+        button = QPushButton()
+        icon_path = Path(__file__).resolve().parent / "icons" / icon_name
+        if icon_path.is_file():
+            button.setIcon(QIcon(str(icon_path)))
+        button.setToolTip(tooltip)
+        button.setAccessibleName(tooltip)
         button.setObjectName("NavButton")
         button.setCheckable(True)
         return button
