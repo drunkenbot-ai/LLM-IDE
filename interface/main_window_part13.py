@@ -311,28 +311,22 @@ class MainWindowPart13:
         }.get(self.attention_backend.currentText(), "sdpa")
 
     def _profile_architecture_scale(self) -> float:
-        """Estimate relative activation cost for profile scheduling defaults."""
         context = max(8, self.context_length.value())
         embedding = max(1, self.embedding_size.value())
         layers = max(1, self.n_layer.value())
         return max(0.5, min(8.0, (context / 512) * (embedding / 256) * (layers / 6)))
 
     def _apply_profile_runtime_defaults(self, profile: str) -> None:
-        """Set data, validation, checkpoint, and memory controls for a profile."""
         scale = self._profile_architecture_scale()
         cpu_count = max(1, os.cpu_count() or 1)
         workers = min(8, max(1, cpu_count // 2))
-
         profile_defaults = {
             "Low-memory": (128, 100, 16, 1000, 2),
             "Code fine-tune": (256, 50, 32, 500, 2),
             "Experimental Lion": (256, 100, 50, 500, 2),
             "Stable LLM": (128, 100, 50, 500, 2),
         }
-        stride, eval_interval, eval_batches, save_interval, worker_divisor = (
-            profile_defaults.get(profile, profile_defaults["Stable LLM"])
-        )
-
+        stride, eval_interval, eval_batches, save_interval, worker_divisor = profile_defaults.get(profile, profile_defaults["Stable LLM"])
         if scale >= 2.0:
             stride *= 2
             eval_interval *= 2
@@ -341,7 +335,6 @@ class MainWindowPart13:
         elif scale <= 0.75:
             eval_interval = max(25, eval_interval // 2)
             save_interval = max(100, save_interval // 2)
-
         target_effective_batch = {
             "Low-memory": 16,
             "Code fine-tune": 16,
@@ -360,12 +353,8 @@ class MainWindowPart13:
             batch_size = 16
         batch_size = min(self.batch_size.maximum(), batch_size)
         self.batch_size.setValue(batch_size)
-        self.gradient_accumulation.setValue(
-            min(
-                self.gradient_accumulation.maximum(),
-                max(1, (target_effective_batch + batch_size - 1) // batch_size),
-            )
-        )
+        accumulation = max(1, (target_effective_batch + batch_size - 1) // batch_size)
+        self.gradient_accumulation.setValue(min(self.gradient_accumulation.maximum(), accumulation))
         self.sample_stride.setValue(min(self.sample_stride.maximum(), max(1, stride)))
         self.eval_interval.setValue(min(self.eval_interval.maximum(), max(0, eval_interval)))
         self.max_eval_batches.setValue(min(self.max_eval_batches.maximum(), max(0, eval_batches)))
