@@ -37,6 +37,26 @@ def _validate_windows_runtime(runtime: Path, python: Path) -> None:
             )
 
 
+def _strip_runtime_packages(runtime: Path) -> None:
+    prefixes = ("torch", "functorch", "nvidia", "triton")
+    for site in runtime.rglob("site-packages"):
+        if not site.is_dir():
+            continue
+        for entry in list(site.iterdir()):
+            if not any(entry.name.lower().startswith(prefix) for prefix in prefixes):
+                continue
+            target = entry.resolve()
+            if sys.platform == "win32":
+                target = Path("\\\\?\\" + str(target))
+            if entry.is_dir():
+                shutil.rmtree(target, ignore_errors=True)
+            else:
+                try:
+                    entry.unlink()
+                except OSError:
+                    pass
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output", type=Path, help="Runtime directory to create.")
@@ -68,6 +88,7 @@ def main() -> int:
         for path in runtime.rglob(cache_name):
             if path.is_dir():
                 shutil.rmtree(path, ignore_errors=True)
+    _strip_runtime_packages(runtime)
     return 0
 
 
