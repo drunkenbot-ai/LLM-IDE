@@ -210,7 +210,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
                     *( [f'Name: "{{autoprograms}}\\{APP_NAME}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.ico"'] if icon_path else [] ),
                     *( [f'Name: "{{commondesktop}}\\{APP_NAME}"; Filename: "{{app}}\\{APP_NAME}.exe"; IconFilename: "{{app}}\\drunken_bot_logo_small.ico"'] if icon_path else [] ),
                     "[Run]",
-                    'Filename: "{app}\\runtime\\Scripts\\python.exe"; Parameters: """{app}\\runtime_setup.py"" --ensure"; WorkingDir: "{app}"; Flags: waituntilterminated; StatusMsg: "Installing hardware runtime. See runtime_setup.log for details..."',
+                    'Filename: "{app}\\runtime\\python.exe"; Parameters: """{app}\\runtime_setup.py"" --ensure"; WorkingDir: "{app}"; Flags: waituntilterminated; StatusMsg: "Installing hardware runtime. See runtime_setup.log for details..."',
                 ]
             ),
             encoding="utf-8",
