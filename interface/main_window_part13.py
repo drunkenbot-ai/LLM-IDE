@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 # MainWindow implementation mixin. Runtime names are provided by app.py.
 from typing import Any
 from . import app as _app
@@ -303,6 +305,44 @@ class MainWindowPart13:
             "Manual": "manual",
         }.get(self.attention_backend.currentText(), "sdpa")
 
+    def _profile_architecture_scale(self) -> float:
+        """Estimate relative activation cost for profile scheduling defaults."""
+        context = max(8, self.context_length.value())
+        embedding = max(1, self.embedding_size.value())
+        layers = max(1, self.n_layer.value())
+        return max(0.5, min(8.0, (context / 512) * (embedding / 256) * (layers / 6)))
+
+    def _apply_profile_runtime_defaults(self, profile: str) -> None:
+        """Set data, validation, checkpoint, and memory controls for a profile."""
+        scale = self._profile_architecture_scale()
+        cpu_count = max(1, os.cpu_count() or 1)
+        workers = min(8, max(1, cpu_count // 2))
+
+        profile_defaults = {
+            "Low-memory": (128, 100, 16, 1000, 2),
+            "Code fine-tune": (256, 50, 32, 500, 2),
+            "Experimental Lion": (256, 100, 50, 500, 2),
+            "Stable LLM": (128, 100, 50, 500, 2),
+        }
+        stride, eval_interval, eval_batches, save_interval, worker_divisor = (
+            profile_defaults.get(profile, profile_defaults["Stable LLM"])
+        )
+
+        if scale >= 2.0:
+            stride *= 2
+            eval_interval *= 2
+            save_interval *= 2
+            eval_batches = max(8, eval_batches // 2)
+        elif scale <= 0.75:
+            eval_interval = max(25, eval_interval // 2)
+            save_interval = max(100, save_interval // 2)
+
+        self.sample_stride.setValue(min(self.sample_stride.maximum(), max(1, stride)))
+        self.eval_interval.setValue(min(self.eval_interval.maximum(), max(0, eval_interval)))
+        self.max_eval_batches.setValue(min(self.max_eval_batches.maximum(), max(0, eval_batches)))
+        self.save_interval.setValue(min(self.save_interval.maximum(), max(1, save_interval)))
+        self.data_loader_workers.setValue(min(self.data_loader_workers.maximum(), workers // worker_divisor))
+
     def apply_training_profile(self) -> None:
         """Apply the selected optimizer/scheduler/regularization profile.
 
@@ -411,6 +451,7 @@ class MainWindowPart13:
             self.warmup_steps.setValue(100)
             self.dropout.setValue(0.1)
             self.early_stopping_patience.setValue(3)
+        self._apply_profile_runtime_defaults(profile)
         self._update_training_mode_controls()
         self.refresh_model_estimate()
         self.training_log.append(f"Applied training profile: {profile}")
@@ -435,5 +476,3 @@ class MainWindowPart13:
         self.auto_vocab.setEnabled(not reuses_tokenizer)
         self.manual_vocab_size.setEnabled(not reuses_tokenizer and not self.auto_vocab.isChecked())
         self.min_frequency.setEnabled(not reuses_tokenizer)
-
-
