@@ -29,13 +29,13 @@ PyInstaller can inspect imports and collect native modules.
 Build the CPU installer:
 
 ```bash
-python packager.py
+python packaging/packager.py
 ```
 
 Build the CUDA-enabled installer:
 
 ```bash
-python packager.py --gpu
+python packaging/packager.py --gpu
 ```
 
 The packager creates a private runtime, installs the pinned dependencies,
@@ -53,7 +53,7 @@ is found.
 To avoid rebuilding the private runtime:
 
 ```bash
-python packager.py --runtime-dir packaging/runtime
+python packaging/packager.py --runtime-dir packaging/runtime
 ```
 
 Use `--no-clean` to retain PyInstaller intermediates while troubleshooting.

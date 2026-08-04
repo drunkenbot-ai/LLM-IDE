@@ -48,7 +48,7 @@ jobs:
           python -m pip install Pillow
 
       - name: Build installer
-        run: python packager.py
+        run:         python packaging/packager.py
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
