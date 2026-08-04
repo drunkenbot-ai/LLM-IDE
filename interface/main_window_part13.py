@@ -337,6 +337,30 @@ class MainWindowPart13:
             eval_interval = max(25, eval_interval // 2)
             save_interval = max(100, save_interval // 2)
 
+        target_effective_batch = {
+            "Low-memory": 16,
+            "Code fine-tune": 16,
+            "Experimental Lion": 32,
+            "Stable LLM": 32,
+        }.get(profile, 32)
+        if scale >= 4.0:
+            batch_size = 2
+        elif scale >= 2.0:
+            batch_size = 4
+        elif scale >= 1.25:
+            batch_size = 8
+        elif scale <= 0.75:
+            batch_size = 32
+        else:
+            batch_size = 16
+        batch_size = min(self.batch_size.maximum(), batch_size)
+        self.batch_size.setValue(batch_size)
+        self.gradient_accumulation.setValue(
+            min(
+                self.gradient_accumulation.maximum(),
+                max(1, (target_effective_batch + batch_size - 1) // batch_size),
+            )
+        )
         self.sample_stride.setValue(min(self.sample_stride.maximum(), max(1, stride)))
         self.eval_interval.setValue(min(self.eval_interval.maximum(), max(0, eval_interval)))
         self.max_eval_batches.setValue(min(self.max_eval_batches.maximum(), max(0, eval_batches)))
@@ -348,6 +372,8 @@ class MainWindowPart13:
         if eval_batches <= 16:
             patience += 1
         self.early_stopping_patience.setValue(min(self.early_stopping_patience.maximum(), patience))
+        epochs = {"Low-memory": 5, "Code fine-tune": 3, "Experimental Lion": 4, "Stable LLM": 5}.get(profile, 5)
+        self.epochs.setValue(min(self.epochs.maximum(), epochs))
 
     def apply_training_profile(self) -> None:
         """Apply the selected optimizer/scheduler/regularization profile.
