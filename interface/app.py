@@ -1,115 +1,32 @@
 from __future__ import annotations
 
 import ctypes
-from datetime import datetime
-import html
-import importlib
-import json
-from functools import partial
+
 import logging
-import math
-import os
-from queue import Empty, Queue
-import re
-import shutil
+
 import signal
-import sqlite3
-import subprocess
+
 import sys
 from pathlib import Path
-from threading import Event, Thread
-from typing import Any, Optional, Union
 
-import torch
-from PySide6.QtCore import QObject, QEvent, QPoint, QSize, Qt, QThread, QTimer, Slot, qInstallMessageHandler
-from PySide6.QtGui import QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap, QPolygon
-from PySide6.QtGui import QFontDatabase
+from typing import  Optional
+
+from PySide6.QtCore import QTimer,qInstallMessageHandler
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QApplication,
-    QAbstractButton,
-    QComboBox,
-    QDoubleSpinBox,
     QDialog,
     QFileDialog,
-    QFormLayout,
-    QGridLayout,
-    QHBoxLayout,
     QInputDialog,
-    QLabel,
-    QLineEdit,
-    QListWidget,
-    QListWidgetItem,
-    QTreeWidget,
-    QTreeWidgetItem,
     QMainWindow,
     QMessageBox,
-    QProgressBar,
-    QPushButton,
-    QSizePolicy,
-    QStackedWidget,
-    QSpinBox,
-    QTextBrowser,
-    QTextEdit,
-    QVBoxLayout,
-    QWidget,
+
 )
 
 from engine.app_logging import qt_message_handler, setup_logging
-from engine.app_logging import DEFAULT_LOG_DIR
-from engine.config import DatasetConfig, ModelConfig, TrainingConfig
-from engine.conversation_datasets import CONVERSATION_DATASET_PRESETS, dataset_ids_for_stage, dataset_stage_label
-from engine.contracts import BackendKind
-from engine.contracts.jobs import RuntimeSpec, TrainingJobSpec
-from engine.coordinator import CoordinatorApiServer, JobManager, create_job_artifact_bundle
-from engine.evaluation import DEFAULT_BENCHMARK_PROMPTS, evaluate_checkpoint, normalize_prompts
-from engine.export import export_gguf_with_llama_cpp, export_hf_microgpt_package, export_llama_adapter_package, export_project_bundle, quantize_checkpoint
-from engine.fine_tuning_service import run_fine_tuning_job
-from engine.llama_chat import LlamaChatSession, load_llama_chat_session, stream_chat_reply
-from engine.lineage import read_json
-from engine.microgpt_chat import load_microgpt_chat_session, stream_microgpt_chat_reply
-from engine.notifier import NotificationManager, default_notifier_config_path, ensure_notifier_config
-from engine.runpod_cloud import (
-    RunPodClient,
-    RunPodConfig,
-    create_runpod_worker_bundle,
-    default_runpod_config_path,
-    ensure_runpod_config,
-    load_runpod_config,
-    public_url_is_cloud_reachable,
-    save_runpod_config,
-)
-from engine.dataset_build import build_dataset
-from engine.dataset_preview import check_project_health, scan_dataset_preview
-from engine.telemetry_store import initialize_store, insert_metric, latest_run, rows_until, telemetry_db_path
-from engine.training import check_resume_compatibility, latest_checkpoint
-from engine.training_planning import estimate_training_resources, format_bytes
-from engine.training_service import run_training_job
-from engine.external_dataset import (
-    DEFAULT_MANIFEST_URL,
-    download_latest_dataset,
-    is_newer_version,
-    load_manifest,
-)
-from interface.chat_widgets import ChatMessageWidget
-from interface.markdown_renderer import markdown_to_html
-from interface.workers import ProcessTaskWorker, TaskWorker, WorkerSignalBridge
+
 from interface.startup_splash import StartupSplash
-from interface.tabs.benchmark_tab import build_benchmark_tab
-from interface.tabs.chat_tab import build_chat_tab
-from interface.tabs.dataset_tab import build_dataset_tab
-from interface.tabs.dataset_plan_tab import (
-    build_dataset_plan_tab,
-    default_data_root,
-    default_data_stage,
-    dataset_plan_defaults,
-    iter_default_data_files,
-    populate_default_data_tree,
-)
-from interface.tabs.live_tab import build_live_training_tab
-from interface.tabs.training_tab import build_training_tab
-from interface.tabs.export_tab import build_export_tab
-from interface.tabs.fine_tuning_tab import build_fine_tuning_tab
-from interface.tabs.job_manager_tab import build_job_manager_tab, set_table_rows
+
 from engine.license_client import load_stored_license_key
 from interface.license_activation_dialog import LicenseActivationDialog, run_license_check_responsively
 
@@ -127,8 +44,7 @@ APP_VERSION = "1.4.0"
 # TODO: point at the real deployed cloud-service URL once it has one.
 # Overridable via env var so ops can point a build at a different
 # deployment (dev/staging/prod) without a code change or rebuild.
-# LICENSE_SERVER_URL = os.environ.get("DRUNKENBOT_LICENSE_SERVER_URL", "https://license.drunkenbot.ai")
-# LICENSE_SERVER_URL = "http://127.0.0.1:8000/"
+
 LICENSE_SERVER_URL = "https://drunkenbot.store"
 WINDOWS_APP_ID = "DrunkenBot.LLMIDE"
 LOGGER = logging.getLogger(__name__)
@@ -142,8 +58,7 @@ _LOGO_FONT_FAMILY: Optional[str] = None
 
 from interface.startup import (
     ProjectChoiceDialog, StartupValidationSplash, _apply_windows_taskbar_icon,
-    _load_recent_projects, _register_recent_project, _run_startup_tests,
-    _run_startup_validations, _validate_writable_directory,
+    _run_startup_validations,
 )
 from interface.main_window_part1 import MainWindowPart1
 from interface.main_window_part2 import MainWindowPart2
