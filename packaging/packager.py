@@ -191,7 +191,7 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
                 [
                     "[Setup]",
                     f'AppName={APP_NAME}',
-                    "AppVersion=1.0.0",
+                    "AppVersion=1.4.0",
                     "AppPublisher=DrunkenBot",
                     f'OutputBaseFilename={APP_NAME}-{architecture}-Setup',
                     f'DefaultDirName={{autopf}}\\{APP_NAME}',
