@@ -405,6 +405,7 @@ def build_dataset_plan_tab(window) -> QWidget:
     window.dataset_plan_refresh_button.clicked.connect(window.refresh_dataset_blueprint_files)
     window._tip(window.dataset_plan_refresh_button, "Reload this tree to include newly copied files and folders.")
     window._update_online_dataset_stage_controls()
+    window._apply_dataset_license_gating()
 
     scroll.setWidget(content)
     outer.addWidget(scroll, 1)
