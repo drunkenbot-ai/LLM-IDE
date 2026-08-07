@@ -69,6 +69,7 @@ class MainWindowPart12:
             LOGGER.info("Dataset blueprint tree refreshed from %s", root)
         finally:
             self._set_dataset_blueprint_refresh_busy(False)
+            self._apply_dataset_license_gating()
 
     def _handle_default_data_tree_changed(self, item: Any, column: int) -> None:
         """Handle category and file toggles in the bundled data tree.
@@ -434,5 +435,4 @@ class MainWindowPart12:
         """
 
         return self._fine_tune_output_path() if training_mode == "fine_tune" else Path(self.model_dir.text())
-
 

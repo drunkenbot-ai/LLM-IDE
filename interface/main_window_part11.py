@@ -284,11 +284,7 @@ class MainWindowPart11:
 
         if not hasattr(self, "dataset_stage"):
             return
-        if not bool(QApplication.instance().property("license_valid")):
-            self.include_conversation_datasets.setChecked(False)
-            self.include_conversation_datasets.setEnabled(False)
-            if hasattr(self, "external_dataset_download_button"):
-                self.external_dataset_download_button.setEnabled(False)
+        self._apply_dataset_license_gating()
         stage = self._dataset_stage_value()
         allowed = set(CONVERSATION_DATASET_PRESETS)
         include_online = self.include_conversation_datasets.isChecked()
@@ -306,6 +302,19 @@ class MainWindowPart11:
             f"{self.dataset_stage.currentText()}: choose optional online datasets."
             if include_online else "Choose optional online datasets, or use local folders only."
         )
+
+    def _apply_dataset_license_gating(self) -> None:
+        """Keep trial restrictions applied after Dataset Sources widgets change."""
+
+        licensed = bool(QApplication.instance().property("license_valid"))
+        if hasattr(self, "include_conversation_datasets"):
+            if not licensed:
+                self.include_conversation_datasets.setChecked(False)
+            self.include_conversation_datasets.setEnabled(licensed)
+        for name in ("external_dataset_download_button", "custom_huggingface_download"):
+            widget = getattr(self, name, None)
+            if widget is not None:
+                widget.setEnabled(licensed)
 
     def _selected_conversation_datasets(self) -> list[str]:
         """Return selected built-in conversation dataset IDs.
