@@ -11,7 +11,7 @@ from pathlib import Path
 
 from typing import  Optional
 
-from PySide6.QtCore import QTimer,qInstallMessageHandler
+from PySide6.QtCore import QTimer, Slot, qInstallMessageHandler
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QApplication,
