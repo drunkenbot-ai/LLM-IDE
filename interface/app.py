@@ -8,9 +8,11 @@ import os
 import re
 import signal
 import shutil
+import sqlite3
 import subprocess
 import sys
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 from queue import Empty, Queue
 from threading import Event, Thread
@@ -54,12 +56,42 @@ from PySide6.QtWidgets import (
 
 from engine.app_logging import qt_message_handler, setup_logging
 from engine.coordinator import JobManager
+from engine.coordinator.artifacts import create_job_artifact_bundle
 from engine.coordinator.api_server import CoordinatorApiServer
+from engine.config import DatasetConfig, ModelConfig, TrainingConfig
 from engine.conversation_datasets import CONVERSATION_DATASET_PRESETS
-from engine.conversation_presets import dataset_ids_for_stage
+from engine.conversation_presets import dataset_ids_for_stage, dataset_stage_label
+from engine.contracts.jobs import BackendKind, RuntimeSpec, TrainingJobSpec
+from engine.dataset_preview_scan import scan_dataset_preview
+from engine.dataset_preview_health import check_project_health
+from engine.dataset_build import build_dataset
+from engine.evaluation import DEFAULT_BENCHMARK_PROMPTS, evaluate_checkpoint, normalize_prompts
+from engine.export import (
+    export_gguf_with_llama_cpp, export_hf_microgpt_package, export_llama_adapter_package,
+    export_project_bundle, quantize_checkpoint,
+)
+from engine.external_dataset import (
+    DEFAULT_MANIFEST_URL, download_latest_dataset, is_newer_version, load_manifest,
+)
+from engine.fine_tuning_service import run_fine_tuning_job
 from engine.llama_chat import LlamaChatSession
-from engine.notifier import NotificationManager, default_notifier_config_path
-from engine.runpod_cloud import default_runpod_config_path, load_runpod_config
+from engine.llama_chat import load_llama_chat_session, stream_chat_reply
+from engine.lineage import read_json
+from engine.microgpt_chat import load_microgpt_chat_session, stream_microgpt_chat_reply
+from engine.notifier import (
+    NotificationManager, default_notifier_config_path, ensure_notifier_config,
+)
+from engine.runpod_cloud import (
+    RunPodClient, default_runpod_config_path, ensure_runpod_config, load_runpod_config,
+    public_url_is_cloud_reachable, RunPodConfig, save_runpod_config,
+    create_runpod_worker_bundle,
+)
+from engine.telemetry_store import (
+    initialize_store, insert_metric, latest_run, rows_until, telemetry_db_path,
+)
+from engine.training_planning import estimate_training_resources, format_bytes
+from engine.training_resume import check_resume_compatibility, latest_checkpoint
+from engine.training_service import run_training_job
 
 from interface.startup_splash import StartupSplash
 
@@ -72,6 +104,7 @@ from interface.tabs.benchmark_tab import build_benchmark_tab
 from interface.tabs.chat_tab import build_chat_tab
 from interface.tabs.dataset_plan_tab import (
     build_dataset_plan_tab, dataset_plan_defaults, default_data_root,
+    iter_default_data_files, populate_default_data_tree,
 )
 from interface.tabs.dataset_tab import build_dataset_tab
 from interface.tabs.export_tab import build_export_tab
