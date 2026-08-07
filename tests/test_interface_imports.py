@@ -88,7 +88,7 @@ class InterfaceImportTests(unittest.TestCase):
         findings = []
         app = importlib.import_module("interface.app")
         known_dynamic_names = {"StartupValidationSplash"}
-        for line in result.stdout.splitlines():
+        for line in (result.stdout + result.stderr).splitlines():
             if ": F821 " not in line:
                 continue
             path, _, detail = line.partition(": F821 ")
