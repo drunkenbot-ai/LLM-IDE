@@ -8,6 +8,7 @@ import os
 import re
 import signal
 import shutil
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -17,7 +18,7 @@ from threading import Event, Thread
 from typing import Optional, Union
 
 from PySide6.QtCore import (
-    QEvent, QObject, QPoint, QThread, QTimer, Qt, Signal, Slot,
+    QEvent, QObject, QPoint, QSize, QThread, QTimer, Qt, Signal, Slot,
     qInstallMessageHandler,
 )
 from PySide6.QtGui import (
@@ -52,6 +53,13 @@ from PySide6.QtWidgets import (
 )
 
 from engine.app_logging import qt_message_handler, setup_logging
+from engine.coordinator import JobManager
+from engine.coordinator.api_server import CoordinatorApiServer
+from engine.conversation_datasets import CONVERSATION_DATASET_PRESETS
+from engine.conversation_presets import dataset_ids_for_stage
+from engine.llama_chat import LlamaChatSession
+from engine.notifier import NotificationManager, default_notifier_config_path
+from engine.runpod_cloud import default_runpod_config_path, load_runpod_config
 
 from interface.startup_splash import StartupSplash
 
@@ -68,7 +76,7 @@ from interface.tabs.dataset_plan_tab import (
 from interface.tabs.dataset_tab import build_dataset_tab
 from interface.tabs.export_tab import build_export_tab
 from interface.tabs.fine_tuning_tab import build_fine_tuning_tab
-from interface.tabs.job_manager_tab import build_job_manager_tab
+from interface.tabs.job_manager_tab import build_job_manager_tab, set_table_rows
 from interface.tabs.live_tab import build_live_training_tab
 from interface.tabs.training_tab import build_training_tab
 from interface.workers import ProcessTaskWorker, TaskWorker, WorkerSignalBridge
@@ -108,6 +116,7 @@ from interface.startup import (
     ProjectChoiceDialog, StartupValidationSplash, _apply_windows_taskbar_icon,
     _run_startup_validations,
 )
+from interface.startup_validation import _run_startup_tests
 from interface.main_window_part1 import MainWindowPart1
 from interface.main_window_part2 import MainWindowPart2
 from interface.main_window_part3 import MainWindowPart3
