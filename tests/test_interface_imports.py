@@ -72,28 +72,35 @@ class InterfaceImportTests(unittest.TestCase):
                 missing[path.name] = absent
         self.assertFalse(missing, f"Missing app shared names: {missing}")
 
-    def test_interface_undefined_names_with_ruff_or_ast_fallback(self) -> None:
+    def test_interface_undefined_names_with_ruff(self) -> None:
         try:
             result = subprocess.run(
-                [sys.executable, "-m", "ruff", "check", "interface/app.py", "--select", "F821",
+                [sys.executable, "-m", "ruff", "check", "interface", "--select", "F821",
                  "--isolated", "--output-format", "concise"],
                 cwd=ROOT, capture_output=True, text=True, check=False,
             )
         except OSError:
-            result = None
-        if result is not None and result.returncode == 0:
-            return
-        if result is not None and result.returncode not in (1, 2):
+            self.skipTest("Ruff is not installed; mandatory AST import/namespace checks still run")
+        if "No module named ruff" in result.stderr:
+            self.skipTest("Ruff is not installed; mandatory AST import/namespace checks still run")
+        if result.returncode not in (0, 1):
             self.fail(result.stderr or result.stdout)
-        if result is not None and "No module named ruff" not in result.stderr:
-            self.fail("Ruff F821 findings:\n" + (result.stdout or result.stderr))
-        compile_errors = []
-        for path in INTERFACE.rglob("*.py"):
-            try:
-                compile(path.read_text(encoding="utf-8"), str(path), "exec")
-            except SyntaxError as exc:
-                compile_errors.append(f"{path}: {exc}")
-        self.assertFalse(compile_errors, "\n".join(compile_errors))
+        findings = []
+        app = importlib.import_module("interface.app")
+        known_dynamic_names = {"StartupValidationSplash"}
+        for line in result.stdout.splitlines():
+            if ": F821 " not in line:
+                continue
+            path, _, detail = line.partition(": F821 ")
+            symbol = detail.split("`", 2)[1] if "`" in detail else detail
+            filename = Path(path.replace("\\", "/")).name
+            # Mixin modules intentionally receive their globals from app.py.
+            if filename.startswith("main_window_part") and hasattr(app, symbol):
+                continue
+            if filename == "startup_validation.py" and symbol in known_dynamic_names:
+                continue
+            findings.append(line)
+        self.assertFalse(findings, "Ruff F821 findings:\n" + "\n".join(findings))
 
     def test_main_window_constructs_offscreen(self) -> None:
         app = QApplication.instance() or QApplication([])
