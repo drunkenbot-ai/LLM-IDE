@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
 )
 
 from engine.app_logging import qt_message_handler, setup_logging
+from engine.coordinator import JobManager
 
 from interface.startup_splash import StartupSplash
 
