@@ -1,26 +1,54 @@
 from __future__ import annotations
 
 import ctypes
-
+import json
 import logging
-
+import math
+import os
+import re
 import signal
-
+import shutil
 import sys
+from datetime import datetime
 from pathlib import Path
+from queue import Empty, Queue
+from threading import Event, Thread
 
-from typing import  Optional
+from typing import Optional, Union
 
-from PySide6.QtCore import QTimer, Slot, qInstallMessageHandler
-from PySide6.QtGui import QFont
+from PySide6.QtCore import (
+    QEvent, QObject, QPoint, QThread, QTimer, Qt, Signal, Slot,
+    qInstallMessageHandler,
+)
+from PySide6.QtGui import (
+    QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap, QPolygon,
+)
 from PySide6.QtWidgets import (
     QApplication,
+    QAbstractButton,
+    QComboBox,
     QDialog,
     QFileDialog,
+    QFormLayout,
+    QGridLayout,
+    QHBoxLayout,
     QInputDialog,
+    QLabel,
+    QLineEdit,
     QMainWindow,
     QMessageBox,
-
+    QProgressBar,
+    QPushButton,
+    QSizePolicy,
+    QSpinBox,
+    QDoubleSpinBox,
+    QStackedWidget,
+    QTextBrowser,
+    QTextEdit,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from engine.app_logging import qt_message_handler, setup_logging
@@ -29,11 +57,31 @@ from interface.startup_splash import StartupSplash
 
 from engine.license_client import load_stored_license_key
 from interface.license_activation_dialog import LicenseActivationDialog, run_license_check_responsively
+from interface.chat_widgets import ChatMessageWidget
+from interface.markdown_renderer import markdown_to_html
+from interface.startup import _register_recent_project
+from interface.tabs.benchmark_tab import build_benchmark_tab
+from interface.tabs.chat_tab import build_chat_tab
+from interface.tabs.dataset_plan_tab import (
+    build_dataset_plan_tab, dataset_plan_defaults, default_data_root,
+)
+from interface.tabs.dataset_tab import build_dataset_tab
+from interface.tabs.export_tab import build_export_tab
+from interface.tabs.fine_tuning_tab import build_fine_tuning_tab
+from interface.tabs.job_manager_tab import build_job_manager_tab
+from interface.tabs.live_tab import build_live_training_tab
+from interface.tabs.training_tab import build_training_tab
+from interface.workers import ProcessTaskWorker, TaskWorker, WorkerSignalBridge
 
 try:
     import psutil
 except ImportError:
     psutil = None
+
+try:
+    import torch
+except ImportError:
+    torch = None
 
 
 APP_NAME = "DrunkenBot-IDE"
