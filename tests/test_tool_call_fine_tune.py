@@ -58,3 +58,24 @@ def test_tool_call_jsonl_preserves_tools_calls_and_results(tmp_path: Path) -> No
     assert "Tools:" in documents[0].text
     assert "tool_calls=" in documents[0].text
     assert "tool_call_id=call-1" in documents[0].text
+
+
+def test_structured_jsonl_skips_malformed_and_invalid_records(tmp_path: Path) -> None:
+    source = tmp_path / "mixed.jsonl"
+    source.write_text(
+        '{"instruction":"keep","output":"yes"}\n'
+        '{"unrelated":"missing training fields"}\n'
+        '{"messages":[{"role":"user","content":"valid"}]}\n'
+        '{not json}\n',
+        encoding="utf-8",
+    )
+    messages: list[str] = []
+
+    documents = load_structured_json_documents(
+        source, "instruction", on_invalid=messages.append
+    )
+
+    assert len(documents) == 1
+    assert "keep" in documents[0].text
+    assert any("line/record 2" in message for message in messages)
+    assert any("line/record 4" in message and "invalid JSON" in message for message in messages)
