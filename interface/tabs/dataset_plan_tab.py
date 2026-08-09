@@ -286,7 +286,15 @@ def build_dataset_plan_tab(window) -> QWidget:
         (path.name for path in active_data_root.iterdir() if path.is_dir()),
         key=str.casefold,
     ) if active_data_root.exists() else []
-    window.dataset_stage.addItems(workflow_names or ["base"])
+    workflow_names = list(dict.fromkeys([
+        "base",
+        "instruction",
+        "conversation",
+        "tool_call",
+        "code",
+        *workflow_names,
+    ]))
+    window.dataset_stage.addItems(workflow_names)
     window.dataset_stage.setMaximumWidth(240)
     # Trial users may choose the dataset purpose; only online/external data
     # sources are entitlement-gated below.
