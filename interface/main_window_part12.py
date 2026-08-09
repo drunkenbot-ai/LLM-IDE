@@ -345,6 +345,7 @@ class MainWindowPart12:
         stage_folder = {
             "instruction": "instruction_latest",
             "conversation": "conversation_latest",
+            "tool_call": "tool_call_latest",
             "code": "code_latest",
             "domain": "domain_latest",
         }.get(stage, "fine_tune_latest")
@@ -365,10 +366,12 @@ class MainWindowPart12:
             "fine_tuned",
             "instruction",
             "conversation",
+            "tool_call",
             "code",
             "domain",
             "instruction_latest",
             "conversation_latest",
+            "tool_call_latest",
             "code_latest",
             "domain_latest",
             "fine_tune_latest",

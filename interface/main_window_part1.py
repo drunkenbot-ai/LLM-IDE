@@ -284,7 +284,7 @@ class MainWindowPart1:
         self._tip(self.dataset_plan_nav, "Open Dataset Blueprint: plan the target data mix before ingestion.")
         self._tip(self.dataset_nav, "Open dataset preparation: load text/PDF files and build tokenizer data.")
         self._tip(self.training_nav, "Open model training: configure architecture and optimization settings.")
-        self._tip(self.fine_tune_nav, "Open fine-tuning: adapt checkpoints with instruction, conversation, or LoRA settings.")
+        self._tip(self.fine_tune_nav, "Open fine-tuning: adapt checkpoints with instruction, conversation, tool-call, or LoRA settings.")
         self._tip(self.live_nav, "Open the live training tracker with model flow, charts, metrics, and telemetry.")
         self._tip(self.jobs_nav, "Open Job Manager: monitor workers, remote connections, assignments, and job controls.")
         self._tip(self.benchmark_nav, "Open benchmark prompts: test checkpoint quality with repeatable prompts.")

@@ -54,14 +54,20 @@ def build_fine_tuning_tab(window) -> QWidget:
     mode_form = QFormLayout()
     window._configure_form(mode_form)
     window.training_mode = QComboBox()
-    window.training_mode.addItems(["Instruction fine-tune", "Conversation fine-tune", "Code fine-tune", "Fine-tune checkpoint"])
+    window.training_mode.addItems([
+        "Instruction fine-tune",
+        "Conversation fine-tune",
+        "Tool-call fine-tune",
+        "Code fine-tune",
+        "Fine-tune checkpoint",
+    ])
     window.training_mode.setMaximumWidth(300)
     window.training_mode.currentTextChanged.connect(window._update_training_mode_controls)
     window.training_mode.currentTextChanged.connect(window.refresh_fine_tune_workflow)
     window.training_mode.currentTextChanged.connect(window._refresh_fine_tune_default_output)
     window._tip(
         window.training_mode,
-        "Instruction tunes request-following, conversation tunes chat behavior, code tunes programming help, generic fine-tune adapts domain data.",
+        "Instruction tunes request-following, conversation tunes chat behavior, tool-call tunes structured tool use, code tunes programming help, generic fine-tune adapts domain data.",
     )
     window.fine_tune_checkpoint = QLineEdit()
     window._tip(window.fine_tune_checkpoint, "Base MicroGPT checkpoint used for fine-tuning. Must match tokenizer and model architecture.")
@@ -174,7 +180,12 @@ def build_fine_tuning_tab(window) -> QWidget:
     builder_form = QFormLayout()
     window._configure_form(builder_form)
     window.fine_tune_dataset_builder_stage = QComboBox()
-    window.fine_tune_dataset_builder_stage.addItems(["Instruction fine-tune", "Conversation fine-tune", "Code fine-tune"])
+    window.fine_tune_dataset_builder_stage.addItems([
+        "Instruction fine-tune",
+        "Conversation fine-tune",
+        "Tool-call fine-tune",
+        "Code fine-tune",
+    ])
     window.fine_tune_dataset_builder_stage.setMaximumWidth(300)
     window.fine_tune_dataset_builder_stage.currentTextChanged.connect(window._refresh_fine_tune_default_output)
     window._tip(
@@ -199,6 +210,7 @@ def build_fine_tuning_tab(window) -> QWidget:
         "Fine-tuning starts from a compatible checkpoint and uses the prepared dataset selected in AI.\n"
         "- Prepare Instruction fine-tune data for request-following behavior.\n"
         "- Prepare Conversation fine-tune data for chat behavior.\n"
+        "- Prepare Tool-call fine-tune data using OpenAI-style tools, tool_calls, and tool results.\n"
         "- Prepare Code fine-tune data for programming help.\n"
         "- Reuse or import the base tokenizer so token IDs stay compatible.\n"
         "- LoRA is recommended for most experiments.\n"

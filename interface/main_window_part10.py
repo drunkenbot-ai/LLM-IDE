@@ -184,6 +184,7 @@ class MainWindowPart10:
 
         conversation_paths: list[Path] = []
         instruction_paths: list[Path] = []
+        tool_call_paths: list[Path] = []
         dataset_stage = self._dataset_stage_value()
         selected_local_paths = self._selected_default_data_paths_for_stage(dataset_stage)
         structured_paths = [
@@ -193,6 +194,8 @@ class MainWindowPart10:
             conversation_paths = structured_paths
         elif dataset_stage == "instruction":
             instruction_paths = structured_paths
+        elif dataset_stage == "tool_call":
+            tool_call_paths = structured_paths
         return DatasetConfig(
             input_dir=Path(self.input_dir.text()),
             output_dir=Path(self.dataset_dir.text()),
@@ -203,6 +206,7 @@ class MainWindowPart10:
             instruction_dataset_path=instruction_paths[0] if instruction_paths else None,
             conversation_dataset_paths=conversation_paths,
             instruction_dataset_paths=instruction_paths,
+            tool_call_dataset_paths=tool_call_paths,
             default_data_paths=selected_local_paths,
             mixture_weights=self._mixture_weights_from_ui(),
             min_frequency=self.min_frequency.value(),
