@@ -288,6 +288,9 @@ def build_dataset_plan_tab(window) -> QWidget:
     ) if active_data_root.exists() else []
     window.dataset_stage.addItems(workflow_names or ["base"])
     window.dataset_stage.setMaximumWidth(240)
+    # Trial users may choose the dataset purpose; only online/external data
+    # sources are entitlement-gated below.
+    window.dataset_stage.setEnabled(True)
     window.include_conversation_datasets = QCheckBox("Online")
     window.include_conversation_datasets.setChecked(False)
     window.include_conversation_datasets.setEnabled(not trial_mode)
