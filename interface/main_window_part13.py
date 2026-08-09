@@ -22,6 +22,7 @@ class MainWindowPart13:
             "Fine-tune checkpoint": "fine_tune",
             "Instruction fine-tune": "fine_tune",
             "Conversation fine-tune": "fine_tune",
+            "Tool-call fine-tune": "fine_tune",
             "Code fine-tune": "fine_tune",
         }.get(self.training_mode.currentText(), "pretrain")
 
@@ -37,6 +38,7 @@ class MainWindowPart13:
             "Fine-tune checkpoint": "domain",
             "Instruction fine-tune": "instruction",
             "Conversation fine-tune": "conversation",
+            "Tool-call fine-tune": "tool_call",
             "Code fine-tune": "code",
         }.get(self.training_mode.currentText(), "base")
 
@@ -117,12 +119,14 @@ class MainWindowPart13:
         dataset_stage = str(summary.get("dataset_stage") or self._dataset_stage_value())
         tokens = int(summary.get("token_count", 0) or 0)
         vocab = int(summary.get("tokenizer_vocab_size", 0) or 0)
-        stage_name = dataset_stage_label(dataset_stage) if dataset_stage in {"base", "instruction", "conversation", "code"} else dataset_stage
+        stage_name = dataset_stage_label(dataset_stage) if dataset_stage in {"base", "instruction", "conversation", "tool_call", "code"} else dataset_stage
         details = f"{stage_name}, {tokens:,} tokens, vocab {vocab:,}"
         if expected_stage == "instruction" and dataset_stage != "instruction":
             return False, f"Dataset mismatch: selected Instruction fine-tune, but prepared dataset is {details}."
         if expected_stage == "conversation" and dataset_stage != "conversation":
             return False, f"Dataset mismatch: selected Conversation fine-tune, but prepared dataset is {details}."
+        if expected_stage == "tool_call" and dataset_stage != "tool_call":
+            return False, f"Dataset mismatch: selected Tool-call fine-tune, but prepared dataset is {details}."
         if expected_stage == "code" and dataset_stage != "code":
             return False, f"Dataset mismatch: selected Code fine-tune, but prepared dataset is {details}."
         if expected_stage == "domain" and dataset_stage == "base":
@@ -163,6 +167,11 @@ class MainWindowPart13:
             self.lora_alpha.setValue(32.0)
             self.learning_rate.setValue(0.00003)
             self.epochs.setValue(max(1, min(self.epochs.value(), 2)))
+        elif stage == "tool_call":
+            self.lora_rank.setValue(16)
+            self.lora_alpha.setValue(32.0)
+            self.learning_rate.setValue(0.00003)
+            self.epochs.setValue(max(1, min(self.epochs.value(), 3)))
         elif stage == "code":
             self.lora_rank.setValue(8)
             self.lora_alpha.setValue(16.0)
