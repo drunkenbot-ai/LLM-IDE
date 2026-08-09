@@ -25,6 +25,9 @@ class MainWindowPart11:
         if config.instruction_dataset_paths:
             self.dataset_log.append(f"Local instruction JSON/JSONL: {len(config.instruction_dataset_paths)} path(s)")
             LOGGER.info("Local instruction JSON/JSONL datasets: %s", "; ".join(str(path) for path in config.instruction_dataset_paths))
+        if config.tool_call_dataset_paths:
+            self.dataset_log.append(f"Local tool-call JSON/JSONL: {len(config.tool_call_dataset_paths)} path(s)")
+            LOGGER.info("Local tool-call JSON/JSONL datasets: %s", "; ".join(str(path) for path in config.tool_call_dataset_paths))
         if config.default_data_paths:
             self.dataset_log.append(f"Bundled default data: {len(config.default_data_paths)} file(s)")
             LOGGER.info("Bundled default data files: %s", "; ".join(str(path) for path in config.default_data_paths))
@@ -62,6 +65,7 @@ class MainWindowPart11:
             ",".join(config.conversation_datasets) or "off",
             ";".join(str(path) for path in config.conversation_dataset_paths) or "off",
             ";".join(str(path) for path in config.instruction_dataset_paths) or "off",
+            ";".join(str(path) for path in config.tool_call_dataset_paths) or "off",
         )
         self.project_state.setText("Preparing dataset")
         self.dataset_status.setText("Dataset: preparing")
