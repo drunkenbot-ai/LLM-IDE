@@ -4,9 +4,15 @@ import os
 
 # MainWindow implementation mixin. Runtime names are provided by app.py.
 from typing import Any
-from . import app as _app
+try:
+    from . import app as _app
+except ImportError:
+    # Allow focused tests to import this mixin while app.py is assembling the
+    # composite MainWindow (app.py imports this module in return).
+    _app = None
 
-globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
+if _app is not None:
+    globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
 
 class MainWindowPart13:
