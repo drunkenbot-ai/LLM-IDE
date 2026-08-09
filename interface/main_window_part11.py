@@ -395,15 +395,17 @@ class MainWindowPart11:
         stage = {
             "Instruction fine-tune": "instruction",
             "Conversation fine-tune": "conversation",
+            "Tool-call fine-tune": "tool_call",
             "Code fine-tune": "code",
         }.get(stage_label, "instruction")
         starter_datasets = {
             "instruction": ["alpaca_52k"],
             "conversation": ["dailydialog"],
+            "tool_call": [],
             "code": ["codealpaca_20k"],
         }
         self._set_dataset_stage(stage)
-        self.include_conversation_datasets.setChecked(True)
+        self.include_conversation_datasets.setChecked(bool(starter_datasets.get(stage)))
         self._set_selected_conversation_datasets(starter_datasets.get(stage, []))
         if stage == "code":
             self.code_training_mode.setChecked(True)
