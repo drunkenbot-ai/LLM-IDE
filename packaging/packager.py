@@ -148,7 +148,10 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
         ),
         str(PACKAGING_ROOT / "runtime_launcher.py"),
     ]
-    subprocess.run(command, cwd=ROOT, check=True)
+    # Run PyInstaller outside the repository root.  The application has a
+    # local ``packaging`` package, which would otherwise shadow the
+    # third-party ``packaging`` dependency imported by PyInstaller.
+    subprocess.run(command, cwd=work_dir, check=True)
 
     bundle = _require_path(dist_dir / APP_NAME, directory=True)
     if runtime_dir is None:

@@ -49,6 +49,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
+          python -m pip install "packaging>=23,<25"
           python -m pip install pyinstaller
           python -m pip install Pillow
 
