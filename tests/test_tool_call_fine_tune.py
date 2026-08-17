@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from interface.main_window_part13 import MainWindowPart13
+from interface.screens.fine_tuning_screen import FineTuningScreenMixin
 from engine.data_core import load_structured_json_documents
 
 
@@ -34,7 +34,7 @@ class _Combo:
 def test_tool_call_fine_tune_maps_to_fine_tune_stage() -> None:
     """Map the UI label to the engine fine-tuning and dataset stages."""
 
-    window = MainWindowPart13()
+    window = FineTuningScreenMixin()
     window.training_mode = _Combo("Tool-call fine-tune")
 
     assert window._training_mode_value() == "fine_tune"

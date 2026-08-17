@@ -26,6 +26,35 @@ def _interface_modules() -> list[str]:
     )
 
 
+def _uses_app_globals_shim(tree: ast.AST) -> bool:
+    """True when a module pulls shared runtime names via globals().update(vars(app))."""
+    for node in ast.walk(tree):
+        if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)):
+            continue
+        if node.func.attr != "update":
+            continue
+        receiver = node.func.value
+        if (
+            isinstance(receiver, ast.Call)
+            and isinstance(receiver.func, ast.Name)
+            and receiver.func.id == "globals"
+        ):
+            return True
+    return False
+
+
+def _shim_module_paths() -> list[Path]:
+    """Interface modules that receive shared names dynamically from interface.app."""
+    paths = []
+    for path in INTERFACE.rglob("*.py"):
+        if path.name == "__init__.py":
+            continue
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        if _uses_app_globals_shim(tree):
+            paths.append(path)
+    return sorted(paths)
+
+
 class InterfaceImportTests(unittest.TestCase):
     def test_every_interface_module_imports_with_actionable_errors(self) -> None:
         failures: list[str] = []
@@ -36,20 +65,11 @@ class InterfaceImportTests(unittest.TestCase):
                 failures.append(f"{name}: {type(exc).__name__}: {exc}")
         self.assertFalse(failures, "Interface import failures:\n" + "\n".join(failures))
 
-    def test_dynamic_main_window_parts_have_all_shared_names(self) -> None:
+    def test_dynamic_mixins_have_all_shared_names(self) -> None:
         app = importlib.import_module("interface.app")
         missing: dict[str, list[str]] = {}
-        for path in sorted(INTERFACE.glob("main_window_part*.py")):
+        for path in _shim_module_paths():
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-            if not any(
-                isinstance(node, ast.Call)
-                and isinstance(node.func, ast.Attribute)
-                and isinstance(node.func.value, ast.Name)
-                and node.func.value.id == "globals"
-                and node.func.attr == "update"
-                for node in ast.walk(tree)
-            ):
-                continue
             assigned = {
                 node.id
                 for node in ast.walk(tree)
@@ -61,12 +81,26 @@ class InterfaceImportTests(unittest.TestCase):
                 if isinstance(node, (ast.Import, ast.ImportFrom))
                 for alias in node.names
             }
+            params: set[str] = set()
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+                    a = node.args
+                    for arg in (*a.posonlyargs, *a.args, *a.kwonlyargs):
+                        params.add(arg.arg)
+                    if a.vararg:
+                        params.add(a.vararg.arg)
+                    if a.kwarg:
+                        params.add(a.kwarg.arg)
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    params.add(node.name)
+                if isinstance(node, ast.ExceptHandler) and node.name:
+                    params.add(node.name)
             loaded = {
                 node.id
                 for node in ast.walk(tree)
                 if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load)
             }
-            names = loaded - assigned - imported - set(dir(builtins))
+            names = loaded - assigned - imported - params - set(dir(builtins))
             absent = sorted(name for name in names if not hasattr(app, name))
             if absent:
                 missing[path.name] = absent
@@ -88,6 +122,7 @@ class InterfaceImportTests(unittest.TestCase):
         findings = []
         app = importlib.import_module("interface.app")
         known_dynamic_names = {"StartupValidationSplash"}
+        shim_filenames = {path.name for path in _shim_module_paths()}
         for line in (result.stdout + result.stderr).splitlines():
             if ": F821 " not in line:
                 continue
@@ -95,9 +130,10 @@ class InterfaceImportTests(unittest.TestCase):
                 continue
             path, _, detail = line.partition(": F821 ")
             symbol = detail.split("`", 2)[1] if "`" in detail else detail
-            filename = Path(path.replace("\\", "/")).name
+            file_part = path.rsplit(":", 2)[0]
+            filename = Path(file_part.replace("\\", "/")).name
             # Mixin modules intentionally receive their globals from app.py.
-            if filename.startswith("main_window_part") and hasattr(app, symbol):
+            if filename in shim_filenames and hasattr(app, symbol):
                 continue
             if filename == "startup_validation.py" and (
                 symbol in known_dynamic_names or "StartupValidationSplash" in line
