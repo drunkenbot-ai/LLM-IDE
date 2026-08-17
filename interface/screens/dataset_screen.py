@@ -1,12 +1,139 @@
 from __future__ import annotations
 
-# MainWindow implementation mixin. Runtime names are provided by app.py.
-from typing import Any
-from . import app as _app
+# DatasetScreenMixin mixin. Shared runtime names are provided by interface.app.
+from typing import Any, Optional, Union  # noqa: F401
+from interface import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
-class MainWindowPart11:
+
+class DatasetScreenMixin:
+    def _dataset_config_from_ui(self) -> DatasetConfig:
+        """Collect dataset options from the current UI controls.
+
+        Returns:
+            Dataset preparation configuration.
+        """
+
+        conversation_paths: list[Path] = []
+        instruction_paths: list[Path] = []
+        tool_call_paths: list[Path] = []
+        dataset_stage = self._dataset_stage_value()
+        selected_local_paths = self._selected_default_data_paths_for_stage(dataset_stage)
+        structured_paths = [
+            path for path in selected_local_paths if path.suffix.lower() in {".json", ".jsonl"}
+        ]
+        if dataset_stage == "conversation":
+            conversation_paths = structured_paths
+        elif dataset_stage == "instruction":
+            instruction_paths = structured_paths
+        elif dataset_stage == "tool_call":
+            tool_call_paths = structured_paths
+        return DatasetConfig(
+            input_dir=Path(self.input_dir.text()),
+            output_dir=Path(self.dataset_dir.text()),
+            vocab_size=None if self.auto_vocab.isChecked() else self.manual_vocab_size.value(),
+            conversation_datasets=self._selected_conversation_datasets(),
+            conversation_sample_limit=self.conversation_sample_limit.value(),
+            conversation_dataset_path=conversation_paths[0] if conversation_paths else None,
+            instruction_dataset_path=instruction_paths[0] if instruction_paths else None,
+            conversation_dataset_paths=conversation_paths,
+            instruction_dataset_paths=instruction_paths,
+            tool_call_dataset_paths=tool_call_paths,
+            default_data_paths=selected_local_paths,
+            mixture_weights=self._mixture_weights_from_ui(),
+            min_frequency=self.min_frequency.value(),
+            context_length=self.context_length.value(),
+            validation_split=self.validation_split.value(),
+            lowercase=False,
+            max_workers=self.max_workers.value(),
+            code_training_mode=self.code_training_mode.isChecked(),
+            include_prose=self.include_prose.isChecked(),
+            include_source_code=self.include_source_code.isChecked(),
+            extract_code_blocks=self.extract_code_blocks.isChecked(),
+            preserve_indentation=self.preserve_indentation.isChecked(),
+            generate_instruction_samples=self.instruction_samples.isChecked(),
+            reasoning_sample_mode=self._reasoning_sample_mode_value(),
+            prepare_mode=self._prepare_mode_value(),
+            tokenizer_strategy=self._tokenizer_strategy_value(),
+            tokenizer_path=Path(self.tokenizer_path.text()) if self.tokenizer_path.text().strip() else None,
+            dataset_stage=dataset_stage,
+            tokenizer_training_max_gb=self.tokenizer_training_max_gb.value(),
+        )
+
+    def _selected_default_data_paths_for_stage(self, stage: str) -> list[Path]:
+        """Return selected bundled files that match the dataset purpose.
+
+        Args:
+            stage: Dataset preparation stage.
+
+        Returns:
+            Selected paths suitable for the requested stage.
+        """
+
+        # Folder selection is the workflow configuration.  Do not apply a
+        # second hardcoded stage filter here; the Dataset Sources tree already
+        # contains exactly the files selected by the user.
+        return self._selected_default_data_paths()
+
+    @staticmethod
+    def _split_path_list(text: str) -> list[Path]:
+        """Split a semicolon-delimited path field.
+
+        Args:
+            text: Raw path field text.
+
+        Returns:
+            Parsed paths.
+        """
+
+        return [Path(item.strip().strip('"')) for item in text.split(";") if item.strip()]
+
+    def check_project_health(self) -> None:
+        """Run a project health check in the background."""
+
+        self.dataset_log.clear()
+        self.dataset_progress.setValue(0)
+        self.dataset_log.append("Checking project health...")
+        self.project_state.setText("Checking health")
+        self._run_task(
+            check_project_health,
+            (
+                Path(self.input_dir.text()),
+                Path(self.dataset_dir.text()),
+                Path(self.model_dir.text()),
+                Path(self.export_dir.text()),
+                Path(self.gguf_path.text()) if self.gguf_path.text().strip() else None,
+                Path(self.llama_cpp_dir.text()) if self.llama_cpp_dir.text().strip() else None,
+                self.device.currentText(),
+            ),
+            self._health_check_finished,
+            self.dataset_log,
+            self.dataset_progress,
+            with_progress=True,
+            button=self.health_check_button,
+            stop_button=self.stop_dataset_button,
+            busy_text="Checking Health",
+            isolate_process=True,
+        )
+
+    @Slot(object)
+    def _health_check_finished(self, result: Any) -> None:
+        """Display project health check results.
+
+        Args:
+            result: Project health result.
+        """
+
+        self.dataset_progress.setValue(100)
+        self.dataset_log.append("")
+        self.dataset_log.append(f"Project health: {result.status.upper()} ({result.summary})")
+        for check in result.checks:
+            marker = {"ok": "OK", "warning": "WARN", "error": "ERROR"}.get(check.get("status"), "INFO")
+            self.dataset_log.append(f"[{marker}] {check.get('name')}: {check.get('detail')}")
+        self.project_state.setText("Health checked")
+        self._clear_button_busy("Check Health")
+
     def prepare_dataset(self) -> None:
         if not bool(QApplication.instance().property("license_valid")):
             self.context_length.setValue(min(self.context_length.value(), 1000))
@@ -215,232 +342,3 @@ class MainWindowPart11:
         )
 
         self._clear_button_busy("DataSet Prepared")
-
-    def _prepare_mode_value(self) -> str:
-        """Return the selected dataset preparation mode.
-
-        Returns:
-            Internal mode value.
-        """
-
-        label = self.prepare_mode.currentText()
-        if label == "Full rebuild":
-            return "full_rebuild"
-        if label == "Force reprocess":
-            return "force_reprocess"
-        return "incremental"
-
-    def _tokenizer_strategy_value(self) -> str:
-        """Return the selected tokenizer strategy.
-
-        Returns:
-            Internal tokenizer strategy value.
-        """
-
-        label = self.tokenizer_strategy.currentText()
-        if label == "Train new tokenizer":
-            return "train_new"
-        if label == "Reuse dataset tokenizer":
-            return "reuse_dataset"
-        if label == "Import tokenizer.json":
-            return "import_tokenizer"
-        return "auto"
-
-    def _reasoning_sample_mode_value(self) -> str:
-        """Return the selected reasoning sample mode.
-
-        Returns:
-            Internal reasoning sample mode.
-        """
-
-        label = self.reasoning_sample_mode.currentText()
-        if label == "Detailed code reasoning":
-            return "detailed"
-        if label == "No reasoning wrapper":
-            return "none"
-        return "scaffold"
-
-    def _dataset_stage_value(self) -> str:
-        """Return the selected dataset preparation stage.
-
-        Returns:
-            Dataset stage identifier.
-        """
-
-        return self.dataset_stage.currentText().strip().lower().replace(" ", "_") or "base"
-
-    def _set_dataset_stage(self, stage: str) -> None:
-        """Set the dataset stage combo from an internal stage value.
-
-        Args:
-            stage: Dataset stage identifier.
-        """
-
-        index = self.dataset_stage.findText(stage, Qt.MatchFixedString)
-        if index < 0:
-            self.dataset_stage.addItem(stage)
-            index = self.dataset_stage.count() - 1
-        self.dataset_stage.setCurrentIndex(index)
-        self._update_online_dataset_stage_controls()
-
-    def _update_online_dataset_stage_controls(self) -> None:
-        """Show and enable online datasets for the selected training stage."""
-
-        if not hasattr(self, "dataset_stage"):
-            return
-        self._apply_dataset_license_gating()
-        stage = self._dataset_stage_value()
-        allowed = set(CONVERSATION_DATASET_PRESETS)
-        include_online = self.include_conversation_datasets.isChecked()
-        for dataset_id, action in getattr(self, "conversation_dataset_actions", {}).items():
-            visible = dataset_id in allowed
-            action.setVisible(visible)
-            action.setEnabled(include_online and visible)
-            if not visible:
-                action.setChecked(False)
-        if hasattr(self, "conversation_dataset_button"):
-            self.conversation_dataset_button.setEnabled(include_online)
-        self.conversation_sample_limit.setEnabled(include_online)
-        self._update_conversation_dataset_button_text()
-        self.conversation_datasets_status.setText(
-            f"{self.dataset_stage.currentText()}: choose optional online datasets."
-            if include_online else "Choose optional online datasets, or use local folders only."
-        )
-
-    def _apply_dataset_license_gating(self) -> None:
-        """Keep trial restrictions applied after Dataset Sources widgets change."""
-
-        licensed = bool(QApplication.instance().property("license_valid"))
-        if hasattr(self, "include_conversation_datasets"):
-            if not licensed:
-                self.include_conversation_datasets.setChecked(False)
-            self.include_conversation_datasets.setEnabled(licensed)
-        for name in ("external_dataset_download_button", "custom_huggingface_download"):
-            widget = getattr(self, name, None)
-            if widget is not None:
-                widget.setEnabled(licensed)
-
-    def _selected_conversation_datasets(self) -> list[str]:
-        """Return selected built-in conversation dataset IDs.
-
-        Returns:
-            Selected dataset identifiers.
-        """
-
-        allowed = set(CONVERSATION_DATASET_PRESETS)
-        selected = [
-            dataset_id
-            for dataset_id, action in getattr(self, "conversation_dataset_actions", {}).items()
-            if dataset_id in allowed and action.isChecked() and self.include_conversation_datasets.isChecked()
-        ]
-        custom = self.custom_huggingface_dataset.text().strip()
-        if custom and self.include_conversation_datasets.isChecked():
-            selected.append(f"hf_custom:{custom}")
-        return selected
-
-    def _download_custom_huggingface_dataset(self) -> None:
-        """Enable the entered Hugging Face dataset for the next preparation run."""
-        value = self.custom_huggingface_dataset.text().strip()
-        if not value:
-            self.conversation_datasets_status.setText("Enter a Hugging Face dataset ID or URL first.")
-            return
-        self.include_conversation_datasets.setChecked(True)
-        self.conversation_datasets_status.setText(
-            f"Custom dataset queued: {value}. It will download during dataset preparation."
-        )
-        self._update_conversation_dataset_button_text()
-
-    def _set_selected_conversation_datasets(self, dataset_ids: list[str]) -> None:
-        """Restore selected conversation dataset actions.
-
-        Args:
-            dataset_ids: Dataset IDs to select.
-        """
-
-        selected = set(dataset_ids)
-        allowed = set(dataset_ids_for_stage(self._dataset_stage_value()))
-        for dataset_id, action in getattr(self, "conversation_dataset_actions", {}).items():
-            action.setChecked(dataset_id in selected and dataset_id in allowed)
-            action.setEnabled(self.include_conversation_datasets.isChecked() and dataset_id in allowed)
-        if hasattr(self, "custom_huggingface_dataset"):
-            self.custom_huggingface_dataset.setText(
-                next((value[10:] for value in dataset_ids if value.startswith("hf_custom:")), "")
-            )
-        if hasattr(self, "conversation_sample_limit"):
-            self.conversation_sample_limit.setEnabled(self.include_conversation_datasets.isChecked())
-        self._update_conversation_dataset_button_text()
-        if hasattr(self, "conversation_datasets_status"):
-            self._update_online_dataset_stage_controls()
-
-    def _update_conversation_dataset_button_text(self) -> None:
-        """Refresh the compact online dataset selector label."""
-
-        if not hasattr(self, "conversation_dataset_button"):
-            return
-        allowed = set(dataset_ids_for_stage(self._dataset_stage_value())) if hasattr(self, "dataset_stage") else set()
-        selected_labels = [
-            action.text()
-            for dataset_id, action in getattr(self, "conversation_dataset_actions", {}).items()
-            if dataset_id in allowed and action.isChecked()
-        ]
-        if not self.include_conversation_datasets.isChecked():
-            self.conversation_dataset_button.setText("Online datasets off")
-        elif not selected_labels:
-            self.conversation_dataset_button.setText("Choose online datasets")
-        elif len(selected_labels) == 1:
-            self.conversation_dataset_button.setText(selected_labels[0])
-        else:
-            self.conversation_dataset_button.setText(f"{len(selected_labels)} online datasets selected")
-
-    def configure_fine_tune_dataset_builder(self) -> None:
-        """Configure the Ingest tab for the selected fine-tune dataset type."""
-
-        stage_label = self.fine_tune_dataset_builder_stage.currentText()
-        stage = {
-            "Instruction fine-tune": "instruction",
-            "Conversation fine-tune": "conversation",
-            "Tool-call fine-tune": "tool_call",
-            "Code fine-tune": "code",
-        }.get(stage_label, "instruction")
-        starter_datasets = {
-            "instruction": ["alpaca_52k"],
-            "conversation": ["dailydialog"],
-            "tool_call": [],
-            "code": ["codealpaca_20k"],
-        }
-        self._set_dataset_stage(stage)
-        self.include_conversation_datasets.setChecked(bool(starter_datasets.get(stage)))
-        self._set_selected_conversation_datasets(starter_datasets.get(stage, []))
-        if stage == "code":
-            self.code_training_mode.setChecked(True)
-            self.include_source_code.setChecked(True)
-            self.extract_code_blocks.setChecked(True)
-            self.preserve_indentation.setChecked(True)
-        self._set_mixture_weights({})
-        self._switch_page(0)
-        self.dataset_log.append(f"Configured Ingest for {dataset_stage_label(stage)}. Import the base tokenizer before preparing.")
-        self.project_state.setText(f"Configured {dataset_stage_label(stage)} data")
-
-    def _dataset_plan_from_ui(self) -> dict[str, float]:
-        """Return dataset blueprint state.
-
-        Returns:
-            Empty mapping because category percentages are disabled.
-        """
-
-        return {}
-
-    def _selected_default_data_paths(self) -> list[Path]:
-        """Return bundled default data files selected in the Dataset Blueprint.
-
-        Returns:
-            Selected bundled data paths.
-        """
-
-        if not hasattr(self, "default_data_actions"):
-            return [path for path, _category in iter_default_data_files()]
-        return [
-            Path(path)
-            for path, item in self.default_data_actions.items()
-            if item.checkState(0) == Qt.Checked
-        ]

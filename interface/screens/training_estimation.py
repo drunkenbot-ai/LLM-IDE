@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-# MainWindow implementation mixin. Runtime names are provided by app.py.
-from typing import Any
-from . import app as _app
+# TrainingEstimationMixin mixin. Shared runtime names are provided by interface.app.
+from typing import Any, Optional, Union  # noqa: F401
+from interface import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
-class MainWindowPart14:
+
+class TrainingEstimationMixin:
     def _update_model_estimate_chips(
         self,
         estimate: dict[str, Any],
@@ -141,150 +142,6 @@ class MainWindowPart14:
             return f"{value / 1_000:.1f}K"
         return str(value)
 
-    def _current_model_config(self, vocab_size: int = 1) -> ModelConfig:
-        """Build a model config from the current AI tab settings.
-
-        Args:
-            vocab_size: Tokenizer vocabulary size to use.
-
-        Returns:
-            Current model configuration.
-        """
-
-        return ModelConfig(
-            vocab_size=vocab_size,
-            context_length=self.train_context_length.value(),
-            embedding_size=self.n_embd.value(),
-            head_count=self.n_head.value(),
-            layer_count=self.n_layer.value(),
-            dropout=self.dropout.value(),
-            bias=self.use_bias.isChecked(),
-            attention_type=self._attention_type_value(),
-            kv_head_count=self.kv_head_count.value(),
-            attention_backend=self._attention_backend_value(),
-            attention_window=self.attention_window.value(),
-            **self._architecture_style_config(),
-        )
-
-    def _current_training_config(
-        self,
-        resume_path: Optional[Path] = None,
-        training_mode: Optional[str] = None,
-    ) -> TrainingConfig:
-        """Build a training config from the current AI tab settings.
-
-        Args:
-            resume_path: Optional specific checkpoint to resume from.
-            training_mode: Optional explicit training mode override.
-
-        Returns:
-            Current training configuration.
-        """
-
-        return TrainingConfig(
-            output_dir=self._training_output_dir_for_mode(training_mode),
-            epochs=self.epochs.value(),
-            batch_size=self.batch_size.value(),
-            learning_rate=self.learning_rate.value(),
-            weight_decay=self.weight_decay.value(),
-            optimizer_name=self._optimizer_value(),
-            scheduler_name=self._scheduler_value(),
-            scheduler_min_lr_ratio=self.min_lr_ratio.value(),
-            polynomial_power=self.polynomial_power.value(),
-            gradient_accumulation=self.gradient_accumulation.value(),
-            sample_stride=self.sample_stride.value(),
-            warmup_steps=self.warmup_steps.value(),
-            eval_interval=self.eval_interval.value(),
-            max_eval_batches=self.max_eval_batches.value(),
-            save_interval=self.save_interval.value(),
-            data_loader_workers=self.data_loader_workers.value(),
-            max_grad_norm=self.max_grad_norm.value(),
-            activation_checkpointing=self.activation_checkpointing.isChecked(),
-            device=self.device.currentText(),
-            use_amp=self.use_amp.isChecked(),
-            precision=self._precision_value(),
-            seed=self.seed.value(),
-            training_mode=training_mode or self._training_mode_value(),
-            fine_tune_from_checkpoint=(
-                Path(self.fine_tune_checkpoint.text())
-                if training_mode != "pretrain" and self.fine_tune_checkpoint.text().strip()
-                else None
-            ),
-            peft_method="none" if training_mode == "pretrain" else self._peft_method_value(),
-            lora_rank=self.lora_rank.value(),
-            lora_alpha=self.lora_alpha.value(),
-            lora_dropout=self.lora_dropout.value(),
-            lora_target_modules=self._lora_target_value(),
-            resume=self.resume_training.isChecked(),
-            resume_from_checkpoint=resume_path if self.resume_training.isChecked() else None,
-            require_compatible_resume=self.resume_safety.isChecked(),
-            early_stopping=self.early_stopping.isChecked(),
-            early_stopping_patience=self.early_stopping_patience.value(),
-        )
-
-    def _current_training_vocab_size(self, data_dir: Path) -> int:
-        """Return the tokenizer vocabulary size for the current training dataset.
-
-        Args:
-            data_dir: Prepared dataset folder.
-
-        Returns:
-            Vocabulary size, or zero if unavailable.
-        """
-
-        summary_path = data_dir / "dataset_summary.json"
-        if summary_path.exists():
-            summary = json.loads(summary_path.read_text(encoding="utf-8"))
-            vocab_size = int(summary.get("tokenizer_vocab_size", 0) or 0)
-            if vocab_size > 0:
-                return vocab_size
-        tokenizer_path = data_dir / "tokenizer.json"
-        if tokenizer_path.exists():
-            tokenizer_data = json.loads(tokenizer_path.read_text(encoding="utf-8"))
-            vocab = tokenizer_data.get("model", {}).get("vocab", {})
-            if isinstance(vocab, dict):
-                return len(vocab)
-        return 0
-
-    def _checkpoint_vocab_size(self, checkpoint_path: Path) -> int:
-        """Return the tokenizer vocabulary size saved in a checkpoint.
-
-        Args:
-            checkpoint_path: Checkpoint file to inspect.
-
-        Returns:
-            Saved vocabulary size, or zero when unavailable.
-        """
-
-        try:
-            checkpoint = torch.load(checkpoint_path, map_location="cpu")
-            model_config = checkpoint.get("model_config", {})
-            if isinstance(model_config, dict):
-                return int(model_config.get("vocab_size", 0) or 0)
-        except Exception as exc:
-            LOGGER.warning("Could not inspect checkpoint vocab size for %s: %s", checkpoint_path, exc)
-        return 0
-
-    @staticmethod
-    def _tokenizer_mismatch_help(checkpoint_vocab: int, dataset_vocab: int) -> str:
-        """Return user-facing help for tokenizer mismatch errors.
-
-        Args:
-            checkpoint_vocab: Vocabulary size saved in the checkpoint.
-            dataset_vocab: Vocabulary size in the prepared dataset.
-
-        Returns:
-            Help text.
-        """
-
-        return (
-            f"Tokenizer mismatch: base checkpoint vocab is {checkpoint_vocab:,}, "
-            f"but prepared dataset vocab is {dataset_vocab:,}.\n"
-            "Fix: rebuild the fine-tune dataset using the exact tokenizer from the base model. "
-            "In Ingest, set Tokenizer policy to Import tokenizer.json and choose the tokenizer.json "
-            "beside the base checkpoint, then prepare the fine-tune dataset again."
-        )
-
     def _training_run_artifacts(self, output_dir: Path) -> list[Path]:
         """Return training-run artifacts in a model output folder.
 
@@ -400,4 +257,106 @@ class MainWindowPart14:
         except Exception as exc:
             self.resume_training_preview.setText(f"[BLOCK] Could not check resume compatibility:\n{exc}")
 
+    def _training_history_path(self) -> Path:
+        """Return the training history path for the selected model folder.
 
+        Returns:
+            Path to ``training_history.json``.
+        """
+
+        output_dir = getattr(self, "active_training_output_dir", None)
+        if output_dir is None:
+            output_dir = Path(self.model_dir.text())
+        return Path(output_dir) / "training_history.json"
+
+    def _load_training_history(self) -> list[dict[str, Any]]:
+        """Load training run history.
+
+        Returns:
+            List of training run entries.
+        """
+
+        path = self._training_history_path()
+        if not path.exists():
+            return []
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            return data if isinstance(data, list) else []
+        except Exception:
+            return []
+
+    def refresh_model_estimate(self) -> None:
+        """Refresh model size, rough VRAM, and run history widgets."""
+
+        model_config = self._current_model_config()
+        # Same reasoning as preview_resume_compatibility: this is the
+        # AI/Training tab's shared "Model Estimate" card, not the
+        # Fine-Tuning tab's; pass an explicit override rather than
+        # inheriting the Fine-Tuning tab's mode combo by fallback.
+        training_config = self._current_training_config(training_mode="pretrain")
+        data_dir = Path(self.train_data_dir.text())
+        train_tokens = max(model_config.context_length * training_config.batch_size, 1)
+        try:
+            summary_path = data_dir / "dataset_summary.json"
+            if summary_path.exists():
+                summary = json.loads(summary_path.read_text(encoding="utf-8"))
+                vocab_size = int(summary.get("tokenizer_vocab_size", 0) or 0)
+                train_tokens = int(summary.get("train_token_count", summary.get("token_count", train_tokens)) or train_tokens)
+                if vocab_size > 0:
+                    model_config.vocab_size = vocab_size
+            elif (data_dir / "tokenizer.json").exists():
+                tokenizer_data = json.loads((data_dir / "tokenizer.json").read_text(encoding="utf-8"))
+                vocab = tokenizer_data.get("model", {}).get("vocab", {})
+                if vocab:
+                    model_config.vocab_size = len(vocab)
+        except Exception as exc:
+            self.training_log.append(f"[WARN] Could not refresh dataset-based estimate: {exc}")
+        estimate = estimate_training_resources(model_config, training_config, train_tokens)
+        self.last_training_estimate = estimate
+        self._update_model_estimate_chips(estimate, model_config, training_config, train_tokens)
+        self.history_metric.setText(f"Runs: {len(self._load_training_history())}")
+        self.training_log.append(
+            "Model estimate refreshed: "
+            f"{int(estimate['parameters']):,} params, "
+            f"checkpoint {format_bytes(float(estimate['checkpoint_bytes']))}, "
+            f"VRAM {format_bytes(float(estimate['vram_bytes']))}."
+        )
+
+    def _append_training_history(self, result: Any) -> None:
+        """Persist a training run entry to ``training_history.json``.
+
+        Args:
+            result: Training result object.
+        """
+
+        history_path = self._training_history_path()
+        history_path.parent.mkdir(parents=True, exist_ok=True)
+        history = self._load_training_history()
+        summary = {}
+        try:
+            if Path(result.summary_path).exists():
+                summary = json.loads(Path(result.summary_path).read_text(encoding="utf-8"))
+        except Exception:
+            summary = {}
+        estimate = getattr(self, "last_training_estimate", {}) or {}
+        entry = {
+            "completed_at": datetime.now().isoformat(timespec="seconds"),
+            "checkpoint_path": str(result.checkpoint_path),
+            "summary_path": str(result.summary_path),
+            "stopped": bool(getattr(result, "stopped", False)),
+            "final_train_loss": result.final_train_loss,
+            "final_val_loss": result.final_val_loss,
+            "best_val_loss": summary.get("best_val_loss"),
+            "recommended_checkpoint_path": summary.get("recommended_checkpoint_path"),
+            "best_checkpoint_path": summary.get("best_checkpoint_path"),
+            "dataset_dir": self.train_data_dir.text(),
+            "dataset_version": (summary.get("model_lineage") or {}).get("dataset_version"),
+            "training_run_id": summary.get("training_run_id"),
+            "parameters": estimate.get("parameters") or summary.get("parameters"),
+            "model_config": summary.get("model_config"),
+            "training_config": summary.get("training_config"),
+        }
+        history.append(entry)
+        history_path.write_text(json.dumps(history[-200:], indent=2), encoding="utf-8")
+        self.history_metric.setText(f"Runs: {len(history[-200:])}")
+        (self.active_training_log or self.training_log).append(f"Training history updated: {history_path}")

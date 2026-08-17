@@ -1,53 +1,13 @@
 from __future__ import annotations
 
-# MainWindow implementation mixin. Runtime names are provided by app.py.
-from typing import Any
-from . import app as _app
+# DatasetPlanScreenMixin mixin. Shared runtime names are provided by interface.app.
+from typing import Any, Optional, Union  # noqa: F401
+from interface import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
-class MainWindowPart6:
-    def _create_project_at(self, project_name: str, base_dir: Path) -> Path:
-        """Create and activate a new project at the selected folder.
 
-        Args:
-            project_name: User-facing project name.
-            base_dir: Parent folder for the new project.
-
-        Returns:
-            Path to the created project.json file.
-        """
-
-        if self.chat_session is not None and hasattr(self.chat_session, "reset"):
-            self.chat_session.reset()
-        self.chat_session = None
-        project_dir = base_dir / self._safe_project_name(project_name)
-        project_file = project_dir / "project.json"
-        project_dir.mkdir(parents=True, exist_ok=True)
-        self._ensure_project_workspace(project_dir)
-        copied_count = self._ensure_project_training_data(project_dir)
-        self.current_project_file = project_file
-        self._apply_project_state(self._default_project_state())
-        self.search_box.setText(project_name)
-        self._apply_project_workspace_paths(project_dir)
-        self._reset_dataset_blueprint_source(project_dir / "training_data")
-        self._apply_project_runtime_environment(project_dir)
-        self._refresh_notification_manager(project_dir)
-        if hasattr(self, "runpod_api_key"):
-            self.load_runpod_settings()
-        self._reset_project_runtime_state()
-        project_file.write_text(json.dumps(self._project_state_dict(project_name, project_dir), indent=2), encoding="utf-8")
-        _register_recent_project(project_file)
-        self.project_state.setText("New project")
-        LOGGER.info("New project created: %s", project_file)
-        self.dataset_log.append(f"Started a new project: {project_file}")
-        self.dataset_log.append(f"Project workspace: {project_dir}")
-        self.dataset_log.append(
-            "Bundled training data is no longer included; use Dataset Sources to download or select a dataset."
-        )
-        self.dataset_log.append(f"Notifier config: {project_dir / 'notifier_config.json'}")
-        return project_file
-
+class DatasetPlanScreenMixin:
     def _reset_dataset_blueprint_source(self, data_root: Path) -> None:
         """Reset the current Dataset Sources tree without replacing its widget."""
         self.blueprint_data_root = Path(data_root)
@@ -62,73 +22,6 @@ class MainWindowPart6:
             self.default_data_tree.addTopLevelItem(
                 QTreeWidgetItem(["No project data files were found.", "", ""])
             )
-
-    def _open_project_file(self, project_file: Path) -> None:
-        """Open and activate a project file.
-
-        Args:
-            project_file: Path to ``project.json``.
-        """
-
-        data = json.loads(project_file.read_text(encoding="utf-8"))
-        self.current_project_file = project_file
-        _register_recent_project(project_file)
-        self._ensure_project_workspace(self.current_project_file.parent)
-        dataset_state = data.get("dataset", {}) if isinstance(data, dict) else {}
-        saved_default_data_paths = dataset_state.get("default_data_paths")
-        self._refresh_dataset_blueprint_source(
-            self.current_project_file.parent / "training_data",
-            saved_paths=(list(saved_default_data_paths) if saved_default_data_paths is not None else None),
-            saved_plan=dict(dataset_state.get("domain_plan", {})),
-            preset=str(dataset_state.get("domain_plan_preset", "Balanced Tiny LLM")),
-        )
-        self._apply_project_state(data)
-        self._apply_project_runtime_environment(self.current_project_file.parent)
-        self._refresh_notification_manager(self.current_project_file.parent)
-        if hasattr(self, "runpod_api_key"):
-            self.load_runpod_settings()
-        if self.model_dir.text().strip():
-            self._load_existing_telemetry(Path(self.model_dir.text()))
-        self.project_state.setText("Project opened")
-        LOGGER.info("Project opened: %s", project_file)
-        self.dataset_log.append(f"Opened project: {project_file}")
-        self.dataset_log.append(f"Notifier config: {self.current_project_file.parent / 'notifier_config.json'}")
-        self.refresh_model_estimate()
-
-    def _project_dialog_start_dir(self) -> str:
-        """Return the best initial folder for project dialogs.
-
-        Returns:
-            Active project folder, its parent, or the current folder.
-        """
-
-        if self.current_project_file is not None:
-            return str(self.current_project_file.parent)
-        text = self.dataset_dir.text().strip() if hasattr(self, "dataset_dir") else ""
-        if text:
-            path = Path(text)
-            for candidate in (path, path.parent):
-                if candidate.exists():
-                    return str(candidate)
-        return str(Path.cwd())
-
-    def _ensure_project_workspace(self, project_dir: Path) -> None:
-        """Create standard folders inside a project.
-
-        Args:
-            project_dir: Project root folder.
-        """
-
-        for name in ("datasets", "models", "fine_tunes", "exports", "training_data", "cache", "temp"):
-            (project_dir / name).mkdir(parents=True, exist_ok=True)
-        ensure_notifier_config(project_dir / "notifier_config.json")
-        ensure_runpod_config(project_dir / "runpod_config.json")
-
-    def _ensure_project_training_data(self, project_dir: Path) -> int:
-        """Create the project training-data folder without bundling corpus files."""
-        target_root = project_dir / "training_data"
-        target_root.mkdir(parents=True, exist_ok=True)
-        return 0
 
     def _refresh_dataset_blueprint_source(
         self,
@@ -320,57 +213,243 @@ class MainWindowPart6:
         )
         self.input_dir.setText(self.external_dataset_dir.text())
 
-    def _refresh_notification_manager(self, project_dir: Optional[Path] = None) -> None:
-        """Load notification settings for the current project.
+    def _dataset_plan_from_ui(self) -> dict[str, float]:
+        """Return dataset blueprint state.
 
-        Args:
-            project_dir: Optional project root folder.
+        Returns:
+            Empty mapping because category percentages are disabled.
         """
 
-        if project_dir is None and self.current_project_file is not None:
-            project_dir = self.current_project_file.parent
-        config_path = default_notifier_config_path(project_dir)
-        self.notification_manager = NotificationManager(config_path)
-        LOGGER.info("Notifier config active: %s", config_path)
+        return {}
 
-    def _apply_project_workspace_paths(self, project_dir: Path) -> None:
-        """Point project output fields at the standard project folders.
+    def _selected_default_data_paths(self) -> list[Path]:
+        """Return bundled default data files selected in the Dataset Blueprint.
 
-        Args:
-            project_dir: Project root folder.
+        Returns:
+            Selected bundled data paths.
         """
 
-        dataset_dir = project_dir / "datasets"
-        model_dir = project_dir / "models"
-        fine_tune_dir = project_dir / "fine_tunes"
-        export_dir = project_dir / "exports"
-        training_data_dir = project_dir / "training_data"
-        self.dataset_dir.setText(str(dataset_dir))
-        self.train_data_dir.setText(str(dataset_dir))
-        self.model_dir.setText(str(model_dir))
-        self.fine_tune_checkpoint.setText(str(model_dir / "final_model.pt"))
-        self.fine_tune_output_dir.setText(str(fine_tune_dir / "latest"))
-        self.export_model_dir.setText(str(model_dir))
-        self.export_dir.setText(str(export_dir))
-        self.gguf_output_path.setText(str(export_dir / "model.gguf"))
-        if not self.input_dir.text().strip():
-            self.input_dir.setText(str(training_data_dir))
+        if not hasattr(self, "default_data_actions"):
+            return [path for path, _category in iter_default_data_files()]
+        return [
+            Path(path)
+            for path, item in self.default_data_actions.items()
+            if item.checkState(0) == Qt.Checked
+        ]
 
-    def _apply_project_runtime_environment(self, project_dir: Path) -> None:
-        """Prefer project-local cache/temp folders for runtime work.
+    def _set_selected_default_data_paths(self, paths: Optional[list[Any]]) -> None:
+        """Restore bundled default data checkbox selections.
 
         Args:
-            project_dir: Project root folder.
+            paths: Saved bundled data file paths. ``None`` means no
+                preference was ever saved (a brand-new project), and every
+                file is selected by default. An explicit empty list means
+                the user deliberately deselected everything, and that
+                choice is restored as-is rather than falling back to
+                "select everything" -- previously the two cases were
+                indistinguishable, so saving a project with nothing
+                selected silently reset to everything selected on reload.
         """
 
-        cache_dir = project_dir / "cache"
-        temp_dir = project_dir / "temp"
-        cache_dir.mkdir(parents=True, exist_ok=True)
-        temp_dir.mkdir(parents=True, exist_ok=True)
-        for key in ("TMPDIR", "TEMP", "TMP"):
-            os.environ[key] = str(temp_dir)
-        for key in ("TORCH_HOME", "HF_HOME", "TRANSFORMERS_CACHE", "PYTORCH_KERNEL_CACHE"):
-            os.environ[key] = str(cache_dir / key.lower())
-            Path(os.environ[key]).mkdir(parents=True, exist_ok=True)
+        if not hasattr(self, "default_data_actions"):
+            return
+        if paths is None:
+            selected = set(self.default_data_actions)
+        else:
+            selected = {str(Path(path)) for path in paths}
+        self.default_data_tree_updating = True
+        try:
+            for path, item in self.default_data_actions.items():
+                item.setCheckState(0, Qt.Checked if path in selected else Qt.Unchecked)
+            self._refresh_default_data_category_states()
+        finally:
+            self.default_data_tree_updating = False
 
+    def _set_dataset_blueprint_refresh_busy(self, busy: bool) -> None:
+        """Toggle refresh busy state indicators for the Dataset Sources page."""
 
+        if hasattr(self, "dataset_plan_refresh_button"):
+            self.dataset_plan_refresh_button.setEnabled(not busy)
+            self.dataset_plan_refresh_button.setText("Refreshing..." if busy else "Refresh")
+        if hasattr(self, "dataset_plan_progress"):
+            if busy:
+                self.dataset_plan_progress.setRange(0, 0)
+                self.dataset_plan_progress.setVisible(True)
+            else:
+                self.dataset_plan_progress.setRange(0, 100)
+                self.dataset_plan_progress.setValue(0)
+                self.dataset_plan_progress.setVisible(False)
+
+    def refresh_dataset_blueprint_files(self) -> None:
+        """Reload the Dataset Blueprint file tree from disk."""
+
+        root = getattr(self, "blueprint_data_root", default_data_root())
+        self._refresh_external_dataset_status()
+        selected_paths = [str(path) for path in self._selected_default_data_paths()]
+        self._set_dataset_blueprint_refresh_busy(True)
+        QApplication.processEvents()
+        try:
+            self._refresh_dataset_blueprint_source(
+                Path(root),
+                saved_paths=selected_paths,
+                saved_plan=self._dataset_plan_from_ui(),
+                preset="Custom",
+            )
+            self.project_state.setText("Blueprint refreshed")
+            LOGGER.info("Dataset blueprint tree refreshed from %s", root)
+        finally:
+            self._set_dataset_blueprint_refresh_busy(False)
+            self._apply_dataset_license_gating()
+
+    def _handle_default_data_tree_changed(self, item: Any, column: int) -> None:
+        """Handle category and file toggles in the bundled data tree.
+
+        Args:
+            item: Changed tree item.
+            column: Changed column index.
+        """
+
+        if column != 0 or getattr(self, "default_data_tree_updating", False):
+            return
+        data = item.data(0, Qt.UserRole) or {}
+        if data.get("kind") != "category":
+            self.default_data_tree_updating = True
+            try:
+                self._refresh_default_data_category_states()
+            finally:
+                self.default_data_tree_updating = False
+            if hasattr(self, "_mixture_weights_state"):
+                delattr(self, "_mixture_weights_state")
+            return
+        state = item.checkState(0)
+        if state == Qt.PartiallyChecked:
+            return
+        self.default_data_tree_updating = True
+        try:
+            for index in range(item.childCount()):
+                item.child(index).setCheckState(0, state)
+        finally:
+            self.default_data_tree_updating = False
+        if hasattr(self, "_mixture_weights_state"):
+            delattr(self, "_mixture_weights_state")
+
+    def _refresh_default_data_category_states(self) -> None:
+        """Refresh category checkbox states from child file selections."""
+
+        if not hasattr(self, "default_data_category_items"):
+            return
+        for category_item in self.default_data_category_items.values():
+            checked = 0
+            partial = False
+            for index in range(category_item.childCount()):
+                state = category_item.child(index).checkState(0)
+                if state == Qt.Checked:
+                    checked += 1
+                elif state == Qt.PartiallyChecked:
+                    partial = True
+            if partial or 0 < checked < category_item.childCount():
+                category_item.setCheckState(0, Qt.PartiallyChecked)
+            elif checked == category_item.childCount() and category_item.childCount() > 0:
+                category_item.setCheckState(0, Qt.Checked)
+            else:
+                category_item.setCheckState(0, Qt.Unchecked)
+
+    def _set_dataset_plan(self, plan: dict[str, Any], preset: str = "Custom") -> None:
+        """Restore high-level dataset blueprint controls.
+
+        Args:
+            plan: Saved dataset domain percentages.
+            preset: Saved preset label.
+        """
+
+        if not hasattr(self, "dataset_plan_spins"):
+            return
+        self._restoring_dataset_plan = True
+        try:
+            values = {**dataset_plan_defaults(), **(plan or {})}
+            for key, widget in self.dataset_plan_spins.items():
+                widget.blockSignals(True)
+                try:
+                    widget.setValue(float(values.get(key, 0.0)))
+                except (TypeError, ValueError):
+                    widget.setValue(0.0)
+                widget.blockSignals(False)
+            self.dataset_plan_preset.blockSignals(True)
+            if preset == "Custom":
+                self.dataset_plan_preset.setCurrentText(preset)
+            else:
+                self.dataset_plan_preset.setCurrentText("Custom")
+            self.dataset_plan_preset.blockSignals(False)
+        finally:
+            self._restoring_dataset_plan = False
+        self._update_dataset_plan_total()
+
+    def _dataset_plan_mark_custom(self, *_args: Any) -> None:
+        """Mark the dataset blueprint as custom after manual edits."""
+
+        if getattr(self, "_restoring_dataset_plan", False):
+            return
+        if hasattr(self, "_mixture_weights_state"):
+            delattr(self, "_mixture_weights_state")
+        if hasattr(self, "dataset_plan_preset") and self.dataset_plan_preset.currentText() != "Custom":
+            self.dataset_plan_preset.blockSignals(True)
+            self.dataset_plan_preset.setCurrentText("Custom")
+            self.dataset_plan_preset.blockSignals(False)
+
+    def _update_dataset_plan_total(self) -> None:
+        """No-op retained for compatibility after blueprint percentage removal."""
+
+        return
+
+    def normalize_dataset_plan(self) -> None:
+        """No-op retained for compatibility after blueprint percentage removal."""
+
+        return
+
+    def apply_dataset_plan_preset(self, preset: str) -> None:
+        """No-op retained for compatibility after blueprint percentage removal.
+
+        Args:
+            preset: Preset label from the Dataset Blueprint combo box.
+        """
+
+        return
+
+    def apply_dataset_plan_to_ingestion(self) -> None:
+        """Clear ingestion mixture overrides (category percentages are disabled)."""
+
+        self._set_mixture_weights({})
+        if hasattr(self, "dataset_log"):
+            self.dataset_log.append("Dataset blueprint applied: category percentages are disabled.")
+        self.project_state.setText("Blueprint applied")
+        LOGGER.info("Dataset blueprint applied with category percentages disabled")
+
+    def _mixture_weights_from_ui(self) -> dict[str, float]:
+        """Return dataset mixture weights from the Ingest tab.
+
+        Returns:
+            Empty mapping because category percentages are disabled.
+        """
+
+        if not hasattr(self, "_mixture_weights_state"):
+            self._mixture_weights_state = {}
+        return {}
+
+    def _set_mixture_weights(self, weights: dict[str, Any]) -> None:
+        """Restore dataset mixture weights.
+
+        Args:
+            weights: Saved mixture weights by source family.
+        """
+
+        self._mixture_weights_state = {}
+
+    def _update_mixture_total(self) -> None:
+        """No-op retained for compatibility after mixture percentage removal."""
+
+        return
+
+    def _normalize_mixture_weights(self) -> None:
+        """No-op retained for compatibility after mixture percentage removal."""
+
+        return
