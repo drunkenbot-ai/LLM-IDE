@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-# MainWindow implementation mixin. Runtime names are provided by app.py.
-from typing import Any
-from . import app as _app
+# LiveScreenMixin mixin. Shared runtime names are provided by interface.app.
+from typing import Any, Optional, Union  # noqa: F401
+from interface import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
-class MainWindowPart3:
+
+class LiveScreenMixin:
     @staticmethod
     def _metric_pair(value: Optional[int], total: Optional[int]) -> str:
         """Format a metric pair.
@@ -202,133 +203,108 @@ class MainWindowPart3:
         timestamp = datetime.fromtimestamp(float(latest["recorded_at"])).strftime("%H:%M:%S")
         self.live_timeline_label.setText(f"Timeline: step {int(latest['step']):,} @ {timestamp}")
 
-    @staticmethod
-    def _compact_preview_text(text: str, limit: int = 220) -> str:
-        """Normalize a training preview into a compact single line.
+    def _update_live_training_metrics(
+        self,
+        step: int,
+        event: dict[str, Any],
+        train_loss: Optional[float],
+        learning_rate: Optional[float],
+        grad_norm: Optional[float],
+        update_ratio: Optional[float],
+        tokens_per_second: Optional[float],
+        samples_per_second: Optional[float],
+        vram_allocated: Optional[float],
+        vram_reserved: Optional[float],
+        gpu_memory: Optional[float],
+        system_cpu: Optional[float],
+        system_ram: Optional[float],
+        data_workers: Optional[int],
+    ) -> None:
+        """Update live tracker widgets from one training progress event.
 
         Args:
-            text: Raw decoded preview text.
-            limit: Maximum number of displayed characters.
+            step: Current optimizer step.
+            event: Progress event emitted by training.
+            train_loss: Latest training loss.
+            learning_rate: Current learning rate.
+            grad_norm: Current gradient norm.
+            update_ratio: Current parameter update ratio.
+            tokens_per_second: Current token throughput.
+            samples_per_second: Current sample throughput.
+            vram_allocated: Current CUDA allocated memory in GB.
+            vram_reserved: Current CUDA reserved memory in GB.
+            gpu_memory: Current GPU memory pressure percentage.
+            system_cpu: Current system CPU utilization percentage.
+            system_ram: Current system RAM utilization percentage.
+            data_workers: CPU data-loader worker count.
+        """
+
+        total_steps = event.get("total_steps")
+        if "epoch" in event and "total_epochs" in event:
+            self.live_epoch_metric.setText(f"Epoch: {event['epoch']}/{event['total_epochs']}")
+        if total_steps:
+            self.live_step_metric.setText(f"Step: {step:,}/{int(total_steps):,}")
+            data_percent = min(100.0, max(0.0, (step / max(1, int(total_steps))) * 100.0))
+            self.live_data_metric.setText(f"Data: {data_percent:.1f}%")
+            self.live_progress.setValue(int(data_percent))
+        else:
+            self.live_step_metric.setText(f"Step: {step:,}")
+        if tokens_per_second is not None:
+            self.live_tokens_metric.setText(f"Tokens/sec: {float(tokens_per_second):,.0f}")
+        if train_loss is not None:
+            self.live_loss_metric.setText(f"Loss: {float(train_loss):.4f}")
+        if learning_rate is not None:
+            self.live_lr_metric.setText(f"LR: {float(learning_rate):.2e}")
+        sample_text = str(event.get("sample_text") or "").strip()
+        if sample_text:
+            self.live_sample_text.setText(f"Training text: {self._compact_preview_text(sample_text, 220)}")
+        self.live_layer_status.setText(f"Layers: {self.n_layer.value()}")
+        self.live_head_status.setText(f"Heads: {self.n_head.value()}")
+        self.live_hidden_status.setText(f"Hidden size: {self.n_embd.value()}")
+        self.live_batch_status.setText(f"Batch size: {self.batch_size.value()}")
+        self.live_context_status.setText(f"Context: {self.train_context_length.value()}")
+        self.live_device_status.setText(f"Device: {self.device.currentText()}")
+        self.live_worker_status.setText(f"CPU workers: {data_workers if data_workers is not None else self.data_loader_workers.value()}")
+        self._set_meter(self.live_cpu_bar, "CPU", system_cpu if system_cpu is not None else self._system_cpu_value())
+        self._set_meter(self.live_gpu_bar, "GPU memory", gpu_memory)
+        if vram_allocated is not None or vram_reserved is not None:
+            allocated = float(vram_allocated or 0.0)
+            reserved = float(vram_reserved or 0.0)
+            reserved_percent = None
+            if self.device.currentText().startswith("cuda") and torch.cuda.is_available():
+                try:
+                    _, total_vram = torch.cuda.mem_get_info()
+                    reserved_percent = min(100.0, 100.0 * reserved * (1024 ** 3) / max(total_vram, 1))
+                except Exception:
+                    reserved_percent = None
+            self._set_meter(self.live_vram_bar, "VRAM reserved", reserved_percent)
+            self.live_vram_label.setText(f"VRAM reserved: {reserved:.2f} GB ({allocated:.2f} GB active)")
+        self._set_meter(self.live_ram_bar, "System RAM", system_ram if system_ram is not None else self._system_ram_value())
+        latest_loss = float(train_loss) if train_loss is not None else None
+        self.live_flow.set_state(self.n_layer.value(), self.n_head.value(), step, latest_loss)
+        self.live_prediction_chart.update_distribution(step, latest_loss)
+        self.live_attention_chart.update_heatmap(step, grad_norm)
+        self.live_activation_chart.update_histogram(step, tokens_per_second)
+        self.live_gradient_chart.update_flow(self.n_layer.value(), grad_norm, step)
+
+    def _system_ram_value(self) -> Optional[float]:
+        """Read system RAM utilization for live telemetry.
 
         Returns:
-            Single-line text preview.
+            System RAM percentage, or None when unavailable.
         """
 
-        compact = re.sub(r"\s+", " ", text).strip()
-        if len(compact) <= limit:
-            return compact
-        return compact[: max(0, limit - 3)].rstrip() + "..."
+        if psutil is None:
+            return None
+        return float(psutil.virtual_memory().percent)
 
-    def _build_export_tab(self) -> QWidget:
-        """Build the export page.
+    def _system_cpu_value(self) -> Optional[float]:
+        """Read system CPU utilization for live telemetry.
 
         Returns:
-            Export page widget.
+            System CPU percentage, or None when unavailable.
         """
 
-        return build_export_tab(self)
-
-    def _build_benchmark_tab(self) -> QWidget:
-        """Build the benchmark prompt page.
-
-        Returns:
-            Benchmark page widget.
-        """
-
-        return build_benchmark_tab(self)
-
-    def _build_chat_tab(self) -> QWidget:
-        """Build the model test chat page.
-
-        Returns:
-            Chat page widget.
-        """
-
-        return build_chat_tab(self)
-
-    def _panel(self) -> QWidget:
-        """Create a base page panel.
-
-        Returns:
-            Panel widget.
-        """
-
-        page = QWidget()
-        page.setObjectName("Panel")
-        return page
-
-    def _page_title(self, text: str) -> QLabel:
-        """Create a page title label.
-
-        Args:
-            text: Title text.
-
-        Returns:
-            Label configured as a page title.
-        """
-
-        label = QLabel(text)
-        label.setObjectName("PageTitle")
-        return label
-
-    def _metric_chip(self, text: str, tooltip: str) -> QLabel:
-        """Create a compact metric display label.
-
-        Args:
-            text: Initial metric text.
-            tooltip: User-facing explanation.
-
-        Returns:
-            Configured metric label.
-        """
-
-        label = QLabel(text)
-        label.setObjectName("MetricChip")
-        label.setMinimumWidth(150)
-        label.setMinimumHeight(28)
-        label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self._tip(label, tooltip)
-        return label
-
-    def _hardware_meter(self, name: str) -> QProgressBar:
-        """Create a slider-like hardware utilization meter.
-
-        Args:
-            name: Display name for the meter.
-
-        Returns:
-            Configured progress bar.
-        """
-
-        meter = QProgressBar()
-        meter.setObjectName("HardwareMeter")
-        meter.setRange(0, 100)
-        meter.setValue(0)
-        meter.setTextVisible(False)
-        meter.setFixedHeight(8)
-        meter.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self._tip(meter, f"Live {name} utilization.")
-        return meter
-
-    def _set_meter(self, meter: QProgressBar, name: str, value: Optional[float]) -> None:
-        """Update a hardware utilization meter.
-
-        Args:
-            meter: Meter to update.
-            name: Display name for the meter.
-            value: Utilization percentage.
-        """
-
-        if value is None:
-            meter.setValue(0)
-            label = self.hardware_meter_labels.get(id(meter))
-            if label is not None:
-                label.setText(f"{name}: -")
-            return
-        bounded = max(0.0, min(100.0, float(value)))
-        meter.setValue(int(round(bounded)))
-        label = self.hardware_meter_labels.get(id(meter))
-        if label is not None:
-            label.setText(f"{name}: {bounded:.1f}%")
-
-
+        if psutil is None:
+            return None
+        return float(psutil.cpu_percent(interval=None))

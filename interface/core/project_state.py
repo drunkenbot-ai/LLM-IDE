@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-# MainWindow implementation mixin. Runtime names are provided by app.py.
-from typing import Any
-from . import app as _app
+# ProjectStateMixin mixin. Shared runtime names are provided by interface.app.
+from typing import Any, Optional, Union  # noqa: F401
+from interface import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
-class MainWindowPart7:
+
+class ProjectStateMixin:
     def _default_project_state(self) -> dict[str, Any]:
         """Build the default state used for a newly created project.
 
@@ -381,4 +382,33 @@ class MainWindowPart7:
             },
         }
 
+    @staticmethod
+    def _safe_project_name(project_name: str) -> str:
+        """Return a filesystem-safe project folder name.
 
+        Args:
+            project_name: Raw user project name.
+
+        Returns:
+            Safe folder name.
+        """
+
+        return re.sub(r"[^A-Za-z0-9_.-]+", "_", project_name).strip("._") or "DrunkenBotProject"
+
+    @staticmethod
+    def _read_json_if_exists(path: Path) -> Optional[Any]:
+        """Read a JSON file when it exists.
+
+        Args:
+            path: JSON file path.
+
+        Returns:
+            Parsed JSON or ``None``.
+        """
+
+        if not path.exists():
+            return None
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            return None

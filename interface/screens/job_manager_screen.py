@@ -1,48 +1,13 @@
 from __future__ import annotations
 
-# MainWindow implementation mixin. Runtime names are provided by app.py.
-from typing import Any
-from . import app as _app
+# JobManagerScreenMixin mixin. Shared runtime names are provided by interface.app.
+from typing import Any, Optional, Union  # noqa: F401
+from interface import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
-class MainWindowPart2:
-    def _build_training_tab(self) -> QWidget:
-        """Build the training configuration page.
 
-        Returns:
-            Training page widget.
-        """
-
-        return build_training_tab(self)
-
-    def _build_fine_tuning_tab(self) -> QWidget:
-        """Build the fine-tuning page.
-
-        Returns:
-            Fine-tuning page widget.
-        """
-
-        return build_fine_tuning_tab(self)
-
-    def _build_live_training_tab(self) -> QWidget:
-        """Build the live training tracker page.
-
-        Returns:
-            Live training tracker page widget.
-        """
-
-        return build_live_training_tab(self)
-
-    def _build_job_manager_tab(self) -> QWidget:
-        """Build the distributed job manager page.
-
-        Returns:
-            Job manager page widget.
-        """
-
-        return build_job_manager_tab(self)
-
+class JobManagerScreenMixin:
     def refresh_job_manager_tab(self) -> None:
         """Refresh the job manager dashboard tables."""
 
@@ -285,7 +250,7 @@ class MainWindowPart2:
                 backend_label="runpod",
             )
             artifact_root = Path(self.coordinator_artifact_root.text().strip()).expanduser()
-            bootstrap_path = create_runpod_worker_bundle(Path(__file__).resolve().parents[2], artifact_root)
+            bootstrap_path = create_runpod_worker_bundle(Path(_app.__file__).resolve().parents[2], artifact_root)
             bootstrap_url = f"{coordinator_url}/artifacts/{bootstrap_path.name}"
             worker_id = f"runpod-{job.job_id}"
             pod_name = f"micro-llm-{self._safe_project_name(self.search_box.text().strip() or 'project')}-{job.job_id[-8:]}"
@@ -434,5 +399,3 @@ class MainWindowPart2:
             if managed.assigned_worker_id == worker_id and managed.spec.status.value in {"assigned", "running", "paused", "stopping"}:
                 return managed.spec.job_id
         return ""
-
-

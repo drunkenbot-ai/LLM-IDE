@@ -150,27 +150,58 @@ from interface.startup import (
     _run_startup_validations,
 )
 from interface.startup_validation import _run_startup_tests
-from interface.main_window_part1 import MainWindowPart1
-from interface.main_window_part2 import MainWindowPart2
-from interface.main_window_part3 import MainWindowPart3
-from interface.main_window_part4 import MainWindowPart4
-from interface.main_window_part5 import MainWindowPart5
-from interface.main_window_part6 import MainWindowPart6
-from interface.main_window_part7 import MainWindowPart7
-from interface.main_window_part8 import MainWindowPart8
-from interface.main_window_part9 import MainWindowPart9
-from interface.main_window_part10 import MainWindowPart10
-from interface.main_window_part11 import MainWindowPart11
-from interface.main_window_part12 import MainWindowPart12
-from interface.main_window_part13 import MainWindowPart13
-from interface.main_window_part14 import MainWindowPart14
-from interface.main_window_part15 import MainWindowPart15
-from interface.main_window_part16 import MainWindowPart16
-from interface.main_window_part17 import MainWindowPart17
-from interface.main_window_part18 import MainWindowPart18
+from interface.core.window_core import WindowCoreMixin
+from interface.core.project_manager import ProjectManagerMixin
+from interface.core.project_state import ProjectStateMixin
+from interface.core.project_state_apply import ProjectStateApplyMixin
+from interface.core.task_runner import TaskRunnerMixin
+from interface.widgets.factories import WidgetFactoryMixin
+from interface.screens.dataset_plan_screen import DatasetPlanScreenMixin
+from interface.screens.dataset_screen import DatasetScreenMixin
+from interface.screens.dataset_preview import DatasetPreviewMixin
+from interface.screens.dataset_quality import DatasetQualityMixin
+from interface.screens.dataset_controls import DatasetControlsMixin
+from interface.screens.training_screen import TrainingScreenMixin
+from interface.screens.training_config import TrainingConfigMixin
+from interface.screens.training_estimation import TrainingEstimationMixin
+from interface.screens.training_metrics import TrainingMetricsMixin
+from interface.screens.training_run import TrainingRunMixin
+from interface.screens.fine_tuning_screen import FineTuningScreenMixin
+from interface.screens.fine_tuning_run import FineTuningRunMixin
+from interface.screens.live_screen import LiveScreenMixin
+from interface.screens.job_manager_screen import JobManagerScreenMixin
+from interface.screens.benchmark_screen import BenchmarkScreenMixin
+from interface.screens.export_screen import ExportScreenMixin
+from interface.screens.chat_screen import ChatScreenMixin
 
-class MainWindow(MainWindowPart1, MainWindowPart2, MainWindowPart3, MainWindowPart4, MainWindowPart5, MainWindowPart6, MainWindowPart7, MainWindowPart8, MainWindowPart9, MainWindowPart10, MainWindowPart11, MainWindowPart12, MainWindowPart13, MainWindowPart14, MainWindowPart15, MainWindowPart16, MainWindowPart17, MainWindowPart18, QMainWindow):
-    """Main application window composed from focused UI mixins."""
+
+class MainWindow(
+    WindowCoreMixin,
+    ProjectManagerMixin,
+    ProjectStateMixin,
+    ProjectStateApplyMixin,
+    TaskRunnerMixin,
+    WidgetFactoryMixin,
+    DatasetPlanScreenMixin,
+    DatasetScreenMixin,
+    DatasetPreviewMixin,
+    DatasetQualityMixin,
+    DatasetControlsMixin,
+    TrainingScreenMixin,
+    TrainingConfigMixin,
+    TrainingEstimationMixin,
+    TrainingMetricsMixin,
+    TrainingRunMixin,
+    FineTuningScreenMixin,
+    FineTuningRunMixin,
+    LiveScreenMixin,
+    JobManagerScreenMixin,
+    BenchmarkScreenMixin,
+    ExportScreenMixin,
+    ChatScreenMixin,
+    QMainWindow,
+):
+    """Main application window assembled from shared widgets and screen mixins."""
 
 def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
     """Block app launch until a valid license is confirmed.

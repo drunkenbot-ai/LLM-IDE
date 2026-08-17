@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-# MainWindow implementation mixin. Runtime names are provided by app.py.
-from typing import Any
-from . import app as _app
+# TrainingRunMixin mixin. Shared runtime names are provided by interface.app.
+from typing import Any, Optional, Union  # noqa: F401
+from interface import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
-class MainWindowPart16:
+
+class TrainingRunMixin:
     def _run_training_preflight(self, model_config: ModelConfig, training_config: TrainingConfig) -> bool:
         """Run pre-training checklist and disk-space guard.
 
@@ -390,3 +391,70 @@ class MainWindowPart16:
             task_kind="training",
         )
 
+    @Slot(object)
+    def _training_finished(self, result: Any) -> None:
+        """Update UI after training finishes.
+
+        Args:
+            result: Training result.
+        """
+
+        log = self.active_training_log or self.training_log
+        progress = self.active_training_progress or self.training_progress
+        progress.setValue(100)
+        if progress is not self.training_progress:
+            self.training_progress.setValue(100)
+        if hasattr(self, "live_progress"):
+            self.live_progress.setValue(100)
+        log.append(f"Saved model: {result.checkpoint_path}")
+        log.append(f"Final train loss: {result.final_train_loss:.4f}")
+        if result.final_val_loss is not None:
+            log.append(f"Final validation loss: {result.final_val_loss:.4f}")
+        training_summary: dict[str, Any] = {}
+        try:
+            training_summary = json.loads(Path(result.summary_path).read_text(encoding="utf-8"))
+        except Exception:
+            training_summary = {}
+        best_checkpoint = str(training_summary.get("recommended_checkpoint_path") or "")
+        best_val_loss = training_summary.get("best_val_loss")
+        if best_checkpoint:
+            if best_val_loss is not None:
+                log.append(f"Recommended checkpoint: {best_checkpoint} (best validation loss {float(best_val_loss):.4f})")
+            else:
+                log.append(f"Recommended checkpoint: {best_checkpoint}")
+        output_dir = self.active_training_output_dir or Path(result.checkpoint_path).parent
+        stage_key = self.active_task_kind if self.active_task_kind in {"training", "fine_tune"} else "training"
+        self.export_model_dir.setText(str(output_dir))
+        try:
+            if stage_key != "fine_tune" and Path(output_dir).resolve() == Path(self.model_dir.text()).resolve():
+                self.fine_tune_checkpoint.setText(str(result.checkpoint_path))
+        except OSError:
+            pass
+        if getattr(result, "stopped", False):
+            self.project_state.setText("Training stopped")
+            self.train_status.setText("Training: stopped, checkpoint saved")
+            log.append("Training stopped safely. Resume from this checkpoint or the latest checkpoint.")
+        else:
+            self.project_state.setText("Training complete")
+            self.train_status.setText(f"Training: loss {result.final_train_loss:.4f}")
+        title = "Fine-tuning complete" if stage_key == "fine_tune" else "Model training complete"
+        if getattr(result, "stopped", False):
+            title = "Fine-tuning stopped" if stage_key == "fine_tune" else "Model training stopped"
+        completion_lines = [
+            f"Checkpoint: {result.checkpoint_path}",
+            f"Summary: {result.summary_path}",
+            f"Final train loss: {result.final_train_loss:.4f}",
+        ]
+        if result.final_val_loss is not None:
+            completion_lines.append(f"Final validation loss: {result.final_val_loss:.4f}")
+        if best_checkpoint:
+            completion_lines.append(f"Recommended checkpoint: {best_checkpoint}")
+        if best_val_loss is not None:
+            completion_lines.append(f"Best validation loss: {float(best_val_loss):.4f}")
+        completion_lines.append(f"Output: {output_dir}")
+        self._notify_complete(stage_key, title, completion_lines)
+        self._append_training_history(result)
+        self._clear_button_busy(self.active_training_final_button_text)
+        self.active_training_log = None
+        self.active_training_progress = None
+        self.active_training_output_dir = None

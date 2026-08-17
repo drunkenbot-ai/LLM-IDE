@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-# MainWindow implementation mixin. Runtime names are provided by app.py.
-from typing import Any
-from . import app as _app
+# ProjectStateApplyMixin mixin. Shared runtime names are provided by interface.app.
+from typing import Any, Optional, Union  # noqa: F401
+from interface import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
-class MainWindowPart8:
+
+class ProjectStateApplyMixin:
     def _apply_project_state(self, data: dict[str, Any]) -> None:
         """Restore UI state from a saved project dictionary.
 
@@ -280,150 +281,3 @@ class MainWindowPart8:
         has_npy_tokens = (dataset_dir / "train_tokens.npy").exists() and (dataset_dir / "val_tokens.npy").exists()
         has_json_tokens = (dataset_dir / "train_tokens.json").exists() and (dataset_dir / "val_tokens.json").exists()
         return has_npy_tokens or has_json_tokens
-
-    @staticmethod
-    def _safe_project_name(project_name: str) -> str:
-        """Return a filesystem-safe project folder name.
-
-        Args:
-            project_name: Raw user project name.
-
-        Returns:
-            Safe folder name.
-        """
-
-        return re.sub(r"[^A-Za-z0-9_.-]+", "_", project_name).strip("._") or "DrunkenBotProject"
-
-    @staticmethod
-    def _read_json_if_exists(path: Path) -> Optional[Any]:
-        """Read a JSON file when it exists.
-
-        Args:
-            path: JSON file path.
-
-        Returns:
-            Parsed JSON or ``None``.
-        """
-
-        if not path.exists():
-            return None
-        try:
-            return json.loads(path.read_text(encoding="utf-8"))
-        except Exception:
-            return None
-
-    @staticmethod
-    def _set_combo_text(combo: QComboBox, text: str) -> None:
-        """Set combo text when the value exists.
-
-        Args:
-            combo: Combo box to update.
-            text: Display text to select.
-        """
-
-        index = combo.findText(text)
-        if index >= 0:
-            combo.setCurrentIndex(index)
-        elif combo.isEditable():
-            combo.setEditText(text)
-
-    def _set_combo_by_data(self, combo: QComboBox, value: str, labels: dict[str, str]) -> None:
-        """Set a combo by internal saved value.
-
-        Args:
-            combo: Combo box to update.
-            value: Internal saved value.
-            labels: Mapping from saved value to display label.
-        """
-
-        self._set_combo_text(combo, labels.get(value, value))
-
-    def _run_task(
-        self,
-        fn,
-        args,
-        on_finished,
-        log: QTextEdit,
-        progress_bar: QProgressBar,
-        with_progress: bool = False,
-        button: Optional[QPushButton] = None,
-        stop_button: Optional[QPushButton] = None,
-        busy_text: str = "Working",
-        task_kind: str = "",
-        isolate_process: bool = False,
-    ) -> None:
-        """Run a long task on a background thread.
-
-        Args:
-            fn: Callable to execute.
-            args: Positional arguments for the callable.
-            on_finished: Slot called with the task result.
-            log: Log widget receiving progress messages.
-            progress_bar: Progress bar receiving percent updates.
-            with_progress: Whether to pass a progress callback to the task.
-            button: Optional button to disable while running.
-            stop_button: Optional stop button to enable while running.
-            busy_text: Button text shown while running.
-            task_kind: Optional notification stage key.
-            isolate_process: Run the task inside a child process.
-        """
-
-        if self.thread is not None:
-            QMessageBox.information(self, "Task running", "Please wait for the current task to finish.")
-            return
-
-        LOGGER.info("Starting background task: %s", getattr(fn, "__name__", str(fn)))
-        self.active_task_kind = task_kind
-        if button:
-            self._set_button_busy(button, busy_text)
-        if stop_button:
-            stop_button.setEnabled(True)
-            self.active_stop_button = stop_button
-
-        self.stop_event = Event()
-        self.progress_queue = Queue()
-        self.active_log = log
-        self.active_progress_bar = progress_bar
-        self.thread = QThread(self)
-        worker_class = ProcessTaskWorker if isolate_process else TaskWorker
-        self.worker = worker_class(
-            fn,
-            *args,
-            progress_queue=self.progress_queue,
-            with_progress=with_progress,
-            stop_event=self.stop_event,
-        )
-        self.result_bridge = WorkerSignalBridge(self)
-        self.worker.moveToThread(self.thread)
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.result_bridge.finished)
-        self.result_bridge.finished.connect(on_finished)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.failed.connect(self.result_bridge.failed)
-        self.result_bridge.failed.connect(self._task_failed_from_worker)
-        self.worker.failed.connect(self.worker.deleteLater)
-        self.worker.failed.connect(self.thread.quit)
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.thread.finished.connect(self._thread_finished)
-        self.progress_timer.start(100)
-        self.thread.start()
-
-    @Slot(str)
-    def _task_failed_from_worker(self, message: str) -> None:
-        """Handle a worker failure on the UI thread.
-
-        Args:
-            message: Error message emitted by the worker.
-        """
-
-        if self.active_log is None or self.active_progress_bar is None:
-            return
-        LOGGER.error("Background task failed: %s", message)
-        if self.active_task_kind == "chat":
-            self.chat_status.setText(f"Chat: load failed - {message}")
-        elif self.active_task_kind == "dataset_download":
-            self.external_dataset_version.setText(f"Download failed: {message}")
-            self.dataset_plan_progress.setVisible(False)
-        self._task_failed(message, self.active_log, self.active_progress_bar)
-
