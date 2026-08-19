@@ -185,7 +185,7 @@ class DatasetScreenMixin:
                 self.dataset_log.append("Checked online dataset choices are ignored until the master checkbox is enabled.")
                 LOGGER.info("Checked online dataset choices are ignored until the master checkbox is enabled")
         LOGGER.info(
-            "Preparing dataset: input=%s output=%s stage=%s online_datasets=%s conversation_json=%s instruction_json=%s",
+            "Preparing dataset: input=%s output=%s stage=%s online_datasets=%s conversation_json=%s instruction_json=%s tool_call_json=%s",
             config.input_dir,
             config.output_dir,
             config.dataset_stage,
