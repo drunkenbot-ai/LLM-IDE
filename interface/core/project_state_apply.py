@@ -15,6 +15,7 @@ class ProjectStateApplyMixin:
             data: Project state loaded from JSON.
         """
 
+        self.set_theme(data.get("theme", "system"), persist=False)
         self.search_box.setText(str(data.get("project_name", "")))
         paths = data.get("paths", {})
         dataset = data.get("dataset", {})

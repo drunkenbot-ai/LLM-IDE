@@ -78,6 +78,14 @@ def build_top_bar(window, app_name: str) -> QWidget:
         action.triggered.connect(
             lambda _checked=False, method=method: window.edit_focused_widget(method)
         )
+    window.theme_menu = window.edit_menu.addMenu("Themes")
+    window.system_theme_action = window.theme_menu.addAction("System")
+    window.system_theme_action.setCheckable(True)
+    window.system_theme_action.triggered.connect(lambda: window.set_theme("system"))
+    window.dark_theme_action = window.theme_menu.addAction("Dark")
+    window.dark_theme_action.setCheckable(True)
+    window.dark_theme_action.triggered.connect(lambda: window.set_theme("dark"))
+    window.update_theme_actions()
 
     window.about_menu = window.menu_bar.addMenu("About")
     window.about_menu.addAction(f"About {app_name}", window.show_about_dialog)

@@ -3,6 +3,7 @@ from __future__ import annotations
 # WindowCoreMixin mixin. Shared runtime names are provided by interface.app.
 from typing import Any, Optional, Union  # noqa: F401
 from interface.widgets.app_shell import build_main_shell
+from interface.theme import apply_theme, current_theme, normalize_theme
 from interface import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
@@ -74,7 +75,8 @@ class WindowCoreMixin:
         self.job_manager_timer.setInterval(2500)
         self.job_manager_timer.timeout.connect(self.refresh_job_manager_tab)
 
-        self._apply_style()
+        self.theme_name = current_theme()
+        self._apply_theme()
 
         shell = self._build_shell()
         self.setCentralWidget(shell)
@@ -205,11 +207,29 @@ class WindowCoreMixin:
             return widget.objectName()
         return widget.__class__.__name__
 
-    def _apply_style(self) -> None:
-        """Load the application stylesheet from the QSS module file."""
+    def _apply_theme(self) -> None:
+        """Apply the window's selected theme application-wide."""
+        self.theme_name = apply_theme(self.theme_name)
 
-        qss_path = Path(_app.__file__).with_name("styles.qss")
-        self.setStyleSheet(qss_path.read_text(encoding="utf-8"))
+    def update_theme_actions(self) -> None:
+        """Synchronize the theme menu checks with the active theme."""
+        if not hasattr(self, "system_theme_action"):
+            return
+        self.system_theme_action.setChecked(self.theme_name == "system")
+        self.dark_theme_action.setChecked(self.theme_name == "dark")
+
+    def set_theme(self, theme: object, persist: bool = True) -> None:
+        """Select an application theme and persist it for the active project.
+
+        Args:
+            theme: Requested theme identifier.
+            persist: Whether to save the selection to the active project.
+        """
+        self.theme_name = normalize_theme(theme)
+        self._apply_theme()
+        self.update_theme_actions()
+        if persist and self.current_project_file is not None:
+            self.save_project()
 
     def _build_shell(self) -> QWidget:
         """Build the top-level dashboard shell from reusable widgets."""

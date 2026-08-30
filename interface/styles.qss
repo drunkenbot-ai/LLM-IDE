@@ -20,7 +20,7 @@ QWidget#Panel {
     color: #eeeeee;
 }
 
-QWidget#Page {
+QWidget#Page, QWidget#PageContent {
     background: #181818;
     color: #eeeeee;
 }
@@ -144,7 +144,7 @@ QCheckBox::indicator:checked:hover {
     border-color: #ff9292;
 }
 
-QTreeView::indicator {
+QTreeView::indicator, QTreeWidget::indicator {
     width: 14px;
     height: 14px;
     background: #111111;
@@ -152,17 +152,17 @@ QTreeView::indicator {
     border-radius: 3px;
 }
 
-QTreeView::indicator:hover {
+QTreeView::indicator:hover, QTreeWidget::indicator:hover {
     border-color: #f5b041;
     background: #1d1d1d;
 }
 
-QTreeView::indicator:checked {
+QTreeView::indicator:checked, QTreeWidget::indicator:checked {
     background: #c94343;
     border-color: #f07171;
 }
 
-QTreeView::indicator:checked:hover {
+QTreeView::indicator:checked:hover, QTreeWidget::indicator:checked:hover {
     background: #e05a5a;
     border-color: #ff9292;
 }
@@ -357,6 +357,45 @@ QTextBrowser {
     padding: 12px;
     font-family: Arial, "Segoe UI", sans-serif;
     font-size: 14px;
+}
+
+QDialog {
+    background: #181818;
+    color: #eeeeee;
+}
+
+QDialog QLabel#Title {
+    color: #f5b041;
+    font-size: 24px;
+}
+
+QDialog QLabel#Subtitle, QDialog QLabel#Step, QDialog QLabel#Body, QDialog QLabel#CardBody {
+    color: #dddddd;
+}
+
+QDialog QLabel#CardTitle {
+    color: #f2f2f2;
+    font-size: 16px;
+}
+
+QWidget#ChoiceCard, QListWidget {
+    background: #171717;
+    color: #dddddd;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+}
+
+QListWidget {
+    padding: 4px;
+}
+
+QListWidget::item {
+    padding: 6px 8px;
+}
+
+QListWidget::item:selected {
+    background: #3a2d19;
+    color: #ffffff;
 }
 
 QScrollArea {
