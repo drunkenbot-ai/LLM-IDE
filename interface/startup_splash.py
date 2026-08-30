@@ -9,7 +9,7 @@ from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QFont, QPixmap
 from PySide6.QtWidgets import QDialog, QLabel, QHBoxLayout, QProgressBar, QTextBrowser, QVBoxLayout
 
-from interface.theme import apply_theme, load_startup_theme
+from interface.theme import DARK_THEME, apply_theme, current_theme, load_startup_theme
 
 
 class StartupSplash(QDialog):
@@ -107,12 +107,17 @@ class StartupSplash(QDialog):
         self._render_checks()
 
     def _render_checks(self) -> None:
+        colors = (
+            {"done": "#ffffff", "running": "#e2cfaa", "failed": "#ff9a9a", "pending": "#bdbdbd"}
+            if current_theme() == DARK_THEME
+            else {"done": "#202020", "running": "#7a5100", "failed": "#a82d2d", "pending": "#555555"}
+        )
         rows = ["<ul style='margin:0; padding-left:18px; line-height:1.8;'>"]
         for label in self._check_order:
             state = self._checks.get(label, "pending")
             escaped = html.escape(label)
             marker = {"done": "[OK]", "running": "[*]", "failed": "[FAIL]"}.get(state, "-")
-            color = {"done": "#ffffff", "running": "#e2cfaa", "failed": "#ff9a9a"}.get(state, "#bdbdbd")
+            color = colors.get(state, colors["pending"])
             rows.append(f"<li style='color:{color};'>{marker} {escaped}</li>")
         rows.append("</ul>")
         self.checks_view.setHtml("".join(rows))
