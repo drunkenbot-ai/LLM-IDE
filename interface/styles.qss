@@ -1,6 +1,6 @@
 * { font-family: Arial, "Segoe UI", sans-serif; }
 
-QMainWindow, QWidget#AppShell {
+QMainWindow, QWidget#AppShell, QStackedWidget {
     background: #111111;
     color: #eeeeee;
 }
@@ -16,6 +16,11 @@ QWidget#SideRail {
 }
 
 QWidget#Panel {
+    background: #181818;
+    color: #eeeeee;
+}
+
+QWidget#Page {
     background: #181818;
     color: #eeeeee;
 }
@@ -135,6 +140,29 @@ QCheckBox::indicator:checked {
 }
 
 QCheckBox::indicator:checked:hover {
+    background: #e05a5a;
+    border-color: #ff9292;
+}
+
+QTreeView::indicator {
+    width: 14px;
+    height: 14px;
+    background: #111111;
+    border: 1px solid #6a6a6a;
+    border-radius: 3px;
+}
+
+QTreeView::indicator:hover {
+    border-color: #f5b041;
+    background: #1d1d1d;
+}
+
+QTreeView::indicator:checked {
+    background: #c94343;
+    border-color: #f07171;
+}
+
+QTreeView::indicator:checked:hover {
     background: #e05a5a;
     border-color: #ff9292;
 }
@@ -331,6 +359,15 @@ QTextBrowser {
     font-size: 14px;
 }
 
+QScrollArea {
+    background: #181818;
+    border: 0;
+}
+
+QScrollArea::viewport {
+    background: #181818;
+}
+
 QScrollArea#ChatScroll {
     background: #111111;
     border: 0;
@@ -345,6 +382,19 @@ QScrollArea#PageScroll {
 
 QWidget#ChatCanvas {
     background: #111111;
+}
+
+QMessageBox {
+    background: #242424;
+    color: #eeeeee;
+}
+
+QMessageBox QLabel {
+    color: #eeeeee;
+}
+
+QMessageBox QPushButton {
+    min-width: 64px;
 }
 
 QWidget#UserBubble {

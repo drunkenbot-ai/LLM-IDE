@@ -51,9 +51,9 @@ def build_top_bar(window, app_name: str) -> QWidget:
     logo.setScaledContents(False)
 
     window.search_box = QLineEdit()
-    window.search_box.setPlaceholderText("Project name...")
+    window.search_box.setReadOnly(True)
     window.search_box.setMaximumWidth(260)
-    window._tip(window.search_box, f"Project name used when saving or reopening a {app_name} project.")
+    window._tip(window.search_box, f"Name of the active {app_name} project.")
     window.menu_bar = QMenuBar()
     window.menu_bar.setObjectName("AppMenuBar")
     window.file_menu = window.menu_bar.addMenu("File")
@@ -155,7 +155,9 @@ def build_main_shell(window, app_name: str) -> QWidget:
     body.addWidget(build_side_rail(window))
     window.pages = QStackedWidget()
     for builder in SCREEN_BUILDERS:
-        window.pages.addWidget(builder(window))
+        page = builder(window)
+        page.setObjectName("Page")
+        window.pages.addWidget(page)
     window.live_page_index = 4
     body.addWidget(window.pages, 1)
     root.addLayout(body, 1)

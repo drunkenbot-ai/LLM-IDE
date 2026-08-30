@@ -231,6 +231,7 @@ def build_dataset_plan_tab(window) -> QWidget:
     outer.setSpacing(12)
 
     scroll = QScrollArea()
+    scroll.setObjectName("PageScroll")
     scroll.setWidgetResizable(True)
     scroll.setFrameShape(QScrollArea.NoFrame)
     content = QWidget()
