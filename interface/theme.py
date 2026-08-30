@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QApplication
 SYSTEM_THEME = "system"
 DARK_THEME = "dark"
 DEFAULT_THEME = DARK_THEME
+THEME_PREFERENCE_VERSION = 1
 _THEME_PROPERTY = "application_theme"
 _RECENT_PROJECTS_PATH = Path.home() / ".drunkenbot_ide" / "recent_projects.json"
 
@@ -36,8 +37,17 @@ def load_startup_theme() -> str:
         except (OSError, json.JSONDecodeError):
             continue
         if isinstance(project_state, dict):
-            return normalize_theme(project_state.get("theme"))
+            return project_theme(project_state)
     return DEFAULT_THEME
+
+
+def project_theme(project_state: object) -> str:
+    """Return a project's theme, migrating preferences created before versioning."""
+    if not isinstance(project_state, dict):
+        return DEFAULT_THEME
+    if project_state.get("theme_preference_version") != THEME_PREFERENCE_VERSION:
+        return DEFAULT_THEME
+    return normalize_theme(project_state.get("theme"))
 
 
 def current_theme() -> str:
@@ -58,4 +68,8 @@ def apply_theme(theme: object) -> str:
         stylesheet = stylesheet_path.read_text(encoding="utf-8")
     app.setStyleSheet(stylesheet)
     app.setProperty(_THEME_PROPERTY, selected_theme)
+    for widget in app.allWidgets():
+        refresh = getattr(widget, "apply_theme", None)
+        if callable(refresh):
+            refresh(selected_theme)
     return selected_theme

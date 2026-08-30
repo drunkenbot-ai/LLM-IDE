@@ -3,6 +3,7 @@ from __future__ import annotations
 # ProjectStateApplyMixin mixin. Shared runtime names are provided by interface.app.
 from typing import Any, Optional, Union  # noqa: F401
 from interface import app as _app
+from interface.theme import project_theme
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
@@ -15,7 +16,7 @@ class ProjectStateApplyMixin:
             data: Project state loaded from JSON.
         """
 
-        self.set_theme(data.get("theme", "dark"), persist=False)
+        self.set_theme(project_theme(data), persist=False)
         self.search_box.setText(str(data.get("project_name", "")))
         paths = data.get("paths", {})
         dataset = data.get("dataset", {})

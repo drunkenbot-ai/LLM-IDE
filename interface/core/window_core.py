@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # WindowCoreMixin mixin. Shared runtime names are provided by interface.app.
 from typing import Any, Optional, Union  # noqa: F401
-from interface.widgets.app_shell import build_main_shell
+from interface.widgets.app_shell import build_main_shell, update_navigation_icons
 from interface.theme import apply_theme, current_theme, normalize_theme
 from interface import app as _app
 
@@ -80,6 +80,7 @@ class WindowCoreMixin:
 
         shell = self._build_shell()
         self.setCentralWidget(shell)
+        update_navigation_icons(self)
         self._install_ui_event_logging(shell)
         self._install_wheel_guard(shell)
         self._refresh_notification_manager()
@@ -227,6 +228,8 @@ class WindowCoreMixin:
         """
         self.theme_name = normalize_theme(theme)
         self._apply_theme()
+        if hasattr(self, "side_rail"):
+            update_navigation_icons(self)
         self.update_theme_actions()
         if persist and self.current_project_file is not None:
             self.save_project()
