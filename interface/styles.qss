@@ -1,6 +1,6 @@
 * { font-family: Arial, "Segoe UI", sans-serif; }
 
-QMainWindow, QWidget#AppShell {
+QMainWindow, QWidget#AppShell, QStackedWidget {
     background: #111111;
     color: #eeeeee;
 }
@@ -16,6 +16,11 @@ QWidget#SideRail {
 }
 
 QWidget#Panel {
+    background: #181818;
+    color: #eeeeee;
+}
+
+QWidget#Page, QWidget#PageContent {
     background: #181818;
     color: #eeeeee;
 }
@@ -116,6 +121,52 @@ QCheckBox {
     spacing: 8px;
 }
 
+QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+    background: #111111;
+    border: 1px solid #6a6a6a;
+    border-radius: 3px;
+}
+
+QCheckBox::indicator:hover {
+    border-color: #f5b041;
+    background: #1d1d1d;
+}
+
+QCheckBox::indicator:checked {
+    background: #c94343;
+    border-color: #f07171;
+}
+
+QCheckBox::indicator:checked:hover {
+    background: #e05a5a;
+    border-color: #ff9292;
+}
+
+QTreeView::indicator, QTreeWidget::indicator {
+    width: 14px;
+    height: 14px;
+    background: #111111;
+    border: 1px solid #6a6a6a;
+    border-radius: 3px;
+}
+
+QTreeView::indicator:hover, QTreeWidget::indicator:hover {
+    border-color: #f5b041;
+    background: #1d1d1d;
+}
+
+QTreeView::indicator:checked, QTreeWidget::indicator:checked {
+    background: #c94343;
+    border-color: #f07171;
+}
+
+QTreeView::indicator:checked:hover, QTreeWidget::indicator:checked:hover {
+    background: #e05a5a;
+    border-color: #ff9292;
+}
+
 QPushButton {
     background: #242424;
     color: #eeeeee;
@@ -185,7 +236,7 @@ QTextEdit {
     font-size: 12px;
 }
 
-QTableWidget {
+QTableWidget, QTreeWidget {
     background: #111111;
     alternate-background-color: #1b1b1b;
     color: #eeeeee;
@@ -194,6 +245,16 @@ QTableWidget {
     gridline-color: #333333;
     selection-background-color: #3a2d19;
     selection-color: #ffffff;
+}
+
+QTableWidget::item, QTreeWidget::item {
+    background: #111111;
+    color: #eeeeee;
+}
+
+QTableWidget::item:selected, QTreeWidget::item:selected {
+    background: #3a2d19;
+    color: #ffffff;
 }
 
 QHeaderView::section {
@@ -206,6 +267,88 @@ QHeaderView::section {
     font-weight: 800;
 }
 
+QScrollBar:vertical {
+    background: #171717;
+    width: 8px;
+    margin: 2px 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #c98216;
+    min-height: 24px;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #f5b041;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+QScrollBar:horizontal {
+    background: #171717;
+    height: 8px;
+    margin: 0 2px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #c98216;
+    min-width: 24px;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #f5b041;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0;
+}
+
+QMenuBar {
+    background: #1f1f1f;
+    color: #eeeeee;
+    border: 1px solid #3d3d3d;
+    border-radius: 7px;
+    padding: 2px;
+}
+
+QMenuBar::item {
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 5px;
+}
+
+QMenuBar::item:selected {
+    background: #f5b041;
+    color: #151515;
+}
+
+QMenu {
+    background: #242424;
+    color: #eeeeee;
+    border: 1px solid #555555;
+    padding: 4px;
+}
+
+QMenu::item {
+    padding: 6px 28px 6px 12px;
+    border-radius: 4px;
+}
+
+QMenu::item:selected {
+    background: #f5b041;
+    color: #151515;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: #3d3d3d;
+    margin: 4px 8px;
+}
+
 QTextBrowser {
     background: #111111;
     color: #eeeeee;
@@ -214,6 +357,54 @@ QTextBrowser {
     padding: 12px;
     font-family: Arial, "Segoe UI", sans-serif;
     font-size: 14px;
+}
+
+QDialog {
+    background: #181818;
+    color: #eeeeee;
+}
+
+QDialog QLabel#Title {
+    color: #f5b041;
+    font-size: 24px;
+}
+
+QDialog QLabel#Subtitle, QDialog QLabel#Step, QDialog QLabel#Body, QDialog QLabel#CardBody {
+    color: #dddddd;
+}
+
+QDialog QLabel#CardTitle {
+    color: #f2f2f2;
+    font-size: 16px;
+}
+
+QWidget#ChoiceCard, QListWidget {
+    background: #171717;
+    color: #dddddd;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+}
+
+QListWidget {
+    padding: 4px;
+}
+
+QListWidget::item {
+    padding: 6px 8px;
+}
+
+QListWidget::item:selected {
+    background: #3a2d19;
+    color: #ffffff;
+}
+
+QScrollArea {
+    background: #181818;
+    border: 0;
+}
+
+QScrollArea::viewport {
+    background: #181818;
 }
 
 QScrollArea#ChatScroll {
@@ -230,6 +421,19 @@ QScrollArea#PageScroll {
 
 QWidget#ChatCanvas {
     background: #111111;
+}
+
+QMessageBox {
+    background: #242424;
+    color: #eeeeee;
+}
+
+QMessageBox QLabel {
+    color: #eeeeee;
+}
+
+QMessageBox QPushButton {
+    min-width: 64px;
 }
 
 QWidget#UserBubble {

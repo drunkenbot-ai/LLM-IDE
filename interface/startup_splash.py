@@ -9,12 +9,15 @@ from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QFont, QPixmap
 from PySide6.QtWidgets import QDialog, QLabel, QHBoxLayout, QProgressBar, QTextBrowser, QVBoxLayout
 
+from interface.theme import DARK_THEME, apply_theme, current_theme, load_startup_theme
+
 
 class StartupSplash(QDialog):
     """Splash screen shown while startup validation is running."""
 
     def __init__(self) -> None:
         super().__init__()
+        apply_theme(load_startup_theme())
         self.setWindowTitle("DrunkenBot-IDE")
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setModal(True)
@@ -37,7 +40,7 @@ class StartupSplash(QDialog):
         if pixmap.isNull():
             logo.setText("DB")
             logo.setAlignment(Qt.AlignCenter)
-            logo.setStyleSheet("color:#f5b041;font-size:38px;")
+            logo.setObjectName("Logo")
         else:
             logo.setPixmap(pixmap.scaled(118, 118, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             logo.setAlignment(Qt.AlignCenter)
@@ -62,14 +65,6 @@ class StartupSplash(QDialog):
         layout.addWidget(self.checks_view, 1)
         self.footer_label = QLabel("")
         layout.addWidget(self.footer_label)
-        self.setStyleSheet(
-            "QDialog { background: #111111; color: #d0d0d0; border: 0; border-radius: 0; "
-            'font-family: Arial, "Segoe UI", sans-serif; } QLabel#Title { color: #d0d0d0; '
-            "font-size: 22px; } QLabel#Step { color: #c7c7c7; font-size: 13px; } "
-            "QTextBrowser { background: #111111; color: #d0d0d0; border: 0; padding: 10px; } "
-            "QProgressBar { background: #222222; border: 0; border-radius: 2px; } "
-            "QProgressBar::chunk { background: #bcbcbc; border-radius: 2px; }"
-        )
         self._checks = {}
         self._check_order = []
 
@@ -112,12 +107,17 @@ class StartupSplash(QDialog):
         self._render_checks()
 
     def _render_checks(self) -> None:
+        colors = (
+            {"done": "#ffffff", "running": "#e2cfaa", "failed": "#ff9a9a", "pending": "#bdbdbd"}
+            if current_theme() == DARK_THEME
+            else {"done": "#202020", "running": "#7a5100", "failed": "#a82d2d", "pending": "#555555"}
+        )
         rows = ["<ul style='margin:0; padding-left:18px; line-height:1.8;'>"]
         for label in self._check_order:
             state = self._checks.get(label, "pending")
             escaped = html.escape(label)
             marker = {"done": "[OK]", "running": "[*]", "failed": "[FAIL]"}.get(state, "-")
-            color = {"done": "#ffffff", "running": "#e2cfaa", "failed": "#ff9a9a"}.get(state, "#bdbdbd")
+            color = colors.get(state, colors["pending"])
             rows.append(f"<li style='color:{color};'>{marker} {escaped}</li>")
         rows.append("</ul>")
         self.checks_view.setHtml("".join(rows))

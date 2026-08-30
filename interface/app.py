@@ -94,6 +94,7 @@ from engine.training_resume import check_resume_compatibility, latest_checkpoint
 from engine.training_service import run_training_job
 
 from interface.startup_splash import StartupSplash
+from interface.theme import apply_theme, load_startup_theme
 
 from engine.license_client import load_stored_license_key
 from interface.license_activation_dialog import LicenseActivationDialog, run_license_check_responsively
@@ -269,6 +270,7 @@ def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = N
         except Exception:
             LOGGER.exception("Could not set Windows app user model ID")
     app = app or QApplication(sys.argv)
+    apply_theme(load_startup_theme())
     app.setFont(QFont("Arial", 10))
     app.setWindowIcon(MainWindow._static_app_icon())
     splash = splash or StartupValidationSplash()

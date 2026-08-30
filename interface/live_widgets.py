@@ -6,8 +6,26 @@ from typing import Any, Optional
 import numpy as np
 import pyqtgraph as pg
 from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QBrush, QColor, QPainter, QPen, QPolygonF
+from PySide6.QtGui import QBrush, QColor, QPainter, QPalette, QPen, QPolygonF
 from PySide6.QtWidgets import QVBoxLayout, QSizePolicy, QWidget
+
+from interface.theme import DARK_THEME, current_theme
+
+
+def _apply_plot_theme(plot: pg.PlotWidget, title: str, x_label: str, y_label: str, theme: str) -> None:
+    """Apply the application theme to a pyqtgraph plot."""
+    if theme == DARK_THEME:
+        background, foreground, axis = "#141414", "#eeeeee", "#6a6a6a"
+    else:
+        background, foreground, axis = "#ffffff", "#202020", "#8a8a8a"
+    plot.setBackground(background)
+    plot.setTitle(title, color=foreground, size="10pt")
+    plot.setLabel("bottom", x_label, color=foreground)
+    plot.setLabel("left", y_label, color=foreground)
+    plot.getAxis("bottom").setPen(pg.mkPen(axis))
+    plot.getAxis("left").setPen(pg.mkPen(axis))
+    plot.getAxis("bottom").setTextPen(pg.mkPen(foreground))
+    plot.getAxis("left").setTextPen(pg.mkPen(foreground))
 
 
 class ModelFlowWidget(QWidget):
@@ -24,6 +42,16 @@ class ModelFlowWidget(QWidget):
         self.head_count = 8
         self.step = 0
         self.loss_value: Optional[float] = None
+
+    def apply_theme(self, _theme: str) -> None:
+        """Repaint the custom canvas after an application theme change."""
+        self.update()
+
+    def _foreground_color(self) -> QColor:
+        """Return a readable text color for the selected application theme."""
+        if current_theme() == DARK_THEME:
+            return QColor("#e6e6e6")
+        return self.palette().color(QPalette.WindowText)
 
     def set_state(self, layer_count: int, head_count: int, step: int, loss_value: Optional[float]) -> None:
         """Update flow state from UI-thread training metrics.
@@ -53,7 +81,8 @@ class ModelFlowWidget(QWidget):
         painter.setRenderHint(QPainter.Antialiasing)
         try:
             rect = self.rect().adjusted(18, 18, -18, -18)
-            painter.fillRect(self.rect(), QColor("#111111"))
+            background = QColor("#111111") if current_theme() == DARK_THEME else self.palette().color(QPalette.Window)
+            painter.fillRect(self.rect(), background)
             self._draw_grid(painter, rect)
             layer_total = min(max(self.layer_count, 4), 10)
             node_total = min(max(self.head_count, 5), 10)
@@ -92,7 +121,7 @@ class ModelFlowWidget(QWidget):
         painter.setPen(QPen(QColor("#4a90e2"), 1))
         painter.setBrush(QBrush(QColor(35, 80, 120, 55)))
         painter.drawRoundedRect(box, 6, 6)
-        painter.setPen(QPen(QColor("#e6e6e6")))
+        painter.setPen(QPen(self._foreground_color()))
         painter.drawText(QRectF(x_value - 42, top - 54, 84, 22), Qt.AlignCenter, label)
 
     def _draw_node(self, painter: QPainter, point: QPointF, column: int, active: bool) -> None:
@@ -179,7 +208,7 @@ class ModelFlowWidget(QWidget):
         painter.drawLine(rect.right() - 34, backward_y, rect.left() + 34, backward_y)
         painter.drawLine(rect.left() + 42, backward_y - 8, rect.left() + 34, backward_y)
         painter.drawLine(rect.left() + 42, backward_y + 8, rect.left() + 34, backward_y)
-        painter.setPen(QPen(QColor("#e6e6e6")))
+        painter.setPen(QPen(self._foreground_color()))
         painter.drawText(rect.left() + 44, rect.top() + 20, "MODEL FLOW (LIVE)")
         painter.setPen(QPen(QColor("#3ed7ff")))
         painter.drawText(rect.left() + 220, rect.top() + 20, "Forward pass")
@@ -193,12 +222,12 @@ class ModelFlowWidget(QWidget):
         painter.setPen(QPen(QColor("#4f7b48"), 1))
         painter.setBrush(QBrush(QColor(25, 55, 30, 160)))
         painter.drawRoundedRect(panel, 5, 5)
-        painter.setPen(QPen(QColor("#d7d7d7")))
+        painter.setPen(QPen(self._foreground_color()))
         painter.drawText(QRectF(panel.left(), panel.top() - 44, panel.width(), 32), Qt.AlignCenter, "OUTPUT\n(NEXT TOKEN)")
         samples = [("token", 0.64), ("code", 0.14), ("text", 0.09), ("data", 0.06), ("...", 0.03)]
         for index, (token, score) in enumerate(samples):
             y_value = panel.top() + 18 + index * 19
-            painter.setPen(QPen(QColor("#b6d77a") if index == 0 else QColor("#d7d7d7")))
+            painter.setPen(QPen(QColor("#b6d77a") if index == 0 else self._foreground_color()))
             painter.drawText(QRectF(panel.left() + 12, y_value - 9, 54, 18), Qt.AlignLeft | Qt.AlignVCenter, token)
             painter.drawText(QRectF(panel.right() - 42, y_value - 9, 34, 18), Qt.AlignRight | Qt.AlignVCenter, f"{score:.2f}")
         painter.setPen(QPen(QColor("#ffb13b"), 1))
@@ -218,10 +247,7 @@ class LiveDistributionWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self.plot = pg.PlotWidget()
-        self.plot.setBackground("#141414")
-        self.plot.setTitle("Prediction distribution", color="#eeeeee", size="10pt")
-        self.plot.setLabel("bottom", "Vocabulary index", color="#d7d7d7")
-        self.plot.setLabel("left", "Probability", color="#d7d7d7")
+        self.apply_theme(current_theme())
         self.plot.showGrid(x=True, y=True, alpha=0.22)
         self.plot.setMenuEnabled(False)
         self.plot.setMouseEnabled(x=False, y=False)
@@ -229,6 +255,10 @@ class LiveDistributionWidget(QWidget):
         self.plot.addItem(self.bars)
         self.plot.setYRange(0, 1.0)
         layout.addWidget(self.plot)
+
+    def apply_theme(self, theme: str) -> None:
+        """Refresh this custom plot for the selected application theme."""
+        _apply_plot_theme(self.plot, "Prediction distribution", "Vocabulary index", "Probability", theme)
 
     def update_distribution(self, step: int, loss_value: Optional[float]) -> None:
         """Update synthetic distribution from live training state.
@@ -259,10 +289,7 @@ class LiveHeatmapWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self.plot = pg.PlotWidget()
-        self.plot.setBackground("#141414")
-        self.plot.setTitle("Attention", color="#eeeeee", size="10pt")
-        self.plot.setLabel("bottom", "Key token", color="#d7d7d7")
-        self.plot.setLabel("left", "Query token", color="#d7d7d7")
+        self.apply_theme(current_theme())
         self.plot.setMenuEnabled(False)
         self.plot.setMouseEnabled(x=False, y=False)
         self.image = pg.ImageItem()
@@ -271,6 +298,10 @@ class LiveHeatmapWidget(QWidget):
         self.plot.setYRange(0, 8)
         layout.addWidget(self.plot)
         self.update_heatmap(0, None)
+
+    def apply_theme(self, theme: str) -> None:
+        """Refresh this custom plot for the selected application theme."""
+        _apply_plot_theme(self.plot, "Attention", "Key token", "Query token", theme)
 
     def update_heatmap(self, step: int, grad_norm: Optional[float]) -> None:
         """Update attention proxy heatmap.
@@ -301,10 +332,7 @@ class LiveHistogramWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self.plot = pg.PlotWidget()
-        self.plot.setBackground("#141414")
-        self.plot.setTitle("Activation distribution", color="#eeeeee", size="10pt")
-        self.plot.setLabel("bottom", "Activation", color="#d7d7d7")
-        self.plot.setLabel("left", "Density", color="#d7d7d7")
+        self.apply_theme(current_theme())
         self.plot.showGrid(x=True, y=True, alpha=0.22)
         self.plot.setMenuEnabled(False)
         self.plot.setMouseEnabled(x=False, y=False)
@@ -313,6 +341,10 @@ class LiveHistogramWidget(QWidget):
         self.plot.addItem(self.bars)
         self.plot.setYRange(0, 1.0)
         layout.addWidget(self.plot)
+
+    def apply_theme(self, theme: str) -> None:
+        """Refresh this custom plot for the selected application theme."""
+        _apply_plot_theme(self.plot, "Activation distribution", "Activation", "Density", theme)
 
     def update_histogram(self, step: int, tokens_per_second: Optional[float]) -> None:
         """Update activation histogram proxy.
@@ -340,10 +372,7 @@ class LiveGradientFlowWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self.plot = pg.PlotWidget()
-        self.plot.setBackground("#141414")
-        self.plot.setTitle("Gradient flow", color="#eeeeee", size="10pt")
-        self.plot.setLabel("bottom", "Gradient norm", color="#d7d7d7")
-        self.plot.setLabel("left", "Layer", color="#d7d7d7")
+        self.apply_theme(current_theme())
         self.plot.showGrid(x=True, y=True, alpha=0.22)
         self.plot.setMenuEnabled(False)
         self.plot.setMouseEnabled(x=False, y=False)
@@ -353,6 +382,10 @@ class LiveGradientFlowWidget(QWidget):
         self.plot.setYRange(0, 17)
         self.plot.setXRange(0, 1)
         layout.addWidget(self.plot)
+
+    def apply_theme(self, theme: str) -> None:
+        """Refresh this custom plot for the selected application theme."""
+        _apply_plot_theme(self.plot, "Gradient flow", "Gradient norm", "Layer", theme)
 
     def update_flow(self, layer_count: int, grad_norm: Optional[float], step: int) -> None:
         """Update gradient flow proxy bars.
@@ -374,4 +407,3 @@ class LiveGradientFlowWidget(QWidget):
         self.bars.setOpts(x0=[0] * count, x1=values, y=self.layers, height=0.55, brush="#ff4ca8")
         self.plot.setYRange(0, count + 1)
         self.plot.setXRange(0, max_value * 1.15)
-

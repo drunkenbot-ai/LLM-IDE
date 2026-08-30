@@ -32,6 +32,7 @@ from .startup_validation import (
     _run_startup_validations,
     _validate_writable_directory,
 )
+from .theme import DARK_THEME, apply_theme, current_theme, load_startup_theme
 
 
 APP_NAME = "DrunkenBot-IDE"
@@ -175,17 +176,6 @@ class StartupValidationSplash(QDialog):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet(
-            """
-            QDialog { background: #111111; color: #d0d0d0; border: 0; border-radius: 0; font-family: Arial, "Segoe UI", sans-serif; }
-            QLabel#Title { color: #d0d0d0; font-size: 22px; }
-            QLabel#Subtitle { color: #bfbfbf; font-size: 13px; }
-            QLabel#Step { color: #c7c7c7; font-size: 13px; }
-            QTextBrowser { background: #111111; color: #d0d0d0; border: 0; padding: 10px; }
-            QProgressBar { background: #222222; border: 0; border-radius: 2px; }
-            QProgressBar::chunk { background: #bcbcbc; border-radius: 2px; }
-            """
-        )
         root = QVBoxLayout(self)
         root.setContentsMargins(24, 24, 24, 24)
         root.setSpacing(12)
@@ -197,7 +187,7 @@ class StartupValidationSplash(QDialog):
         if logo_pixmap.isNull():
             logo.setText("DB")
             logo.setAlignment(Qt.AlignCenter)
-            logo.setStyleSheet("color:#f5b041;font-size:38px;")
+            logo.setObjectName("Logo")
         else:
             logo.setPixmap(logo_pixmap)
             logo.setAlignment(Qt.AlignCenter)
@@ -281,18 +271,23 @@ class StartupValidationSplash(QDialog):
         _apply_windows_taskbar_icon(self)
 
     def _render_checks(self) -> None:
+        colors = (
+            {"done": "#ffffff", "running": "#e2cfaa", "failed": "#ff9a9a", "pending": "#bdbdbd"}
+            if current_theme() == DARK_THEME
+            else {"done": "#202020", "running": "#7a5100", "failed": "#a82d2d", "pending": "#555555"}
+        )
         rows: list[str] = ["<ul style='margin:0; padding-left:18px; line-height:1.8;'>"]
         for label in self._check_order:
             state = self._checks.get(label, "pending")
             escaped = html.escape(label)
             if state == "done":
-                rows.append(f"<li style='color:#ffffff;'>[OK] {escaped}</li>")
+                rows.append(f"<li style='color:{colors['done']};'>[OK] {escaped}</li>")
             elif state == "running":
-                rows.append(f"<li style='color:#e2cfaa;'>[*] {escaped}</li>")
+                rows.append(f"<li style='color:{colors['running']};'>[*] {escaped}</li>")
             elif state == "failed":
-                rows.append(f"<li style='color:#ff9a9a;'>[FAIL] {escaped}</li>")
+                rows.append(f"<li style='color:{colors['failed']};'>[FAIL] {escaped}</li>")
             else:
-                rows.append(f"<li style='color:#bdbdbd;'>- {escaped}</li>")
+                rows.append(f"<li style='color:{colors['pending']};'>- {escaped}</li>")
         rows.append("</ul>")
         self.checks_view.setHtml("".join(rows))
         QApplication.processEvents()
@@ -313,21 +308,6 @@ class ProjectChoiceDialog(QDialog):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet(
-            """
-            QDialog { background: #111111; color: #eeeeee; border: 0; border-radius: 0; font-family: Arial, "Segoe UI", sans-serif; }
-            QLabel#Title { color: #f5b041; font-size: 24px; }
-            QLabel#Body { color: #dddddd; font-size: 13px; }
-            QLabel#CardTitle { color: #f1f1f1; font-size: 16px; }
-            QLabel#CardBody { color: #c9c9c9; font-size: 12px; }
-            QWidget#ChoiceCard { background: #171717; border: 1px solid #3a3a3a; border-radius: 8px; }
-            QListWidget { background: #171717; color: #d8d8d8; border: 1px solid #3a3a3a; border-radius: 8px; padding: 4px; }
-            QListWidget::item { padding: 6px 8px; }
-            QListWidget::item:selected { background: #2a2a2a; color: #ffffff; }
-            QPushButton { background: #242424; color: #eeeeee; border: 0; border-radius: 6px; padding: 8px 12px; }
-            QPushButton:hover { background: #f5b041; color: #151515; }
-            """
-        )
         root = QVBoxLayout(self)
         root.setContentsMargins(28, 24, 28, 24)
         root.setSpacing(16)
@@ -336,7 +316,7 @@ class ProjectChoiceDialog(QDialog):
         logo_pixmap = _main_window()._app_logo_pixmap(144)
         if logo_pixmap.isNull():
             logo.setText("DB")
-            logo.setStyleSheet("color:#f5b041;font-size:56px;")
+            logo.setObjectName("Logo")
             logo.setAlignment(Qt.AlignCenter)
         else:
             logo.setPixmap(logo_pixmap)

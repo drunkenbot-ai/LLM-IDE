@@ -2,7 +2,8 @@ from __future__ import annotations
 
 # WindowCoreMixin mixin. Shared runtime names are provided by interface.app.
 from typing import Any, Optional, Union  # noqa: F401
-from interface.widgets.app_shell import build_main_shell
+from interface.widgets.app_shell import build_main_shell, update_navigation_icons
+from interface.theme import apply_theme, current_theme, normalize_theme
 from interface import app as _app
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
@@ -74,10 +75,12 @@ class WindowCoreMixin:
         self.job_manager_timer.setInterval(2500)
         self.job_manager_timer.timeout.connect(self.refresh_job_manager_tab)
 
-        self._apply_style()
+        self.theme_name = current_theme()
+        self._apply_theme()
 
         shell = self._build_shell()
         self.setCentralWidget(shell)
+        update_navigation_icons(self)
         self._install_ui_event_logging(shell)
         self._install_wheel_guard(shell)
         self._refresh_notification_manager()
@@ -152,6 +155,26 @@ class WindowCoreMixin:
                     lambda item=widget: self._log_ui_event("edited", item, item.text())
                 )
 
+    def edit_focused_widget(self, method_name: str) -> None:
+        """Run a standard edit operation on the currently focused editor.
+
+        Args:
+            method_name: Qt editor method to invoke, such as ``copy`` or
+                ``selectAll``.
+        """
+        widget = QApplication.focusWidget()
+        method = getattr(widget, method_name, None) if widget is not None else None
+        if callable(method):
+            method()
+
+    def show_about_dialog(self) -> None:
+        """Display the application identity and version."""
+        QMessageBox.information(
+            self,
+            f"About {APP_NAME}",
+            f"{APP_NAME} {APP_VERSION}\n\nA desktop environment for building, training, and using LLMs.",
+        )
+
     def _log_ui_event(self, action: str, widget: QWidget, value: Any) -> None:
         """Log a UI action or parameter value.
 
@@ -185,11 +208,31 @@ class WindowCoreMixin:
             return widget.objectName()
         return widget.__class__.__name__
 
-    def _apply_style(self) -> None:
-        """Load the application stylesheet from the QSS module file."""
+    def _apply_theme(self) -> None:
+        """Apply the window's selected theme application-wide."""
+        self.theme_name = apply_theme(self.theme_name)
 
-        qss_path = Path(_app.__file__).with_name("styles.qss")
-        self.setStyleSheet(qss_path.read_text(encoding="utf-8"))
+    def update_theme_actions(self) -> None:
+        """Synchronize the theme menu checks with the active theme."""
+        if not hasattr(self, "system_theme_action"):
+            return
+        self.system_theme_action.setChecked(self.theme_name == "system")
+        self.dark_theme_action.setChecked(self.theme_name == "dark")
+
+    def set_theme(self, theme: object, persist: bool = True) -> None:
+        """Select an application theme and persist it for the active project.
+
+        Args:
+            theme: Requested theme identifier.
+            persist: Whether to save the selection to the active project.
+        """
+        self.theme_name = normalize_theme(theme)
+        self._apply_theme()
+        if hasattr(self, "side_rail"):
+            update_navigation_icons(self)
+        self.update_theme_actions()
+        if persist and self.current_project_file is not None:
+            self.save_project()
 
     def _build_shell(self) -> QWidget:
         """Build the top-level dashboard shell from reusable widgets."""

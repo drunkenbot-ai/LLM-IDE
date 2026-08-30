@@ -3,6 +3,35 @@ from __future__ import annotations
 import re
 from urllib.parse import quote
 
+from interface.theme import DARK_THEME, current_theme
+
+
+def _html_theme_colors() -> dict[str, str]:
+    """Return chat HTML colors for the selected application theme."""
+    if current_theme() == DARK_THEME:
+        return {
+            "body": "#eeeeee",
+            "heading": "#f2f2f2",
+            "code_background": "#1a1a1a",
+            "code_text": "#d4d4d4",
+            "quote": "#cccccc",
+            "border": "#555555",
+            "code_block": "#050505",
+            "code_block_border": "#2b2b2b",
+            "code_bar": "#111111",
+        }
+    return {
+        "body": "#202020",
+        "heading": "#111111",
+        "code_background": "#eeeeee",
+        "code_text": "#202020",
+        "quote": "#404040",
+        "border": "#a0a0a0",
+        "code_block": "#f6f6f6",
+        "code_block_border": "#b0b0b0",
+        "code_bar": "#e5e5e5",
+    }
+
 
 def markdown_to_html(markdown_text: str) -> str:
     """Convert Markdown to themed HTML.
@@ -15,6 +44,7 @@ def markdown_to_html(markdown_text: str) -> str:
     """
 
     try:
+        colors = _html_theme_colors()
         import markdown as markdown_lib
         from pygments import highlight
         from pygments.formatters import HtmlFormatter
@@ -50,21 +80,21 @@ def markdown_to_html(markdown_text: str) -> str:
             <style>
             body {{
                 background: transparent;
-                color: #eeeeee;
+                color: {colors["body"]};
                 font-family: Arial, "Segoe UI", sans-serif;
                 font-size: 14px;
                 line-height: 1.22;
                 margin: 0;
             }}
-            h1 {{ color: #f2f2f2; font-size: 19px; margin: 6px 0 3px 0; }}
-            h2 {{ color: #f2f2f2; font-size: 17px; margin: 6px 0 3px 0; }}
-            h3 {{ color: #f2f2f2; font-size: 15px; margin: 5px 0 2px 0; }}
+            h1 {{ color: {colors["heading"]}; font-size: 19px; margin: 6px 0 3px 0; }}
+            h2 {{ color: {colors["heading"]}; font-size: 17px; margin: 6px 0 3px 0; }}
+            h3 {{ color: {colors["heading"]}; font-size: 15px; margin: 5px 0 2px 0; }}
             p {{ margin: 2px 0; }}
             ol, ul {{ margin-top: 2px; margin-bottom: 2px; padding-left: 20px; }}
             li {{ margin: 1px 0; }}
             code {{
-                background: #1a1a1a;
-                color: #d4d4d4;
+                background: {colors["code_background"]};
+                color: {colors["code_text"]};
                 border-radius: 4px;
                 padding: 2px 4px;
                 font-family: Consolas, monospace;
@@ -81,7 +111,7 @@ def markdown_to_html(markdown_text: str) -> str:
             pre code {{
                 background: transparent;
                 padding: 0;
-                color: #d4d4d4;
+                color: {colors["code_text"]};
                 font-family: Consolas, monospace;
                 font-size: 13px;
                 line-height: 1.16;
@@ -90,26 +120,26 @@ def markdown_to_html(markdown_text: str) -> str:
                 border-left: 3px solid #f5b041;
                 margin-left: 0;
                 padding-left: 12px;
-                color: #cccccc;
+                color: {colors["quote"]};
             }}
             table {{ border-collapse: collapse; }}
-            th, td {{ border: 1px solid #555555; padding: 6px 8px; }}
+            th, td {{ border: 1px solid {colors["border"]}; padding: 6px 8px; }}
             .codeblock {{
-                background: #050505;
-                border: 1px solid #2b2b2b;
+                background: {colors["code_block"]};
+                border: 1px solid {colors["code_block_border"]};
                 border-radius: 12px;
                 margin: 8px 0;
             }}
             .codebar {{
-                color: #f2f2f2;
-                background: #111111;
-                border-bottom: 1px solid #2b2b2b;
+                color: {colors["heading"]};
+                background: {colors["code_bar"]};
+                border-bottom: 1px solid {colors["code_block_border"]};
                 padding: 7px 10px;
                 font-size: 12px;
                 font-weight: bold;
             }}
             .copylink {{
-                color: #d7d7d7;
+                color: {colors["body"]};
                 text-decoration: none;
                 float: right;
                 font-weight: normal;
@@ -134,6 +164,7 @@ def basic_markdown_html(markdown_text: str) -> str:
         Basic HTML.
     """
 
+    colors = _html_theme_colors()
     text = normalize_code_blocks(markdown_text)
     parts: list[str] = []
     pattern = re.compile(r"```(?:\w+)?\n(.*?)```", re.DOTALL)
@@ -145,16 +176,16 @@ def basic_markdown_html(markdown_text: str) -> str:
         last = match.end()
     parts.append(render_basic_prose(text[last:]))
     return (
-        "<html><body style='background:transparent;color:#eeeeee;font-family:Arial;font-size:14px;line-height:1.22;'>"
+        f"<html><body style='background:transparent;color:{colors['body']};font-family:Arial;font-size:14px;line-height:1.22;'>"
         "<style>"
         "p{margin:2px 0;} h1{font-size:19px;margin:6px 0 3px;} h2{font-size:17px;margin:6px 0 3px;}"
         "h3{font-size:15px;margin:5px 0 2px;} ol,ul{margin-top:2px;margin-bottom:2px;padding-left:20px;} li{margin:1px 0;}"
-        "code{background:#1a1a1a;color:#d4d4d4;border-radius:4px;padding:2px 4px;font-family:Consolas,monospace;}"
+        f"code{{background:{colors['code_background']};color:{colors['code_text']};border-radius:4px;padding:2px 4px;font-family:Consolas,monospace;}}"
         "pre{background:transparent;border:0;border-radius:0;padding:0;margin:4px 0;"
         "font-family:Consolas,monospace;white-space:pre-wrap;line-height:1.16;font-size:13px;}"
-        ".codeblock{background:#050505;border:1px solid #2b2b2b;border-radius:12px;margin:8px 0;}"
-        ".codebar{color:#f2f2f2;background:#111;border-bottom:1px solid #2b2b2b;padding:7px 10px;font-size:12px;font-weight:bold;}"
-        ".copylink{color:#d7d7d7;text-decoration:none;float:right;font-weight:normal;}.codebody{padding:12px 14px;}"
+        f".codeblock{{background:{colors['code_block']};border:1px solid {colors['code_block_border']};border-radius:12px;margin:8px 0;}}"
+        f".codebar{{color:{colors['heading']};background:{colors['code_bar']};border-bottom:1px solid {colors['code_block_border']};padding:7px 10px;font-size:12px;font-weight:bold;}}"
+        f".copylink{{color:{colors['body']};text-decoration:none;float:right;font-weight:normal;}}.codebody{{padding:12px 14px;}}"
         "</style>"
         + "".join(parts)
         + "</body></html>"
@@ -400,4 +431,3 @@ def guess_code_language(lines: list[str]) -> str:
     if any(marker in joined for marker in ("def ", "import ", "print(", "self.")):
         return "python"
     return "text"
-
