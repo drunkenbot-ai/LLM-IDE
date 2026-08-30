@@ -9,13 +9,14 @@ from PySide6.QtWidgets import QApplication
 
 SYSTEM_THEME = "system"
 DARK_THEME = "dark"
+DEFAULT_THEME = DARK_THEME
 _THEME_PROPERTY = "application_theme"
 _RECENT_PROJECTS_PATH = Path.home() / ".drunkenbot_ide" / "recent_projects.json"
 
 
 def normalize_theme(theme: object) -> str:
-    """Return a supported theme name, defaulting to the system theme."""
-    return DARK_THEME if theme == DARK_THEME else SYSTEM_THEME
+    """Return a supported theme name, defaulting to the application's Dark theme."""
+    return SYSTEM_THEME if theme == SYSTEM_THEME else DARK_THEME
 
 
 def load_startup_theme() -> str:
@@ -23,9 +24,9 @@ def load_startup_theme() -> str:
     try:
         recent_projects = json.loads(_RECENT_PROJECTS_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
-        return SYSTEM_THEME
+        return DEFAULT_THEME
     if not isinstance(recent_projects, list):
-        return SYSTEM_THEME
+        return DEFAULT_THEME
     for entry in recent_projects:
         if not isinstance(entry, dict):
             continue
@@ -36,13 +37,13 @@ def load_startup_theme() -> str:
             continue
         if isinstance(project_state, dict):
             return normalize_theme(project_state.get("theme"))
-    return SYSTEM_THEME
+    return DEFAULT_THEME
 
 
 def current_theme() -> str:
     """Return the QApplication theme currently in effect."""
     app = QApplication.instance()
-    return normalize_theme(app.property(_THEME_PROPERTY) if app is not None else SYSTEM_THEME)
+    return normalize_theme(app.property(_THEME_PROPERTY) if app is not None else DEFAULT_THEME)
 
 
 def apply_theme(theme: object) -> str:
