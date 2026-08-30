@@ -226,14 +226,17 @@ def build_dataset_plan_tab(window) -> QWidget:
     """
 
     page = QWidget()
+    page.setObjectName("Page")
     outer = QVBoxLayout(page)
     outer.setContentsMargins(18, 18, 18, 12)
     outer.setSpacing(12)
 
     scroll = QScrollArea()
+    scroll.setObjectName("PageScroll")
     scroll.setWidgetResizable(True)
     scroll.setFrameShape(QScrollArea.NoFrame)
     content = QWidget()
+    content.setObjectName("PageContent")
     layout = QVBoxLayout(content)
     layout.setContentsMargins(0, 0, 0, 0)
     layout.setSpacing(12)

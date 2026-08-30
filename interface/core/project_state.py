@@ -23,6 +23,8 @@ class ProjectStateMixin:
         return {
             "schema": "drunkenbot_ide_project",
             "version": 1,
+            "theme": "dark",
+            "theme_preference_version": 1,
             "project_name": "",
             "project_dir": "",
             "paths": {
@@ -254,6 +256,8 @@ class ProjectStateMixin:
         return {
             "schema": "drunkenbot_ide_project",
             "version": 1,
+            "theme": self.theme_name,
+            "theme_preference_version": 1,
             "project_name": project_name,
             "project_dir": str(project_dir),
             "created_at": created_at,

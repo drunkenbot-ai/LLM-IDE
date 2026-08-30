@@ -8,6 +8,24 @@ from PySide6.QtCore import QPointF
 from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QSizePolicy, QToolTip, QVBoxLayout, QWidget
 
+from interface.theme import DARK_THEME, current_theme
+
+
+def _apply_plot_theme(plot: pg.PlotWidget, title: str, x_label: str, y_label: str, theme: str) -> None:
+    """Apply colors to a pyqtgraph plot, which does not inherit Qt QSS."""
+    if theme == DARK_THEME:
+        background, foreground, axis = "#141414", "#eeeeee", "#6a6a6a"
+    else:
+        background, foreground, axis = "#ffffff", "#202020", "#8a8a8a"
+    plot.setBackground(background)
+    plot.setTitle(title, color=foreground, size="10pt")
+    plot.setLabel("bottom", x_label, color=foreground)
+    plot.setLabel("left", y_label, color=foreground)
+    plot.getAxis("bottom").setPen(pg.mkPen(axis))
+    plot.getAxis("left").setPen(pg.mkPen(axis))
+    plot.getAxis("bottom").setTextPen(pg.mkPen(foreground))
+    plot.getAxis("left").setTextPen(pg.mkPen(foreground))
+
 
 class DatasetBarChartWidget(QWidget):
     """Compact bar chart for dataset composition and token statistics."""
@@ -33,22 +51,18 @@ class DatasetBarChartWidget(QWidget):
         self.labels: list[str] = []
         self.values: list[float] = []
         self.value_suffix = ""
+        self.title = title
+        self.y_label = y_label
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         pg.setConfigOptions(antialias=True)
         self.plot = pg.PlotWidget()
-        self.plot.setBackground("#141414")
-        self.plot.setTitle(title, color="#eeeeee", size="10pt")
-        self.plot.setLabel("left", y_label, color="#d7d7d7")
+        self.apply_theme(current_theme())
         self.plot.showGrid(x=False, y=True, alpha=0.24)
         self.plot.setMenuEnabled(False)
         self.plot.setMouseEnabled(x=False, y=False)
-        self.plot.getAxis("bottom").setPen(pg.mkPen("#6a6a6a"))
-        self.plot.getAxis("left").setPen(pg.mkPen("#6a6a6a"))
-        self.plot.getAxis("bottom").setTextPen(pg.mkPen("#cfcfcf"))
-        self.plot.getAxis("left").setTextPen(pg.mkPen("#cfcfcf"))
         self.plot.getPlotItem().setContentsMargins(8, 8, 8, 8)
         self.bar_item = pg.BarGraphItem(x=[], height=[], width=0.58, brush=pg.mkBrush("#f5b041"))
         self.plot.addItem(self.bar_item)
@@ -57,6 +71,10 @@ class DatasetBarChartWidget(QWidget):
         self.plot.scene().sigMouseMoved.connect(self._on_mouse_moved)
         layout.addWidget(self.plot)
         self.clear()
+
+    def apply_theme(self, theme: str) -> None:
+        """Refresh this custom plot for the selected application theme."""
+        _apply_plot_theme(self.plot, self.title, "", self.y_label, theme)
 
     def clear(self) -> None:
         """Clear chart values."""
@@ -163,17 +181,10 @@ class LossChartWidget(QWidget):
         layout.setSpacing(0)
         pg.setConfigOptions(antialias=True)
         self.plot = pg.PlotWidget()
-        self.plot.setBackground("#141414")
-        self.plot.setTitle(title, color="#eeeeee", size="11pt")
-        self.plot.setLabel("bottom", "Optimizer step", color="#d7d7d7")
-        self.plot.setLabel("left", y_label, color="#d7d7d7")
+        self.apply_theme(current_theme())
         self.plot.showGrid(x=True, y=True, alpha=0.28)
         self.plot.setMenuEnabled(False)
         self.plot.setMouseEnabled(x=True, y=True)
-        self.plot.getAxis("bottom").setPen(pg.mkPen("#6a6a6a"))
-        self.plot.getAxis("left").setPen(pg.mkPen("#6a6a6a"))
-        self.plot.getAxis("bottom").setTextPen(pg.mkPen("#cfcfcf"))
-        self.plot.getAxis("left").setTextPen(pg.mkPen("#cfcfcf"))
         self.plot.getPlotItem().setContentsMargins(10, 8, 10, 8)
         self.legend = self.plot.addLegend(offset=(12, 8), brush=pg.mkBrush(20, 20, 20, 180), pen=pg.mkPen("#444444"))
         self.primary_curve = self.plot.plot([], [], pen=pg.mkPen("#f5b041", width=2), name=primary_label)
@@ -187,6 +198,10 @@ class LossChartWidget(QWidget):
         self.plot.scene().sigMouseMoved.connect(self._on_mouse_moved)
         layout.addWidget(self.plot)
         self._refresh_plot()
+
+    def apply_theme(self, theme: str) -> None:
+        """Refresh this custom plot for the selected application theme."""
+        _apply_plot_theme(self.plot, self.title, "Optimizer step", self.y_label, theme)
 
     def clear(self) -> None:
         """Remove all plotted loss values."""
@@ -397,4 +412,3 @@ class LossChartWidget(QWidget):
         )
         distance = ((nearest[1] - x_value) / x_span) ** 2 + ((nearest[2] - y_value) / y_span) ** 2
         return nearest if distance < 0.01 else None
-
