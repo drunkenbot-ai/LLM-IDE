@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QMenuBar,
     QPushButton,
     QSizePolicy,
     QStackedWidget,
@@ -53,16 +54,33 @@ def build_top_bar(window, app_name: str) -> QWidget:
     window.search_box.setPlaceholderText("Project name...")
     window.search_box.setMaximumWidth(260)
     window._tip(window.search_box, f"Project name used when saving or reopening a {app_name} project.")
-    for name, text, slot in (
-        ("new_project_button", "New Project", window.new_project),
-        ("save_project_button", "Save Project", window.save_project),
-        ("open_project_button", "Open Project", window.open_project),
+    window.menu_bar = QMenuBar()
+    window.menu_bar.setObjectName("AppMenuBar")
+    window.file_menu = window.menu_bar.addMenu("File")
+    window.new_project_action = window.file_menu.addAction("New Project", window.new_project)
+    window.new_project_action.setShortcut("Ctrl+N")
+    window.save_project_action = window.file_menu.addAction("Save Project", window.save_project)
+    window.save_project_action.setShortcut("Ctrl+S")
+    window.open_project_action = window.file_menu.addAction("Open Project", window.open_project)
+    window.open_project_action.setShortcut("Ctrl+O")
+
+    window.edit_menu = window.menu_bar.addMenu("Edit")
+    for text, method, shortcut in (
+        ("Undo", "undo", "Ctrl+Z"),
+        ("Redo", "redo", "Ctrl+Shift+Z"),
+        ("Cut", "cut", "Ctrl+X"),
+        ("Copy", "copy", "Ctrl+C"),
+        ("Paste", "paste", "Ctrl+V"),
+        ("Select All", "selectAll", "Ctrl+A"),
     ):
-        button = QPushButton(text)
-        button.setMaximumWidth(130)
-        button.clicked.connect(slot)
-        window._tip(button, f"{text} in the current project.")
-        setattr(window, name, button)
+        action = window.edit_menu.addAction(text)
+        action.setShortcut(shortcut)
+        action.triggered.connect(
+            lambda _checked=False, method=method: window.edit_focused_widget(method)
+        )
+
+    window.about_menu = window.menu_bar.addMenu("About")
+    window.about_menu.addAction(f"About {app_name}", window.show_about_dialog)
 
     for name, text in (
         ("dataset_status", "Dataset: not prepared"),
@@ -82,8 +100,7 @@ def build_top_bar(window, app_name: str) -> QWidget:
     layout.addWidget(logo)
     layout.addSpacing(12)
     layout.addWidget(window.search_box)
-    for name in ("new_project_button", "save_project_button", "open_project_button"):
-        layout.addWidget(getattr(window, name))
+    layout.addWidget(window.menu_bar)
     layout.addSpacing(10)
     for name in ("dataset_status", "train_status", "export_status", "chat_status"):
         layout.addWidget(getattr(window, name))

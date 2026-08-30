@@ -152,6 +152,26 @@ class WindowCoreMixin:
                     lambda item=widget: self._log_ui_event("edited", item, item.text())
                 )
 
+    def edit_focused_widget(self, method_name: str) -> None:
+        """Run a standard edit operation on the currently focused editor.
+
+        Args:
+            method_name: Qt editor method to invoke, such as ``copy`` or
+                ``selectAll``.
+        """
+        widget = QApplication.focusWidget()
+        method = getattr(widget, method_name, None) if widget is not None else None
+        if callable(method):
+            method()
+
+    def show_about_dialog(self) -> None:
+        """Display the application identity and version."""
+        QMessageBox.information(
+            self,
+            f"About {APP_NAME}",
+            f"{APP_NAME} {APP_VERSION}\n\nA desktop environment for building, training, and using LLMs.",
+        )
+
     def _log_ui_event(self, action: str, widget: QWidget, value: Any) -> None:
         """Log a UI action or parameter value.
 
