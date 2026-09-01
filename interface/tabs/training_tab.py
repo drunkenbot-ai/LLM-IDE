@@ -274,6 +274,10 @@ def build_training_tab(window) -> QWidget:
         "Local runs training on this computer. Remote publishes a job for workers. RunPod creates a cloud GPU worker automatically.",
     )
     runtime.addRow("Launch", window.training_launch_target)
+    window.training_process_status = QLabel("Worker: detached | Run: - | PID: -")
+    window.training_process_status.setObjectName("Metric")
+    window.training_process_status.setWordWrap(True)
+    runtime.addRow("Process", window.training_process_status)
     runtime.addRow("Device", window.device)
     runtime.addRow("Hardware", window.device_info)
     runtime.addRow("", window.use_amp)
@@ -292,7 +296,7 @@ def build_training_tab(window) -> QWidget:
     window.stop_training_button = QPushButton("Stop")
     window.stop_training_button.setEnabled(False)
     window.stop_training_button.setMaximumWidth(120)
-    window.stop_training_button.clicked.connect(window.stop_active_task)
+    window.stop_training_button.clicked.connect(window.stop_training_process)
     window._tip(window.stop_training_button, "Request a graceful stop and save a resumable checkpoint.")
 
     action_row = QHBoxLayout()

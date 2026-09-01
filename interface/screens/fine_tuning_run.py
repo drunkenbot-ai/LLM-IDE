@@ -267,7 +267,6 @@ class FineTuningRunMixin:
             return
         self.active_training_output_dir = training_config.output_dir
         self._prepare_fine_tune_run_folder(training_config)
-        self._init_telemetry_store(training_config.output_dir)
         self.fine_tune_log.append("")
         self.fine_tune_progress.setValue(0)
         self.training_progress.setValue(0)
@@ -301,15 +300,15 @@ class FineTuningRunMixin:
         self.fine_tune_log.append("Fine-tuning started...")
         self.project_state.setText("Fine-tuning")
         self.train_status.setText("Training: fine-tuning")
-        self._run_task(
-            run_fine_tuning_job,
-            (dataset_dir, model_config, training_config, self._training_stage_value()),
-            self._training_finished,
-            self.fine_tune_log,
-            self.fine_tune_progress,
-            with_progress=True,
+        self._launch_local_training(
+            dataset_dir,
+            model_config,
+            training_config,
+            training_mode="fine_tune",
+            stage=self._training_stage_value(),
+            log=self.fine_tune_log,
+            progress=self.fine_tune_progress,
             button=self.fine_tune_button,
             stop_button=self.stop_fine_tune_button,
             busy_text="Fine-tuning",
-            task_kind="fine_tune",
         )
