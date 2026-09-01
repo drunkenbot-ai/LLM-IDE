@@ -106,5 +106,6 @@ control and only signals after the timeout when
 identity. Never replace this check with a numeric PID lookup.
 
 This integration requires engine PR #11
-(`07928616b0d046cfdb5a90f514dbe50fa812df5f`) to merge before the LLM-IDE
-change.
+(`5de7dfe0cb83a8708090f8ee8e2f63ce417e3e96`) to merge before the LLM-IDE
+change. That revision uses a persistent cross-platform mutex for stale claim
+recovery and fails closed when exclusive mutation ownership cannot be proven.
