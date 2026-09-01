@@ -94,6 +94,12 @@ rendering to one snapshot per refresh, and skips Live chart painting while the
 page is hidden. Window close only detaches the timer, allowing the process to
 survive and be identity-checked when the project reopens.
 
+The project file persists a versioned reference containing the returned run
+ID, manifest path, control path, and telemetry database path. Reattach tries
+that exact manifest first and falls back to scanning configured model and
+fine-tune output directories. Metric and event readers maintain independent
+last-row-ID cursors across each attached UI session.
+
 Forced termination is fail-closed: the UI first writes a cooperative stop
 control and only signals after the timeout when
 `manifest_process_is_current()` confirms both PID and process creation

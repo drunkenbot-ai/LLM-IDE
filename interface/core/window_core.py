@@ -56,6 +56,7 @@ class WindowCoreMixin:
         self.active_training_mode = "pretrain"
         self.active_training_final_button_text = "Start Training"
         self.active_training_output_dir: Optional[Path] = None
+        self.persisted_training_process: dict[str, Any] = {}
         self.interrupt_count = 0
         self.chat_session: Optional[LlamaChatSession] = None
         self.chat_markdown = ""

@@ -185,6 +185,42 @@ def test_poll_reads_incrementally_and_emits_terminal_once(tmp_path: Path) -> Non
     assert len(terminals) == 1
 
 
+def test_reattach_advances_metric_and_event_row_id_cursors(tmp_path: Path) -> None:
+    request = fake_request(tmp_path)
+    request.manifest_path.parent.mkdir(parents=True)
+    request.manifest_path.write_text("{}", encoding="utf-8")
+    metric_cursors = []
+    event_cursors = []
+
+    def read_metrics(_path, _run_id, last_row_id=0, **_kwargs):
+        metric_cursors.append(last_row_id)
+        return [{"id": 9, "step": 3}] if last_row_id == 0 else []
+
+    def read_events(_path, _run_id, last_row_id=0, **_kwargs):
+        event_cursors.append(last_row_id)
+        return (
+            [{"id": 12, "event_type": "lifecycle", "payload_json": "{}"}]
+            if last_row_id == 0
+            else []
+        )
+
+    controller, *_ = make_controller(
+        tmp_path,
+        request=request,
+        load_manifest=lambda _path: manifest(request, "running"),
+        read_metrics=read_metrics,
+        read_events=read_events,
+    )
+
+    controller.attach(request.manifest_path)
+    controller.poll()
+
+    assert metric_cursors == [0, 9]
+    assert event_cursors == [0, 12]
+    assert controller.last_metric_row_id == 9
+    assert controller.last_event_row_id == 12
+
+
 def test_worker_exit_two_is_visible_launch_refusal(tmp_path: Path) -> None:
     controller, timer, states, _, _, errors = make_controller(
         tmp_path,

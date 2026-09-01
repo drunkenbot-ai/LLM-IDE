@@ -1474,6 +1474,9 @@ these states: `starting`, `running`, `stopping`, `stopped`, `completed`,
 - Closing LLM-IDE detaches from local training. It does not stop the worker.
 - Reopening the project discovers the active or latest run, verifies its
   process creation identity and heartbeat, and resumes telemetry display.
+- The project saves the worker run ID plus manifest, control, and telemetry
+  paths, then falls back to output-directory discovery if that reference is
+  unavailable.
 - `Stop` writes a cooperative, run-specific stop request. If the worker does
   not stop within the timeout, `Force Stop` is offered only while the PID and
   recorded process identity still match. An unverifiable or reused PID is

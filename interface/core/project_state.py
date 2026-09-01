@@ -27,6 +27,7 @@ class ProjectStateMixin:
             "theme_preference_version": 1,
             "project_name": "",
             "project_dir": "",
+            "training_process": {},
             "paths": {
                 "source_vault": "",
                 "dataset_core": str(dataset_dir),
@@ -266,6 +267,7 @@ class ProjectStateMixin:
             "project_dir": str(project_dir),
             "created_at": created_at,
             "saved_at": now_iso,
+            "training_process": dict(self.persisted_training_process),
             "paths": {
                 "source_vault": self.input_dir.text(),
                 "dataset_core": self.dataset_dir.text(),

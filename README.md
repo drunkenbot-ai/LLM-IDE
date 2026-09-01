@@ -132,8 +132,9 @@ interval, AMP, resume, and FP16 checkpoint quantization.
 Local UI training launches the standalone engine worker and persists a
 run-specific request/manifest plus batched SQLite telemetry. Closing the UI
 detaches without stopping training; reopening the project verifies heartbeat,
-PID creation identity, and reattaches safely. Stop is cooperative first, and
-force termination is unavailable for stale or unverifiable process identity.
+PID creation identity, and reattaches safely using the saved run and manifest
+reference. Stop is cooperative first, and force termination is unavailable for
+stale or unverifiable process identity.
 
 Prepared train/validation token arrays are now written as `train_tokens.npy` and
 `val_tokens.npy` for faster load times and lower disk overhead than giant JSON

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import json
 from pathlib import Path
 from queue import Queue
 from types import SimpleNamespace
@@ -200,6 +201,72 @@ def test_reattach_state_rebinds_live_telemetry_database(tmp_path: Path) -> None:
         assert window.telemetry_run_id == request.run_id
         assert window.telemetry_latest_index == 12
         assert window.telemetry_latest_id == 34
+    finally:
+        window.close()
+        window.deleteLater()
+        app.processEvents()
+
+
+def test_worker_request_reference_is_persisted_in_project_state(tmp_path: Path) -> None:
+    app = interface_app.QApplication.instance() or interface_app.QApplication([])
+    app.setProperty("license_valid", True)
+    window = interface_app.MainWindow()
+    project_file = tmp_path / "project.json"
+    project_file.write_text('{"schema": "drunkenbot_ide_project"}', encoding="utf-8")
+    window.current_project_file = project_file
+    request = fake_request(tmp_path, "persisted-run")
+    try:
+        window._remember_training_request(request)
+
+        saved = json.loads(project_file.read_text(encoding="utf-8"))
+        assert saved["training_process"] == {
+            "schema": "drunkenbot.training-process-reference",
+            "version": 1,
+            "run_id": "persisted-run",
+            "manifest_path": str(request.manifest_path),
+            "control_path": str(request.control_path),
+            "telemetry_db_path": str(request.telemetry_db_path),
+        }
+    finally:
+        window.current_project_file = None
+        window.close()
+        window.deleteLater()
+        app.processEvents()
+
+
+def test_discovery_prefers_persisted_manifest_reference(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    app = interface_app.QApplication.instance() or interface_app.QApplication([])
+    app.setProperty("license_valid", True)
+    window = interface_app.MainWindow()
+    request = fake_request(tmp_path, "persisted-run")
+    request.manifest_path.parent.mkdir(parents=True)
+    request.manifest_path.write_text("{}", encoding="utf-8")
+    window.persisted_training_process = {
+        "run_id": request.run_id,
+        "manifest_path": str(request.manifest_path),
+        "control_path": str(request.control_path),
+        "telemetry_db_path": str(request.telemetry_db_path),
+    }
+    attached = []
+    scanned = []
+
+    def attach(path):
+        attached.append(path)
+        window.training_controller.request = request
+
+    monkeypatch.setattr(window.training_controller, "attach", attach)
+    monkeypatch.setattr(
+        window.training_controller,
+        "discover",
+        lambda paths: scanned.append(paths) or False,
+    )
+    try:
+        assert window.discover_training_run()
+        assert attached == [request.manifest_path]
+        assert scanned == []
     finally:
         window.close()
         window.deleteLater()

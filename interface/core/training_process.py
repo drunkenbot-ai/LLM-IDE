@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -99,15 +100,65 @@ class TrainingProcessMixin:
         self.telemetry_latest_index = 0
         log.append(f"Standalone worker request: {request.manifest_path.parent / 'request.json'}")
         log.append(f"Training run ID: {request.run_id}")
+        try:
+            self._remember_training_request(request)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            self._on_training_process_error(
+                f"Could not persist training reattachment metadata: {exc}"
+            )
 
     def discover_training_run(self) -> bool:
         """Discover and safely reattach to the active or latest project run."""
         self.training_controller.detach()
+        manifest_path = str(self.persisted_training_process.get("manifest_path") or "")
+        if manifest_path and Path(manifest_path).exists():
+            try:
+                self.training_controller.attach(Path(manifest_path))
+            except (OSError, ValueError, json.JSONDecodeError) as exc:
+                self._on_training_process_error(
+                    f"Could not reattach from saved training metadata: {exc}"
+                )
+            else:
+                request = self.training_controller.request
+                expected_run_id = str(
+                    self.persisted_training_process.get("run_id") or ""
+                )
+                if request is not None and request.run_id == expected_run_id:
+                    return True
         output_dirs = []
         for value in (self.model_dir.text(), self.fine_tune_output_dir.text()):
             if value.strip():
                 output_dirs.append(Path(value))
-        return self.training_controller.discover(output_dirs)
+        discovered = self.training_controller.discover(output_dirs)
+        if discovered and self.training_controller.request is not None:
+            try:
+                self._remember_training_request(self.training_controller.request)
+            except (OSError, ValueError, json.JSONDecodeError) as exc:
+                self._on_training_process_error(
+                    f"Could not persist discovered training metadata: {exc}"
+                )
+        return discovered
+
+    def _remember_training_request(self, request: Any) -> None:
+        metadata = {
+            "schema": "drunkenbot.training-process-reference",
+            "version": 1,
+            "run_id": request.run_id,
+            "manifest_path": str(request.manifest_path),
+            "control_path": str(request.control_path),
+            "telemetry_db_path": str(request.telemetry_db_path),
+        }
+        self.persisted_training_process = metadata
+        project_file = self.current_project_file
+        if project_file is None or not project_file.exists():
+            return
+        data = json.loads(project_file.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            raise ValueError("Project file must contain a JSON object")
+        data["training_process"] = metadata
+        temporary = project_file.with_suffix(f"{project_file.suffix}.tmp")
+        temporary.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        os.replace(temporary, project_file)
 
     def stop_training_process(self) -> None:
         """Request cooperative stop, or verified force stop after its timeout."""
