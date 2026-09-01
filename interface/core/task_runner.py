@@ -149,6 +149,8 @@ class TaskRunnerMixin:
         self.interrupt_count += 1
         if self.interrupt_count > 1:
             os._exit(130)
+        if hasattr(self, "training_controller"):
+            self.training_controller.detach()
         if self.stop_event is not None:
             self.stop_event.set()
         if self.active_log is not None:
@@ -166,6 +168,8 @@ class TaskRunnerMixin:
             event: Qt close event.
         """
 
+        if hasattr(self, "training_controller"):
+            self.training_controller.detach()
         if self.thread is not None:
             if self.stop_event is not None:
                 self.stop_event.set()
@@ -315,18 +319,23 @@ class TaskRunnerMixin:
             return f"{minutes}m {secs:02d}s"
         return f"{secs}s"
 
-    def _drain_progress_queue(self) -> None:
-        """Drain queued worker progress events on the UI thread."""
+    def _drain_progress_queue(self, final: bool = False) -> None:
+        """Drain a bounded normal batch or coalesce a completed worker backlog."""
 
         if self.progress_queue is None or self.active_log is None or self.active_progress_bar is None:
             return
         drained = 0
         last_percent = None
-        while drained < 12:
+        latest_progress_event = None
+        while final or drained < 12:
             try:
                 event = self.progress_queue.get_nowait()
             except Empty:
                 break
+            if final and isinstance(event, dict) and not self._is_terminal_progress_event(event):
+                latest_progress_event = event
+                drained += 1
+                continue
             notification_event = event
             if isinstance(event, dict) and event.get("percent") is not None:
                 last_percent = event.get("percent")
@@ -343,14 +352,36 @@ class TaskRunnerMixin:
             if isinstance(notification_event, dict):
                 self._notify_progress(notification_event)
             drained += 1
+        if latest_progress_event is not None:
+            notification_event = latest_progress_event
+            if latest_progress_event.get("percent") is not None:
+                last_percent = latest_progress_event.get("percent")
+                latest_progress_event = {**latest_progress_event, "percent": None}
+            self._handle_progress(
+                latest_progress_event,
+                self.active_log,
+                self.active_progress_bar,
+            )
+            self._notify_progress(notification_event)
         if last_percent is not None:
             self.active_progress_bar.setValue(max(0, min(100, int(last_percent))))
+
+    @staticmethod
+    def _is_terminal_progress_event(event: dict[str, Any]) -> bool:
+        """Return whether an event must survive final backlog coalescing."""
+
+        return (
+            str(event.get("event_type") or "").lower()
+            in {"failure", "error", "warning", "stop", "completion"}
+            or str(event.get("level") or "").lower() in {"error", "warning", "critical"}
+            or str(event.get("message") or "").startswith("Invalid record:")
+        )
 
     def _thread_finished(self) -> None:
         """Clean up thread bookkeeping after a worker finishes."""
 
         LOGGER.info("Background task thread finished")
-        self._drain_progress_queue()
+        self._drain_progress_queue(final=True)
         if self.progress_timer.isActive():
             self.progress_timer.stop()
         self.thread = None

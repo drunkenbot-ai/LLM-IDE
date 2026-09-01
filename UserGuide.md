@@ -1463,7 +1463,34 @@ print(a + b)
 ```
 ````
 
-## 4.1 Training Metrics and Telemetry
+## 4.1 Standalone Local Training
+
+Local pretraining and fine-tuning run in a standalone engine process rather
+than inside the desktop application's Qt worker thread. The Training and
+Fine-tuning pages show the durable run ID, operating-system PID, and one of
+these states: `starting`, `running`, `stopping`, `stopped`, `completed`,
+`failed`, or `stale`.
+
+- Closing LLM-IDE detaches from local training. It does not stop the worker.
+- Reopening the project discovers the active or latest run, verifies its
+  process creation identity and heartbeat, and resumes telemetry display.
+- `Stop` writes a cooperative, run-specific stop request. If the worker does
+  not stop within the timeout, `Force Stop` is offered only while the PID and
+  recorded process identity still match. An unverifiable or reused PID is
+  never signaled.
+- Worker requests and manifests are stored under
+  `<model-output>/training_runs/<run-id>/`. Metrics and durable lifecycle,
+  validation, checkpoint, warning, and terminal events are stored in
+  `<model-output>/training_telemetry.sqlite`.
+- LLM-IDE polls durable state every 750 ms. The worker continues recording
+  while another tab is selected; expensive Live charts update only when the
+  Live page is visible.
+
+For LoRA runs, the recommended/best checkpoint is a merged inference artifact
+for Chat. Resume uses `best_resume_checkpoint_path` (or a normal step/epoch
+checkpoint), not the inference-only `checkpoint_best_val.pt`.
+
+## 4.2 Training Metrics and Telemetry
 
 The `AI` tab shows live training telemetry while a run is active.
 
@@ -1561,6 +1588,10 @@ Effect:
 
 - Helps identify memory bottlenecks.
 - Useful when choosing batch size, context length, and model size.
+
+The Hardware card distinguishes system CPU from the LLM-IDE process CPU.
+Training-process CPU is shown as unavailable when the engine payload does not
+provide it; the UI does not substitute or fabricate a value.
 
 ## 5. Export Options
 

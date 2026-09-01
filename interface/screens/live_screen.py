@@ -113,7 +113,10 @@ class LiveScreenMixin:
         self.live_time_slider.setRange(0, self.telemetry_latest_index)
         self.live_time_slider.setValue(self.telemetry_latest_index)
         self.live_time_slider.blockSignals(False)
-        if self.telemetry_latest_index:
+        if (
+            self.telemetry_latest_index
+            and self.pages.currentIndex() == self.live_page_index
+        ):
             rows = self._timeline_rows_until(self.telemetry_latest_index)
             if rows:
                 self._apply_timeline_rows(rows)
@@ -265,7 +268,7 @@ class LiveScreenMixin:
         self.live_context_status.setText(f"Context: {self.train_context_length.value()}")
         self.live_device_status.setText(f"Device: {self.device.currentText()}")
         self.live_worker_status.setText(f"CPU workers: {data_workers if data_workers is not None else self.data_loader_workers.value()}")
-        self._set_meter(self.live_cpu_bar, "CPU", system_cpu if system_cpu is not None else self._system_cpu_value())
+        self._set_meter(self.live_cpu_bar, "System CPU", system_cpu if system_cpu is not None else self._system_cpu_value())
         self._set_meter(self.live_gpu_bar, "GPU memory", gpu_memory)
         if vram_allocated is not None or vram_reserved is not None:
             allocated = float(vram_allocated or 0.0)

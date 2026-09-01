@@ -250,8 +250,16 @@ class DatasetScreenMixin:
 
         self.dataset_log.append(
             f"Cache summary: reused {result.cached_file_count:,} file(s), "
-            f"processed {result.processed_file_count:,} file(s)."
+            f"processed {result.processed_file_count:,} file(s), "
+            f"skipped {result.skipped_file_count:,}, "
+            f"invalid/failed {result.failed_file_count:,}."
         )
+        if result.failed_file_count:
+            self.dataset_log.append(
+                "[WARN] Dataset preparation kept valid records but rejected "
+                f"records from {result.failed_file_count:,} source file(s). "
+                "See the Invalid record messages above for filename and record/line details."
+            )
 
         if getattr(result, "dataset_version_id", ""):
             self.dataset_log.append(
@@ -293,11 +301,21 @@ class DatasetScreenMixin:
         )
 
         self.train_data_dir.setText(str(result.output_dir))
-        self.project_state.setText("Dataset ready")
+        self.project_state.setText(
+            "Dataset ready with warnings"
+            if result.failed_file_count
+            else "Dataset ready"
+        )
 
         self.dataset_status.setText(
             f"Dataset: {result.document_count} files, {result.token_count:,} tokens"
         )
+        if result.failed_file_count:
+            self.dataset_status.setText(
+                f"Dataset: {result.document_count} valid, "
+                f"{result.failed_file_count} invalid source(s), "
+                f"{result.token_count:,} tokens"
+            )
 
         if result.code_sample_count:
             self.dataset_status.setText(
