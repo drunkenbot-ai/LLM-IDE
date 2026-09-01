@@ -129,6 +129,13 @@ checkpoint by default. The UI exposes model options such as `n_embd`, `n_head`,
 `n_layer`, context length, learning rate, batch size, warmup, checkpoint
 interval, AMP, resume, and FP16 checkpoint quantization.
 
+Local UI training launches the standalone engine worker and persists a
+run-specific request/manifest plus batched SQLite telemetry. Closing the UI
+detaches without stopping training; reopening the project verifies heartbeat,
+PID creation identity, and reattaches safely using the saved run and manifest
+reference. Stop is cooperative first, and force termination is unavailable for
+stale or unverifiable process identity.
+
 Prepared train/validation token arrays are now written as `train_tokens.npy` and
 `val_tokens.npy` for faster load times and lower disk overhead than giant JSON
 token lists. Existing `.json` token files are still supported as a fallback.
@@ -198,16 +205,25 @@ python tools/check_dependency_boundaries.py
   windows, category charts, and token distribution charts.
 - Dataset preparation now records corpus block diversity in `dataset_summary.json`
   and lowers the dataset rating when the final corpus is duplicate-heavy.
+- Structured-ingestion diagnostics are grouped once per affected source; partial
+  builds complete at 100% with bounded warning totals instead of per-record log
+  floods.
 - Validation token splits are chunk-shuffled with a fixed seed so held-out loss
   samples the whole corpus instead of only the tail of `corpus.txt`.
 - Architecture Advisor with parameter and memory breakdowns.
 - Training Health Advisor for validation gaps, overfitting, and unstable loss.
-- Best-validation checkpoint tracking via `checkpoint_best_val.pt`.
-- Live Training Monitor with graph history persisted to SQLite.
+- Best-validation inference checkpoint tracking via
+  `checkpoint_best_val.pt`, with a separate
+  `checkpoint_best_val_resume.pt` for LoRA resume.
+- Standalone local pretraining/fine-tuning that survives UI close and safely
+  reattaches by durable run identity.
+- Live Training Monitor with incrementally read, worker-owned SQLite history.
 - Fine-tuning Lab with LoRA support and compatibility checks.
 - Job Manager groundwork for local, remote-worker, and RunPod-backed training.
 
 When validation is enabled, the trainer saves a recommended checkpoint at
 `checkpoints/checkpoint_best_val.pt` whenever validation loss improves. The final
 training summary records both the final model path and the recommended
-best-validation checkpoint.
+best-validation checkpoint. LoRA summaries also record
+`best_resume_checkpoint_path`; resume controls use that artifact rather than
+the merged inference checkpoint.

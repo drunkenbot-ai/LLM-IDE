@@ -100,6 +100,7 @@ from engine.license_client import load_stored_license_key
 from interface.license_activation_dialog import LicenseActivationDialog, run_license_check_responsively
 from interface.chat_widgets import ChatMessageWidget
 from interface.markdown_renderer import markdown_to_html
+from interface.training_artifacts import select_training_artifacts
 from interface.startup import _register_recent_project
 from interface.tabs.benchmark_tab import build_benchmark_tab
 from interface.tabs.chat_tab import build_chat_tab
@@ -156,6 +157,7 @@ from interface.core.project_manager import ProjectManagerMixin
 from interface.core.project_state import ProjectStateMixin
 from interface.core.project_state_apply import ProjectStateApplyMixin
 from interface.core.task_runner import TaskRunnerMixin
+from interface.core.training_process import TrainingProcessMixin
 from interface.widgets.factories import WidgetFactoryMixin
 from interface.screens.dataset_plan_screen import DatasetPlanScreenMixin
 from interface.screens.dataset_screen import DatasetScreenMixin
@@ -182,6 +184,7 @@ class MainWindow(
     ProjectStateMixin,
     ProjectStateApplyMixin,
     TaskRunnerMixin,
+    TrainingProcessMixin,
     WidgetFactoryMixin,
     DatasetPlanScreenMixin,
     DatasetScreenMixin,

@@ -27,6 +27,7 @@ class ProjectStateMixin:
             "theme_preference_version": 1,
             "project_name": "",
             "project_dir": "",
+            "training_process": {},
             "paths": {
                 "source_vault": "",
                 "dataset_core": str(dataset_dir),
@@ -171,6 +172,8 @@ class ProjectStateMixin:
         self.stop_dataset_button.setEnabled(False)
         self.stop_training_button.setEnabled(False)
         self.stop_fine_tune_button.setEnabled(False)
+        self.training_process_status.setText("Worker: detached | Run: - | PID: -")
+        self.fine_tune_process_status.setText("Worker: detached | Run: - | PID: -")
         self.stop_benchmark_button.setEnabled(False)
         self.stop_chat_button.setEnabled(False)
         self.load_llm_button.setText("Load Model")
@@ -214,6 +217,8 @@ class ProjectStateMixin:
         self.live_time_slider.blockSignals(False)
         self.live_timeline_label.setText("Timeline: no saved telemetry")
         self._set_meter(self.live_cpu_bar, "CPU", self._system_cpu_value())
+        self._set_meter(self.live_training_cpu_bar, "Training process CPU", None)
+        self._set_meter(self.live_ui_cpu_bar, "UI process CPU", None)
         self._set_meter(self.live_gpu_bar, "GPU memory", None)
         self._set_meter(self.live_vram_bar, "VRAM reserved", None)
         self._set_meter(self.live_ram_bar, "System RAM", self._system_ram_value())
@@ -262,6 +267,7 @@ class ProjectStateMixin:
             "project_dir": str(project_dir),
             "created_at": created_at,
             "saved_at": now_iso,
+            "training_process": dict(self.persisted_training_process),
             "paths": {
                 "source_vault": self.input_dir.text(),
                 "dataset_core": self.dataset_dir.text(),

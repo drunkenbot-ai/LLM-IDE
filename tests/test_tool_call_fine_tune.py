@@ -56,8 +56,8 @@ def test_tool_call_jsonl_preserves_tools_calls_and_results(tmp_path: Path) -> No
 
     assert len(documents) == 1
     assert "Tools:" in documents[0].text
-    assert "tool_calls=" in documents[0].text
-    assert "tool_call_id=call-1" in documents[0].text
+    assert "<tool_calls>" in documents[0].text
+    assert '<tool_result id="call-1">' in documents[0].text
 
 
 def test_structured_jsonl_skips_malformed_and_invalid_records(tmp_path: Path) -> None:
@@ -77,5 +77,7 @@ def test_structured_jsonl_skips_malformed_and_invalid_records(tmp_path: Path) ->
 
     assert len(documents) == 1
     assert "keep" in documents[0].text
-    assert any("line/record 2" in message for message in messages)
-    assert any("line/record 4" in message and "invalid JSON" in message for message in messages)
+    assert len(messages) == 1
+    assert "lines 2-4" in messages[0]
+    assert "invalid JSON" in messages[0]
+    assert "3 invalid records" in messages[0]

@@ -8,43 +8,70 @@ globals().update({name: value for name, value in vars(_app).items() if not name.
 
 
 class TrainingMetricsMixin:
-    def _update_training_metrics(self, event: dict[str, Any], update_fine_tune: bool = False) -> None:
+    def _update_training_metrics(
+        self,
+        event: dict[str, Any],
+        update_fine_tune: bool = False,
+        render_live: bool = True,
+    ) -> None:
         """Update training metric chips from a progress event.
 
         Args:
             event: Progress event emitted by the training backend.
             update_fine_tune: Whether to mirror metrics into the Fine-Tuning tab chips.
         """
-
         if "epoch" in event and "total_epochs" in event:
-            self.training_epoch_metric.setText(f"Epoch: {event['epoch']}/{event['total_epochs']}")
+            self._set_text_if_changed(
+                self.training_epoch_metric,
+                f"Epoch: {event['epoch']}/{event['total_epochs']}",
+            )
             if update_fine_tune and hasattr(self, "fine_tune_epoch_metric"):
-                self.fine_tune_epoch_metric.setText(f"Epoch: {event['epoch']}/{event['total_epochs']}")
+                self._set_text_if_changed(
+                    self.fine_tune_epoch_metric,
+                    f"Epoch: {event['epoch']}/{event['total_epochs']}",
+                )
         if "step" in event and "total_steps" in event:
-            self.training_step_metric.setText(f"Step: {event['step']}/{event['total_steps']}")
+            self._set_text_if_changed(
+                self.training_step_metric,
+                f"Step: {event['step']}/{event['total_steps']}",
+            )
             if update_fine_tune and hasattr(self, "fine_tune_step_metric"):
-                self.fine_tune_step_metric.setText(f"Step: {event['step']}/{event['total_steps']}")
+                self._set_text_if_changed(
+                    self.fine_tune_step_metric,
+                    f"Step: {event['step']}/{event['total_steps']}",
+                )
         train_loss = self._finite_metric(event.get("train_loss"))
         if train_loss is not None:
-            self.training_loss_metric.setText(f"Train loss: {float(train_loss):.4f}")
+            self._set_text_if_changed(
+                self.training_loss_metric,
+                f"Train loss: {float(train_loss):.4f}",
+            )
             if update_fine_tune and hasattr(self, "fine_tune_loss_metric"):
-                self.fine_tune_loss_metric.setText(f"Train loss: {float(train_loss):.4f}")
+                self._set_text_if_changed(
+                    self.fine_tune_loss_metric,
+                    f"Train loss: {float(train_loss):.4f}",
+                )
         val_loss = self._finite_metric(event.get("val_loss"))
         if val_loss is not None:
-            self.training_val_metric.setText(f"Val loss: {float(val_loss):.4f}")
+            self._set_text_if_changed(
+                self.training_val_metric,
+                f"Val loss: {float(val_loss):.4f}",
+            )
             if update_fine_tune and hasattr(self, "fine_tune_val_metric"):
-                self.fine_tune_val_metric.setText(f"Val loss: {float(val_loss):.4f}")
+                self._set_text_if_changed(
+                    self.fine_tune_val_metric,
+                    f"Val loss: {float(val_loss):.4f}",
+                )
         step = event.get("step")
+        live_visible = render_live and self.pages.currentIndex() == self.live_page_index
         if step is not None and (train_loss is not None or val_loss is not None):
             step_int_for_loss = int(step)
-            self.loss_chart.add_metrics(step_int_for_loss, train_loss, val_loss)
             self._update_training_health(step_int_for_loss, train_loss, val_loss)
+            if live_visible:
+                self.loss_chart.add_metrics(step_int_for_loss, train_loss, val_loss)
         if step is None:
             return
         step_int = int(step)
-        if self.pages.currentIndex() != self.live_page_index:
-            return
-        self._record_live_metric(event)
         learning_rate = self._finite_metric(event.get("learning_rate"))
         grad_norm = self._finite_metric(event.get("grad_norm"))
         weight_norm = self._finite_metric(event.get("weight_norm"))
@@ -59,26 +86,58 @@ class TrainingMetricsMixin:
         data_workers = event.get("data_loader_workers")
         eta_seconds = self._finite_metric(event.get("eta_seconds"))
         if learning_rate is not None:
-            self.training_lr_metric.setText(f"LR: {float(learning_rate):.2e}")
+            self._set_text_if_changed(
+                self.training_lr_metric,
+                f"LR: {float(learning_rate):.2e}",
+            )
             if update_fine_tune and hasattr(self, "fine_tune_lr_metric"):
-                self.fine_tune_lr_metric.setText(f"LR: {float(learning_rate):.2e}")
+                self._set_text_if_changed(
+                    self.fine_tune_lr_metric,
+                    f"LR: {float(learning_rate):.2e}",
+                )
         if grad_norm is not None:
-            self.training_grad_metric.setText(f"Grad: {float(grad_norm):.3f}")
+            self._set_text_if_changed(
+                self.training_grad_metric,
+                f"Grad: {float(grad_norm):.3f}",
+            )
             if update_fine_tune and hasattr(self, "fine_tune_grad_metric"):
-                self.fine_tune_grad_metric.setText(f"Grad: {float(grad_norm):.3f}")
+                self._set_text_if_changed(
+                    self.fine_tune_grad_metric,
+                    f"Grad: {float(grad_norm):.3f}",
+                )
         if tokens_per_second is not None:
-            self.training_speed_metric.setText(f"Speed: {float(tokens_per_second):.0f} tok/s")
+            self._set_text_if_changed(
+                self.training_speed_metric,
+                f"Speed: {float(tokens_per_second):.0f} tok/s",
+            )
             if update_fine_tune and hasattr(self, "fine_tune_speed_metric"):
-                self.fine_tune_speed_metric.setText(f"Speed: {float(tokens_per_second):.0f} tok/s")
+                self._set_text_if_changed(
+                    self.fine_tune_speed_metric,
+                    f"Speed: {float(tokens_per_second):.0f} tok/s",
+                )
         if vram_allocated is not None:
-            self.training_vram_metric.setText(f"VRAM: {float(vram_allocated):.2f} GB")
+            self._set_text_if_changed(
+                self.training_vram_metric,
+                f"VRAM: {float(vram_allocated):.2f} GB",
+            )
         if eta_seconds is not None:
-            self.training_eta_metric.setText(f"ETA: {self._format_duration(float(eta_seconds))}")
+            self._set_text_if_changed(
+                self.training_eta_metric,
+                f"ETA: {self._format_duration(float(eta_seconds))}",
+            )
+            if update_fine_tune and hasattr(self, "fine_tune_eta_metric"):
+                self._set_text_if_changed(
+                    self.fine_tune_eta_metric,
+                    f"ETA: {self._format_duration(float(eta_seconds))}"
+                )
         elapsed_seconds = self._finite_metric(event.get("elapsed_seconds"))
         if elapsed_seconds is not None:
-            self.training_elapsed_metric.setText(f"Total time: {self._format_duration(float(elapsed_seconds))}")
-            if update_fine_tune and hasattr(self, "fine_tune_eta_metric"):
-                self.fine_tune_eta_metric.setText(f"ETA: {self._format_duration(float(eta_seconds))}")
+            self._set_text_if_changed(
+                self.training_elapsed_metric,
+                f"Total time: {self._format_duration(float(elapsed_seconds))}",
+            )
+        if not live_visible:
+            return
         if learning_rate is not None or grad_norm is not None:
             self.optimization_chart.add_values(step_int, learning_rate, grad_norm)
         if weight_norm is not None or update_ratio is not None:
@@ -145,7 +204,7 @@ class TrainingMetricsMixin:
         else:
             label = "Health: watching"
             tip = "Collecting more loss points before making a stronger diagnosis."
-        self.training_health_metric.setText(label)
+        self._set_text_if_changed(self.training_health_metric, label)
         self._tip(self.training_health_metric, tip)
 
     @staticmethod

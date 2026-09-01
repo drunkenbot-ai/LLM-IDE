@@ -338,7 +338,6 @@ class TrainingRunMixin:
         if not self._run_training_preflight(model_config, training_config):
             return
         self.active_training_output_dir = training_config.output_dir
-        self._init_telemetry_store(training_config.output_dir)
         self.training_log.append("")
         self.training_progress.setValue(0)
         self.training_epoch_metric.setText("Epoch: -")
@@ -378,17 +377,17 @@ class TrainingRunMixin:
         self.training_log.append("Training started...")
         self.project_state.setText("Training")
         self.train_status.setText("Training: running")
-        self._run_task(
-            run_training_job,
-            (dataset_dir, model_config, training_config),
-            self._training_finished,
-            self.training_log,
-            self.training_progress,
-            with_progress=True,
+        self._launch_local_training(
+            dataset_dir,
+            model_config,
+            training_config,
+            training_mode="pretrain",
+            stage=self._training_stage_value(),
+            log=self.training_log,
+            progress=self.training_progress,
             button=self.train_button,
             stop_button=self.stop_training_button,
             busy_text="Training",
-            task_kind="training",
         )
 
     @Slot(object)
@@ -407,14 +406,21 @@ class TrainingRunMixin:
         if hasattr(self, "live_progress"):
             self.live_progress.setValue(100)
         log.append(f"Saved model: {result.checkpoint_path}")
-        log.append(f"Final train loss: {result.final_train_loss:.4f}")
-        if result.final_val_loss is not None:
-            log.append(f"Final validation loss: {result.final_val_loss:.4f}")
+        train_loss = self._finite_metric(result.final_train_loss)
+        val_loss = self._finite_metric(result.final_val_loss)
+        log.append(
+            f"Final train loss: {train_loss:.4f}"
+            if train_loss is not None
+            else "Final train loss: unavailable"
+        )
+        if val_loss is not None:
+            log.append(f"Final validation loss: {val_loss:.4f}")
         training_summary: dict[str, Any] = {}
         try:
             training_summary = json.loads(Path(result.summary_path).read_text(encoding="utf-8"))
-        except Exception:
+        except (OSError, json.JSONDecodeError, TypeError) as exc:
             training_summary = {}
+            log.append(f"Training summary warning: {exc}")
         best_checkpoint = str(training_summary.get("recommended_checkpoint_path") or "")
         best_val_loss = training_summary.get("best_val_loss")
         if best_checkpoint:
@@ -423,11 +429,19 @@ class TrainingRunMixin:
             else:
                 log.append(f"Recommended checkpoint: {best_checkpoint}")
         output_dir = self.active_training_output_dir or Path(result.checkpoint_path).parent
-        stage_key = self.active_task_kind if self.active_task_kind in {"training", "fine_tune"} else "training"
+        stage_key = "fine_tune" if self.active_training_mode == "fine_tune" else "training"
+        artifacts = select_training_artifacts(
+            training_summary,
+            Path(result.checkpoint_path),
+        )
         self.export_model_dir.setText(str(output_dir))
+        self.microgpt_chat_path.setText(str(artifacts.inference_path))
+        if artifacts.resume_path is not None:
+            self.resume_checkpoint.setText(str(artifacts.resume_path))
+            log.append(f"Resume checkpoint: {artifacts.resume_path}")
         try:
             if stage_key != "fine_tune" and Path(output_dir).resolve() == Path(self.model_dir.text()).resolve():
-                self.fine_tune_checkpoint.setText(str(result.checkpoint_path))
+                self.fine_tune_checkpoint.setText(str(artifacts.inference_path))
         except OSError:
             pass
         if getattr(result, "stopped", False):
@@ -436,25 +450,29 @@ class TrainingRunMixin:
             log.append("Training stopped safely. Resume from this checkpoint or the latest checkpoint.")
         else:
             self.project_state.setText("Training complete")
-            self.train_status.setText(f"Training: loss {result.final_train_loss:.4f}")
+            self.train_status.setText(
+                f"Training: loss {train_loss:.4f}"
+                if train_loss is not None
+                else "Training: complete"
+            )
         title = "Fine-tuning complete" if stage_key == "fine_tune" else "Model training complete"
         if getattr(result, "stopped", False):
             title = "Fine-tuning stopped" if stage_key == "fine_tune" else "Model training stopped"
         completion_lines = [
             f"Checkpoint: {result.checkpoint_path}",
             f"Summary: {result.summary_path}",
-            f"Final train loss: {result.final_train_loss:.4f}",
+            (
+                f"Final train loss: {train_loss:.4f}"
+                if train_loss is not None
+                else "Final train loss: unavailable"
+            ),
         ]
-        if result.final_val_loss is not None:
-            completion_lines.append(f"Final validation loss: {result.final_val_loss:.4f}")
+        if val_loss is not None:
+            completion_lines.append(f"Final validation loss: {val_loss:.4f}")
         if best_checkpoint:
             completion_lines.append(f"Recommended checkpoint: {best_checkpoint}")
         if best_val_loss is not None:
             completion_lines.append(f"Best validation loss: {float(best_val_loss):.4f}")
         completion_lines.append(f"Output: {output_dir}")
-        self._notify_complete(stage_key, title, completion_lines)
         self._append_training_history(result)
-        self._clear_button_busy(self.active_training_final_button_text)
-        self.active_training_log = None
-        self.active_training_progress = None
-        self.active_training_output_dir = None
+        self._finish_training_controls()
