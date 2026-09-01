@@ -21,6 +21,7 @@ class ProjectStateApplyMixin:
         paths = data.get("paths", {})
         dataset = data.get("dataset", {})
         training = data.get("training", {})
+        self.persisted_training_process = dict(data.get("training_process") or {})
         export = data.get("export", {})
         chat = data.get("chat", {})
         distributed = data.get("distributed", {})

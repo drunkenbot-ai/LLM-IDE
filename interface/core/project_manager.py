@@ -43,7 +43,7 @@ class ProjectManagerMixin:
     def new_project(self) -> None:
         """Start a fresh project and clear the active project file binding."""
 
-        if self.thread is not None:
+        if self.thread is not None or self.training_controller.active:
             QMessageBox.information(self, "Task running", "Please stop or wait for the current task before creating a new project.")
             return
         if self.current_project_file is not None or self.search_box.text().strip():
@@ -120,6 +120,7 @@ class ProjectManagerMixin:
         if hasattr(self, "runpod_api_key"):
             self.load_runpod_settings()
         self._reset_project_runtime_state()
+        self.discover_training_run()
         project_file.write_text(json.dumps(self._project_state_dict(project_name, project_dir), indent=2), encoding="utf-8")
         _register_recent_project(project_file)
         self.project_state.setText("New project")
@@ -139,6 +140,7 @@ class ProjectManagerMixin:
             project_file: Path to ``project.json``.
         """
 
+        self.training_controller.detach()
         data = json.loads(project_file.read_text(encoding="utf-8"))
         self.current_project_file = project_file
         _register_recent_project(project_file)
@@ -158,6 +160,7 @@ class ProjectManagerMixin:
             self.load_runpod_settings()
         if self.model_dir.text().strip():
             self._load_existing_telemetry(Path(self.model_dir.text()))
+        self.discover_training_run()
         self.project_state.setText("Project opened")
         LOGGER.info("Project opened: %s", project_file)
         self.dataset_log.append(f"Opened project: {project_file}")

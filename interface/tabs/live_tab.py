@@ -104,8 +104,12 @@ def build_live_training_tab(window) -> QWidget:
     hardware_layout = QVBoxLayout()
     hardware_layout.setSpacing(7)
     window.live_device_status = QLabel("Device: -")
-    window.live_cpu_label = QLabel("CPU: -")
-    window.live_cpu_bar = window._hardware_meter("CPU")
+    window.live_cpu_label = QLabel("System CPU: -")
+    window.live_cpu_bar = window._hardware_meter("System CPU")
+    window.live_training_cpu_label = QLabel("Training process CPU: unavailable")
+    window.live_training_cpu_bar = window._hardware_meter("Training process CPU")
+    window.live_ui_cpu_label = QLabel("UI process CPU: -")
+    window.live_ui_cpu_bar = window._hardware_meter("UI process CPU")
     window.live_gpu_label = QLabel("GPU memory: -")
     window.live_gpu_bar = window._hardware_meter("GPU memory")
     window.live_vram_label = QLabel("VRAM reserved: -")
@@ -114,12 +118,16 @@ def build_live_training_tab(window) -> QWidget:
     window.live_ram_bar = window._hardware_meter("System RAM")
     window.live_worker_status = QLabel("CPU workers: -")
     window.hardware_meter_labels[id(window.live_cpu_bar)] = window.live_cpu_label
+    window.hardware_meter_labels[id(window.live_training_cpu_bar)] = window.live_training_cpu_label
+    window.hardware_meter_labels[id(window.live_ui_cpu_bar)] = window.live_ui_cpu_label
     window.hardware_meter_labels[id(window.live_gpu_bar)] = window.live_gpu_label
     window.hardware_meter_labels[id(window.live_vram_bar)] = window.live_vram_label
     window.hardware_meter_labels[id(window.live_ram_bar)] = window.live_ram_label
     hardware_layout.addWidget(window.live_device_status)
     for label, meter in (
         (window.live_cpu_label, window.live_cpu_bar),
+        (window.live_training_cpu_label, window.live_training_cpu_bar),
+        (window.live_ui_cpu_label, window.live_ui_cpu_bar),
         (window.live_gpu_label, window.live_gpu_bar),
         (window.live_vram_label, window.live_vram_bar),
         (window.live_ram_label, window.live_ram_bar),

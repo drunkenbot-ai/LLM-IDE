@@ -349,13 +349,18 @@ class TrainingEstimationMixin:
             "best_val_loss": summary.get("best_val_loss"),
             "recommended_checkpoint_path": summary.get("recommended_checkpoint_path"),
             "best_checkpoint_path": summary.get("best_checkpoint_path"),
+            "best_resume_checkpoint_path": summary.get("best_resume_checkpoint_path"),
             "dataset_dir": self.train_data_dir.text(),
             "dataset_version": (summary.get("model_lineage") or {}).get("dataset_version"),
             "training_run_id": summary.get("training_run_id"),
+            "worker_run_id": getattr(result, "run_id", None),
             "parameters": estimate.get("parameters") or summary.get("parameters"),
             "model_config": summary.get("model_config"),
             "training_config": summary.get("training_config"),
         }
+        run_id = entry["worker_run_id"]
+        if run_id:
+            history = [item for item in history if item.get("worker_run_id") != run_id]
         history.append(entry)
         history_path.write_text(json.dumps(history[-200:], indent=2), encoding="utf-8")
         self.history_metric.setText(f"Runs: {len(history[-200:])}")

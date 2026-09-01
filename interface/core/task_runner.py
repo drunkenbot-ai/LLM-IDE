@@ -3,6 +3,13 @@ from __future__ import annotations
 # TaskRunnerMixin mixin. Shared runtime names are provided by interface.app.
 from typing import Any, Optional, Union  # noqa: F401
 from interface import app as _app
+from interface.dataset_progress import (
+    apply_dataset_progress,
+    dataset_event_is_ui_only,
+    dataset_failure_was_stopped,
+    dataset_terminal_percent,
+)
+from interface.progress_events import coalesce_final_events
 
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
@@ -70,6 +77,9 @@ class TaskRunnerMixin:
 
         LOGGER.info("Starting background task: %s", getattr(fn, "__name__", str(fn)))
         self.active_task_kind = task_kind
+        self.active_task_terminal_event = None
+        self.dataset_diagnostic_sources.clear()
+        self.dataset_result_applied = False
         if button:
             self._set_button_busy(button, busy_text)
         if stop_button:
@@ -116,6 +126,18 @@ class TaskRunnerMixin:
         if self.active_log is None or self.active_progress_bar is None:
             return
         LOGGER.error("Background task failed: %s", message)
+        if self.active_task_kind == "dataset":
+            stopped = dataset_failure_was_stopped(message)
+            self.active_task_terminal_event = {
+                "event_type": "cancelled" if stopped else "failure",
+                "message": message,
+            }
+            self.dataset_status.setText(
+                "Dataset: preparation stopped" if stopped else "Dataset: preparation failed"
+            )
+            self.project_state.setText(
+                "Dataset preparation stopped" if stopped else "Dataset preparation failed"
+            )
         if self.active_task_kind == "chat":
             self.chat_status.setText(f"Chat: load failed - {message}")
         elif self.active_task_kind == "dataset_download":
@@ -149,6 +171,8 @@ class TaskRunnerMixin:
         self.interrupt_count += 1
         if self.interrupt_count > 1:
             os._exit(130)
+        if hasattr(self, "training_controller"):
+            self.training_controller.detach()
         if self.stop_event is not None:
             self.stop_event.set()
         if self.active_log is not None:
@@ -166,6 +190,8 @@ class TaskRunnerMixin:
             event: Qt close event.
         """
 
+        if hasattr(self, "training_controller"):
+            self.training_controller.detach()
         if self.thread is not None:
             if self.stop_event is not None:
                 self.stop_event.set()
@@ -193,6 +219,10 @@ class TaskRunnerMixin:
             if event.get("type") == "chat_delta":
                 self._apply_chat_delta(event)
                 return
+            if self.active_task_kind == "dataset" and apply_dataset_progress(
+                self, event, log, progress_bar
+            ):
+                return
             message = event.get("message")
             percent = event.get("percent")
             if log in (self.training_log, getattr(self, "fine_tune_log", None)):
@@ -218,6 +248,8 @@ class TaskRunnerMixin:
         if not self.active_task_kind or self.notification_manager is None:
             return
         if self.active_task_kind not in {"dataset", "training", "fine_tune"}:
+            return
+        if self.active_task_kind == "dataset" and dataset_event_is_ui_only(event):
             return
         title = {
             "dataset": "Dataset preparation",
@@ -315,18 +347,23 @@ class TaskRunnerMixin:
             return f"{minutes}m {secs:02d}s"
         return f"{secs}s"
 
-    def _drain_progress_queue(self) -> None:
-        """Drain queued worker progress events on the UI thread."""
+    def _drain_progress_queue(self, final: bool = False) -> None:
+        """Drain a bounded normal batch or coalesce a completed worker backlog."""
 
         if self.progress_queue is None or self.active_log is None or self.active_progress_bar is None:
             return
         drained = 0
         last_percent = None
-        while drained < 12:
+        events = []
+        while final or drained < 12:
             try:
-                event = self.progress_queue.get_nowait()
+                events.append(self.progress_queue.get_nowait())
             except Empty:
                 break
+            drained += 1
+        if final:
+            events = coalesce_final_events(events, self._is_terminal_progress_event)
+        for event in events:
             notification_event = event
             if isinstance(event, dict) and event.get("percent") is not None:
                 last_percent = event.get("percent")
@@ -342,15 +379,30 @@ class TaskRunnerMixin:
             self._handle_progress(event, self.active_log, self.active_progress_bar)
             if isinstance(notification_event, dict):
                 self._notify_progress(notification_event)
-            drained += 1
+        terminal_percent = dataset_terminal_percent(
+            getattr(self, "active_task_terminal_event", None)
+        )
+        if final and self.active_task_kind == "dataset" and terminal_percent is not None:
+            last_percent = terminal_percent
         if last_percent is not None:
             self.active_progress_bar.setValue(max(0, min(100, int(last_percent))))
+
+    @staticmethod
+    def _is_terminal_progress_event(event: dict[str, Any]) -> bool:
+        """Return whether an event must survive final backlog coalescing."""
+
+        return (
+            str(event.get("event_type") or "").lower()
+            in {"failure", "error", "warning", "stop", "completion"}
+            or str(event.get("level") or "").lower() in {"error", "warning", "critical"}
+            or str(event.get("message") or "").startswith("Invalid record:")
+        )
 
     def _thread_finished(self) -> None:
         """Clean up thread bookkeeping after a worker finishes."""
 
         LOGGER.info("Background task thread finished")
-        self._drain_progress_queue()
+        self._drain_progress_queue(final=True)
         if self.progress_timer.isActive():
             self.progress_timer.stop()
         self.thread = None
@@ -368,6 +420,7 @@ class TaskRunnerMixin:
         if self.active_button is not None:
             self._clear_button_busy()
         self.active_task_kind = ""
+        self.dataset_diagnostic_sources.clear()
 
     def _task_failed(self, message: str, log: QTextEdit, progress_bar: QProgressBar) -> None:
         """Handle background task failure.
@@ -378,7 +431,7 @@ class TaskRunnerMixin:
             progress_bar: Progress bar to reset.
         """
 
-        stopped_by_user = "stopped by user" in message.lower()
+        stopped_by_user = dataset_failure_was_stopped(message)
         if stopped_by_user:
             LOGGER.info("Background task stopped by user: %s", message)
         else:

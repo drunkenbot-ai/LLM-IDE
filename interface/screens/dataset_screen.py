@@ -219,8 +219,27 @@ class DatasetScreenMixin:
             result: Dataset build result.
         """
 
+        self.dataset_progress.setRange(0, 100)
         self.dataset_progress.setValue(100)
+        self.dataset_result_applied = True
         self.auto_vocab_label.setText(f"{result.vocab_size:,}")
+        partial_file_count = int(getattr(result, "partial_file_count", 0) or 0)
+        failed_file_count = int(getattr(result, "failed_file_count", 0) or 0)
+        invalid_record_count = int(getattr(result, "invalid_record_count", 0) or 0)
+        preparation_outcome = str(
+            getattr(result, "preparation_outcome", "")
+            or (
+                "completed_with_warnings"
+                if failed_file_count
+                else "completed"
+            )
+        )
+        has_warnings = (
+            preparation_outcome == "completed_with_warnings"
+            or partial_file_count > 0
+            or failed_file_count > 0
+            or invalid_record_count > 0
+        )
 
         LOGGER.info(
             "Dataset prepared: documents=%s tokens=%s vocab=%s code=%s prose=%s conversation=%s output=%s",
@@ -250,8 +269,18 @@ class DatasetScreenMixin:
 
         self.dataset_log.append(
             f"Cache summary: reused {result.cached_file_count:,} file(s), "
-            f"processed {result.processed_file_count:,} file(s)."
+            f"processed {result.processed_file_count:,} file(s), "
+            f"skipped {result.skipped_file_count:,}, "
+            f"partial {partial_file_count:,}, "
+            f"failed {failed_file_count:,}."
         )
+        if has_warnings:
+            self.dataset_log.append(
+                "[WARN] Dataset preparation completed with warnings: "
+                f"{partial_file_count:,} partial source(s), "
+                f"{failed_file_count:,} unusable source(s), and "
+                f"{invalid_record_count:,} invalid record(s)."
+            )
 
         if getattr(result, "dataset_version_id", ""):
             self.dataset_log.append(
@@ -277,7 +306,10 @@ class DatasetScreenMixin:
                 "cached_file_count": result.cached_file_count,
                 "processed_file_count": result.processed_file_count,
                 "skipped_file_count": result.skipped_file_count,
-                "failed_file_count": result.failed_file_count,
+                "partial_file_count": partial_file_count,
+                "failed_file_count": failed_file_count,
+                "invalid_record_count": invalid_record_count,
+                "preparation_outcome": preparation_outcome,
                 "warning": result.warning,
                 "sequence_token_stats": getattr(result, "sequence_token_stats",
                                                 {}),
@@ -293,13 +325,23 @@ class DatasetScreenMixin:
         )
 
         self.train_data_dir.setText(str(result.output_dir))
-        self.project_state.setText("Dataset ready")
+        self.project_state.setText(
+            "Dataset ready with warnings"
+            if has_warnings
+            else "Dataset ready"
+        )
 
         self.dataset_status.setText(
             f"Dataset: {result.document_count} files, {result.token_count:,} tokens"
         )
+        if has_warnings:
+            self.dataset_status.setText(
+                f"Dataset: {result.document_count:,} valid, "
+                f"{invalid_record_count:,} invalid record(s), "
+                f"{result.token_count:,} tokens"
+            )
 
-        if result.code_sample_count:
+        if result.code_sample_count and not has_warnings:
             self.dataset_status.setText(
                 f"Dataset: {result.code_sample_count:,} code, "
                 f"{result.prose_sample_count:,} prose, "
@@ -334,9 +376,16 @@ class DatasetScreenMixin:
                     f"{result.processed_file_count:,} processed, "
                     f"{result.cached_file_count:,} cached, "
                     f"{result.skipped_file_count:,} skipped, "
-                    f"{result.failed_file_count:,} failed"
+                    f"{partial_file_count:,} partial, "
+                    f"{failed_file_count:,} failed"
                 ),
+                f"Invalid records: {invalid_record_count:,}",
                 f"Dataset version: {getattr(result, 'dataset_version_id', '') or '-'}",
+                (
+                    "Preparation: completed with warnings"
+                    if has_warnings
+                    else "Preparation: completed"
+                ),
                 f"Health: {'warning - ' + result.warning if result.warning else 'ready'}",
             ],
         )

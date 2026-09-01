@@ -38,6 +38,9 @@ class WindowCoreMixin:
         self.active_button_text = ""
         self.active_button_restore_text = ""
         self.active_task_kind = ""
+        self.active_task_terminal_event: Optional[dict[str, Any]] = None
+        self.dataset_diagnostic_sources: set[str] = set()
+        self.dataset_result_applied = False
         self.notification_manager: Optional[NotificationManager] = None
         self.current_project_file: Optional[Path] = None
         self.telemetry_db_path: Optional[Path] = None
@@ -52,8 +55,11 @@ class WindowCoreMixin:
         self.training_health_points: list[tuple[int, Optional[float], Optional[float]]] = []
         self.active_training_log: Optional[QTextEdit] = None
         self.active_training_progress: Optional[QProgressBar] = None
+        self.active_training_button: Optional[QPushButton] = None
+        self.active_training_mode = "pretrain"
         self.active_training_final_button_text = "Start Training"
         self.active_training_output_dir: Optional[Path] = None
+        self.persisted_training_process: dict[str, Any] = {}
         self.interrupt_count = 0
         self.chat_session: Optional[LlamaChatSession] = None
         self.chat_markdown = ""
@@ -84,6 +90,7 @@ class WindowCoreMixin:
         self._install_ui_event_logging(shell)
         self._install_wheel_guard(shell)
         self._refresh_notification_manager()
+        self._initialize_training_controller()
         self.job_manager_timer.start()
 
     def eventFilter(self, watched: QObject, event: QEvent) -> bool:
@@ -260,6 +267,8 @@ class WindowCoreMixin:
         for button_index, button in enumerate(buttons):
             button.setChecked(button_index == index)
         self._refresh_training_layout()
+        if index == self.live_page_index:
+            self._render_current_live_snapshot()
         if index == 5:
             QTimer.singleShot(20, self.refresh_job_manager_tab)
 
