@@ -77,5 +77,7 @@ def test_structured_jsonl_skips_malformed_and_invalid_records(tmp_path: Path) ->
 
     assert len(documents) == 1
     assert "keep" in documents[0].text
-    assert any("line 2" in message for message in messages)
-    assert any("line 4" in message and "invalid JSON" in message for message in messages)
+    assert len(messages) == 1
+    assert "lines 2-4" in messages[0]
+    assert "invalid JSON" in messages[0]
+    assert "3 invalid records" in messages[0]

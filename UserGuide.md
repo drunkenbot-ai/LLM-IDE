@@ -360,6 +360,11 @@ large on disk but mostly repeat the same few examples. The duplicate block
 ratio is saved in `dataset_summary.json`, shown in the `Duplicates` chip, and
 included in the five-star dataset rating.
 
+Malformed JSON or JSONL input is summarized once per affected source instead of
+once per invalid record. If valid records remain, preparation completes at 100%
+with a nonfatal warning summary and the resulting statistics and dataset version
+remain available. Sources with no usable records are identified as errors.
+
 Effect on the LLM:
 
 - Duplicate-heavy datasets make small models memorize repeated passages.

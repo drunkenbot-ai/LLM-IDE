@@ -38,6 +38,9 @@ class WindowCoreMixin:
         self.active_button_text = ""
         self.active_button_restore_text = ""
         self.active_task_kind = ""
+        self.active_task_terminal_event: Optional[dict[str, Any]] = None
+        self.dataset_diagnostic_sources: set[str] = set()
+        self.dataset_result_applied = False
         self.notification_manager: Optional[NotificationManager] = None
         self.current_project_file: Optional[Path] = None
         self.telemetry_db_path: Optional[Path] = None

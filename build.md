@@ -106,6 +106,9 @@ control and only signals after the timeout when
 identity. Never replace this check with a numeric PID lookup.
 
 This integration requires engine PR #11
-(`e033bbda2f48e594b004eef820f0fa981d80269e`) to merge before the LLM-IDE
+(`e1862f574ff2a809f8d0b25794956376c132e7b5`) to merge before the LLM-IDE
 change. That revision uses a persistent cross-platform mutex for stale claim
 recovery and fails closed when exclusive mutation ownership cannot be proven.
+It also emits one bounded dataset diagnostic per affected source and one
+terminal completion event, allowing the UI to report large malformed JSON/JSONL
+inputs without per-record log floods while still completing partial builds.
