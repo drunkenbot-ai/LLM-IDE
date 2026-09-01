@@ -105,8 +105,8 @@ control and only signals after the timeout when
 `manifest_process_is_current()` confirms both PID and process creation
 identity. Never replace this check with a numeric PID lookup.
 
-This integration requires engine PR #11
-(`e1862f574ff2a809f8d0b25794956376c132e7b5`) to merge before the LLM-IDE
+This integration requires engine PR #12
+(`6182e1b75e043c56d2d55db32956c3ee02c0daeb`) to merge before the LLM-IDE
 change. That revision uses a persistent cross-platform mutex for stale claim
 recovery and fails closed when exclusive mutation ownership cannot be proven.
 It also emits one bounded dataset diagnostic per affected source and one
