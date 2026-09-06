@@ -445,3 +445,75 @@ def test_terminal_backlog_drains_across_bounded_polls(tmp_path: Path) -> None:
     assert not timer.running
     assert batches[-1].latest_metric["id"] == 1001
     assert len(terminals) == 1
+
+
+def test_poll_tolerates_transient_manifest_read_errors(tmp_path: Path) -> None:
+    request = fake_request(tmp_path)
+    request.manifest_path.parent.mkdir(parents=True)
+    request.manifest_path.write_text("{}", encoding="utf-8")
+    attempts = [0]
+
+    def flaky_manifest(_path):
+        if attempts[0] < 2:
+            attempts[0] += 1
+            raise PermissionError(13, "Permission denied")
+        return manifest(request, "running")
+
+    controller, timer, states, _, _, errors = make_controller(
+        tmp_path,
+        request=request,
+        load_manifest=flaky_manifest,
+        max_manifest_retries=3,
+    )
+    controller.attach(request.manifest_path, manifest=manifest(request, "running"))
+    assert timer.running
+
+    # First flaky read: should not abort
+    controller.poll()
+    assert timer.running
+    assert states[-1].state == "running"
+    assert errors == []
+
+    # Second flaky read: should not abort
+    controller.poll()
+    assert timer.running
+    assert states[-1].state == "running"
+    assert errors == []
+
+    # Third read: succeeds
+    controller.poll()
+    assert timer.running
+    assert states[-1].state == "running"
+    assert errors == []
+    assert controller._consecutive_manifest_errors == 0
+
+
+def test_poll_fails_after_sustained_manifest_read_errors(tmp_path: Path) -> None:
+    request = fake_request(tmp_path)
+    request.manifest_path.parent.mkdir(parents=True)
+    request.manifest_path.write_text("{}", encoding="utf-8")
+
+    def failing_manifest(_path):
+        raise PermissionError(13, "Permission denied")
+
+    controller, timer, states, _, _, errors = make_controller(
+        tmp_path,
+        request=request,
+        load_manifest=failing_manifest,
+        max_manifest_retries=2,
+    )
+    controller.attach(request.manifest_path, manifest=manifest(request, "running"))
+    assert timer.running
+
+    # Attempt 1: retryable
+    controller.poll()
+    assert timer.running
+    assert states[-1].state == "running"
+    assert errors == []
+
+    # Attempt 2: max reached
+    controller.poll()
+    assert not timer.running
+    assert states[-1].state == "failed"
+    assert len(errors) == 1
+    assert "Permission denied" in errors[0]
