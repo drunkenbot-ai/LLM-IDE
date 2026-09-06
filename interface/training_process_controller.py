@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import sqlite3
 import time
@@ -33,8 +34,10 @@ except ImportError:
     psutil = None
 
 
+LOGGER = logging.getLogger("interface.training_process_controller")
 POLL_INTERVAL_MS = 750
 FORCE_STOP_TIMEOUT_SECONDS = 10.0
+MAX_CONSECUTIVE_MANIFEST_ERRORS = 5
 MAX_METRIC_HISTORY = 2000
 MAX_EVENT_HISTORY = 1000
 TERMINAL_STATES = {"completed", "stopped", "failed"}
@@ -125,6 +128,7 @@ class TrainingProcessController:
         monotonic: Callable[[], float] = time.monotonic,
         ui_cpu_percent: Callable[[], float | None] | None = None,
         force_stop_timeout_seconds: float = FORCE_STOP_TIMEOUT_SECONDS,
+        max_manifest_retries: int = MAX_CONSECUTIVE_MANIFEST_ERRORS,
     ) -> None:
         """Configure protocol functions, callbacks, and bounded state."""
         self.timer = timer
@@ -146,6 +150,8 @@ class TrainingProcessController:
         self._monotonic = monotonic
         self._ui_cpu_percent = ui_cpu_percent or self._default_ui_cpu_percent
         self.force_stop_timeout_seconds = max(0.0, force_stop_timeout_seconds)
+        self.max_manifest_retries = max(1, int(max_manifest_retries))
+        self._consecutive_manifest_errors = 0
 
         self.request: StandaloneTrainingRequest | None = None
         self.request_path: Path | None = None
@@ -285,7 +291,17 @@ class TrainingProcessController:
         if self.manifest_path.exists():
             try:
                 self.manifest = self._load_manifest(self.manifest_path)
+                self._consecutive_manifest_errors = 0
             except (OSError, ValueError, json.JSONDecodeError) as exc:
+                self._consecutive_manifest_errors += 1
+                if self._consecutive_manifest_errors < self.max_manifest_retries:
+                    LOGGER.warning(
+                        "Transient error reading training manifest (%d/%d): %s",
+                        self._consecutive_manifest_errors,
+                        self.max_manifest_retries,
+                        exc,
+                    )
+                    return
                 self._set_state("failed", message=f"Malformed or incompatible manifest: {exc}")
                 self.on_error(f"Malformed or incompatible training manifest: {exc}")
                 self.timer.stop()
@@ -387,6 +403,7 @@ class TrainingProcessController:
         self.stop_requested_at = None
         self._terminal_emitted = False
         self._last_snapshot = None
+        self._consecutive_manifest_errors = 0
 
     def _read_telemetry(self) -> bool:
         if self.request is None:
