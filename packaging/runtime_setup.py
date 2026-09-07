@@ -86,24 +86,49 @@ def _log_path(root: Path) -> Path:
     raise OSError("Could not create a writable runtime setup log.")
 
 
-def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
-    environment = os.environ.copy()
-    environment["PYTHONNOUSERSITE"] = "1"
-    environment["PATH"] = os.pathsep.join(
-        item for item in environment.get("PATH", "").split(os.pathsep)
-        if "mingw" not in item.lower() and "scoop" not in item.lower()
-    )
+def get_triton_specifier(torch_version: str) -> str:
+    """Return the compatible triton-windows requirement for a given PyTorch version.
+
+    The official triton-windows wheels correspond to PyTorch releases:
+    - PyTorch 2.5.x -> triton-windows 3.1.x
+    - PyTorch 2.6.x -> triton-windows 3.2.x
+    - PyTorch 2.7.x -> triton-windows 3.3.x
+    - PyTorch 2.8.x -> triton-windows 3.4.x
+    - PyTorch 2.9.x -> triton-windows 3.5.x
+    - PyTorch 2.10.x -> triton-windows 3.6.x
+
+    Args:
+        torch_version: PyTorch version string (e.g. '2.5.1').
+
+    Returns:
+        A pip-compatible requirement specifier for triton-windows.
+    """
+    match = re.match(r"^(\d+)\.(\d+)", torch_version)
+    if not match:
+        return "triton-windows"
+    major, minor = int(match.group(1)), int(match.group(2))
+    if major == 2 and minor >= 5:
+        triton_minor = minor - 4
+        return f"triton-windows>=3.{triton_minor}.0,<3.{triton_minor + 1}.0"
+    if major == 2 and minor == 4:
+        return "triton-windows<3.1.0"
+    return "triton-windows"
+
+
+def _run_pip(python_executable: str, args: list[str], environment: dict[str, str]) -> None:
+    """Execute a pip command streaming output to stdout and the setup log.
+
+    Args:
+        python_executable: Path to the Python executable.
+        args: Command-line arguments passed to pip.
+        environment: Environment variable mapping.
+
+    Raises:
+        subprocess.CalledProcessError: If the pip command exits with non-zero status.
+    """
+    command = [python_executable, "-m", "pip", *args]
     process = subprocess.Popen(
-        [
-            python_executable,
-            "-m",
-            "pip",
-            "install",
-            "--no-warn-script-location",
-            f"torch=={TORCH_VERSION}",
-            "--index-url",
-            TORCH_INDEXES[choice.profile],
-        ],
+        command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -113,20 +138,89 @@ def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
     assert process.stdout is not None
     for line in process.stdout:
         print(line, end="", file=sys.stdout, flush=True)
-        print(line, end="", file=_SETUP_LOG, flush=True)
+        if _SETUP_LOG is not None:
+            print(line, end="", file=_SETUP_LOG, flush=True)
     return_code = process.wait()
     if return_code:
-        raise subprocess.CalledProcessError(return_code, process.args)
+        raise subprocess.CalledProcessError(return_code, command)
+
+
+def install_runtime(python_executable: str, choice: RuntimeChoice) -> None:
+    """Install hardware-specific PyTorch and optional Triton runtime wheels.
+
+    Args:
+        python_executable: Path to the Python executable.
+        choice: Selected runtime choice.
+    """
+    environment = os.environ.copy()
+    environment["PYTHONNOUSERSITE"] = "1"
+    environment["PATH"] = os.pathsep.join(
+        item for item in environment.get("PATH", "").split(os.pathsep)
+        if "mingw" not in item.lower() and "scoop" not in item.lower()
+    )
+    _run_pip(
+        python_executable,
+        [
+            "install",
+            "--no-warn-script-location",
+            f"torch=={TORCH_VERSION}",
+            "--index-url",
+            TORCH_INDEXES[choice.profile],
+        ],
+        environment,
+    )
+
+    if platform.system() == "Windows" and choice.profile != "cpu":
+        triton_spec = get_triton_specifier(TORCH_VERSION)
+        msg = f"Installing {triton_spec} for Windows CUDA runtime...\n"
+        print(msg, end="", file=sys.stdout, flush=True)
+        if _SETUP_LOG is not None:
+            print(msg, end="", file=_SETUP_LOG, flush=True)
+        try:
+            _run_pip(
+                python_executable,
+                [
+                    "install",
+                    "--no-warn-script-location",
+                    triton_spec,
+                ],
+                environment,
+            )
+        except Exception as exc:
+            warning = f"Warning: Failed to install {triton_spec}: {exc!r}. Running without Triton.\n"
+            print(warning, end="", file=sys.stdout, flush=True)
+            if _SETUP_LOG is not None:
+                print(warning, end="", file=_SETUP_LOG, flush=True)
 
 
 def ensure_runtime(python_executable: str, root: Path) -> RuntimeChoice:
+    """Ensure the expected runtime wheels are installed and verified.
+
+    Args:
+        python_executable: Path to the Python executable.
+        root: Root directory containing PROFILE_FILE.
+
+    Returns:
+        The selected RuntimeChoice.
+    """
     choice = choose_runtime()
     marker = root / PROFILE_FILE
     if marker.exists() and marker.read_text(encoding="utf-8").strip() == choice.profile:
+        if platform.system() == "Windows" and choice.profile != "cpu":
+            triton_check = subprocess.run(
+                [python_executable, "-c", "import triton"],
+                cwd=root,
+                capture_output=True,
+                check=False,
+            )
+            if triton_check.returncode != 0:
+                install_runtime(python_executable, choice)
         return choice
+
     install_runtime(python_executable, choice)
     verification = subprocess.run(
         [python_executable, "-c", "import torch; print(torch.__version__)"],
+        cwd=root,
         capture_output=True,
         text=True,
         check=False,
@@ -140,6 +234,23 @@ def ensure_runtime(python_executable: str, root: Path) -> RuntimeChoice:
     )
     if verification.returncode != 0:
         raise RuntimeError(f"Torch verification failed: {verification.stderr.strip()}")
+
+    if platform.system() == "Windows" and choice.profile != "cpu":
+        triton_ver = subprocess.run(
+            [python_executable, "-c", "import triton; print(triton.__version__)"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        print(
+            f"Triton verification exit code: {triton_ver.returncode}\n"
+            f"Triton verification output: {triton_ver.stdout.strip()}\n"
+            f"Triton verification error: {triton_ver.stderr.strip()}",
+            file=_SETUP_LOG,
+            flush=True,
+        )
+
     marker.write_text(choice.profile, encoding="utf-8")
     return choice
 

@@ -78,7 +78,7 @@ def main() -> int:
     filtered.write_text(
         "\n".join(
             line for line in requirements.read_text(encoding="utf-8").splitlines()
-            if line.strip().lower() not in {"torch", "torch==", "torchvision"}
+            if line.strip().lower() not in {"torch", "torch==", "torchvision", "triton", "triton-windows"}
         ) + "\n",
         encoding="utf-8",
     )
