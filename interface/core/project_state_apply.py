@@ -184,6 +184,7 @@ class ProjectStateApplyMixin:
         self.resume_training.setChecked(bool(training.get("resume", self.resume_training.isChecked())))
         self.resume_safety.setChecked(bool(training.get("require_compatible_resume", True)))
         self.early_stopping.setChecked(bool(training.get("early_stopping", True)))
+        self.early_stopping_patience.setValue(int(training.get("early_stopping_patience", self.early_stopping_patience.value())))
         self.benchmark_prompts.setPlainText(str(training.get("benchmark_prompts", self.benchmark_prompts.toPlainText())))
         self.benchmark_tokens.setValue(int(training.get("benchmark_tokens", self.benchmark_tokens.value())))
         self.benchmark_temperature.setValue(float(training.get("benchmark_temperature", self.benchmark_temperature.value())))
