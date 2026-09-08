@@ -46,10 +46,19 @@ class TrainingScreenMixin:
 
         self.device.clear()
         if torch.cuda.is_available():
-            device_name = torch.cuda.get_device_name(0)
+            device_count = torch.cuda.device_count()
             self.device.addItem("cuda")
+            if device_count > 1:
+                for idx in range(device_count):
+                    self.device.addItem(f"cuda:{idx}")
             self.device.addItem("cpu")
-            self.device_info.setText(f"CUDA ready: {device_name}")
+            device_name = torch.cuda.get_device_name(0)
+            try:
+                free_bytes, total_bytes = torch.cuda.mem_get_info(0)
+                vram_gb = total_bytes / (1024 ** 3)
+                self.device_info.setText(f"CUDA ready: {device_name} ({vram_gb:.1f} GB VRAM)")
+            except Exception:
+                self.device_info.setText(f"CUDA ready: {device_name}")
             self.use_amp_default = True
         else:
             self.device.addItem("cpu")
@@ -220,7 +229,24 @@ class TrainingScreenMixin:
             batch_size = 32
         else:
             batch_size = 16
-        batch_size = min(self.batch_size.maximum(), batch_size)
+
+        # Scale micro-batch dynamically based on detected hardware capacity
+        if torch.cuda.is_available():
+            try:
+                _, total_bytes = torch.cuda.mem_get_info()
+                vram_total_gb = total_bytes / (1024 ** 3)
+                if vram_total_gb >= 22.0:
+                    batch_size = min(batch_size * 2, 64)
+                elif vram_total_gb < 6.0:
+                    batch_size = min(batch_size, 4)
+                elif vram_total_gb < 8.0:
+                    batch_size = min(batch_size, 8)
+            except Exception:
+                pass
+        else:
+            batch_size = min(batch_size, 4)
+
+        batch_size = min(self.batch_size.maximum(), max(1, batch_size))
         self.batch_size.setValue(batch_size)
         accumulation = max(1, (target_effective_batch + batch_size - 1) // batch_size)
         self.gradient_accumulation.setValue(min(self.gradient_accumulation.maximum(), accumulation))
@@ -262,6 +288,9 @@ class TrainingScreenMixin:
         """
 
         profile = self.training_profile.currentText()
+        bf16_supported = torch.cuda.is_available() and getattr(torch.cuda, "is_bf16_supported", lambda: False)()
+        rec_precision = "BF16" if bf16_supported else ("FP16" if torch.cuda.is_available() else "FP32")
+
         if profile == "Low-memory":
             self._set_combo_text(self.optimizer_name, "Adafactor")
             self._set_combo_text(self.scheduler_name, "Cosine decay")
@@ -270,7 +299,7 @@ class TrainingScreenMixin:
             self.min_lr_ratio.setValue(0.05)
             self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(1.0)
-            self._set_combo_text(self.precision, "BF16" if torch.cuda.is_available() else "FP32")
+            self._set_combo_text(self.precision, rec_precision)
             self.use_amp.setChecked(True)
             self._set_combo_text(self.attention_type, "Grouped-query")
             self.kv_head_count.setValue(max(1, self.n_head.value() // 2))
@@ -293,7 +322,7 @@ class TrainingScreenMixin:
             self.min_lr_ratio.setValue(0.1)
             self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(0.5)
-            self._set_combo_text(self.precision, "FP16")
+            self._set_combo_text(self.precision, rec_precision)
             self.use_amp.setChecked(True)
             self.activation_checkpointing.setChecked(False)
             self.batch_size.setValue(16)
@@ -320,7 +349,7 @@ class TrainingScreenMixin:
             self.max_grad_norm.setValue(1.0)
             # Lion is reported to be more sensitive to fp16 under/overflow
             # than AdamW; prefer bf16 where available, fp32 otherwise.
-            self._set_combo_text(self.precision, "BF16" if torch.cuda.is_available() else "FP32")
+            self._set_combo_text(self.precision, rec_precision)
             self.use_amp.setChecked(True)
             self.activation_checkpointing.setChecked(False)
             self.batch_size.setValue(16)
@@ -337,7 +366,7 @@ class TrainingScreenMixin:
             self.min_lr_ratio.setValue(0.1)
             self.polynomial_power.setValue(1.0)
             self.max_grad_norm.setValue(1.0)
-            self._set_combo_text(self.precision, "FP16")
+            self._set_combo_text(self.precision, rec_precision)
             self.use_amp.setChecked(True)
             self.activation_checkpointing.setChecked(False)
             self.batch_size.setValue(16)

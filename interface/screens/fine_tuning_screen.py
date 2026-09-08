@@ -150,9 +150,36 @@ class FineTuningScreenMixin:
         synced = self._sync_architecture_from_fine_tune_base()
         self._set_combo_text(self.peft_method, "LoRA adapters")
         self.lora_dropout.setValue(0.05)
-        self._set_combo_text(self.lora_targets, "Attention projections")
+        self._set_combo_text(self.lora_targets, "Attention + MLP")
         self.max_grad_norm.setValue(0.5)
         self.weight_decay.setValue(0.05)
+        # Dynamically determine recommended batch size and gradient accumulation from detected hardware
+        rec_batch = 16
+        if torch.cuda.is_available():
+            try:
+                _, total_bytes = torch.cuda.mem_get_info()
+                total_gb = total_bytes / (1024 ** 3)
+                if total_gb >= 22.0:
+                    rec_batch = 32
+                elif total_gb >= 10.0:
+                    rec_batch = 16
+                elif total_gb >= 6.0:
+                    rec_batch = 8
+                else:
+                    rec_batch = 4
+            except Exception:
+                rec_batch = 16
+        else:
+            rec_batch = 4
+        if hasattr(self, "batch_size"):
+            self.batch_size.setValue(min(self.batch_size.maximum(), rec_batch))
+        if hasattr(self, "gradient_accumulation"):
+            target_eff = 32
+            self.gradient_accumulation.setValue(max(1, (target_eff + rec_batch - 1) // rec_batch))
+        if hasattr(self, "precision"):
+            bf16_supported = torch.cuda.is_available() and getattr(torch.cuda, "is_bf16_supported", lambda: False)()
+            rec_precision = "BF16" if bf16_supported else ("FP16" if torch.cuda.is_available() else "FP32")
+            self._set_combo_text(self.precision, rec_precision)
         self._set_combo_by_data(self.scheduler_name, "cosine", {
             "warmup_linear": "Warmup linear",
             "cosine": "Cosine decay",
@@ -161,16 +188,19 @@ class FineTuningScreenMixin:
             "constant": "Constant",
         })
         if stage == "conversation":
+            self._set_combo_text(self.lora_targets, "Attention + MLP")
             self.lora_rank.setValue(16)
             self.lora_alpha.setValue(32.0)
             self.learning_rate.setValue(0.00003)
             self.epochs.setValue(max(1, min(self.epochs.value(), 2)))
         elif stage == "tool_call":
+            self._set_combo_text(self.lora_targets, "Attention + MLP")
             self.lora_rank.setValue(16)
             self.lora_alpha.setValue(32.0)
             self.learning_rate.setValue(0.00003)
             self.epochs.setValue(max(1, min(self.epochs.value(), 3)))
         elif stage == "code":
+            self._set_combo_text(self.lora_targets, "Attention projections")
             self.lora_rank.setValue(8)
             self.lora_alpha.setValue(16.0)
             self.lora_dropout.setValue(0.05)
@@ -178,13 +208,15 @@ class FineTuningScreenMixin:
             self.max_grad_norm.setValue(0.5)
             self.epochs.setValue(max(1, min(self.epochs.value(), 3)))
         elif stage == "instruction":
-            self.lora_rank.setValue(8)
-            self.lora_alpha.setValue(16.0)
+            self._set_combo_text(self.lora_targets, "Attention + MLP")
+            self.lora_rank.setValue(16)
+            self.lora_alpha.setValue(32.0)
             self.learning_rate.setValue(0.00005)
             self.epochs.setValue(max(1, min(self.epochs.value(), 3)))
         else:
-            self.lora_rank.setValue(8)
-            self.lora_alpha.setValue(16.0)
+            self._set_combo_text(self.lora_targets, "Attention + MLP")
+            self.lora_rank.setValue(16)
+            self.lora_alpha.setValue(32.0)
             self.learning_rate.setValue(0.00005)
         self._update_training_mode_controls()
         message = "Recommended LoRA settings applied."
