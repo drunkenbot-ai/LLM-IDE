@@ -122,10 +122,24 @@ class TrainingEstimationMixin:
                 notes.append("Grouped/multi-query attention reduces KV memory and is useful for longer contexts.")
             if model_config.mlp_type == "swiglu" and model_config.norm_type == "rmsnorm":
                 notes.append("Llama-like blocks improve modern compatibility but must match checkpoints when resuming.")
-        if training_config is not None and training_config.device == "cuda" and vram_bytes > 3.5 * 1024**3:
-            notes.append("Estimated VRAM is high for 4 GB GPUs. Try lower batch, context, embedding, or layers.")
-            if label == "Advisor: balanced":
-                label = "Advisor: memory check"
+        if training_config is not None and training_config.device.startswith("cuda") and vram_bytes > 0:
+            if torch.cuda.is_available():
+                try:
+                    free_bytes, total_bytes = torch.cuda.mem_get_info()
+                    if vram_bytes > free_bytes * 0.85:
+                        notes.append(
+                            f"Estimated VRAM ({vram_bytes / 1024**3:.1f} GB) is close to free GPU memory "
+                            f"({free_bytes / 1024**3:.1f} GB of {total_bytes / 1024**3:.1f} GB). "
+                            "Consider reducing micro-batch size or enabling activation checkpointing."
+                        )
+                        if label == "Advisor: balanced":
+                            label = "Advisor: memory check"
+                except Exception:
+                    pass
+            elif vram_bytes > 3.5 * 1024**3:
+                notes.append("Estimated VRAM is high. Try lower batch, context, embedding, or layers.")
+                if label == "Advisor: balanced":
+                    label = "Advisor: memory check"
         self.architecture_advisor_metric.setText(label)
         self._tip(self.architecture_advisor_metric, "\n".join(notes))
 

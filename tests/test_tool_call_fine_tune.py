@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import interface.app  # noqa: F401
 from interface.screens.fine_tuning_screen import FineTuningScreenMixin
 from engine.data_core import load_structured_json_documents
 
