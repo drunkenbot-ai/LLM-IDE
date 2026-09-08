@@ -87,13 +87,23 @@ def build_training_tab(window) -> QWidget:
         "Leave checked unless you are deliberately experimenting with this.",
     )
     window.n_embd = window._spin(32, 4096, 128)
-    window._tip(window.n_embd, "Embedding size, also called n_embd. Larger values increase model capacity and memory usage.")
+    window._tip(
+        window.n_embd,
+        "Embedding size (n_embd). Larger values increase capacity and memory usage. "
+        "For maximum GPU FlashAttention speed, ensure (n_embd / n_head) is a multiple of 8, "
+        "ideally 64 or 128 (e.g. 512, 768).",
+    )
     window.architecture_style.currentTextChanged.connect(
         lambda text: window.rope_theta.setEnabled(text == "Llama-like")
     )
     window.rope_theta.setEnabled(window.architecture_style.currentText() == "Llama-like")
     window.n_head = window._spin(1, 64, 4)
-    window._tip(window.n_head, "Attention head count. More heads can model varied relationships, but n_embd must divide evenly by n_head.")
+    window._tip(
+        window.n_head,
+        "Attention head count. n_embd must divide evenly by n_head. "
+        "For fast GPU FlashAttention, head dimension (n_embd / n_head) must be a multiple of 8, "
+        "ideally 64 or 128 (e.g. 512 / 8 = 64, 768 / 12 = 64).",
+    )
     window.attention_type = QComboBox()
     window.attention_type.addItems(["Multi-head", "Grouped-query", "Multi-query"])
     window.attention_type.setMaximumWidth(260)

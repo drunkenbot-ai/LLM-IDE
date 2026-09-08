@@ -109,6 +109,13 @@ class TrainingEstimationMixin:
             label = "Advisor: balanced"
             notes.append(f"Token budget is about {tokens_per_param:.1f} tokens per parameter.")
         if model_config is not None:
+            head_dim = model_config.embedding_size // max(1, model_config.head_count)
+            if head_dim % 8 != 0:
+                notes.append(
+                    f"Head dimension d_k = {head_dim} (n_embd={model_config.embedding_size} / n_head={model_config.head_count}) "
+                    "is not divisible by 8. FlashAttention will fall back to slow Math attention. Recommended: 64 or 128 (e.g. n_embd: 512, n_head: 8)."
+                )
+                label = f"Advisor: d_k={head_dim} (slow)"
             if model_config.context_length >= 2048 and model_config.embedding_size <= 256:
                 notes.append("Long context with a small embedding can be memory-heavy without adding much capacity.")
             if model_config.attention_type in {"grouped_query", "multi_query"}:

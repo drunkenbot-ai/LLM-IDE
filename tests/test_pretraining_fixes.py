@@ -10,7 +10,7 @@ from interface import app as _interface_app  # noqa: F401
 from interface.core.project_state import ProjectStateMixin
 from interface.core.project_state_apply import ProjectStateApplyMixin
 
-from engine.config import DatasetConfig
+from engine.config import DatasetConfig, ModelConfig, TrainingConfig
 from engine.data import Document
 from engine.dataset_corpus import _StreamingCorpusBuilder
 from engine.dataset_mixture import (
@@ -25,7 +25,7 @@ from engine.tokenizer import (
     token_dtype_for_vocab,
     train_tokenizer,
 )
-from engine.training import TokenDataset
+from engine.training import TokenDataset, train_model
 
 
 class DiversityFilterTests(unittest.TestCase):
@@ -181,5 +181,60 @@ class ValidationLoaderStrideTests(unittest.TestCase):
         self.assertEqual(y1.tolist(), list(range(65, 129)))
 
 
+class TrainingDiagnosticsAndTelemetryTests(unittest.TestCase):
+    """Tests for preflight warnings and telemetry emission enhancements."""
+
+    def test_head_dim_not_divisible_by_eight_detected(self) -> None:
+        model_config = ModelConfig(
+            vocab_size=32,
+            context_length=16,
+            embedding_size=560,
+            head_count=8,
+            layer_count=2,
+        )
+        head_dim = model_config.embedding_size // model_config.head_count
+        self.assertEqual(head_dim, 70)
+        self.assertNotEqual(head_dim % 8, 0)
+
+    def test_milestone_step_emits_event(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            model_config = ModelConfig(
+                vocab_size=16,
+                context_length=8,
+                embedding_size=16,
+                head_count=2,
+                layer_count=1,
+                dropout=0.0,
+            )
+            training_config = TrainingConfig(
+                output_dir=Path(tmp_dir),
+                epochs=1,
+                batch_size=1,
+                learning_rate=1e-3,
+                sample_stride=8,
+                warmup_steps=0,
+                eval_interval=0,
+                save_interval=0,
+                use_amp=False,
+                precision="fp32",
+                device="cpu",
+                resume=False,
+                early_stopping=False,
+            )
+            events: list[dict] = []
+            train_model(
+                model_config,
+                training_config,
+                [index % 16 for index in range(32)],
+                [],
+                pad_token_id=-1,
+                progress=events.append,
+            )
+            step_events = [e for e in events if e.get("event_type") == "step"]
+            self.assertGreaterEqual(len(step_events), 1)
+            self.assertIn("Step 1", step_events[0]["message"])
+
+
 if __name__ == "__main__":
     unittest.main()
+

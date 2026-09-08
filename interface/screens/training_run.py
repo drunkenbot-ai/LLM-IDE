@@ -193,6 +193,19 @@ class TrainingRunMixin:
             warnings.append("Free disk space is close to the estimated training storage need.")
         if checkpoint_count > 50:
             warnings.append("Save interval may create many checkpoints. Increase Save every or clean old checkpoints.")
+        head_dim = model_config.embedding_size // max(1, model_config.head_count)
+        if head_dim % 8 != 0:
+            warnings.append(
+                f"Head dimension d_k = {head_dim} (n_embd={model_config.embedding_size} / n_head={model_config.head_count}) "
+                "is not divisible by 8. PyTorch FlashAttention will fall back to slow Math attention. "
+                "For 10x-20x faster training, adjust settings so d_k is 64 or 128 (e.g. n_embd: 512, n_head: 8)."
+            )
+        if training_config.compile_model and training_config.activation_checkpointing:
+            warnings.append(
+                "Both Torch compile and Activation checkpointing are enabled. "
+                "Activation checkpointing forces extra forward passes and can slow down compilation. "
+                "Disable Activation checkpointing unless GPU memory is nearly exhausted."
+            )
 
         log.clear()
         log.append("Training checklist")
