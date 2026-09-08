@@ -171,6 +171,8 @@ class ProjectStateApplyMixin:
         self.data_loader_workers.setValue(int(training.get("data_loader_workers", self.data_loader_workers.value())))
         self.max_grad_norm.setValue(float(training.get("max_grad_norm", self.max_grad_norm.value())))
         self.activation_checkpointing.setChecked(bool(training.get("activation_checkpointing", False)))
+        if hasattr(self, "compile_model"):
+            self.compile_model.setChecked(bool(training.get("compile_model", False)))
         self.seed.setValue(int(training.get("seed", self.seed.value())))
         self._set_combo_text(self.device, str(training.get("device", self.device.currentText())))
         self.use_amp.setChecked(bool(training.get("use_amp", self.use_amp.isChecked())))

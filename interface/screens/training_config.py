@@ -67,6 +67,7 @@ class TrainingConfigMixin:
             data_loader_workers=self.data_loader_workers.value(),
             max_grad_norm=self.max_grad_norm.value(),
             activation_checkpointing=self.activation_checkpointing.isChecked(),
+            compile_model=self.compile_model.isChecked() if hasattr(self, "compile_model") else False,
             device=self.device.currentText(),
             use_amp=self.use_amp.isChecked(),
             precision=self._precision_value(),

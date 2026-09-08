@@ -195,6 +195,12 @@ def build_training_tab(window) -> QWidget:
         window.activation_checkpointing,
         "Recompute transformer activations during backpropagation to lower VRAM use. Training becomes slower, but this is useful when memory is the constraint.",
     )
+    window.compile_model = QCheckBox("Torch compile")
+    window.compile_model.setChecked(False)
+    window._tip(
+        window.compile_model,
+        "Compile model using PyTorch Inductor for kernel fusion. Requires supported CUDA environment and Triton.",
+    )
     window.seed = window._spin(1, 2_147_483_647, 1337)
     window._tip(window.seed, "Random seed for reproducible initialization and sampling order.")
     window.device = QComboBox()
@@ -263,6 +269,7 @@ def build_training_tab(window) -> QWidget:
     right.addRow("CPU workers", window.data_loader_workers)
     right.addRow("Max grad", window.max_grad_norm)
     right.addRow("VRAM saver", window.activation_checkpointing)
+    right.addRow("Kernel fusion", window.compile_model)
     right.addRow("Seed", window.seed)
     runtime = QFormLayout()
     window._configure_form(runtime)
