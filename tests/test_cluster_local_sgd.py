@@ -452,3 +452,164 @@ def test_cluster_telemetry_bridge() -> None:
     assert received[0][0][0]["worker_id"] == "test_node"
     assert received[0][1] is None
     assert received[0][2] is None
+
+
+def test_dynamic_fault_tolerant_shard_reassignment(tmp_path: Path) -> None:
+    """Verify that when a worker drops out, surviving workers automatically re-partition and take over 100% of data."""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "job_fault_tol"
+    total_tokens = 3072
+    context_length = 256
+
+    bus.create_job(
+        job_id=job_id,
+        model_config={},
+        training_config={},
+        dataset_path="dummy.npy",
+        max_rounds=5,
+        min_workers=1,
+    )
+
+    # 3 workers join the job
+    bus.claim_job_slot(job_id, "worker_a")
+    bus.claim_job_slot(job_id, "worker_b")
+    bus.claim_job_slot(job_id, "worker_c")
+
+    # Round 0 begins: workers retrieve their dynamic shard assignments
+    s0, tot0 = bus.get_worker_shard_assignment(job_id, "worker_a", round_num=0)
+    s1, tot1 = bus.get_worker_shard_assignment(job_id, "worker_b", round_num=0)
+    s2, tot2 = bus.get_worker_shard_assignment(job_id, "worker_c", round_num=0)
+
+    assert (s0, tot0) == (0, 3)
+    assert (s1, tot1) == (1, 3)
+    assert (s2, tot2) == (2, 3)
+
+    # Initial boundaries
+    b0 = compute_shard_boundaries(total_tokens, s0, tot0, context_length)
+    b1 = compute_shard_boundaries(total_tokens, s1, tot1, context_length)
+    b2 = compute_shard_boundaries(total_tokens, s2, tot2, context_length)
+    assert b0 == (0, 1024)
+    assert b1 == (1024, 2048)
+    assert b2 == (2048, 3072)
+
+    # Worker B crashes/dies and is marked DROPPED
+    bus.mark_worker_dropped(job_id, "worker_b", reason="crash")
+
+    # In round 1, surviving workers re-query their shard assignments
+    new_s0, new_tot0 = bus.get_worker_shard_assignment(job_id, "worker_a", round_num=1)
+    new_s2, new_tot2 = bus.get_worker_shard_assignment(job_id, "worker_c", round_num=1)
+
+    assert (new_s0, new_tot0) == (0, 2)
+    assert (new_s2, new_tot2) == (1, 2)
+
+    # Reallocated boundaries: 2 workers now cover the entire dataset without gaps!
+    re_b0 = compute_shard_boundaries(total_tokens, new_s0, new_tot0, context_length)
+    re_b2 = compute_shard_boundaries(total_tokens, new_s2, new_tot2, context_length)
+
+    assert re_b0 == (0, 1536)
+    assert re_b2 == (1536, 3072)
+    assert re_b0[1] == re_b2[0]  # Seamless boundary
+    assert re_b2[1] == total_tokens  # 100% data covered
+
+
+def test_coordinator_telemetry_aggregation_and_summary(tmp_path: Path) -> None:
+    """Verify coordinator collects worker telemetries, aggregates loss/speed, and records round summary."""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "job_telemetry"
+
+    bus.create_job(
+        job_id=job_id,
+        model_config={},
+        training_config={},
+        dataset_path="dummy.npy",
+        max_rounds=2,
+        sync_interval_steps=100,
+        min_workers=2,
+    )
+
+    bus.get_worker_shard_assignment(job_id, "node_1", 0)
+    bus.get_worker_shard_assignment(job_id, "node_2", 0)
+
+    # Deposit weights
+    bus.save_worker_weights(job_id, 0, "node_1", {"w": torch.tensor([1.0])})
+    bus.save_worker_weights(job_id, 0, "node_2", {"w": torch.tensor([3.0])})
+
+    # Deposit telemetry
+    bus.save_worker_telemetry(job_id, 0, "node_1", {
+        "worker_id": "node_1",
+        "avg_loss": 2.0,
+        "tokens_per_sec": 5000.0,
+        "tokens_processed": 50000,
+    })
+    bus.save_worker_telemetry(job_id, 0, "node_2", {
+        "worker_id": "node_2",
+        "avg_loss": 3.0,
+        "tokens_per_sec": 7000.0,
+        "tokens_processed": 70000,
+    })
+
+    coordinator = ClusterCoordinator(bus, job_id)
+    collected_callbacks = []
+
+    global_model = coordinator.wait_and_average_round(
+        round_num=0,
+        poll_interval_seconds=0.05,
+        progress_callback=lambda m: collected_callbacks.append(m),
+    )
+
+    assert global_model is not None
+    assert len(collected_callbacks) >= 1
+    summary = collected_callbacks[-1]
+
+    # Global loss is average of 2.0 and 3.0 = 2.5
+    assert summary["global_loss"] == 2.5
+    # Aggregate speed is sum of 5000 and 7000 = 12000
+    assert summary["aggregate_tokens_per_sec"] == 12000.0
+    assert summary["total_tokens_round"] == 120000
+    assert summary["ready_workers_count"] == 2
+    assert summary["worker_losses"]["node_1"] == 2.0
+    assert summary["worker_losses"]["node_2"] == 3.0
+
+    # Verify persisted in SQLite
+    history = bus.get_all_round_history(job_id)
+    assert len(history) == 1
+    assert history[0]["round_number"] == 0
+    assert history[0]["avg_loss"] == 2.5
+
+
+def test_coordinator_drops_straggler_and_reallocates(tmp_path: Path) -> None:
+    """Verify coordinator drops dead workers upon timeout and reallocates workload."""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "job_straggler_drop"
+
+    bus.create_job(
+        job_id=job_id,
+        model_config={},
+        training_config={},
+        dataset_path="dummy.npy",
+        max_rounds=2,
+        min_workers=1,
+        sync_timeout_seconds=0.2,  # Short timeout for testing
+    )
+
+    bus.get_worker_shard_assignment(job_id, "live_worker", 0)
+    bus.get_worker_shard_assignment(job_id, "dead_worker", 0)
+
+    # Only live_worker deposits weights
+    bus.save_worker_weights(job_id, 0, "live_worker", {"w": torch.tensor([5.0])})
+
+    coordinator = ClusterCoordinator(bus, job_id)
+    global_model = coordinator.wait_and_average_round(round_num=0, poll_interval_seconds=0.05)
+
+    assert global_model is not None
+    assert torch.equal(global_model["w"], torch.tensor([5.0]))
+
+    # Verify dead_worker was marked DROPPED
+    active_participants = bus.get_job_participants(job_id)
+    assert len(active_participants) == 1
+    assert active_participants[0]["worker_id"] == "live_worker"
+
+    # For next round, live_worker gets assigned all shards (slot 0 of 1)
+    slot, total = bus.get_worker_shard_assignment(job_id, "live_worker", round_num=1)
+    assert (slot, total) == (0, 1)
+

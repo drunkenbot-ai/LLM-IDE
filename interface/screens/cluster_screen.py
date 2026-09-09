@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
-from PySide6.QtCore import QObject, QTimer, Signal
+from PySide6.QtCore import QObject, QThread, QTimer, Signal
 from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
 
 from cluster.bus import ClusterStorageBus
@@ -23,6 +23,37 @@ class ClusterTelemetryBridge(QObject):
     """Qt signal bridge for thread-safe worker telemetry updates."""
 
     telemetry_ready = Signal(object, object, object)  # workers, active_job, error
+
+
+class ClusterCoordinatorThread(QThread):
+    """Background worker thread executing the ClusterCoordinator round-averaging loop."""
+
+    round_telemetry_ready = Signal(dict)
+    job_finished = Signal(str, bool)
+
+    def __init__(self, bus: ClusterStorageBus, job_id: str, poll_interval: float = 1.0, parent=None) -> None:
+        super().__init__(parent)
+        self.bus = bus
+        self.job_id = job_id
+        self.poll_interval = poll_interval
+        self._stop_event = threading.Event()
+
+    def run(self) -> None:
+        from cluster.coordinator import ClusterCoordinator
+        coordinator = ClusterCoordinator(self.bus, self.job_id)
+
+        def _on_round_progress(metrics: dict[str, Any]) -> None:
+            self.round_telemetry_ready.emit(metrics)
+
+        success = coordinator.run_job(
+            poll_interval_seconds=self.poll_interval,
+            telemetry_callback=_on_round_progress,
+            stop_event=self._stop_event,
+        )
+        self.job_finished.emit(self.job_id, success)
+
+    def stop(self) -> None:
+        self._stop_event.set()
 
 
 class ClusterScreenMixin:
@@ -257,11 +288,87 @@ class ClusterScreenMixin:
             )
             bus.set_job_status(job_id, "RUNNING")
             self._log_cluster_event(f"Successfully queued job {job_id} across cluster.")
+            self._start_cluster_coordinator(bus, job_id)
             self.refresh_cluster_status()
 
         except Exception as exc:
             QMessageBox.critical(self, "Launch Error", f"Failed to submit cluster job:\n{exc}")
             self._log_cluster_event(f"Launch failed: {exc}")
+
+    def _start_cluster_coordinator(self, bus: ClusterStorageBus, job_id: str) -> None:
+        """Launch background coordinator thread to handle round synchronization and telemetry."""
+        if hasattr(self, "_coordinator_thread") and self._coordinator_thread and self._coordinator_thread.isRunning():
+            self._coordinator_thread.stop()
+            self._coordinator_thread.wait(2000)
+
+        self._coordinator_thread = ClusterCoordinatorThread(bus, job_id, poll_interval=1.0)
+        self._coordinator_thread.round_telemetry_ready.connect(self._on_cluster_round_telemetry)
+        self._coordinator_thread.job_finished.connect(self._on_cluster_job_finished)
+        self._coordinator_thread.start()
+
+    def _on_cluster_round_telemetry(self, telemetry: dict[str, Any]) -> None:
+        """Receive round telemetry from the coordinator thread and update charts and UI chips."""
+        round_num = int(telemetry.get("round", 0))
+        cur_round = round_num + 1
+        max_rounds = int(telemetry.get("max_rounds", 10))
+        effective_step = int(telemetry.get("effective_step", 0))
+        global_loss = float(telemetry.get("global_loss", 0.0))
+        speed = float(telemetry.get("aggregate_tokens_per_sec", 0.0))
+        workers_count = int(telemetry.get("ready_workers_count", 0))
+        worker_losses = telemetry.get("worker_losses", {})
+
+        # 1. Update Training Tab Charts & Metrics
+        if hasattr(self, "loss_chart") and self.loss_chart:
+            self.loss_chart.add_metrics(effective_step, global_loss, None)
+
+        if hasattr(self, "throughput_chart") and self.throughput_chart:
+            self.throughput_chart.add_values(effective_step, speed)
+
+        if hasattr(self, "training_loss_metric"):
+            self.training_loss_metric.setText(f"Train loss: {global_loss:.4f}")
+        if hasattr(self, "training_speed_metric"):
+            self.training_speed_metric.setText(f"Speed: {speed:,.0f} tok/s")
+        if hasattr(self, "training_step_metric"):
+            self.training_step_metric.setText(f"Step: {effective_step} (Round {cur_round}/{max_rounds})")
+        if hasattr(self, "training_progress"):
+            self.training_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
+
+        # 2. Update Live Tab Metrics
+        if hasattr(self, "live_loss_metric"):
+            self.live_loss_metric.setText(f"Loss: {global_loss:.4f}")
+        if hasattr(self, "live_tokens_metric"):
+            self.live_tokens_metric.setText(f"Tokens/sec: {speed:,.0f}")
+        if hasattr(self, "live_step_metric"):
+            self.live_step_metric.setText(f"Step: {effective_step}")
+        if hasattr(self, "live_progress"):
+            self.live_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
+
+        # 3. Update Cluster Tab
+        if hasattr(self, "cluster_status_label"):
+            self.cluster_status_label.setText(f"Status: Round {cur_round}/{max_rounds} (Loss: {global_loss:.4f})")
+        if hasattr(self, "cluster_round_label"):
+            self.cluster_round_label.setText(f"Round: {cur_round} / {max_rounds}")
+
+        worker_breakdown = ", ".join(f"{w}: {l:.4f}" for w, l in worker_losses.items())
+        msg = f"Round {cur_round}/{max_rounds} complete | Loss: {global_loss:.4f} | Aggregate Speed: {speed:,.0f} tok/s | Workers: {workers_count}"
+        if worker_breakdown:
+            msg += f" ({worker_breakdown})"
+        self._log_cluster_event(msg)
+
+        if hasattr(self, "training_log"):
+            self.training_log.append(f"[Local SGD] {msg}")
+
+        self.refresh_cluster_status()
+
+    def _on_cluster_job_finished(self, job_id: str, success: bool) -> None:
+        """Handle coordinator completion signal."""
+        if success:
+            self._log_cluster_event(f"Cluster job {job_id} successfully completed all rounds.")
+            if hasattr(self, "cluster_status_label"):
+                self.cluster_status_label.setText("Status: Completed")
+        else:
+            self._log_cluster_event(f"Cluster job {job_id} stopped or cancelled.")
+        self.refresh_cluster_status()
 
     def pause_cluster_job(self) -> None:
         """Cooperatively pause active cluster job."""
@@ -287,6 +394,8 @@ class ClusterScreenMixin:
 
     def stop_cluster_job(self) -> None:
         """Stop active cluster job."""
+        if hasattr(self, "_coordinator_thread") and self._coordinator_thread:
+            self._coordinator_thread.stop()
         bus = self._get_cluster_bus()
         if not bus:
             return
