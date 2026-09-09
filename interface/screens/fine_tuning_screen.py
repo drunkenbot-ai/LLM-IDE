@@ -200,9 +200,9 @@ class FineTuningScreenMixin:
             self.learning_rate.setValue(0.00003)
             self.epochs.setValue(max(1, min(self.epochs.value(), 3)))
         elif stage == "code":
-            self._set_combo_text(self.lora_targets, "Attention projections")
-            self.lora_rank.setValue(8)
-            self.lora_alpha.setValue(16.0)
+            self._set_combo_text(self.lora_targets, "Attention + MLP")
+            self.lora_rank.setValue(16)
+            self.lora_alpha.setValue(32.0)
             self.lora_dropout.setValue(0.05)
             self.learning_rate.setValue(0.00005)
             self.max_grad_norm.setValue(0.5)

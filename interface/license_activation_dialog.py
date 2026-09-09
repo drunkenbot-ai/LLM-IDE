@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 
 from engine.license_client import (
     LicenseCheckResult,
+    activate_license,
     check_license_at_launch,
     store_license_key,
 )
@@ -70,6 +71,40 @@ def run_license_check_responsively(app_version: str, server_url: str) -> License
 
     loop = QEventLoop()
     thread = _LicenseCheckThread(app_version, server_url)
+    captured: dict[str, LicenseCheckResult] = {}
+
+    def _capture(result: LicenseCheckResult) -> None:
+        captured["result"] = result
+        loop.quit()
+
+    thread.finished_with_result.connect(_capture)
+    thread.start()
+    loop.exec()
+    thread.wait()
+    return captured["result"]
+
+
+class _LicenseActivationThread(QThread):
+    """Runs activate_license off the GUI thread."""
+
+    finished_with_result = Signal(object)
+
+    def __init__(self, license_key: str, app_version: str, server_url: str) -> None:
+        super().__init__()
+        self._license_key = license_key
+        self._app_version = app_version
+        self._server_url = server_url
+
+    def run(self) -> None:
+        result = activate_license(self._license_key, self._app_version, self._server_url)
+        self.finished_with_result.emit(result)
+
+
+def run_license_activation_responsively(license_key: str, app_version: str, server_url: str) -> LicenseCheckResult:
+    """Run online license activation without freezing the GUI thread."""
+
+    loop = QEventLoop()
+    thread = _LicenseActivationThread(license_key, app_version, server_url)
     captured: dict[str, LicenseCheckResult] = {}
 
     def _capture(result: LicenseCheckResult) -> None:
@@ -151,10 +186,9 @@ class LicenseActivationDialog(QDialog):
             return
 
         self._activate_button.setEnabled(False)
-        self._activate_button.setText("Checking...")
+        self._activate_button.setText("Activating...")
         try:
-            store_license_key(license_key)
-            result = run_license_check_responsively(self._app_version, self._server_url)
+            result = run_license_activation_responsively(license_key, self._app_version, self._server_url)
         finally:
             self._activate_button.setEnabled(True)
             self._activate_button.setText("Activate")
