@@ -149,6 +149,7 @@ class ProjectStateApplyMixin:
         self.weight_decay.setValue(float(training.get("weight_decay", self.weight_decay.value())))
         self._set_combo_by_data(self.optimizer_name, str(training.get("optimizer_name", "adamw")), {
             "adamw": "AdamW",
+            "adamw_8bit": "AdamW (8-bit)",
             "adam": "Adam",
             "lion": "Lion",
             "adafactor": "Adafactor",

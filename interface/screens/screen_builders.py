@@ -4,8 +4,8 @@ from collections.abc import Callable
 
 from PySide6.QtWidgets import QWidget
 
-from interface.tabs.benchmark_tab import build_benchmark_tab
-from interface.tabs.chat_tab import build_chat_tab
+from inference.ui.benchmark_tab import build_benchmark_tab
+from inference.ui.chat_tab import build_chat_tab
 from interface.tabs.dataset_plan_tab import build_dataset_plan_tab
 from interface.tabs.dataset_tab import build_dataset_tab
 from interface.tabs.export_tab import build_export_tab

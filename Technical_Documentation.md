@@ -12,16 +12,17 @@ This document provides an exhaustive technical and algorithmic specification of 
 5. [Parameter-Efficient Fine-Tuning (PEFT / LoRA)](#5-parameter-efficient-fine-tuning-peft-lora)
 6. [Machine-Bound Encrypted Licensing Subsystem](#6-machine-bound-encrypted-licensing-subsystem)
 7. [Export Bay & Model Serialization Subsystem](#7-export-bay-model-serialization-subsystem)
-8. [Local Inference & Chat Engine](#8-local-inference-chat-engine)
+8. [Standalone Inference Architecture (`inference/`)](#8-standalone-inference-architecture-inference)
 9. [UI Component Architecture & Screen Reference](#9-ui-component-architecture-screen-reference)
 
 ---
 
 ## 1. System Overview & Architecture Boundary
 
-DrunkenBot LLM-IDE follows a strict unidirectional decoupled architecture. The codebase is cleanly split into two isolated layers:
-- **`engine/`**: Pure computational Python and PyTorch backend. Contains zero dependencies on Qt, GUI widgets, or display servers. It can be executed headlessly via CLI, within remote worker processes, or in automated batch scripts.
-- **`interface/`**: PySide6 (Qt for Python) desktop application. Manages UI widgets, reactive event loops, asynchronous worker bridges, SQLite telemetry polling, and user configurations.
+DrunkenBot LLM-IDE follows a strict decoupled, modular architecture. The codebase is organized into three isolated subsystems:
+- **`engine/`**: Pure computational Python and PyTorch backend for dataset building, BPE tokenization, transformer model definitions, distributed-style detached workers, and optimization. Zero GUI dependencies.
+- **`inference/`**: Standalone, submodule-ready inference package containing a headless core (`inference.core` for CLI, external tools, and future web backends) and desktop UI components (`inference.ui`).
+- **`interface/`**: PySide6 (Qt for Python) desktop IDE shell. Manages application navigation, project workspace state, asynchronous task runners, and unified screen composition.
 
 ```mermaid
 graph TD
@@ -120,6 +121,30 @@ Targets: [-100,   -100, -100, -100, -100, -100, ... -100, -100, -100, -100, -100
                                                                                    ^ Loss computed ONLY from here onward
 ```
 
+### 2.4 Sequence Packing (Sample Packing)
+On consumer GPUs, variable-length instruction batches normally suffer from massive padding waste (up to 70% of batch tokens are padding `<pad>` and `-100`).
+[engine/target_masking.py](file:///e:/AI_Projects/LLM-IDE/engine/target_masking.py) implements `PackedInstructionDataset`:
+- **Greedy Bin-Packing**: Concatenates multiple discrete non-overlapping samples into full sequences of length `context_length`.
+- **Static Shape Optimization**: Batches maintain static `(batch_size, context_length)` dimensions, eliminating memory fragmentation, preventing `torch.compile` recompilations, and maximizing tensor core saturation.
+- **Compute Efficiency**: Reduces total fine-tuning steps by 2× to 4× on consumer hardware with zero loss in target masking accuracy.
+
+### 2.5 ChatML Role Separation & Multi-Hop ReAct Chains
+To prevent prompt injection and guarantee unambiguous role boundaries:
+- **Atomic Role Tokens**: Tokenizer registers `<|im_start|>` and `<|im_end|>` as atomic special tokens:
+  ```text
+  <|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n{query}<|im_end|>\n<|im_start|>assistant\n{completion}<|im_end|>
+  ```
+- **Multi-Hop Agent Trajectories**: [engine/tool_call_data.py](file:///e:/AI_Projects/LLM-IDE/engine/tool_call_data.py) supports recursive ReAct problem-solving sequences:
+  `User -> <thought> 1 + <tool_calls> 1 -> <tool_result> 1 -> <thought> 2 + <tool_calls> 2 -> <tool_result> 2 -> Final Assistant Synthesis`.
+  Target masking isolates external `<tool_result>` blocks (loss masked) while backpropagating gradients strictly over assistant thoughts and tool call payloads.
+
+### 2.6 Synthetic Agent & Reasoning Data Generation
+To bootstrap frontier agent behaviors on consumer models without requiring proprietary frontier API dependencies, [engine/generate_agent_data.py](file:///e:/AI_Projects/LLM-IDE/engine/generate_agent_data.py) generates publication-grade synthetic datasets:
+1. **Multi-Hop Web Search Trajectories**: Formulates search queries with `<thought>` planning, receives simulated observations, and synthesizes answers with source citations.
+2. **Python Interpreter Computation**: Writes executable Python snippets for arithmetic, financial modeling, orbital physics, and statistics, verifying calculations via execution outputs.
+3. **Contrastive Negative Ingestion**: System prompts declare external tools (`web_search`, `python_interpreter`), but the query is common knowledge. The assistant explicitly reasons (`<thought>No external tools needed...</thought>`) and answers directly without invoking tools, preventing tool-calling collapse.
+4. **Standard Schema & Packing**: Outputs standard OpenAI JSONL format directly consumed by `PackedInstructionDataset` with prompt loss masking.
+
 ---
 
 ## 3. Neural Architecture & Transformer Internals
@@ -143,7 +168,7 @@ Instead of absolute positional embedding tables that fail to extrapolate beyond 
 
 $$R_{\Theta, m}^d = \text{diag}\left(R_{\theta_1, m}, R_{\theta_2, m}, \dots, R_{\theta_{d/2}, m}\right)$$
 
-where $\theta_i = \theta_{\text{base}}^{-2(i-1)/d}$. The base frequency $\theta_{\text{base}}$ is configurable from $10,000.0$ to $500,000.0$, supporting extended context lengths without positional collapse.
+where $\theta_i = \theta_{\text{base}}^{-2(i-1)/d}$. The base frequency $\theta_{\text{base}}$ defaults to $500,000.0$ (aligned with LLaMA-3 standards), supporting extended context lengths and dense tool documentation without high-frequency positional collapse.
 
 ### 3.2 Attention Mechanisms: MHA, GQA & MQA
 - **Multi-Head Attention (MHA)**: Equal number of Query ($Q$), Key ($K$), and Value ($V$) heads ($H_Q = H_K = H_V$).
@@ -155,7 +180,9 @@ where $\theta_i = \theta_{\text{base}}^{-2(i-1)/d}$. The base frequency $\theta_
   $$\text{FFN}(x) = \text{GELU}(x W_1 + b_1) W_2 + b_2$$
 - **SwiGLU (LLaMA-Style)**:
   $$\text{SwiGLU}(x) = \left(\text{SiLU}(x W_{\text{gate}}) \odot (x W_{\text{up}})\right) W_{\text{down}}$$
-  SwiGLU provides superior non-linear capacity per parameter, eliminating training instability and enabling faster loss convergence.
+  To match the parameter and FLOP efficiency of GELU without memory bloat, `MicroGPT` uses the canonical intermediate dimension:
+  $$\text{dim}_{\text{intermediate}} = \left\lfloor \frac{2}{3} \times 4 \times d_{\text{model}} \right\rfloor = \left\lfloor \frac{8}{3} d_{\text{model}} \right\rfloor \quad (\text{rounded to multiple of 64})$$
+  This yields a ~33% parameter and activation memory reduction compared to naive $4 \times$ gating, saving vital GPU memory on consumer hardware while preserving the superior non-linear representation capacity of SwiGLU.
 
 ### 3.4 Architecture Presets
 
@@ -219,6 +246,20 @@ Before initializing the optimizer and data loader, [engine/training_orchestrator
 In standard sequential datasets, setting validation stride to $1$ forces the validation loop to evaluate the same 1,000 tokens repeatedly across windows. DrunkenBot LLM-IDE enforces:
 $$\text{Validation Stride} = \max(1, \text{Context Length})$$
 This guarantees that 50 evaluation batches evaluate up to **400,000+ distinct non-overlapping tokens** drawn across the validation set, providing true generalization loss measurements.
+
+### 4.4 Weight Decay Decoupling & 8-Bit AdamW Optimizer
+- **Weight Decay Group Decoupling**:
+  In standard Transformer implementations, applying weight decay to 1D vectors (RMSNorm scale weights, LayerNorm weights, and biases) causes parameter shrinkage, gradient starvation, and loss instability in small models.
+  [engine/training_runtime.py](file:///e:/AI_Projects/LLM-IDE/engine/training_runtime.py) splits trainable parameters into two strict groups:
+  $$\text{Group}_{\text{decay}} = \{p \in \Theta \mid \text{dim}(p) \ge 2\} \implies \text{weight\_decay} = \lambda$$
+  $$\text{Group}_{\text{no\_decay}} = \{p \in \Theta \mid \text{dim}(p) < 2\} \implies \text{weight\_decay} = 0.0$$
+  Tied parameters (e.g. `token_embedding.weight == lm_head.weight`) are deduplicated by object identity before group formation.
+- **8-Bit AdamW (`adamw_8bit`)**:
+  Standard AdamW maintains two 32-bit floating-point states ($m$ and $v$) per parameter ($8\text{ bytes/param}$). For a 350M parameter model, optimizer states consume $2.8\text{ GB}$ of VRAM alone.
+  Selecting `adamw_8bit` leverages `bitsandbytes.optim.AdamW8bit` on CUDA, quantizing optimizer first and second moments dynamically to 8-bit blockwise representations ($2\text{ bytes/param}$), achieving a **75% memory reduction in optimizer states** without loss in model convergence.
+  If running on CPU or if `bitsandbytes` is absent, the engine emits a clear warning and smoothly falls back to standard `torch.optim.AdamW`.
+- **CUDA Fused AdamW**:
+  When running standard AdamW on CUDA under PyTorch 2.x, `fused=True` is automatically engaged, merging optimizer step kernels into a single GPU pass for higher arithmetic throughput.
 
 ---
 
@@ -329,9 +370,50 @@ flowchart TD
 
 ---
 
-## 8. Local Inference & Chat Engine
+## 8. Standalone Inference Architecture (`inference/`)
 
-The Chat Studio provides real-time local text generation with streamed Markdown rendering in [interface/tabs/chat_tab.py](file:///e:/AI_Projects/LLM-IDE/interface/tabs/chat_tab.py) and [engine/llama_chat.py](file:///e:/AI_Projects/LLM-IDE/engine/llama_chat.py).
+Inference capabilities are decoupled into a dedicated, submodule-ready package (`inference/`) designed to be hosted in its own repository (`drunkenbot-ai/inference.git`).
+
+The architecture strictly isolates the **headless inference core** from the **desktop UI**:
+- **`inference.core` (Headless Engine)**: Pure Python / PyTorch / llama.cpp inference with **zero GUI dependencies**. Exposes session management, KV-cached generation, the autonomous ReAct tool loop, and benchmarking. Any external tool, script, or future web server (FastAPI, WebSockets, SSE) can import `inference.core` without installing Qt.
+- **`inference.ui` (Desktop UI & Widgets)**: PySide6 desktop components, including collapsible chain-of-thought accordions, styled tool cards, syntax-highlighted Markdown rendering, and Qt tab builders.
+
+```mermaid
+flowchart TD
+    subgraph Inference_Package ["Inference Package (inference/)"]
+        subgraph Core_Layer ["inference.core (Headless - Zero Qt Dependencies)"]
+            IC1[types.py: InferenceMessage, GenerationOptions, StreamChunk]
+            IC2[agent_executor.py: Subprocess Python & DuckDuckGo Search]
+            IC3[microgpt_chat.py: Native PyTorch Session & ReAct Loop]
+            IC4[llama_chat.py: llama.cpp GGUF Session & Metrics]
+            IC5[generation.py: Model Loader & Prompt Generator]
+            IC6[evaluation.py: Checkpoint Benchmark Suite]
+        end
+
+        subgraph UI_Layer ["inference.ui (Desktop PySide6 Components)"]
+            IU1[chat_widgets.py: ChatMessageWidget & Thought Accordion]
+            IU2[markdown_renderer.py: HTML Syntax Highlighting & Tool Boxes]
+            IU3[chat_screen.py: ChatScreenMixin Session Manager]
+            IU4[chat_tab.py: build_chat_tab Layout]
+            IU5[benchmark_screen.py: BenchmarkScreenMixin]
+            IU6[benchmark_tab.py: build_benchmark_tab Layout]
+        end
+
+        subgraph Future_Web ["Future Web Application (Planned)"]
+            FW1[FastAPI / Starlette / WebSockets Server]
+            FW2[Streaming Server-Sent Events (SSE)]
+            FW3[Web Frontend: React / Vue / Vanilla JS]
+        end
+
+        IU3 --> IC3
+        IU3 --> IC4
+        IU1 --> IU2
+        FW1 --> IC1
+        FW1 --> IC3
+        FW1 --> IC4
+        FW1 --> IC2
+    end
+```
 
 ### 8.1 Inference Execution Flow
 1. **Dynamic Backend Selection**: Supports loading native PyTorch `MicroGPT` checkpoints with full KV-caching or compiled GGUF models via `llama-cpp-python`.
@@ -342,8 +424,28 @@ The Chat Studio provides real-time local text generation with streamed Markdown 
    - Top-k Filtering: Truncates vocabulary to the top $k$ candidates.
    - Frequency & Repetition Penalty: Penalizes previously generated tokens to eliminate degenerate loops.
 4. **Reasoning / Thinking Effort Control**:
-   - Supports models trained with chain-of-thought tokens (`<think>...</think>`).
+   - Supports models trained with chain-of-thought tokens (`<thought>...</thought>`).
    - The UI includes selectable reasoning effort presets (`Light`, `Balanced`, `Deep`) that control generation token budget and temperature modulation during internal reasoning passes.
+
+### 8.2 Autonomous Agent Tool Execution & Multi-Turn ReAct Loop
+Beyond passive conversational chat, DrunkenBot LLM-IDE enables models to operate as autonomous frontier-grade agents through an active execution loop:
+1. **Autonomous Tool Router ([inference/core/agent_executor.py](file:///e:/AI_Projects/LLM-IDE/inference/core/agent_executor.py))**:
+   - `python_interpreter`: Safe sandboxed subprocess execution with a strict 5.0-second timeout, capturing stdout, stderr, and execution exceptions cleanly. Enables exact arithmetic, statistical modeling, and algorithmic verification.
+   - `web_search`: Live search execution via DuckDuckGo Lite HTML parsing with structured snippet extraction and graceful offline simulation fallback.
+   - `parse_tool_calls`: Universal parser supporting both OpenAI JSON blocks (`<tool_calls>[...]</tool_calls>`) and Tag-based blocks (`<CALL>tool=...\narg=...</CALL>`).
+2. **Autonomous Multi-Turn ReAct Loop ([inference/core/microgpt_chat.py](file:///e:/AI_Projects/LLM-IDE/inference/core/microgpt_chat.py))**:
+   - When the model emits a tool call, `MicroGPTChatSession.generate_stream()` intercepts the tag instead of terminating.
+   - The session emits live UI status banners (`⚙️ Calling tool <name>...`), routes the execution via `execute_agent_tool`, displays the observation (`📋 Observation: ...`), formats a `<tool_result id="...">...</tool_result>` block, appends it into the KV sequence, and prompts the model to autonomously continue reasoning or synthesize its final answer (up to `max_tool_hops = 3`).
+3. **Synthetic Data Forge**:
+   - Interactive UI card in the Dataset Blueprint screen ([interface/tabs/dataset_plan_tab.py](file:///e:/AI_Projects/LLM-IDE/interface/tabs/dataset_plan_tab.py)) and backend generation scripts ([engine/generate_agent_data.py](file:///e:/AI_Projects/LLM-IDE/engine/generate_agent_data.py), [engine/generate_identity_data.py](file:///e:/AI_Projects/LLM-IDE/engine/generate_identity_data.py)).
+   - Allows users on consumer hardware to generate high-fidelity multi-hop agent trajectories, Python problem-solving samples, contrastive negative scenarios, and diverse combinatorial identity sentences on demand.
+4. **Pre-Training Replay Buffer Ingestion Hook ([engine/dataset_loader.py](file:///e:/AI_Projects/LLM-IDE/engine/dataset_loader.py))**:
+   - When preparing fine-tuning datasets (`instruction`, `conversation`, `tool_call`), `_load_documents_with_cache` dynamically samples up to `replay_buffer_ratio` (default 5%) of available base pre-training documents from `input_dir`.
+   - These base files retain identity completion targets (`targets = tokens`), ensuring gradients backpropagate over foundational language, grammar, and world knowledge during fine-tuning, directly resolving catastrophic forgetting.
+5. **Collapsible Thought Process & Tool Execution UI ([inference/ui/chat_widgets.py](file:///e:/AI_Projects/LLM-IDE/inference/ui/chat_widgets.py), [inference/ui/markdown_renderer.py](file:///e:/AI_Projects/LLM-IDE/inference/ui/markdown_renderer.py))**:
+   - `ChatMessageWidget` detects internal reasoning tokens (`<thought>...</thought>` or `<think>...</think>`) and separates them from the final response.
+   - An interactive collapsible toggle button (`💭 Thought Process [▼ / ▲]`) allows users to expand or collapse the model's reasoning chain at will.
+   - Tool execution status chips (`⚙️ Tool Call: <name>`) and observation cards (`📋 Observation: <result>`) are themed with distinct borders and colors matching dark/light themes.
 
 ---
 

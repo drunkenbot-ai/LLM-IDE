@@ -42,6 +42,8 @@ class TestToolCallTargetMasking(unittest.TestCase):
             "</tool_result>",
             "<CALL>",
             "</CALL>",
+            "<thought>",
+            "</thought>",
         ]:
             self.assertIn(token, TOOL_TOKENS)
             self.assertIn(token, SPECIAL_TOKENS)

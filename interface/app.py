@@ -65,7 +65,7 @@ from engine.contracts.jobs import BackendKind, RuntimeSpec, TrainingJobSpec
 from engine.dataset_preview_scan import scan_dataset_preview
 from engine.dataset_preview_health import check_project_health
 from engine.dataset_build import build_dataset
-from engine.evaluation import DEFAULT_BENCHMARK_PROMPTS, evaluate_checkpoint, normalize_prompts
+from inference.core.evaluation import DEFAULT_BENCHMARK_PROMPTS, evaluate_checkpoint, normalize_prompts
 from engine.export import (
     export_gguf_with_llama_cpp, export_hf_microgpt_package, export_llama_adapter_package,
     export_project_bundle, quantize_checkpoint,
@@ -74,10 +74,10 @@ from engine.external_dataset import (
     DEFAULT_MANIFEST_URL, download_latest_dataset, is_newer_version, load_manifest,
 )
 from engine.fine_tuning_service import run_fine_tuning_job
-from engine.llama_chat import LlamaChatSession
-from engine.llama_chat import load_llama_chat_session, stream_chat_reply
+from inference.core.llama_chat import LlamaChatSession
+from inference.core.llama_chat import load_llama_chat_session, stream_chat_reply
 from engine.lineage import read_json
-from engine.microgpt_chat import load_microgpt_chat_session, stream_microgpt_chat_reply
+from inference.core.microgpt_chat import load_microgpt_chat_session, stream_microgpt_chat_reply
 from engine.notifier import (
     NotificationManager, default_notifier_config_path, ensure_notifier_config,
 )
@@ -98,12 +98,12 @@ from interface.theme import apply_theme, load_startup_theme
 
 from engine.license_client import check_local_license, load_stored_license_key
 from interface.license_activation_dialog import LicenseActivationDialog, run_license_check_responsively
-from interface.chat_widgets import ChatMessageWidget
-from interface.markdown_renderer import markdown_to_html
+from inference.ui.chat_widgets import ChatMessageWidget
+from inference.ui.markdown_renderer import markdown_to_html
 from interface.training_artifacts import select_training_artifacts
 from interface.startup import _register_recent_project
-from interface.tabs.benchmark_tab import build_benchmark_tab
-from interface.tabs.chat_tab import build_chat_tab
+from inference.ui.benchmark_tab import build_benchmark_tab
+from inference.ui.chat_tab import build_chat_tab
 from interface.tabs.dataset_plan_tab import (
     build_dataset_plan_tab, dataset_plan_defaults, default_data_root,
     iter_default_data_files, populate_default_data_tree,
@@ -173,9 +173,9 @@ from interface.screens.fine_tuning_screen import FineTuningScreenMixin
 from interface.screens.fine_tuning_run import FineTuningRunMixin
 from interface.screens.live_screen import LiveScreenMixin
 from interface.screens.job_manager_screen import JobManagerScreenMixin
-from interface.screens.benchmark_screen import BenchmarkScreenMixin
+from inference.ui.benchmark_screen import BenchmarkScreenMixin
 from interface.screens.export_screen import ExportScreenMixin
-from interface.screens.chat_screen import ChatScreenMixin
+from inference.ui.chat_screen import ChatScreenMixin
 
 
 class MainWindow(

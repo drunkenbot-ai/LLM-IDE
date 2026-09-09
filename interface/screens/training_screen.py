@@ -112,6 +112,7 @@ class TrainingScreenMixin:
 
         return {
             "AdamW": "adamw",
+            "AdamW (8-bit)": "adamw_8bit",
             "Adam": "adam",
             "Lion": "lion",
             "Adafactor": "adafactor",

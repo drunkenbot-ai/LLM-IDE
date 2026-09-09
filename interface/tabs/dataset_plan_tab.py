@@ -352,6 +352,35 @@ def build_dataset_plan_tab(window) -> QWidget:
     conversation_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
     conversation_card.setMaximumHeight(250)
 
+    forge_form = QFormLayout()
+    window._configure_form(forge_form)
+    window.forge_sample_count = window._spin(50, 10000, 300)
+    window.forge_sample_count.setMaximumHeight(30)
+    window._tip(window.forge_sample_count, "Number of synthetic agent or identity records to generate.")
+
+    window.generate_agent_button = QPushButton("Forge Agent & Tool Data")
+    window.generate_agent_button.clicked.connect(window.generate_synthetic_agent_data)
+    window._tip(
+        window.generate_agent_button,
+        "Generate multi-hop web search, Python calculation, and contrastive negative tool trajectories directly into training_data/tool_call/.",
+    )
+
+    window.generate_identity_button = QPushButton("Forge Identity Facts")
+    window.generate_identity_button.clicked.connect(window.generate_synthetic_identity_data)
+    window._tip(
+        window.generate_identity_button,
+        "Generate combinatorial model identity and self-awareness sentences directly into training_data/identity/.",
+    )
+
+    forge_buttons = QHBoxLayout()
+    forge_buttons.addWidget(window.generate_agent_button)
+    forge_buttons.addWidget(window.generate_identity_button)
+
+    forge_form.addRow("Records", window.forge_sample_count)
+    forge_form.addRow("", forge_buttons)
+    forge_card = window._card("SYNTHETIC DATA FORGE", forge_form)
+    forge_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+
     window.default_data_tree_updating = False
     window.default_data_tree = QTreeWidget()
     window.default_data_tree.setHeaderLabels(["Category / file", "Characters", "Vocab"])
@@ -412,7 +441,8 @@ def build_dataset_plan_tab(window) -> QWidget:
     default_card = window._card("BUNDLED DEFAULT DATA", default_layout)
     body_grid.addWidget(external_card, 0, 0)
     body_grid.addWidget(conversation_card, 1, 0)
-    body_grid.addWidget(default_card, 0, 1, 2, 1)
+    body_grid.addWidget(forge_card, 2, 0)
+    body_grid.addWidget(default_card, 0, 1, 3, 1)
     body_grid.setColumnStretch(0, 1)
     body_grid.setColumnStretch(1, 1)
     layout.addLayout(body_grid)
