@@ -400,3 +400,70 @@ class DatasetScreenMixin:
         )
 
         self._clear_button_busy("DataSet Prepared")
+
+    def generate_synthetic_agent_data(self) -> None:
+        """Generate synthetic agent & reasoning trajectories into project training data."""
+        project_dir = getattr(self, "project_dir", None) or Path.cwd()
+        target_dir = Path(project_dir) / "training_data" / "tool_call"
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target_file = target_dir / "agent_reasoning_trajectories.jsonl"
+        sample_count = getattr(self, "forge_sample_count", None)
+        count = sample_count.value() if sample_count is not None else 300
+
+        from engine.generate_agent_data import generate_agent_dataset
+
+        def _task(progress=None, should_stop=None):
+            if progress:
+                progress({"message": f"Forging {count} synthetic agent & reasoning trajectories...", "percent": 20})
+            written = generate_agent_dataset(target_file, sample_count=count)
+            if progress:
+                progress({"message": f"Synthesized {written} agent records.", "percent": 100})
+            return {"file": str(target_file), "count": written}
+
+        def _finished(result):
+            res_dict = result if isinstance(result, dict) else {}
+            self.dataset_log.append(f"[OK] Synthesized {res_dict.get('count', 0)} agent trajectories to {res_dict.get('file', target_file)}")
+            self.refresh_dataset_blueprint_files()
+
+        self._run_task(
+            _task,
+            (),
+            _finished,
+            self.dataset_log,
+            getattr(self, "dataset_plan_progress", None),
+            with_progress=True,
+            button=getattr(self, "generate_agent_button", None),
+            busy_text="Forging Agent Data",
+        )
+
+    def generate_synthetic_identity_data(self) -> None:
+        """Generate combinatorial identity & self-awareness sentences into project training data."""
+        project_dir = getattr(self, "project_dir", None) or Path.cwd()
+        sample_count = getattr(self, "forge_sample_count", None)
+        count = sample_count.value() if sample_count is not None else 500
+
+        from engine.generate_identity_data import generate_identity_corpus
+
+        def _task(progress=None, should_stop=None):
+            if progress:
+                progress({"message": f"Forging {count} identity & self-awareness facts...", "percent": 20})
+            out_path = generate_identity_corpus(Path(project_dir), sentence_count=count)
+            if progress:
+                progress({"message": f"Synthesized identity facts to {out_path.name}", "percent": 100})
+            return {"file": str(out_path), "count": count}
+
+        def _finished(result):
+            res_dict = result if isinstance(result, dict) else {}
+            self.dataset_log.append(f"[OK] Synthesized identity facts to {res_dict.get('file')}")
+            self.refresh_dataset_blueprint_files()
+
+        self._run_task(
+            _task,
+            (),
+            _finished,
+            self.dataset_log,
+            getattr(self, "dataset_plan_progress", None),
+            with_progress=True,
+            button=getattr(self, "generate_identity_button", None),
+            busy_text="Forging Identity Facts",
+        )

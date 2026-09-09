@@ -164,11 +164,11 @@ def build_training_tab(window) -> QWidget:
     window.apply_training_profile_button.clicked.connect(window.apply_training_profile)
     window._tip(window.apply_training_profile_button, "Apply the selected training profile to the controls below.")
     window.optimizer_name = QComboBox()
-    window.optimizer_name.addItems(["AdamW", "Adam", "Lion", "Adafactor"])
+    window.optimizer_name.addItems(["AdamW", "AdamW (8-bit)", "Adam", "Lion", "Adafactor"])
     window.optimizer_name.setMaximumWidth(260)
     window._tip(
         window.optimizer_name,
-        "Optimizer algorithm. AdamW is the safest default; Lion can be efficient; Adafactor can reduce optimizer memory when supported.",
+        "Optimizer algorithm. AdamW is the safest default; AdamW (8-bit) compresses optimizer state memory by 75% for 6GB-12GB consumer GPUs; Lion is fast; Adafactor reduces memory.",
     )
     window.scheduler_name = QComboBox()
     window.scheduler_name.addItems(["Warmup linear", "Cosine decay", "Polynomial decay", "One-cycle", "Constant"])

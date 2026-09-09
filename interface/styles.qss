@@ -453,6 +453,35 @@ QTextBrowser#BubbleText {
     padding: 2px;
 }
 
+QPushButton#ThoughtToggle {
+    background: #181b22;
+    color: #94a3b8;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: left;
+}
+
+QPushButton#ThoughtToggle:hover {
+    background: #222734;
+    color: #cbd5e1;
+    border-color: #475569;
+}
+
+QTextBrowser#ThoughtText {
+    background: #13161d;
+    color: #94a3b8;
+    border-left: 3px solid #6366f1;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 0;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
 QTextEdit#ChatInput, QTextEdit#SystemPrompt {
     background: #111111;
     color: #eeeeee;
