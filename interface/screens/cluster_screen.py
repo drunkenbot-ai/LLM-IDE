@@ -4,27 +4,42 @@ from __future__ import annotations
 
 import dataclasses
 import os
+import subprocess
+import sys
+import tempfile
 import threading
 import time
 from pathlib import Path
 from typing import Any, Optional
 
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QObject, QTimer, Signal
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from cluster.bus import ClusterStorageBus
-from cluster.worker import ClusterWorker
 from interface.tabs.cluster_tab import set_cluster_table_rows
+
+
+class ClusterTelemetryBridge(QObject):
+    """Qt signal bridge for thread-safe worker telemetry updates."""
+
+    telemetry_ready = Signal(object, object, object)  # workers, active_job, error
 
 
 class ClusterScreenMixin:
     """Mixin for MainWindow handling distributed Local SGD cluster operations."""
 
-    _local_cluster_worker: Optional[ClusterWorker] = None
-    _local_cluster_thread: Optional[threading.Thread] = None
+    _local_worker_proc: Optional[subprocess.Popen] = None
+    _cluster_bridge: Optional[ClusterTelemetryBridge] = None
     _cached_cluster_bus: Optional[ClusterStorageBus] = None
     _cached_cluster_path: Optional[str] = None
     _cluster_poll_in_progress: bool = False
+
+    def _ensure_cluster_bridge(self) -> ClusterTelemetryBridge:
+        """Lazily initialize the cross-thread telemetry signal bridge."""
+        if self._cluster_bridge is None:
+            self._cluster_bridge = ClusterTelemetryBridge()
+            self._cluster_bridge.telemetry_ready.connect(self._apply_cluster_telemetry)
+        return self._cluster_bridge
 
     def _get_cluster_bus(self) -> Optional[ClusterStorageBus]:
         """Get or initialize storage bus from the configured shared directory, using caching."""
@@ -66,6 +81,15 @@ class ClusterScreenMixin:
 
     def refresh_cluster_status(self) -> None:
         """Poll the SQLite bus in a background thread to prevent UI thread freezing."""
+        # Check local worker process liveness
+        if self._local_worker_proc is not None:
+            if self._local_worker_proc.poll() is not None:
+                code = self._local_worker_proc.poll()
+                self._local_worker_proc = None
+                if hasattr(self, "cluster_local_worker_btn"):
+                    self.cluster_local_worker_btn.setText("Start Local Worker")
+                self._log_cluster_event(f"Local worker process exited (code {code}).")
+
         if not hasattr(self, "cluster_shared_dir"):
             return
         path_str = self.cluster_shared_dir.text().strip()
@@ -78,11 +102,13 @@ class ClusterScreenMixin:
             return
         self._cluster_poll_in_progress = True
 
+        bridge = self._ensure_cluster_bridge()
+
         def _bg_poll() -> None:
             try:
                 p = Path(path_str)
                 if not p.exists():
-                    QTimer.singleShot(0, lambda: self._apply_cluster_telemetry(None, None, error="Folder not found"))
+                    bridge.telemetry_ready.emit(None, None, "Folder not found")
                     return
 
                 if self._cached_cluster_path != path_str or self._cached_cluster_bus is None:
@@ -92,10 +118,9 @@ class ClusterScreenMixin:
                 bus = self._cached_cluster_bus
                 workers = bus.list_workers(active_within_seconds=60.0)
                 active_job = bus.get_active_job()
-                QTimer.singleShot(0, lambda w=workers, j=active_job: self._apply_cluster_telemetry(w, j))
+                bridge.telemetry_ready.emit(workers, active_job, None)
             except Exception as exc:
-                err_msg = str(exc)
-                QTimer.singleShot(0, lambda m=err_msg: self._apply_cluster_telemetry(None, None, error=m))
+                bridge.telemetry_ready.emit(None, None, str(exc))
             finally:
                 self._cluster_poll_in_progress = False
 
@@ -127,11 +152,16 @@ class ClusterScreenMixin:
                         if last_hb
                         else "-"
                     )
+                    vram_val = w.get("vram_gb", 0)
+                    try:
+                        vram_str = f"{float(vram_val):.1f}"
+                    except (ValueError, TypeError):
+                        vram_str = str(vram_val)
                     rows.append([
                         str(w.get("worker_id", "-")),
                         str(w.get("hostname", "-")),
                         str(w.get("gpu_name", "-")),
-                        str(w.get("vram_gb", 0)),
+                        vram_str,
                         str(w.get("status", "OFFLINE")),
                         last_hb_str,
                     ])
@@ -261,32 +291,90 @@ class ClusterScreenMixin:
             self.refresh_cluster_status()
 
     def toggle_local_cluster_worker(self) -> None:
-        """Start or stop a local background cluster worker on this machine."""
-        if self._local_cluster_worker is not None:
-            # Stop existing worker
-            self._local_cluster_worker.stop()
-            self._local_cluster_worker = None
-            self._local_cluster_thread = None
+        """Start or stop an independent local cluster worker background process."""
+        if self._local_worker_proc is not None and self._local_worker_proc.poll() is None:
+            pid = self._local_worker_proc.pid
+            self._log_cluster_event(f"Stopping local worker process (PID: {pid})...")
+            try:
+                self._local_worker_proc.terminate()
+                try:
+                    self._local_worker_proc.wait(timeout=2.0)
+                except subprocess.TimeoutExpired:
+                    self._local_worker_proc.kill()
+                    self._local_worker_proc.wait(timeout=1.0)
+            except Exception as exc:
+                self._log_cluster_event(f"Error terminating worker process: {exc}")
+
+            self._local_worker_proc = None
             if hasattr(self, "cluster_local_worker_btn"):
                 self.cluster_local_worker_btn.setText("Start Local Worker")
-            self._log_cluster_event("Stopped local worker daemon.")
+            self._log_cluster_event(f"Stopped local worker process (PID: {pid}).")
             self.refresh_cluster_status()
-        else:
-            bus = self._get_cluster_bus()
-            if not bus:
-                QMessageBox.warning(self, "Error", "Shared network directory not configured.")
-                return
-            worker = ClusterWorker(bus=bus)
-            self._local_cluster_worker = worker
+            return
 
-            def _run():
-                worker.run_daemon(poll_interval=2.0)
+        # Check if already running via singleton check
+        from cluster.cluster_worker import get_running_worker_pid, get_worker_executable
+        running_pid = get_running_worker_pid()
+        if running_pid:
+            QMessageBox.information(
+                self,
+                "Worker Already Running",
+                f"A cluster worker process is already active on this machine (PID: {running_pid}).\n\n"
+                f"Visible in Task Manager as 'cluster_worker.exe' (or PID {running_pid}).\n"
+                f"To stop it, you can kill PID {running_pid} in Task Manager or run:\n"
+                f"cluster_worker.bat --stop",
+            )
+            return
 
-            t = threading.Thread(target=_run, daemon=True)
-            self._local_cluster_thread = t
-            t.start()
+        if not hasattr(self, "cluster_shared_dir"):
+            return
+        path_str = self.cluster_shared_dir.text().strip()
+        if not path_str:
+            QMessageBox.warning(self, "Error", "Shared network directory not configured.")
+            return
 
+        try:
+            shared_p = Path(path_str)
+            shared_p.mkdir(parents=True, exist_ok=True)
+        except Exception as exc:
+            QMessageBox.warning(self, "Error", f"Failed to access shared directory:\n{exc}")
+            return
+
+        # Resolve script path (root cluster_worker.py or cluster/cluster_worker.py)
+        root_dir = Path(__file__).resolve().parent.parent.parent
+        script_path = root_dir / "cluster_worker.py"
+        if not script_path.exists():
+            script_path = root_dir / "cluster" / "cluster_worker.py"
+
+        worker_exe = get_worker_executable()
+        exe_name = Path(worker_exe).name
+        log_path = Path(tempfile.gettempdir()) / "cluster_worker_local.log"
+
+        env = os.environ.copy()
+        env["LLM_SHARED_DIR"] = path_str
+
+        flags = 0
+        if sys.platform == "win32":
+            flags = subprocess.CREATE_NO_WINDOW
+
+        try:
+            log_file = open(log_path, "a", encoding="utf-8")
+            proc = subprocess.Popen(
+                [worker_exe, str(script_path), "--shared-dir", path_str],
+                env=env,
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                creationflags=flags,
+            )
+            self._local_worker_proc = proc
             if hasattr(self, "cluster_local_worker_btn"):
-                self.cluster_local_worker_btn.setText("Stop Local Worker")
-            self._log_cluster_event(f"Started local worker {worker.worker_id} on {worker.device_str}.")
-            self.refresh_cluster_status()
+                self.cluster_local_worker_btn.setText(f"Stop Local Worker (PID: {proc.pid})")
+
+            self._log_cluster_event(
+                f"Started local worker process: '{exe_name}' (PID: {proc.pid}).\n"
+                f"    Task Manager name: '{exe_name}' (PID: {proc.pid}). Logs: {log_path}"
+            )
+            QTimer.singleShot(1000, self.refresh_cluster_status)
+        except Exception as exc:
+            QMessageBox.critical(self, "Launch Error", f"Failed to launch worker process:\n{exc}")
+            self._log_cluster_event(f"Failed to launch worker process: {exc}")

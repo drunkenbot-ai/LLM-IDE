@@ -351,3 +351,61 @@ def test_end_to_end_cluster_local_sgd_round(tmp_path: Path) -> None:
     finally:
         worker_1.stop()
         worker_2.stop()
+
+
+def test_standalone_worker_lock_and_lifecycle() -> None:
+    """Verify singleton lock acquisition, duplicate rejection, and cleanup."""
+    import os
+    from cluster.cluster_worker import (
+        acquire_singleton_lock,
+        get_running_worker_pid,
+        is_pid_running,
+        release_singleton_lock,
+    )
+
+    release_singleton_lock()
+    try:
+        assert acquire_singleton_lock() is True
+        pid = get_running_worker_pid()
+        assert pid == os.getpid()
+        assert is_pid_running(pid) is True
+    finally:
+        release_singleton_lock()
+
+    assert get_running_worker_pid() is None
+
+
+def test_get_worker_executable() -> None:
+    """Verify worker executable resolution returns a valid executable path."""
+    from cluster.cluster_worker import get_worker_executable
+
+    exe = get_worker_executable()
+    assert isinstance(exe, str)
+    assert Path(exe).exists()
+
+
+def test_cluster_telemetry_bridge() -> None:
+    """Verify ClusterTelemetryBridge emits Qt signals across threads safely."""
+    import threading
+    from PySide6.QtWidgets import QApplication
+    from interface.screens.cluster_screen import ClusterTelemetryBridge
+
+    app = QApplication.instance() or QApplication([])
+    bridge = ClusterTelemetryBridge()
+    received = []
+
+    bridge.telemetry_ready.connect(lambda w, j, err: received.append((w, j, err)))
+
+    def _emitter():
+        time.sleep(0.02)
+        bridge.telemetry_ready.emit([{"worker_id": "test_node"}], None, None)
+
+    t = threading.Thread(target=_emitter)
+    t.start()
+    t.join()
+
+    app.processEvents()
+    assert len(received) == 1
+    assert received[0][0][0]["worker_id"] == "test_node"
+    assert received[0][1] is None
+    assert received[0][2] is None

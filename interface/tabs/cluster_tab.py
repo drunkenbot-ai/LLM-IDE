@@ -131,6 +131,7 @@ def build_cluster_card(window) -> QWidget:
 
     # Status summary
     status_row = QHBoxLayout()
+    status_row.setSpacing(24)
     window.cluster_status_label = QLabel("Status: Idle")
     window.cluster_status_label.setObjectName("Metric")
     window.cluster_workers_label = QLabel("Active Workers: 0")
