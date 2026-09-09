@@ -1,5 +1,7 @@
 # How To Create Your LLM
 
+> 📘 **Note**: For the comprehensive, newly updated step-by-step guide with new UI screenshots and detailed workflows, please see **[How to Train your LLM.md](How%20to%20Train%20your%20LLM.md)**.
+
 ## Introduction
 
 DrunkenBot LLM-IDE is a desktop workflow for building a small local language

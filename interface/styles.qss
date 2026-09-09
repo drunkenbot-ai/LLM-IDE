@@ -310,8 +310,6 @@ QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
 QMenuBar {
     background: #1f1f1f;
     color: #eeeeee;
-    border: 1px solid #3d3d3d;
-    border-radius: 7px;
     padding: 2px;
 }
 

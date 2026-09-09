@@ -18,6 +18,7 @@ class DatasetScreenMixin:
         conversation_paths: list[Path] = []
         instruction_paths: list[Path] = []
         tool_call_paths: list[Path] = []
+        code_paths: list[Path] = []
         dataset_stage = self._dataset_stage_value()
         selected_local_paths = self._selected_default_data_paths_for_stage(dataset_stage)
         structured_paths = [
@@ -29,6 +30,8 @@ class DatasetScreenMixin:
             instruction_paths = structured_paths
         elif dataset_stage == "tool_call":
             tool_call_paths = structured_paths
+        elif dataset_stage == "code":
+            code_paths = structured_paths
         return DatasetConfig(
             input_dir=Path(self.input_dir.text()),
             output_dir=Path(self.dataset_dir.text()),
@@ -37,9 +40,11 @@ class DatasetScreenMixin:
             conversation_sample_limit=self.conversation_sample_limit.value(),
             conversation_dataset_path=conversation_paths[0] if conversation_paths else None,
             instruction_dataset_path=instruction_paths[0] if instruction_paths else None,
+            code_dataset_path=code_paths[0] if code_paths else None,
             conversation_dataset_paths=conversation_paths,
             instruction_dataset_paths=instruction_paths,
             tool_call_dataset_paths=tool_call_paths,
+            code_dataset_paths=code_paths,
             default_data_paths=selected_local_paths,
             mixture_weights=self._mixture_weights_from_ui(),
             min_frequency=self.min_frequency.value(),
@@ -155,6 +160,9 @@ class DatasetScreenMixin:
         if config.tool_call_dataset_paths:
             self.dataset_log.append(f"Local tool-call JSON/JSONL: {len(config.tool_call_dataset_paths)} path(s)")
             LOGGER.info("Local tool-call JSON/JSONL datasets: %s", "; ".join(str(path) for path in config.tool_call_dataset_paths))
+        if config.code_dataset_paths:
+            self.dataset_log.append(f"Local code JSON/JSONL: {len(config.code_dataset_paths)} path(s)")
+            LOGGER.info("Local code JSON/JSONL datasets: %s", "; ".join(str(path) for path in config.code_dataset_paths))
         if config.default_data_paths:
             self.dataset_log.append(f"Bundled default data: {len(config.default_data_paths)} file(s)")
             LOGGER.info("Bundled default data files: %s", "; ".join(str(path) for path in config.default_data_paths))
@@ -185,7 +193,7 @@ class DatasetScreenMixin:
                 self.dataset_log.append("Checked online dataset choices are ignored until the master checkbox is enabled.")
                 LOGGER.info("Checked online dataset choices are ignored until the master checkbox is enabled")
         LOGGER.info(
-            "Preparing dataset: input=%s output=%s stage=%s online_datasets=%s conversation_json=%s instruction_json=%s tool_call_json=%s",
+            "Preparing dataset: input=%s output=%s stage=%s online_datasets=%s conversation_json=%s instruction_json=%s tool_call_json=%s code_json=%s",
             config.input_dir,
             config.output_dir,
             config.dataset_stage,
@@ -193,6 +201,7 @@ class DatasetScreenMixin:
             ";".join(str(path) for path in config.conversation_dataset_paths) or "off",
             ";".join(str(path) for path in config.instruction_dataset_paths) or "off",
             ";".join(str(path) for path in config.tool_call_dataset_paths) or "off",
+            ";".join(str(path) for path in config.code_dataset_paths) or "off",
         )
         self.project_state.setText("Preparing dataset")
         self.dataset_status.setText("Dataset: preparing")

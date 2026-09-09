@@ -325,20 +325,38 @@ class TrainingScreenMixin:
             self._set_combo_text(self.precision, rec_precision)
             self.use_amp.setChecked(True)
             self.activation_checkpointing.setChecked(False)
-            self.batch_size.setValue(16)
-            self.gradient_accumulation.setValue(1)
+            rec_batch = 16
+            if torch.cuda.is_available():
+                try:
+                    _, total_bytes = torch.cuda.mem_get_info()
+                    total_gb = total_bytes / (1024 ** 3)
+                    if total_gb >= 22.0:
+                        rec_batch = 32
+                    elif total_gb >= 10.0:
+                        rec_batch = 16
+                    elif total_gb >= 6.0:
+                        rec_batch = 8
+                    else:
+                        rec_batch = 4
+                except Exception:
+                    rec_batch = 16
+            else:
+                rec_batch = 4
+            self.batch_size.setValue(min(self.batch_size.maximum(), rec_batch))
+            target_eff = 32
+            self.gradient_accumulation.setValue(max(1, (target_eff + rec_batch - 1) // rec_batch))
             self.data_loader_workers.setValue(0)
             self.warmup_steps.setValue(50)
             self.dropout.setValue(0.05)
             # Fine-tuning generally needs less patience than a full
             # pretraining run before validation loss plateaus meaningfully.
             self.early_stopping_patience.setValue(2)
-            self._set_combo_text(self.training_mode, "Fine-tune checkpoint")
+            self._set_combo_text(self.training_mode, "Code fine-tune")
             self._set_combo_text(self.peft_method, "LoRA adapters")
-            self.lora_rank.setValue(8)
-            self.lora_alpha.setValue(16.0)
+            self.lora_rank.setValue(16)
+            self.lora_alpha.setValue(32.0)
             self.lora_dropout.setValue(0.05)
-            self._set_combo_text(self.lora_targets, "Attention projections")
+            self._set_combo_text(self.lora_targets, "Attention + MLP")
         elif profile == "Experimental Lion":
             self._set_combo_text(self.optimizer_name, "Lion")
             self._set_combo_text(self.scheduler_name, "One-cycle")

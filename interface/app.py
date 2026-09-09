@@ -96,7 +96,7 @@ from engine.training_service import run_training_job
 from interface.startup_splash import StartupSplash
 from interface.theme import apply_theme, load_startup_theme
 
-from engine.license_client import load_stored_license_key
+from engine.license_client import check_local_license, load_stored_license_key
 from interface.license_activation_dialog import LicenseActivationDialog, run_license_check_responsively
 from interface.chat_widgets import ChatMessageWidget
 from interface.markdown_renderer import markdown_to_html
@@ -210,11 +210,9 @@ class MainWindow(
 def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
     """Block app launch until a valid license is confirmed.
 
-    Checks the currently stored license key (if any). On failure, shows
-    :class:`LicenseActivationDialog` in a loop -- unlike the general
-    startup-validation flow elsewhere in ``main()``, there is deliberately
-    no "continue anyway" option here: an unlicensed launch is not a
-    degraded-but-usable state, it's the one thing this app must not do.
+    Checks the local encrypted license first on this machine. If valid,
+    the app proceeds immediately without network delay or key prompts.
+    Otherwise, falls back to stored key check or displays LicenseActivationDialog.
 
     Args:
         splash: Startup splash screen, used to show progress.
@@ -227,6 +225,14 @@ def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
     splash.append_log("Checking license...")
     QApplication.processEvents()
 
+    # 1. Local-first check: fast, offline, machine-bound encrypted vault
+    local_result = check_local_license(APP_VERSION)
+    if local_result.valid:
+        splash.append_log("[OK] License valid (local encrypted license)")
+        QApplication.instance().setProperty("license_valid", True)
+        return True
+
+    # 2. Stored key fallback check
     stored_key = load_stored_license_key()
     if stored_key:
         result = run_license_check_responsively(APP_VERSION, LICENSE_SERVER_URL)
@@ -239,7 +245,7 @@ def _ensure_valid_license(splash: "StartupValidationSplash") -> bool:
             return True
         initial_message = result.reason
     else:
-        initial_message = "No license activated on this machine yet."
+        initial_message = "No valid license activated on this machine."
 
     splash.hide()
     try:
