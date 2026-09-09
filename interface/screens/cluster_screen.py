@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from PySide6.QtCore import QObject, QTimer, Signal
-from PySide6.QtWidgets import QFileDialog, QMessageBox
+from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
 
 from cluster.bus import ClusterStorageBus
 from interface.tabs.cluster_tab import set_cluster_table_rows
@@ -28,7 +28,7 @@ class ClusterTelemetryBridge(QObject):
 class ClusterScreenMixin:
     """Mixin for MainWindow handling distributed Local SGD cluster operations."""
 
-    _local_worker_proc: Optional[subprocess.Popen] = None
+    _local_worker_procs: dict[str, subprocess.Popen] = {}
     _cluster_bridge: Optional[ClusterTelemetryBridge] = None
     _cached_cluster_bus: Optional[ClusterStorageBus] = None
     _cached_cluster_path: Optional[str] = None
@@ -82,13 +82,19 @@ class ClusterScreenMixin:
     def refresh_cluster_status(self) -> None:
         """Poll the SQLite bus in a background thread to prevent UI thread freezing."""
         # Check local worker process liveness
-        if self._local_worker_proc is not None:
-            if self._local_worker_proc.poll() is not None:
-                code = self._local_worker_proc.poll()
-                self._local_worker_proc = None
-                if hasattr(self, "cluster_local_worker_btn"):
-                    self.cluster_local_worker_btn.setText("Start Local Worker")
-                self._log_cluster_event(f"Local worker process exited (code {code}).")
+        if hasattr(self, "_local_worker_procs") and self._local_worker_procs:
+            alive = {}
+            for dev, proc in list(self._local_worker_procs.items()):
+                if proc.poll() is None:
+                    alive[dev] = proc
+                else:
+                    self._log_cluster_event(f"Local worker for '{dev}' exited (code {proc.poll()}).")
+            self._local_worker_procs = alive
+            if hasattr(self, "cluster_local_worker_btn"):
+                if alive:
+                    self.cluster_local_worker_btn.setText(f"Stop Local Worker(s) ({len(alive)} active)")
+                else:
+                    self.cluster_local_worker_btn.setText("Start Local Worker(s)")
 
         if not hasattr(self, "cluster_shared_dir"):
             return
@@ -291,39 +297,29 @@ class ClusterScreenMixin:
             self.refresh_cluster_status()
 
     def toggle_local_cluster_worker(self) -> None:
-        """Start or stop an independent local cluster worker background process."""
-        if self._local_worker_proc is not None and self._local_worker_proc.poll() is None:
-            pid = self._local_worker_proc.pid
-            self._log_cluster_event(f"Stopping local worker process (PID: {pid})...")
-            try:
-                self._local_worker_proc.terminate()
+        """Start or stop independent local cluster worker background processes for all detected GPUs."""
+        if not hasattr(self, "_local_worker_procs"):
+            self._local_worker_procs = {}
+
+        # If any local worker is currently running, stop them all
+        active_procs = {d: p for d, p in self._local_worker_procs.items() if p.poll() is None}
+        if active_procs:
+            self._log_cluster_event(f"Stopping {len(active_procs)} local worker process(es)...")
+            for dev, proc in active_procs.items():
                 try:
-                    self._local_worker_proc.wait(timeout=2.0)
-                except subprocess.TimeoutExpired:
-                    self._local_worker_proc.kill()
-                    self._local_worker_proc.wait(timeout=1.0)
-            except Exception as exc:
-                self._log_cluster_event(f"Error terminating worker process: {exc}")
-
-            self._local_worker_proc = None
+                    proc.terminate()
+                    try:
+                        proc.wait(timeout=1.5)
+                    except subprocess.TimeoutExpired:
+                        proc.kill()
+                        proc.wait(timeout=1.0)
+                except Exception as exc:
+                    self._log_cluster_event(f"Error terminating worker {dev}: {exc}")
+            self._local_worker_procs.clear()
             if hasattr(self, "cluster_local_worker_btn"):
-                self.cluster_local_worker_btn.setText("Start Local Worker")
-            self._log_cluster_event(f"Stopped local worker process (PID: {pid}).")
+                self.cluster_local_worker_btn.setText("Start Local Worker(s)")
+            self._log_cluster_event("Stopped all local worker process(es).")
             self.refresh_cluster_status()
-            return
-
-        # Check if already running via singleton check
-        from cluster.cluster_worker import get_running_worker_pid, get_worker_executable
-        running_pid = get_running_worker_pid()
-        if running_pid:
-            QMessageBox.information(
-                self,
-                "Worker Already Running",
-                f"A cluster worker process is already active on this machine (PID: {running_pid}).\n\n"
-                f"Visible in Task Manager as 'cluster_worker.exe' (or PID {running_pid}).\n"
-                f"To stop it, you can kill PID {running_pid} in Task Manager or run:\n"
-                f"cluster_worker.bat --stop",
-            )
             return
 
         if not hasattr(self, "cluster_shared_dir"):
@@ -340,7 +336,12 @@ class ClusterScreenMixin:
             QMessageBox.warning(self, "Error", f"Failed to access shared directory:\n{exc}")
             return
 
-        # Resolve script path (root cluster_worker.py or cluster/cluster_worker.py)
+        from cluster.cluster_worker import detect_all_gpus, get_device_tag, get_running_worker_pid, get_worker_executable
+
+        all_gpus = detect_all_gpus()
+        # Launch worker for each detected GPU (or cpu if no discrete GPU)
+        devices = [g["device"] for g in all_gpus] if all_gpus else ["cpu"]
+
         root_dir = Path(__file__).resolve().parent.parent.parent
         script_path = root_dir / "cluster_worker.py"
         if not script_path.exists():
@@ -352,29 +353,138 @@ class ClusterScreenMixin:
 
         env = os.environ.copy()
         env["LLM_SHARED_DIR"] = path_str
+        flags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
 
-        flags = 0
-        if sys.platform == "win32":
-            flags = subprocess.CREATE_NO_WINDOW
+        started_count = 0
+        for dev in devices:
+            tag = get_device_tag(dev)
+            existing_pid = get_running_worker_pid(tag)
+            if existing_pid:
+                self._log_cluster_event(f"Worker for device '{dev}' already running on host (PID: {existing_pid}).")
+                continue
 
+            try:
+                log_file = open(log_path, "a", encoding="utf-8")
+                proc = subprocess.Popen(
+                    [worker_exe, str(script_path), "--shared-dir", path_str, "--device", dev],
+                    env=env,
+                    stdout=log_file,
+                    stderr=subprocess.STDOUT,
+                    creationflags=flags,
+                )
+                self._local_worker_procs[dev] = proc
+                started_count += 1
+                gpu_info = next((g for g in all_gpus if g["device"] == dev), {})
+                gpu_display = gpu_info.get("name", dev)
+                self._log_cluster_event(
+                    f"Started local worker on '{dev}' [{gpu_display}] (PID: {proc.pid}).\n"
+                    f"    Task Manager name: '{exe_name}' (PID: {proc.pid}). Logs: {log_path}"
+                )
+            except Exception as exc:
+                self._log_cluster_event(f"Failed to launch worker for {dev}: {exc}")
+
+        if hasattr(self, "cluster_local_worker_btn"):
+            active_now = len([p for p in self._local_worker_procs.values() if p.poll() is None])
+            if active_now > 0:
+                self.cluster_local_worker_btn.setText(f"Stop Local Worker(s) ({active_now} active)")
+            else:
+                self.cluster_local_worker_btn.setText("Start Local Worker(s)")
+
+        QTimer.singleShot(1000, self.refresh_cluster_status)
+
+    def restart_local_cluster_workers(self) -> None:
+        """Cleanly terminate and re-launch local worker processes."""
+        if not hasattr(self, "_local_worker_procs"):
+            self._local_worker_procs = {}
+
+        # 1. Terminate all tracked local workers
+        for dev, proc in list(self._local_worker_procs.items()):
+            if proc.poll() is None:
+                try:
+                    proc.terminate()
+                    proc.wait(timeout=1.5)
+                except Exception:
+                    proc.kill()
+        self._local_worker_procs.clear()
+
+        # 2. Stop any remaining background worker processes for this host
+        from cluster.cluster_worker import stop_running_worker
+        stop_running_worker()
+
+        self._log_cluster_event("Restarting local cluster worker processes...")
+        time.sleep(0.5)
+
+        # 3. Start fresh workers
+        self.toggle_local_cluster_worker()
+
+    def clean_offline_cluster_workers(self) -> None:
+        """Purge dead and offline workers from the database and fleet table."""
+        bus = self._get_cluster_bus()
+        if not bus:
+            return
         try:
-            log_file = open(log_path, "a", encoding="utf-8")
-            proc = subprocess.Popen(
-                [worker_exe, str(script_path), "--shared-dir", path_str],
-                env=env,
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
-                creationflags=flags,
-            )
-            self._local_worker_proc = proc
-            if hasattr(self, "cluster_local_worker_btn"):
-                self.cluster_local_worker_btn.setText(f"Stop Local Worker (PID: {proc.pid})")
-
-            self._log_cluster_event(
-                f"Started local worker process: '{exe_name}' (PID: {proc.pid}).\n"
-                f"    Task Manager name: '{exe_name}' (PID: {proc.pid}). Logs: {log_path}"
-            )
-            QTimer.singleShot(1000, self.refresh_cluster_status)
+            removed = bus.delete_offline_workers(stale_threshold_seconds=60.0)
+            self._log_cluster_event(f"Cleaned {removed} offline / stale worker(s) from database.")
+            self.refresh_cluster_status()
         except Exception as exc:
-            QMessageBox.critical(self, "Launch Error", f"Failed to launch worker process:\n{exc}")
-            self._log_cluster_event(f"Failed to launch worker process: {exc}")
+            self._log_cluster_event(f"Error cleaning offline workers: {exc}")
+
+    def show_cluster_worker_context_menu(self, pos) -> None:
+        """Display right-click context menu on discovered fleet table rows."""
+        if not hasattr(self, "cluster_worker_table"):
+            return
+        row = self.cluster_worker_table.rowAt(pos.y())
+        if row < 0:
+            return
+        worker_id_item = self.cluster_worker_table.item(row, 0)
+        if not worker_id_item:
+            return
+        worker_id = worker_id_item.text().strip()
+
+        menu = QMenu(self)
+        stop_act = menu.addAction(f"Stop Worker '{worker_id}'")
+        restart_act = menu.addAction(f"Restart Worker '{worker_id}'")
+        menu.addSeparator()
+        delete_act = menu.addAction(f"Remove '{worker_id}' from Fleet")
+
+        viewport = self.cluster_worker_table.viewport()
+        global_pos = viewport.mapToGlobal(pos) if viewport else pos
+        selected_act = menu.exec(global_pos)
+
+        if selected_act == stop_act:
+            self.stop_cluster_worker(worker_id)
+        elif selected_act == restart_act:
+            self.restart_cluster_worker(worker_id)
+        elif selected_act == delete_act:
+            self.delete_cluster_worker(worker_id)
+
+    def stop_cluster_worker(self, worker_id: str) -> None:
+        """Send STOP command to a specific worker."""
+        # Terminate if local
+        if hasattr(self, "_local_worker_procs"):
+            for dev, proc in list(self._local_worker_procs.items()):
+                tag = dev.replace(":", "_")
+                if tag in worker_id and proc.poll() is None:
+                    proc.terminate()
+
+        bus = self._get_cluster_bus()
+        if bus:
+            bus.set_worker_command(worker_id, "STOP")
+            self._log_cluster_event(f"Sent STOP command to worker '{worker_id}'.")
+            self.refresh_cluster_status()
+
+    def restart_cluster_worker(self, worker_id: str) -> None:
+        """Send RESTART command to a specific worker."""
+        bus = self._get_cluster_bus()
+        if bus:
+            bus.set_worker_command(worker_id, "RESTART")
+            self._log_cluster_event(f"Sent RESTART command to worker '{worker_id}'.")
+            self.refresh_cluster_status()
+
+    def delete_cluster_worker(self, worker_id: str) -> None:
+        """Delete a worker row from the database."""
+        bus = self._get_cluster_bus()
+        if bus:
+            bus.delete_worker(worker_id)
+            self._log_cluster_event(f"Removed worker '{worker_id}' from cluster database.")
+            self.refresh_cluster_status()

@@ -117,15 +117,25 @@ def build_cluster_card(window) -> QWidget:
     window.cluster_stop_btn = QPushButton("Stop Job")
     window.cluster_stop_btn.clicked.connect(window.stop_cluster_job)
 
-    window.cluster_local_worker_btn = QPushButton("Start Local Worker")
+    window.cluster_local_worker_btn = QPushButton("Start Local Worker(s)")
     window.cluster_local_worker_btn.clicked.connect(window.toggle_local_cluster_worker)
-    window._tip(window.cluster_local_worker_btn, "Run a worker daemon process on this machine to join the cluster.")
+    window._tip(window.cluster_local_worker_btn, "Run worker daemon processes on this machine for all detected GPUs.")
+
+    window.cluster_restart_local_btn = QPushButton("Restart Local")
+    window.cluster_restart_local_btn.clicked.connect(window.restart_local_cluster_workers)
+    window._tip(window.cluster_restart_local_btn, "Restart all local cluster worker processes.")
+
+    window.cluster_clean_offline_btn = QPushButton("Clean Offline")
+    window.cluster_clean_offline_btn.clicked.connect(window.clean_offline_cluster_workers)
+    window._tip(window.cluster_clean_offline_btn, "Remove offline/stale workers from the discovered fleet list.")
 
     action_row.addWidget(window.cluster_launch_btn)
     action_row.addWidget(window.cluster_pause_btn)
     action_row.addWidget(window.cluster_resume_btn)
     action_row.addWidget(window.cluster_stop_btn)
     action_row.addWidget(window.cluster_local_worker_btn)
+    action_row.addWidget(window.cluster_restart_local_btn)
+    action_row.addWidget(window.cluster_clean_offline_btn)
     action_row.addStretch(1)
     form.addRow("Cluster control", action_row)
 
@@ -149,6 +159,9 @@ def build_cluster_card(window) -> QWidget:
     window.cluster_worker_table = _cluster_table(
         ["Worker ID", "Hostname", "GPU / Device", "VRAM (GB)", "Status", "Last Heartbeat"]
     )
+    window.cluster_worker_table.setContextMenuPolicy(Qt.CustomContextMenu)
+    window.cluster_worker_table.customContextMenuRequested.connect(window.show_cluster_worker_context_menu)
+
     window.cluster_log = QTextEdit()
     window.cluster_log.setReadOnly(True)
     window.cluster_log.setMinimumHeight(100)

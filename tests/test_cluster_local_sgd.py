@@ -354,7 +354,7 @@ def test_end_to_end_cluster_local_sgd_round(tmp_path: Path) -> None:
 
 
 def test_standalone_worker_lock_and_lifecycle() -> None:
-    """Verify singleton lock acquisition, duplicate rejection, and cleanup."""
+    """Verify singleton lock acquisition, duplicate rejection, and per-device isolation."""
     import os
     from cluster.cluster_worker import (
         acquire_singleton_lock,
@@ -363,16 +363,59 @@ def test_standalone_worker_lock_and_lifecycle() -> None:
         release_singleton_lock,
     )
 
-    release_singleton_lock()
-    try:
-        assert acquire_singleton_lock() is True
-        pid = get_running_worker_pid()
-        assert pid == os.getpid()
-        assert is_pid_running(pid) is True
-    finally:
-        release_singleton_lock()
+    dev_a = "cuda_0"
+    dev_b = "cuda_1"
 
-    assert get_running_worker_pid() is None
+    release_singleton_lock(dev_a)
+    release_singleton_lock(dev_b)
+    try:
+        assert acquire_singleton_lock(dev_a) is True
+        # Cannot acquire again on same device tag
+        assert acquire_singleton_lock(dev_a) is False
+        # But CAN acquire simultaneously on a different device tag
+        assert acquire_singleton_lock(dev_b) is True
+
+        pid_a = get_running_worker_pid(dev_a)
+        pid_b = get_running_worker_pid(dev_b)
+        assert pid_a == os.getpid()
+        assert pid_b == os.getpid()
+        assert is_pid_running(pid_a) is True
+    finally:
+        release_singleton_lock(dev_a)
+        release_singleton_lock(dev_b)
+
+    assert get_running_worker_pid(dev_a) is None
+    assert get_running_worker_pid(dev_b) is None
+
+
+def test_storage_bus_worker_commands_and_purge(tmp_path: Path) -> None:
+    """Verify set_worker_command, get_worker_command, and delete_offline_workers."""
+    bus = ClusterStorageBus(tmp_path)
+
+    bus.register_worker("w1", "host_a", "NVIDIA RTX 4090", 24.0)
+    bus.register_worker("w2", "host_b", "NVIDIA RTX 3090", 24.0)
+
+    # Worker command lifecycle
+    assert bus.get_worker_command("w1") is None
+    bus.set_worker_command("w1", "STOP")
+    assert bus.get_worker_command("w1") == "STOP"
+    bus.set_worker_command("w1", None)
+    assert bus.get_worker_command("w1") is None
+
+    # Offline worker purging
+    # Simulate w2 having an old heartbeat > 60s ago
+    with bus._connect() as conn:
+        conn.execute("UPDATE workers SET last_heartbeat = ? WHERE worker_id = ?", (time.time() - 100.0, "w2"))
+
+    deleted = bus.delete_offline_workers(stale_threshold_seconds=30.0)
+    assert deleted == 1
+    workers = bus.list_workers()
+    assert len(workers) == 1
+    assert workers[0]["worker_id"] == "w1"
+
+    # Single worker deletion
+    assert bus.delete_worker("w1") is True
+    assert len(bus.list_workers()) == 0
 
 
 def test_get_worker_executable() -> None:
