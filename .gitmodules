@@ -4,3 +4,6 @@
 [submodule "inference"]
 	path = inference
 	url = https://github.com/drunkenbot-ai/inference.git
+[submodule "cluster"]
+	path = cluster
+	url = https://github.com/drunkenbot-ai/cluster.git

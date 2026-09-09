@@ -1,0 +1,195 @@
+"""Cluster Fleet Manager Tab for Port-Blocked Distributed Training (Local SGD).
+
+Provides UI controls for:
+1. Setting central shared network drive path (SMB/NFS/NAS).
+2. Monitoring active cluster worker nodes and hardware telemetry.
+3. Configuring Local SGD hyperparameters (sync interval K, straggler timeout).
+4. Launching, pausing, resuming, and stopping distributed training jobs.
+5. Launching an optional local worker daemon.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QFormLayout,
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QScrollArea,
+    QTableWidget,
+    QTableWidgetItem,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
+
+
+def _cluster_table(headers: list[str]) -> QTableWidget:
+    """Create a styled table for cluster telemetry."""
+    table = QTableWidget(0, len(headers))
+    table.setHorizontalHeaderLabels(headers)
+    table.setAlternatingRowColors(True)
+    table.setSelectionBehavior(QTableWidget.SelectRows)
+    table.setEditTriggers(QTableWidget.NoEditTriggers)
+    table.verticalHeader().setVisible(False)
+    table.horizontalHeader().setStretchLastSection(True)
+    table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+    table.setMinimumHeight(150)
+    return table
+
+
+def set_cluster_table_rows(table: QTableWidget, rows: list[list[str]]) -> None:
+    """Replace rows in a cluster table widget with diff caching."""
+    if getattr(table, "_rendered_row_cache", None) == rows:
+        return
+    table._rendered_row_cache = [list(r) for r in rows]
+
+    table.setUpdatesEnabled(False)
+    try:
+        table.setRowCount(len(rows))
+        for row_idx, row in enumerate(rows):
+            for col_idx, val in enumerate(row):
+                item = QTableWidgetItem(val)
+                item.setToolTip(val)
+                table.setItem(row_idx, col_idx, item)
+    finally:
+        table.setUpdatesEnabled(True)
+
+
+def build_cluster_card(window) -> QWidget:
+    """Build the Port-Blocked Cluster Card for embedding in Job Manager or Standalone."""
+    form = QFormLayout()
+    window._configure_form(form)
+
+    # Central Shared Drive path
+    window.cluster_shared_dir = QLineEdit(str(Path.home() / "llm_cluster_shared"))
+    window._tip(window.cluster_shared_dir, "Path to centralized network storage folder (SMB/NFS/NAS) shared across all worker machines.")
+
+    shared_dir_row = QHBoxLayout()
+    shared_dir_row.addWidget(window.cluster_shared_dir, 1)
+    window.cluster_browse_btn = QPushButton("Browse...")
+    window.cluster_browse_btn.clicked.connect(window.browse_cluster_shared_dir)
+    window.cluster_refresh_btn = QPushButton("Refresh Fleet")
+    window.cluster_refresh_btn.clicked.connect(window.refresh_cluster_status)
+    shared_dir_row.addWidget(window.cluster_browse_btn)
+    shared_dir_row.addWidget(window.cluster_refresh_btn)
+    form.addRow("Shared network dir", shared_dir_row)
+
+    # Local SGD Settings
+    window.cluster_sync_steps = window._spin(10, 5000, 250)
+    window._tip(window.cluster_sync_steps, "Local training steps (K) each worker completes before synchronizing weights.")
+    window.cluster_max_rounds = window._spin(1, 1000, 10)
+    window._tip(window.cluster_max_rounds, "Total periodic synchronization rounds to execute.")
+    window.cluster_sync_timeout = window._spin(15, 3600, 180)
+    window._tip(window.cluster_sync_timeout, "Straggler timeout in seconds before proceeding with weight averaging without slow workers.")
+    window.cluster_min_workers = window._spin(1, 64, 1)
+    window._tip(window.cluster_min_workers, "Minimum number of workers that must deposit weights before round averaging can proceed.")
+
+    hparams_row = QHBoxLayout()
+    hparams_row.addWidget(QLabel("Sync interval (K steps):"))
+    hparams_row.addWidget(window.cluster_sync_steps)
+    hparams_row.addWidget(QLabel("Max rounds:"))
+    hparams_row.addWidget(window.cluster_max_rounds)
+    hparams_row.addWidget(QLabel("Straggler timeout (s):"))
+    hparams_row.addWidget(window.cluster_sync_timeout)
+    hparams_row.addWidget(QLabel("Min workers:"))
+    hparams_row.addWidget(window.cluster_min_workers)
+    hparams_row.addStretch(1)
+    form.addRow("Local SGD parameters", hparams_row)
+
+    # Action Buttons
+    action_row = QHBoxLayout()
+    window.cluster_launch_btn = QPushButton("Launch Cluster Job")
+    window.cluster_launch_btn.clicked.connect(window.launch_cluster_training_job)
+    window._tip(window.cluster_launch_btn, "Queue a distributed Local SGD training job on the shared network drive.")
+
+    window.cluster_pause_btn = QPushButton("Pause Job")
+    window.cluster_pause_btn.clicked.connect(window.pause_cluster_job)
+
+    window.cluster_resume_btn = QPushButton("Resume Job")
+    window.cluster_resume_btn.clicked.connect(window.resume_cluster_job)
+
+    window.cluster_stop_btn = QPushButton("Stop Job")
+    window.cluster_stop_btn.clicked.connect(window.stop_cluster_job)
+
+    window.cluster_local_worker_btn = QPushButton("Start Local Worker")
+    window.cluster_local_worker_btn.clicked.connect(window.toggle_local_cluster_worker)
+    window._tip(window.cluster_local_worker_btn, "Run a worker daemon process on this machine to join the cluster.")
+
+    action_row.addWidget(window.cluster_launch_btn)
+    action_row.addWidget(window.cluster_pause_btn)
+    action_row.addWidget(window.cluster_resume_btn)
+    action_row.addWidget(window.cluster_stop_btn)
+    action_row.addWidget(window.cluster_local_worker_btn)
+    action_row.addStretch(1)
+    form.addRow("Cluster control", action_row)
+
+    # Status summary
+    status_row = QHBoxLayout()
+    window.cluster_status_label = QLabel("Status: Idle")
+    window.cluster_status_label.setObjectName("Metric")
+    window.cluster_workers_label = QLabel("Active Workers: 0")
+    window.cluster_workers_label.setObjectName("Metric")
+    window.cluster_round_label = QLabel("Round: -")
+    window.cluster_round_label.setObjectName("Metric")
+
+    status_row.addWidget(window.cluster_status_label)
+    status_row.addWidget(window.cluster_workers_label)
+    status_row.addWidget(window.cluster_round_label)
+    status_row.addStretch(1)
+    form.addRow("Telemetry", status_row)
+
+    # Tables & Logs
+    window.cluster_worker_table = _cluster_table(
+        ["Worker ID", "Hostname", "GPU / Device", "VRAM (GB)", "Status", "Last Heartbeat"]
+    )
+    window.cluster_log = QTextEdit()
+    window.cluster_log.setReadOnly(True)
+    window.cluster_log.setMinimumHeight(100)
+
+    holder = QWidget()
+    holder_layout = QVBoxLayout(holder)
+    holder_layout.setContentsMargins(0, 0, 0, 0)
+    holder_layout.setSpacing(8)
+    holder_layout.addLayout(form)
+    holder_layout.addWidget(QLabel("<b>DISCOVERED CLUSTER WORKER FLEET</b>"))
+    holder_layout.addWidget(window.cluster_worker_table)
+    holder_layout.addWidget(QLabel("<b>CLUSTER EVENT LOG</b>"))
+    holder_layout.addWidget(window.cluster_log)
+
+    card = window._card("PORT-BLOCKED CLUSTER (LOCAL SGD / SHARED STORAGE)", QVBoxLayout())
+    card.layout().addWidget(holder)
+    return card
+
+
+def build_cluster_tab(window) -> QWidget:
+    """Build a standalone page widget for the Cluster Fleet Manager."""
+    page = window._panel()
+    page_layout = QVBoxLayout(page)
+    page_layout.setContentsMargins(18, 18, 18, 10)
+    page_layout.setSpacing(8)
+
+    title_row = QHBoxLayout()
+    title_row.addWidget(window._page_title("Cluster Fleet Manager (Local SGD)"))
+    title_row.addStretch(1)
+    page_layout.addLayout(title_row)
+
+    scroll = QScrollArea()
+    scroll.setObjectName("PageScroll")
+    scroll.setWidgetResizable(True)
+    scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+    content = QWidget()
+    root = QVBoxLayout(content)
+    root.setContentsMargins(0, 0, 0, 0)
+    root.setSpacing(10)
+    scroll.setWidget(content)
+    page_layout.addWidget(scroll, 1)
+
+    root.addWidget(build_cluster_card(window), 1)
+    return page

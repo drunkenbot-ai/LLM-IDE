@@ -75,12 +75,15 @@ class TrainingScreenMixin:
         """Return whether training should launch locally or remotely.
 
         Returns:
-            ``local`` or ``remote``.
+            ``local``, ``remote``, ``cluster``, or ``runpod``.
         """
 
-        if self.training_launch_target.currentText() == "RunPod cloud":
+        text = self.training_launch_target.currentText()
+        if text == "Cluster (Local SGD)":
+            return "cluster"
+        if text == "RunPod cloud":
             return "runpod"
-        return "remote" if self.training_launch_target.currentText() == "Remote workers" else "local"
+        return "remote" if text == "Remote workers" else "local"
 
     def _architecture_style_config(self) -> dict[str, Any]:
         """Return ModelConfig keyword arguments for the selected block style.
