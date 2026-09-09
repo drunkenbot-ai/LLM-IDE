@@ -157,7 +157,7 @@ def build_cluster_card(window) -> QWidget:
 
     # Tables & Logs
     window.cluster_worker_table = _cluster_table(
-        ["Worker ID", "Hostname", "GPU / Device", "VRAM (GB)", "Status", "Last Heartbeat"]
+        ["Worker ID", "Hostname", "GPU / Device", "VRAM Usage", "RAM Usage", "CPU", "Status", "Last Heartbeat"]
     )
     window.cluster_worker_table.setContextMenuPolicy(Qt.CustomContextMenu)
     window.cluster_worker_table.customContextMenuRequested.connect(window.show_cluster_worker_context_menu)

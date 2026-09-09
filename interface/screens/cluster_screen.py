@@ -189,16 +189,37 @@ class ClusterScreenMixin:
                         if last_hb
                         else "-"
                     )
-                    vram_val = w.get("vram_gb", 0)
-                    try:
-                        vram_str = f"{float(vram_val):.1f}"
-                    except (ValueError, TypeError):
-                        vram_str = str(vram_val)
+                    # VRAM Usage (e.g. "80% (3.2 / 4.0 GB)")
+                    vram_val = float(w.get("vram_gb") or 0.0)
+                    vram_used = float(w.get("vram_used_gb") or 0.0)
+                    if vram_val > 0:
+                        vram_pct = int(round((vram_used / vram_val) * 100))
+                        vram_str = f"{vram_pct}% ({vram_used:.1f} / {vram_val:.1f} GB)"
+                    elif vram_used > 0:
+                        vram_str = f"{vram_used:.1f} GB"
+                    else:
+                        vram_str = f"{vram_val:.1f} GB"
+
+                    # RAM Usage (e.g. "45% (7.2 / 16.0 GB)")
+                    ram_total = float(w.get("ram_total_gb") or 0.0)
+                    ram_used = float(w.get("ram_used_gb") or 0.0)
+                    if ram_total > 0:
+                        ram_pct = int(round((ram_used / ram_total) * 100))
+                        ram_str = f"{ram_pct}% ({ram_used:.1f} / {ram_total:.1f} GB)"
+                    else:
+                        ram_str = "-"
+
+                    # CPU Usage (e.g. "18%")
+                    cpu_pct = float(w.get("cpu_percent") or 0.0)
+                    cpu_str = f"{cpu_pct:.0f}%" if cpu_pct > 0 else "-"
+
                     rows.append([
                         str(w.get("worker_id", "-")),
                         str(w.get("hostname", "-")),
                         str(w.get("gpu_name", "-")),
                         vram_str,
+                        ram_str,
+                        cpu_str,
                         str(w.get("status", "OFFLINE")),
                         last_hb_str,
                     ])

@@ -613,3 +613,62 @@ def test_coordinator_drops_straggler_and_reallocates(tmp_path: Path) -> None:
     slot, total = bus.get_worker_shard_assignment(job_id, "live_worker", round_num=1)
     assert (slot, total) == (0, 1)
 
+
+def test_storage_bus_heartbeat_resource_metrics(tmp_path: Path) -> None:
+    """Verify heartbeat accepts and updates CPU, RAM, and VRAM telemetry."""
+    bus = ClusterStorageBus(tmp_path)
+    bus.register_worker("node_alpha", "host-1", "NVIDIA GeForce GTX 1650", 4.0)
+
+    # Send heartbeat with metrics
+    bus.heartbeat("node_alpha", status="IDLE", metrics={
+        "cpu_percent": 24.5,
+        "ram_used_gb": 6.8,
+        "ram_total_gb": 16.0,
+        "vram_used_gb": 3.2,
+        "vram_total_gb": 4.0,
+    })
+
+    workers = bus.list_workers()
+    assert len(workers) == 1
+    w = workers[0]
+    assert w["worker_id"] == "node_alpha"
+    assert w["cpu_percent"] == 24.5
+    assert w["ram_used_gb"] == 6.8
+    assert w["ram_total_gb"] == 16.0
+    assert w["vram_used_gb"] == 3.2
+
+
+def test_collect_system_metrics_standalone() -> None:
+    """Verify standalone system metrics collection helper."""
+    from cluster.cluster_worker import collect_system_metrics
+    metrics = collect_system_metrics("cpu", total_vram_gb=4.0)
+    assert "cpu_percent" in metrics
+    assert "ram_used_gb" in metrics
+    assert "ram_total_gb" in metrics
+    assert "vram_used_gb" in metrics
+    assert "vram_total_gb" in metrics
+    assert metrics["vram_total_gb"] == 4.0
+
+
+def test_durable_checkpoints_storage(tmp_path: Path) -> None:
+    """Verify durable checkpoints storage on shared drive."""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "job_ckpt_test"
+
+    state_dict = {"weight": torch.tensor([10.0, 20.0])}
+
+    # Step checkpoint
+    saved_path = bus.save_checkpoint(job_id, step=250, state_dict=state_dict, is_final=False)
+    assert saved_path.exists()
+    assert saved_path.name == "checkpoint_step_000250.pt"
+
+    # Latest checkpoint pointer
+    latest = bus.load_latest_checkpoint(job_id)
+    assert latest is not None
+    assert torch.equal(latest["weight"], state_dict["weight"])
+
+    # Final model checkpoint
+    bus.save_checkpoint(job_id, step=500, state_dict=state_dict, is_final=True)
+    final_path = bus.get_checkpoints_dir(job_id) / "final_model.pt"
+    assert final_path.exists()
+
