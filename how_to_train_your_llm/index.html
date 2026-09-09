@@ -1,0 +1,1769 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The complete desktop foundry for training, fine-tuning, and deploying local language models.">
+      
+      
+        <meta name="author" content="DrunkenBot">
+      
+      
+        <link rel="canonical" href="https://drunkenbot-ai.github.io/LLM-IDE/how_to_train_your_llm/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../technical_documentation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>How to Train Your LLM - DrunkenBot LLM-IDE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="amber" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-train-your-llm-the-complete-practical-handbook" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="DrunkenBot LLM-IDE Documentation" class="md-header__button md-logo" aria-label="DrunkenBot LLM-IDE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DrunkenBot LLM-IDE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              How to Train Your LLM
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="amber" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="amber" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/drunkenbot-ai/LLM-IDE" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    drunkenbot-ai/LLM-IDE
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  How to Train Your LLM
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../technical_documentation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Technical Documentation
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="DrunkenBot LLM-IDE Documentation" class="md-nav__button md-logo" aria-label="DrunkenBot LLM-IDE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    DrunkenBot LLM-IDE Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/drunkenbot-ai/LLM-IDE" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    drunkenbot-ai/LLM-IDE
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to Train Your LLM
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to Train Your LLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-step-by-step-field-guide-to-creating-fine-tuning-and-deploying-custom-language-models-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Step-by-Step Field Guide to Creating, Fine-Tuning, and Deploying Custom Language Models Locally
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome-to-local-llm-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Welcome to Local LLM Development
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-0-mental-model-core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 0: Mental Model &amp; Core Concepts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 0: Mental Model &amp; Core Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-tokens-vs-words" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Tokens vs. Words
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-context-length" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Context Length
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-training-loss-vs-validation-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Training Loss vs. Validation Loss
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-1-project-setup-workspace-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Project Setup &amp; Workspace Initialization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Project Setup &amp; Workspace Initialization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-by-step-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step Setup:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-2-gathering-preparing-your-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Gathering &amp; Preparing Your Data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: Gathering &amp; Preparing Your Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-preparing-datasets-by-stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Preparing Datasets by Stage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-using-the-dataset-blueprint-tab-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Using the Dataset Blueprint Tab (IN)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-ingestion-tokenizer-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Ingestion &amp; Tokenizer Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-3-pretraining-your-base-model-from-scratch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Pretraining Your Base Model From Scratch
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 3: Pretraining Your Base Model From Scratch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-selecting-model-architectural-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Selecting Model Architectural Dimensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-hyperparameter-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Hyperparameter Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-launching-training-live-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Launching Training &amp; Live Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-4-post-training-alignment-fine-tuning-lora-peft" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Post-Training Alignment &amp; Fine-Tuning (LoRA &amp; PEFT)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 4: Post-Training Alignment &amp; Fine-Tuning (LoRA &amp; PEFT)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-choosing-your-adaptation-kind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Choosing Your Adaptation Kind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-full-fine-tuning-vs-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Full Fine-Tuning vs. LoRA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-lora-configuration-rules-of-thumb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. LoRA Configuration Rules of Thumb
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-5-benchmarking-evaluating-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Benchmarking &amp; Evaluating Performance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-6-exporting-real-world-deployment-gguf-chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: Exporting &amp; Real-World Deployment (GGUF &amp; Chat)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 6: Exporting &amp; Real-World Deployment (GGUF &amp; Chat)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-exporting-your-model-in-the-export-bay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Exporting Your Model in the Export Bay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-testing-in-the-built-in-chat-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Testing in the Built-in Chat Studio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-deploying-in-external-ecosystems-ollama-lm-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Deploying in External Ecosystems (Ollama &amp; LM Studio)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Deploying in External Ecosystems (Ollama &amp; LM Studio)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deploy-to-ollama" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploy to Ollama
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-to-lm-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploy to LM Studio
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-7-troubleshooting-common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7: Troubleshooting &amp; Common Pitfalls
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 7: Troubleshooting &amp; Common Pitfalls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-training-loss-is-nan-or-suddenly-explodes-to-infinity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Training Loss is NaN or Suddenly Explodes to Infinity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cuda-out-of-memory-oom-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. CUDA Out of Memory (OOM) Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-the-model-repeats-the-same-sentence-in-an-infinite-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The Model Repeats the Same Sentence in an Infinite Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-overfitting-training-loss-drops-to-01-but-validation-loss-increases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Overfitting: Training Loss Drops to 0.1, but Validation Loss Increases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-generated-code-has-broken-indentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Generated Code Has Broken Indentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-of-the-ideal-llm-journey" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary of the Ideal LLM Journey
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../technical_documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-step-by-step-field-guide-to-creating-fine-tuning-and-deploying-custom-language-models-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Step-by-Step Field Guide to Creating, Fine-Tuning, and Deploying Custom Language Models Locally
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome-to-local-llm-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Welcome to Local LLM Development
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-0-mental-model-core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 0: Mental Model &amp; Core Concepts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 0: Mental Model &amp; Core Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-tokens-vs-words" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Tokens vs. Words
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-context-length" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Context Length
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-training-loss-vs-validation-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Training Loss vs. Validation Loss
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-1-project-setup-workspace-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Project Setup &amp; Workspace Initialization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Project Setup &amp; Workspace Initialization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-by-step-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step Setup:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-2-gathering-preparing-your-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Gathering &amp; Preparing Your Data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: Gathering &amp; Preparing Your Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-preparing-datasets-by-stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Preparing Datasets by Stage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-using-the-dataset-blueprint-tab-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Using the Dataset Blueprint Tab (IN)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-ingestion-tokenizer-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Ingestion &amp; Tokenizer Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-3-pretraining-your-base-model-from-scratch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Pretraining Your Base Model From Scratch
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 3: Pretraining Your Base Model From Scratch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-selecting-model-architectural-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Selecting Model Architectural Dimensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-hyperparameter-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Hyperparameter Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-launching-training-live-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Launching Training &amp; Live Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-4-post-training-alignment-fine-tuning-lora-peft" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Post-Training Alignment &amp; Fine-Tuning (LoRA &amp; PEFT)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 4: Post-Training Alignment &amp; Fine-Tuning (LoRA &amp; PEFT)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-choosing-your-adaptation-kind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Choosing Your Adaptation Kind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-full-fine-tuning-vs-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Full Fine-Tuning vs. LoRA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-lora-configuration-rules-of-thumb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. LoRA Configuration Rules of Thumb
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-5-benchmarking-evaluating-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Benchmarking &amp; Evaluating Performance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-6-exporting-real-world-deployment-gguf-chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: Exporting &amp; Real-World Deployment (GGUF &amp; Chat)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 6: Exporting &amp; Real-World Deployment (GGUF &amp; Chat)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-exporting-your-model-in-the-export-bay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Exporting Your Model in the Export Bay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-testing-in-the-built-in-chat-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Testing in the Built-in Chat Studio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-deploying-in-external-ecosystems-ollama-lm-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Deploying in External Ecosystems (Ollama &amp; LM Studio)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Deploying in External Ecosystems (Ollama &amp; LM Studio)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deploy-to-ollama" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploy to Ollama
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-to-lm-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploy to LM Studio
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-7-troubleshooting-common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7: Troubleshooting &amp; Common Pitfalls
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 7: Troubleshooting &amp; Common Pitfalls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-training-loss-is-nan-or-suddenly-explodes-to-infinity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Training Loss is NaN or Suddenly Explodes to Infinity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cuda-out-of-memory-oom-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. CUDA Out of Memory (OOM) Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-the-model-repeats-the-same-sentence-in-an-infinite-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The Model Repeats the Same Sentence in an Infinite Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-overfitting-training-loss-drops-to-01-but-validation-loss-increases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Overfitting: Training Loss Drops to 0.1, but Validation Loss Increases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-generated-code-has-broken-indentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Generated Code Has Broken Indentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-of-the-ideal-llm-journey" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary of the Ideal LLM Journey
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="how-to-train-your-llm-the-complete-practical-handbook">How to Train Your LLM: The Complete Practical Handbook<a class="headerlink" href="#how-to-train-your-llm-the-complete-practical-handbook" title="Permanent link">&para;</a></h1>
+<h3 id="a-step-by-step-field-guide-to-creating-fine-tuning-and-deploying-custom-language-models-locally">A Step-by-Step Field Guide to Creating, Fine-Tuning, and Deploying Custom Language Models Locally<a class="headerlink" href="#a-step-by-step-field-guide-to-creating-fine-tuning-and-deploying-custom-language-models-locally" title="Permanent link">&para;</a></h3>
+<hr />
+<h2 id="welcome-to-local-llm-development">Welcome to Local LLM Development<a class="headerlink" href="#welcome-to-local-llm-development" title="Permanent link">&para;</a></h2>
+<p>Building a custom Large Language Model (LLM) was once restricted to mega-corporations with multi-million-dollar compute clusters. <strong>DrunkenBot LLM-IDE</strong> changes that paradigm completely: it allows developers, data scientists, and AI researchers to design, train, align, and quantize proprietary generative language models entirely on their own workstation.</p>
+<p>Whether your goal is to build a domain-specialized code assistant, a private medical or legal document synthesizer, or a lightweight conversational companion, this handbook will guide you step-by-step from zero to a fully deployed GGUF model running locally.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#phase-0-mental-model-core-concepts">Phase 0: Mental Model &amp; Core Concepts</a></li>
+<li><a href="#phase-1-project-setup-workspace-initialization">Phase 1: Project Setup &amp; Workspace Initialization</a></li>
+<li><a href="#phase-2-gathering-preparing-your-data">Phase 2: Gathering &amp; Preparing Your Data</a></li>
+<li><a href="#phase-3-pretraining-your-base-model-from-scratch">Phase 3: Pretraining Your Base Model From Scratch</a></li>
+<li><a href="#phase-4-post-training-alignment-fine-tuning-lora-peft">Phase 4: Post-Training Alignment &amp; Fine-Tuning (LoRA &amp; PEFT)</a></li>
+<li><a href="#phase-5-benchmarking-evaluating-performance">Phase 5: Benchmarking &amp; Evaluating Performance</a></li>
+<li><a href="#phase-6-exporting-real-world-deployment-gguf-chat">Phase 6: Exporting &amp; Real-World Deployment (GGUF &amp; Chat)</a></li>
+<li><a href="#phase-7-troubleshooting-common-pitfalls">Phase 7: Troubleshooting &amp; Common Pitfalls</a></li>
+</ul>
+<hr />
+<h2 id="phase-0-mental-model-core-concepts">Phase 0: Mental Model &amp; Core Concepts<a class="headerlink" href="#phase-0-mental-model-core-concepts" title="Permanent link">&para;</a></h2>
+<p>Before launching your first training run, it is vital to understand the multi-stage lifecycle of modern generative models:</p>
+<pre class="mermaid"><code>flowchart LR
+    A[Raw Unstructured Data&lt;br/&gt;Books, Code, Docs, Web] --&gt;|Stage 1: Pretraining| B[Base Foundational Model&lt;br/&gt;Predicts next token]
+    B --&gt;|Stage 2: Instruction / Code Alignment| C[Aligned Task Model&lt;br/&gt;Follows user commands]
+    C --&gt;|Stage 3: Conversation / Tool Fine-Tune| D[Assistant / Agent Model&lt;br/&gt;Multi-turn dialogue &amp; JSON tools]
+    D --&gt;|Stage 4: Quantization &amp; Export| E[Deployment Artifact&lt;br/&gt;GGUF Q4_K_M / Ollama]</code></pre>
+<h3 id="1-tokens-vs-words">1. Tokens vs. Words<a class="headerlink" href="#1-tokens-vs-words" title="Permanent link">&para;</a></h3>
+<p>Neural networks do not process raw text or strings directly. Text is converted into integers ("token IDs") via a <strong>Byte-Pair Encoding (BPE) Tokenizer</strong>.
+- <span class="arithmatex">\(1 \text{ token} \approx 0.75 \text{ English words}\)</span> (or roughly <span class="arithmatex">\(3.5\)</span> to <span class="arithmatex">\(4\)</span> characters).
+- For programming code, tokens represent keywords (<code>def</code>, <code>class</code>, <code>import</code>), indentation blocks, or punctuation operators (<code>-&gt;</code>, <code>::</code>, <code>!=</code>).</p>
+<h3 id="2-context-length">2. Context Length<a class="headerlink" href="#2-context-length" title="Permanent link">&para;</a></h3>
+<p>The context length (e.g. 512, 1024, 2048, or 4096 tokens) represents the model's instantaneous working memory. 
+- Memory consumption in standard self-attention scales quadratically (<span class="arithmatex">\(\mathcal{O}(N^2)\)</span>) with context length.
+- Double the context length quadruples attention memory requirements. Keep context lengths reasonable (512–1024 for small models; 2048–4096 for larger models).</p>
+<h3 id="3-training-loss-vs-validation-loss">3. Training Loss vs. Validation Loss<a class="headerlink" href="#3-training-loss-vs-validation-loss" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Training Loss</strong>: How well the model predicts the next token on the data it is actively studying.</li>
+<li><strong>Validation Loss</strong>: How well the model predicts tokens on unseen test documents held in reserve.</li>
+<li><strong>Ideal Curve</strong>: Both curves decrease smoothly in tandem.</li>
+<li><strong>Overfitting</strong>: Training loss drops very low (e.g. <span class="arithmatex">\(&lt; 1.0\)</span>), but validation loss starts rising. The model has memorized the training text rather than learning underlying concepts.</li>
+</ul>
+<hr />
+<h2 id="phase-1-project-setup-workspace-initialization">Phase 1: Project Setup &amp; Workspace Initialization<a class="headerlink" href="#phase-1-project-setup-workspace-initialization" title="Permanent link">&para;</a></h2>
+<p>DrunkenBot LLM-IDE uses a project-based workspace where all raw data, tokenizers, checkpoints, telemetry logs, and exported binaries are self-contained.</p>
+<pre class="mermaid"><code>graph TD
+    PRJ[My_Custom_LLM_Project/] --&gt; CFG[project.json&lt;br/&gt;Saved paths &amp; hyperparameters]
+    PRJ --&gt; DATA[training_data/&lt;br/&gt;Raw user documents &amp; corpora]
+    PRJ --&gt; DS[datasets/&lt;br/&gt;train_tokens.npy, val_tokens.npy, tokenizer.json]
+    PRJ --&gt; MDL[models/&lt;br/&gt;PyTorch checkpoints &amp; checkpoints_step_XXXX.pt]
+    PRJ --&gt; EXP[exports/&lt;br/&gt;GGUF models, SafeTensors, HuggingFace packages]
+    PRJ --&gt; RUNS[runs/&lt;br/&gt;SQLite telemetry database: telemetry.db]</code></pre>
+<h3 id="step-by-step-setup">Step-by-Step Setup:<a class="headerlink" href="#step-by-step-setup" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Launch DrunkenBot LLM-IDE:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>run_app.py
+</span></code></pre></div></li>
+<li>The startup splash screen validates your installation. When the <strong>Project Chooser</strong> dialog appears:</li>
+<li>Click <strong>New Project</strong>.</li>
+<li>Enter a human-readable project name (e.g. <code>CodeForge-350M</code> or <code>LegalBot-45M</code>).</li>
+<li>Select a destination folder on your fastest SSD.</li>
+<li>Click <strong>Save Project</strong> (or press <code>Ctrl+S</code>). The IDE automatically creates the directory hierarchy shown above.</li>
+</ol>
+<hr />
+<h2 id="phase-2-gathering-preparing-your-data">Phase 2: Gathering &amp; Preparing Your Data<a class="headerlink" href="#phase-2-gathering-preparing-your-data" title="Permanent link">&para;</a></h2>
+<p>Data quality is the single most important factor determining model intelligence. High-quality, clean data always outperforms massive, noisy data.</p>
+<h3 id="1-preparing-datasets-by-stage">1. Preparing Datasets by Stage<a class="headerlink" href="#1-preparing-datasets-by-stage" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Dataset Kind</th>
+<th style="text-align: left;">File Format</th>
+<th style="text-align: left;">Format Structure</th>
+<th style="text-align: left;">Primary Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Base Pretraining</strong></td>
+<td style="text-align: left;"><code>.txt</code>, <code>.md</code>, <code>.pdf</code></td>
+<td style="text-align: left;">Freeform text, technical documentation, books</td>
+<td style="text-align: left;">Teaches grammar, reasoning, vocabulary, and syntax.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Instruction</strong></td>
+<td style="text-align: left;"><code>.jsonl</code></td>
+<td style="text-align: left;"><code>{"instruction": "...", "input": "...", "output": "..."}</code></td>
+<td style="text-align: left;">Teaches prompt-following and task execution.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Conversation</strong></td>
+<td style="text-align: left;"><code>.jsonl</code></td>
+<td style="text-align: left;"><code>{"messages": [{"role": "system", ...}, {"role": "user", ...}, {"role": "assistant", ...}]}</code></td>
+<td style="text-align: left;">Teaches multi-turn dialogue, tone, and character.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Code</strong></td>
+<td style="text-align: left;"><code>.jsonl</code> / <code>.py</code> / <code>.cpp</code></td>
+<td style="text-align: left;">Preserved indentation with docstrings &amp; solutions</td>
+<td style="text-align: left;">Teaches code generation, refactoring, and debugging.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tool-Call</strong></td>
+<td style="text-align: left;"><code>.jsonl</code></td>
+<td style="text-align: left;">Functions schema with structured JSON arguments</td>
+<td style="text-align: left;">Teaches tool invocation and API orchestration.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-using-the-dataset-blueprint-tab-in">2. Using the Dataset Blueprint Tab (<code>IN</code>)<a class="headerlink" href="#2-using-the-dataset-blueprint-tab-in" title="Permanent link">&para;</a></h3>
+<p><img alt="Dataset Blueprint" src="../ref/01_dataset_blueprint.png" /></p>
+<ol>
+<li>Navigate to <strong>Dataset Blueprint</strong> (the first icon in the left navigation sidebar).</li>
+<li>Copy your raw files into <code>your_project/training_data/</code> or click <strong>Browse</strong> to point to an external directory.</li>
+<li>Review the categorized document tree:</li>
+<li>The blueprint calculates estimated token counts, character volume, and vocabulary density.</li>
+<li>You can uncheck categories or documents you wish to exclude.</li>
+</ol>
+<h3 id="3-ingestion-tokenizer-configuration">3. Ingestion &amp; Tokenizer Configuration<a class="headerlink" href="#3-ingestion-tokenizer-configuration" title="Permanent link">&para;</a></h3>
+<p><img alt="Dataset Ingestion" src="../ref/02_dataset_ingestion.png" /></p>
+<ol>
+<li>Click the <strong>Ingestion</strong> icon (second icon in the sidebar).</li>
+<li>Configure your Tokenizer settings:</li>
+<li><strong>Vocabulary Size</strong>: <ul>
+<li>Small domain models (15M–45M): <code>4,096</code> to <code>8,192</code> tokens.</li>
+<li>General or Code models (120M–350M): <code>16,384</code> to <code>32,000</code> tokens.</li>
+</ul>
+</li>
+<li><strong>Context Length</strong>: Select your target sequence window (e.g. <code>512</code>, <code>1024</code>, or <code>2048</code>).</li>
+<li><strong>Validation Split Ratio</strong>: Default <code>0.05</code> (5% held out for unbiased validation loss).</li>
+<li><strong>Prompt Loss Masking</strong>: Ensure prompt loss masking is enabled if building instruction, dialogue, code, or tool-calling sets. The engine automatically marks prompt spans with <code>-100</code> (<code>IGNORE_INDEX</code>).</li>
+<li>Click <strong>Build Dataset</strong>. The engine will train the BPE tokenizer and compile binary memory maps:</li>
+<li><code>train_tokens.npy</code></li>
+<li><code>val_tokens.npy</code></li>
+<li><code>train_targets.npy</code> (with masked prompts)</li>
+<li><code>val_targets.npy</code></li>
+</ol>
+<hr />
+<h2 id="phase-3-pretraining-your-base-model-from-scratch">Phase 3: Pretraining Your Base Model From Scratch<a class="headerlink" href="#phase-3-pretraining-your-base-model-from-scratch" title="Permanent link">&para;</a></h2>
+<p>Once your dataset is compiled, navigate to the <strong>Neural Forge</strong> tab (third icon in the sidebar).</p>
+<p><img alt="Neural Forge" src="../ref/03_model_training.png" /></p>
+<h3 id="1-selecting-model-architectural-dimensions">1. Selecting Model Architectural Dimensions<a class="headerlink" href="#1-selecting-model-architectural-dimensions" title="Permanent link">&para;</a></h3>
+<p>Choose an architecture preset that fits your hardware:</p>
+<pre class="mermaid"><code>graph TD
+    subgraph Compute_Selection ["Hardware Selection Guide"]
+        G1["CPU or 4GB VRAM GPU"] --&gt; P1["Preset: Tiny (~15M params)&lt;br/&gt;4 layers, 4 heads, n_embd=256, ctx=512"]
+        G2["6GB - 8GB GPU (e.g. RTX 3060/4060)"] --&gt; P2["Preset: Small (~45M params)&lt;br/&gt;6 layers, 8 heads, n_embd=512, ctx=1024"]
+        G3["8GB - 12GB GPU (e.g. RTX 3080/4070)"] --&gt; P3["Preset: Medium (~125M params)&lt;br/&gt;12 layers, 12 heads, n_embd=768, ctx=2048"]
+        G4["16GB - 24GB GPU (e.g. RTX 3090/4090)"] --&gt; P4["Preset: Base (~350M params)&lt;br/&gt;24 layers, 16 heads, n_embd=1024, ctx=2048"]
+    end</code></pre>
+<h3 id="2-hyperparameter-configuration">2. Hyperparameter Configuration<a class="headerlink" href="#2-hyperparameter-configuration" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Block Style</strong>: Modern LLaMA-style (RMSNorm + SwiGLU) is strongly recommended over Classic GPT.</li>
+<li><strong>RoPE Base Theta</strong>: Set to <code>10000.0</code> for short context (<span class="arithmatex">\(\le 2048\)</span>) or <code>50000.0</code> for long context (<span class="arithmatex">\(4096+\)</span>).</li>
+<li><strong>Learning Rate</strong>:</li>
+<li>Tiny/Small: <code>5e-4</code> (<span class="arithmatex">\(0.0005\)</span>)</li>
+<li>Medium/Base: <code>3e-4</code> (<span class="arithmatex">\(0.0003\)</span>)</li>
+<li><strong>Learning Rate Schedule</strong>: <code>Warmup Linear</code> with <span class="arithmatex">\(500\)</span> to <span class="arithmatex">\(1,000\)</span> warmup steps.</li>
+<li><strong>Weight Decay</strong>: <code>0.1</code> (AdamW decoupled weight decay prevents weight explosion).</li>
+<li><strong>Precision</strong>: Set to <strong>Mixed Precision (AMP FP16)</strong> for <span class="arithmatex">\(2\times\)</span> faster training and <span class="arithmatex">\(50\%\)</span> VRAM reduction.</li>
+</ul>
+<h3 id="3-launching-training-live-monitoring">3. Launching Training &amp; Live Monitoring<a class="headerlink" href="#3-launching-training-live-monitoring" title="Permanent link">&para;</a></h3>
+<p>Click <strong>Start Training</strong>. The IDE starts a detached background worker process.</p>
+<p>Navigate to the <strong>Live Telemetry</strong> tab (fifth icon):</p>
+<p><img alt="Live Telemetry" src="../ref/05_live_training.png" /></p>
+<ul>
+<li><strong>Training Curve</strong>: Watch the gold/blue loss curve. Good pretraining typically begins at loss <span class="arithmatex">\(\approx 10.0\)</span> and converges down toward <span class="arithmatex">\(2.5\)</span> – <span class="arithmatex">\(1.8\)</span>.</li>
+<li><strong>Validation Loss</strong>: Checked automatically every 100 steps. As long as validation loss decreases alongside training loss, the model is acquiring generalized intelligence.</li>
+<li><strong>Safety</strong>: You can safely close the IDE window! The worker keeps computing. When you reopen the IDE, it reattaches automatically.</li>
+</ul>
+<hr />
+<h2 id="phase-4-post-training-alignment-fine-tuning-lora-peft">Phase 4: Post-Training Alignment &amp; Fine-Tuning (LoRA &amp; PEFT)<a class="headerlink" href="#phase-4-post-training-alignment-fine-tuning-lora-peft" title="Permanent link">&para;</a></h2>
+<p>Once pretraining finishes (or if adapting an existing base checkpoint), open the <strong>Fine-Tuning Lab</strong> (fourth icon).</p>
+<p><img alt="Fine-Tuning Lab" src="../ref/04_fine_tuning.png" /></p>
+<h3 id="1-choosing-your-adaptation-kind">1. Choosing Your Adaptation Kind<a class="headerlink" href="#1-choosing-your-adaptation-kind" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Instruction Fine-Tuning</strong>: Teaches the model to act upon commands and answer direct questions.</li>
+<li><strong>Conversation Fine-Tuning</strong>: Trains multi-turn dialogue capability with pinned system prompts.</li>
+<li><strong>Code Fine-Tuning</strong>: Trains the model on programming syntax, functions, and docstrings.</li>
+<li><strong>Tool-Call Fine-Tuning</strong>: Trains the model to emit JSON schemas for external API calling.</li>
+</ul>
+<h3 id="2-full-fine-tuning-vs-lora">2. Full Fine-Tuning vs. LoRA<a class="headerlink" href="#2-full-fine-tuning-vs-lora" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Feature</th>
+<th style="text-align: left;">Full Fine-Tuning</th>
+<th style="text-align: left;">LoRA (Low-Rank Adaptation)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>VRAM Usage</strong></td>
+<td style="text-align: left;">High (<span class="arithmatex">\(3\times\)</span> model weight memory)</td>
+<td style="text-align: left;">Very Low (<span class="arithmatex">\(\approx 20\%\)</span> extra memory)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Speed</strong></td>
+<td style="text-align: left;">Standard</td>
+<td style="text-align: left;"><span class="arithmatex">\(2\times\)</span> faster backpropagation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Catastrophic Forgetting</strong></td>
+<td style="text-align: left;">Risk of degrading base knowledge</td>
+<td style="text-align: left;">Base weights are frozen; zero degradation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Recommended When</strong></td>
+<td style="text-align: left;">Training small models (<span class="arithmatex">\(&lt; 50\text{M}\)</span>)</td>
+<td style="text-align: left;">Training larger models (<span class="arithmatex">\(&gt; 100\text{M}\)</span>) or code</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-lora-configuration-rules-of-thumb">3. LoRA Configuration Rules of Thumb<a class="headerlink" href="#3-lora-configuration-rules-of-thumb" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>LoRA Rank (<span class="arithmatex">\(r\)</span>)</strong>: <code>16</code> is ideal for general instruction; <code>32</code> for complex code.</li>
+<li><strong>LoRA Alpha (<span class="arithmatex">\(\alpha\)</span>)</strong>: Set to <span class="arithmatex">\(2 \times r\)</span> (e.g. rank <code>16</code> <span class="arithmatex">\(\rightarrow\)</span> alpha <code>32.0</code>).</li>
+<li><strong>LoRA Target Modules</strong>:</li>
+<li>For standard conversation: <strong>Attention projections</strong> (<code>q, k, v, out</code>).</li>
+<li>For code &amp; tool calling: <strong>Attention + MLP</strong> (<code>w1, w2, c_fc, c_proj</code>). Code logic requires MLP representational capacity!</li>
+<li>Click <strong>Apply Recommended LoRA</strong> to automatically configure optimal settings for your selected task.</li>
+</ul>
+<hr />
+<h2 id="phase-5-benchmarking-evaluating-performance">Phase 5: Benchmarking &amp; Evaluating Performance<a class="headerlink" href="#phase-5-benchmarking-evaluating-performance" title="Permanent link">&para;</a></h2>
+<p>Before deploying, benchmark your checkpoint to evaluate perplexity, latency, and response quality.</p>
+<p><img alt="Benchmarks" src="../ref/07_benchmarks.png" /></p>
+<ol>
+<li>Open the <strong>Benchmarks</strong> tab (seventh icon).</li>
+<li>Select your checkpoint from <code>models/</code>.</li>
+<li>Select your benchmark suite:</li>
+<li><strong>Reasoning</strong>: Multi-step logic puzzles and math problems.</li>
+<li><strong>Coding</strong>: Algorithm implementations, syntax completion, docstrings.</li>
+<li><strong>General Knowledge</strong>: Factual recall and summarization.</li>
+<li>Click <strong>Run Benchmark</strong>. The benchmark engine reports:</li>
+<li><strong>Perplexity</strong>: Lower is better (<span class="arithmatex">\(\le 12.0\)</span> represents strong comprehension).</li>
+<li><strong>Inference Speed</strong>: Tokens per second generated on host hardware.</li>
+<li><strong>Output Fidelity</strong>: Side-by-side prompt responses across training checkpoints.</li>
+</ol>
+<hr />
+<h2 id="phase-6-exporting-real-world-deployment-gguf-chat">Phase 6: Exporting &amp; Real-World Deployment (GGUF &amp; Chat)<a class="headerlink" href="#phase-6-exporting-real-world-deployment-gguf-chat" title="Permanent link">&para;</a></h2>
+<h3 id="1-exporting-your-model-in-the-export-bay">1. Exporting Your Model in the Export Bay<a class="headerlink" href="#1-exporting-your-model-in-the-export-bay" title="Permanent link">&para;</a></h3>
+<p><img alt="Export Bay" src="../ref/08_export_bay.png" /></p>
+<ol>
+<li>Open the <strong>Export Bay</strong> tab (eighth icon).</li>
+<li>Choose your target distribution format:</li>
+<li><strong>HuggingFace Transformers</strong>: Exports <code>model.safetensors</code> and <code>config.json</code> for deployment with HuggingFace Hub, vLLM, or TGI.</li>
+<li><strong>Quantized FP16</strong>: Halves file size while retaining native PyTorch compatibility.</li>
+<li><strong>GGUF Conversion</strong>: Compiles directly into quantized GGUF format for <code>llama.cpp</code>.</li>
+<li>Select your GGUF Quantization type:</li>
+<li><code>f16</code>: Unquantized full precision (fastest on high-end GPUs with ample VRAM).</li>
+<li><code>q8_0</code>: 8-bit integer quantization (indistinguishable quality from FP16, <span class="arithmatex">\(50\%\)</span> smaller).</li>
+<li><code>q4_k_m</code>: 4-bit medium k-quantization (the industry standard for consumer desktop and laptop deployment).</li>
+<li>Click <strong>Convert to GGUF</strong>. The compiled binary is saved in your project's <code>exports/</code> folder.</li>
+</ol>
+<h3 id="2-testing-in-the-built-in-chat-studio">2. Testing in the Built-in Chat Studio<a class="headerlink" href="#2-testing-in-the-built-in-chat-studio" title="Permanent link">&para;</a></h3>
+<p><img alt="Chat Studio" src="../ref/09_chat_interface.png" /></p>
+<ol>
+<li>Open the <strong>Chat Studio</strong> (ninth icon).</li>
+<li>Select <strong>Model type</strong>: <code>GGUF / llama.cpp</code>.</li>
+<li>Click <strong>Browse</strong> and select your newly exported <code>.gguf</code> file.</li>
+<li>Set <strong>GPU layers</strong>:</li>
+<li><code>-1</code> to offload all transformer layers to your graphics card.</li>
+<li>Or set to a specific layer count (e.g. <code>12</code>) for hybrid CPU/GPU memory sharing.</li>
+<li>Configure response samplers:</li>
+<li><strong>Temperature</strong>: <code>0.7</code> for balanced creativity; <code>0.2</code> for deterministic code/math.</li>
+<li><strong>Top-p</strong>: <code>0.9</code> (nucleus sampling).</li>
+<li><strong>Repeat Penalty</strong>: <code>1.1</code> (prevents repetitive phrase loops).</li>
+<li><strong>Reasoning Effort</strong>: Select <code>Light</code>, <code>Balanced</code>, or <code>Deep</code> if testing models trained with chain-of-thought tokens.</li>
+<li>Click <strong>Load Model</strong> and start chatting with your custom local LLM!</li>
+</ol>
+<h3 id="3-deploying-in-external-ecosystems-ollama-lm-studio">3. Deploying in External Ecosystems (Ollama &amp; LM Studio)<a class="headerlink" href="#3-deploying-in-external-ecosystems-ollama-lm-studio" title="Permanent link">&para;</a></h3>
+<h4 id="deploy-to-ollama">Deploy to Ollama<a class="headerlink" href="#deploy-to-ollama" title="Permanent link">&para;</a></h4>
+<p>Create a file named <code>Modelfile</code>:
+<div class="language-dockerfile highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">FROM</span><span class="w"> </span><span class="s">./exports/model.gguf</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>PARAMETER<span class="w"> </span>temperature<span class="w"> </span><span class="m">0</span>.7
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>PARAMETER<span class="w"> </span>top_p<span class="w"> </span><span class="m">0</span>.9
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>SYSTEM<span class="w"> </span><span class="s2">"You are an intelligent, expert AI assistant trained with DrunkenBot LLM-IDE."</span>
+</span></code></pre></div>
+Run in terminal:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ollama<span class="w"> </span>create<span class="w"> </span>my-custom-model<span class="w"> </span>-f<span class="w"> </span>Modelfile
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>ollama<span class="w"> </span>run<span class="w"> </span>my-custom-model
+</span></code></pre></div></p>
+<h4 id="deploy-to-lm-studio">Deploy to LM Studio<a class="headerlink" href="#deploy-to-lm-studio" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Open LM Studio.</li>
+<li>Drag and drop your <code>.gguf</code> file into the <code>Models</code> folder.</li>
+<li>Start local inference or expose an OpenAI-compatible HTTP REST endpoint at <code>localhost:1234</code>.</li>
+</ol>
+<hr />
+<h2 id="phase-7-troubleshooting-common-pitfalls">Phase 7: Troubleshooting &amp; Common Pitfalls<a class="headerlink" href="#phase-7-troubleshooting-common-pitfalls" title="Permanent link">&para;</a></h2>
+<h3 id="1-training-loss-is-nan-or-suddenly-explodes-to-infinity">1. Training Loss is <code>NaN</code> or Suddenly Explodes to Infinity<a class="headerlink" href="#1-training-loss-is-nan-or-suddenly-explodes-to-infinity" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cause</strong>: Learning rate is too high, or mixed-precision gradient scaling underflowed.</li>
+<li><strong>Fix</strong>:</li>
+<li>Reduce learning rate by half (e.g. from <code>5e-4</code> to <code>2.5e-4</code>).</li>
+<li>Increase warmup steps from <code>100</code> to <code>500</code>.</li>
+<li>Ensure gradient clipping is active (<code>max_grad_norm = 1.0</code>).</li>
+</ul>
+<h3 id="2-cuda-out-of-memory-oom-error">2. CUDA Out of Memory (OOM) Error<a class="headerlink" href="#2-cuda-out-of-memory-oom-error" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cause</strong>: The model size, batch size, or context length exceeded your GPU's physical VRAM.</li>
+<li><strong>Fix</strong>:</li>
+<li>Reduce <strong>Batch Size</strong> to <code>4</code> or <code>2</code>, and increase <strong>Gradient Accumulation</strong> to maintain the same effective batch size.</li>
+<li>Shorten context length (e.g. from 2048 to 1024).</li>
+<li>Use <strong>LoRA</strong> instead of Full Fine-Tuning.</li>
+</ul>
+<h3 id="3-the-model-repeats-the-same-sentence-in-an-infinite-loop">3. The Model Repeats the Same Sentence in an Infinite Loop<a class="headerlink" href="#3-the-model-repeats-the-same-sentence-in-an-infinite-loop" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cause</strong>: Under-trained base model, lack of diversity in training data, or repeat penalty too low.</li>
+<li><strong>Fix</strong>:</li>
+<li>Increase <strong>Repeat Penalty</strong> in the Chat tab to <code>1.15</code> or <code>1.20</code>.</li>
+<li>Ensure training loss reached <span class="arithmatex">\(\le 2.5\)</span> before conversational fine-tuning.</li>
+</ul>
+<h3 id="4-overfitting-training-loss-drops-to-01-but-validation-loss-increases">4. Overfitting: Training Loss Drops to 0.1, but Validation Loss Increases<a class="headerlink" href="#4-overfitting-training-loss-drops-to-01-but-validation-loss-increases" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cause</strong>: Dataset is too small or repetitive for the chosen model size; the model memorized the text.</li>
+<li><strong>Fix</strong>:</li>
+<li>Increase <strong>Dropout</strong> (e.g. from <code>0.0</code> to <code>0.1</code>).</li>
+<li>Increase <strong>Weight Decay</strong> to <code>0.1</code>.</li>
+<li>Add more diverse text to your training corpus in the Blueprint tab.</li>
+</ul>
+<h3 id="5-generated-code-has-broken-indentation">5. Generated Code Has Broken Indentation<a class="headerlink" href="#5-generated-code-has-broken-indentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cause</strong>: Dataset was prepared in general text mode, which collapsed spaces.</li>
+<li><strong>Fix</strong>:</li>
+<li>Ensure the dataset stage was set to <code>Code</code> in the Ingestion tab.</li>
+<li>The engine's <code>clean_code</code> pipeline preserves indentation, tabs, and newlines. Re-run dataset preparation with code mode enabled.</li>
+</ul>
+<hr />
+<h2 id="summary-of-the-ideal-llm-journey">Summary of the Ideal LLM Journey<a class="headerlink" href="#summary-of-the-ideal-llm-journey" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>[Gather Data]  ──&gt;  [Ingest with Target Masking]  ──&gt;  [Pretrain Base Model]
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                                                               │
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                                                               ▼
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>[Deploy to Chat / Ollama]  &lt;──  [Export to GGUF]  &lt;──  [LoRA Fine-Tune (Code/Chat)]
+</span></code></pre></div>
+<p>Congratulations! You are now equipped with the complete technical knowledge and workflows to train, adapt, and deploy your own custom language models locally with DrunkenBot LLM-IDE.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

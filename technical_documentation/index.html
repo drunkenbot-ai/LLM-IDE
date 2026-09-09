@@ -1,0 +1,1936 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The complete desktop foundry for training, fine-tuning, and deploying local language models.">
+      
+      
+        <meta name="author" content="DrunkenBot">
+      
+      
+        <link rel="canonical" href="https://drunkenbot-ai.github.io/LLM-IDE/technical_documentation/">
+      
+      
+        <link rel="prev" href="../how_to_train_your_llm/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Technical Documentation - DrunkenBot LLM-IDE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="amber" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#drunkenbot-llm-ide-comprehensive-technical-architecture-specification" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="DrunkenBot LLM-IDE Documentation" class="md-header__button md-logo" aria-label="DrunkenBot LLM-IDE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DrunkenBot LLM-IDE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Technical Documentation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="amber" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="amber" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/drunkenbot-ai/LLM-IDE" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    drunkenbot-ai/LLM-IDE
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../how_to_train_your_llm/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  How to Train Your LLM
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Technical Documentation
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="DrunkenBot LLM-IDE Documentation" class="md-nav__button md-logo" aria-label="DrunkenBot LLM-IDE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    DrunkenBot LLM-IDE Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/drunkenbot-ai/LLM-IDE" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    drunkenbot-ai/LLM-IDE
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how_to_train_your_llm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to Train Your LLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Documentation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-system-overview-architecture-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. System Overview &amp; Architecture Boundary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. System Overview &amp; Architecture Boundary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-architectural-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Architectural Principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-data-ingestion-tokenization-target-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Data Ingestion, Tokenization &amp; Target Masking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Data Ingestion, Tokenization &amp; Target Masking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-indentation-preserving-code-ingestion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Indentation-Preserving Code Ingestion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-adaptive-diversity-repetition-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Adaptive Diversity &amp; Repetition Filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-prompt-loss-masking-ignore_index-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Prompt Loss Masking (IGNORE_INDEX = -100)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-neural-architecture-transformer-internals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Neural Architecture &amp; Transformer Internals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Neural Architecture &amp; Transformer Internals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-rotary-position-embeddings-rope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Rotary Position Embeddings (RoPE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-attention-mechanisms-mha-gqa-mqa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Attention Mechanisms: MHA, GQA &amp; MQA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-activation-functions-feed-forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Activation Functions &amp; Feed-Forward
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-architecture-presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Architecture Presets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-training-orchestration-process-supervision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Training Orchestration &amp; Process Supervision
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Training Orchestration &amp; Process Supervision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-process-identity-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Process Identity Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-hardware-adaptive-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Hardware-Adaptive Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-validation-stride-without-overlap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Validation Stride Without Overlap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-parameter-efficient-fine-tuning-peft-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Parameter-Efficient Fine-Tuning (PEFT / LoRA)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Parameter-Efficient Fine-Tuning (PEFT / LoRA)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-mathematical-formulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Mathematical Formulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-machine-bound-encrypted-licensing-subsystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Machine-Bound Encrypted Licensing Subsystem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Machine-Bound Encrypted Licensing Subsystem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-two-layer-machine-bound-cryptography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Two-Layer Machine-Bound Cryptography
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-local-first-launch-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Local-First Launch Guarantee
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-export-bay-model-serialization-subsystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Export Bay &amp; Model Serialization Subsystem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Export Bay &amp; Model Serialization Subsystem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-serialization-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Serialization Formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-local-inference-chat-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Local Inference &amp; Chat Engine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Local Inference &amp; Chat Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-inference-execution-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Inference Execution Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-ui-component-architecture-screen-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. UI Component Architecture &amp; Screen Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. UI Component Architecture &amp; Screen Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-screen-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Screen Catalog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.1 Screen Catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-dataset-blueprint-screen_builders0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Dataset Blueprint (SCREEN_BUILDERS[0])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-dataset-ingestion-screen_builders1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dataset Ingestion (SCREEN_BUILDERS[1])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-neural-forge-training-screen_builders2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Neural Forge Training (SCREEN_BUILDERS[2])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-fine-tuning-lab-screen_builders3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Fine-Tuning Lab (SCREEN_BUILDERS[3])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-live-telemetry-screen_builders4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Live Telemetry (SCREEN_BUILDERS[4])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-job-manager-screen_builders5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Job Manager (SCREEN_BUILDERS[5])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-benchmark-suite-screen_builders6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Benchmark Suite (SCREEN_BUILDERS[6])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-export-bay-screen_builders7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Export Bay (SCREEN_BUILDERS[7])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-chat-studio-screen_builders8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Chat Studio (SCREEN_BUILDERS[8])
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-verification-test-suite-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Verification &amp; Test Suite Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-system-overview-architecture-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. System Overview &amp; Architecture Boundary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. System Overview &amp; Architecture Boundary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-architectural-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Architectural Principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-data-ingestion-tokenization-target-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Data Ingestion, Tokenization &amp; Target Masking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Data Ingestion, Tokenization &amp; Target Masking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-indentation-preserving-code-ingestion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Indentation-Preserving Code Ingestion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-adaptive-diversity-repetition-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Adaptive Diversity &amp; Repetition Filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-prompt-loss-masking-ignore_index-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Prompt Loss Masking (IGNORE_INDEX = -100)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-neural-architecture-transformer-internals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Neural Architecture &amp; Transformer Internals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Neural Architecture &amp; Transformer Internals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-rotary-position-embeddings-rope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Rotary Position Embeddings (RoPE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-attention-mechanisms-mha-gqa-mqa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Attention Mechanisms: MHA, GQA &amp; MQA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-activation-functions-feed-forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Activation Functions &amp; Feed-Forward
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-architecture-presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Architecture Presets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-training-orchestration-process-supervision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Training Orchestration &amp; Process Supervision
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Training Orchestration &amp; Process Supervision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-process-identity-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Process Identity Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-hardware-adaptive-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Hardware-Adaptive Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-validation-stride-without-overlap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Validation Stride Without Overlap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-parameter-efficient-fine-tuning-peft-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Parameter-Efficient Fine-Tuning (PEFT / LoRA)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Parameter-Efficient Fine-Tuning (PEFT / LoRA)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-mathematical-formulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Mathematical Formulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-machine-bound-encrypted-licensing-subsystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Machine-Bound Encrypted Licensing Subsystem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Machine-Bound Encrypted Licensing Subsystem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-two-layer-machine-bound-cryptography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Two-Layer Machine-Bound Cryptography
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-local-first-launch-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Local-First Launch Guarantee
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-export-bay-model-serialization-subsystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Export Bay &amp; Model Serialization Subsystem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Export Bay &amp; Model Serialization Subsystem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-serialization-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Serialization Formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-local-inference-chat-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Local Inference &amp; Chat Engine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Local Inference &amp; Chat Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-inference-execution-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Inference Execution Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-ui-component-architecture-screen-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. UI Component Architecture &amp; Screen Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. UI Component Architecture &amp; Screen Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-screen-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Screen Catalog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.1 Screen Catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-dataset-blueprint-screen_builders0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Dataset Blueprint (SCREEN_BUILDERS[0])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-dataset-ingestion-screen_builders1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dataset Ingestion (SCREEN_BUILDERS[1])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-neural-forge-training-screen_builders2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Neural Forge Training (SCREEN_BUILDERS[2])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-fine-tuning-lab-screen_builders3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Fine-Tuning Lab (SCREEN_BUILDERS[3])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-live-telemetry-screen_builders4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Live Telemetry (SCREEN_BUILDERS[4])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-job-manager-screen_builders5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Job Manager (SCREEN_BUILDERS[5])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-benchmark-suite-screen_builders6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Benchmark Suite (SCREEN_BUILDERS[6])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-export-bay-screen_builders7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Export Bay (SCREEN_BUILDERS[7])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-chat-studio-screen_builders8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Chat Studio (SCREEN_BUILDERS[8])
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-verification-test-suite-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Verification &amp; Test Suite Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="drunkenbot-llm-ide-comprehensive-technical-architecture-specification">DrunkenBot LLM-IDE: Comprehensive Technical Architecture Specification<a class="headerlink" href="#drunkenbot-llm-ide-comprehensive-technical-architecture-specification" title="Permanent link">&para;</a></h1>
+<p>This document provides an exhaustive technical and algorithmic specification of the <strong>DrunkenBot LLM-IDE</strong> architecture, detailing the decoupled computational engine, neural architectures, data ingestion and target masking pipelines, detached process supervision, parameter-efficient fine-tuning (PEFT), machine-bound cryptographic licensing, and export subsystems.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#1-system-overview-architecture-boundary">System Overview &amp; Architecture Boundary</a></li>
+<li><a href="#2-data-ingestion-tokenization-target-masking">Data Ingestion, Tokenization &amp; Target Masking</a></li>
+<li><a href="#3-neural-architecture-transformer-internals">Neural Architecture &amp; Transformer Internals</a></li>
+<li><a href="#4-training-orchestration-process-supervision">Training Orchestration &amp; Process Supervision</a></li>
+<li><a href="#5-parameter-efficient-fine-tuning-peft-lora">Parameter-Efficient Fine-Tuning (PEFT / LoRA)</a></li>
+<li><a href="#6-machine-bound-encrypted-licensing-subsystem">Machine-Bound Encrypted Licensing Subsystem</a></li>
+<li><a href="#7-export-bay-model-serialization-subsystem">Export Bay &amp; Model Serialization Subsystem</a></li>
+<li><a href="#8-local-inference-chat-engine">Local Inference &amp; Chat Engine</a></li>
+<li><a href="#9-ui-component-architecture-screen-reference">UI Component Architecture &amp; Screen Reference</a></li>
+</ol>
+<hr />
+<h2 id="1-system-overview-architecture-boundary">1. System Overview &amp; Architecture Boundary<a class="headerlink" href="#1-system-overview-architecture-boundary" title="Permanent link">&para;</a></h2>
+<p>DrunkenBot LLM-IDE follows a strict unidirectional decoupled architecture. The codebase is cleanly split into two isolated layers:
+- <strong><code>engine/</code></strong>: Pure computational Python and PyTorch backend. Contains zero dependencies on Qt, GUI widgets, or display servers. It can be executed headlessly via CLI, within remote worker processes, or in automated batch scripts.
+- <strong><code>interface/</code></strong>: PySide6 (Qt for Python) desktop application. Manages UI widgets, reactive event loops, asynchronous worker bridges, SQLite telemetry polling, and user configurations.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph UI_Layer ["Interface Layer (PySide6 Desktop Application)"]
+        A[App Entry Point: run_app.py] --&gt; B[StartupValidationSplash]
+        B --&gt; C[ProjectChoiceDialog]
+        C --&gt; D[MainWindow &amp; AppShell]
+        D --&gt; E1[Dataset Blueprint Screen]
+        D --&gt; E2[Dataset Ingestion Screen]
+        D --&gt; E3[Neural Forge Training Screen]
+        D --&gt; E4[Fine-Tuning Lab Screen]
+        D --&gt; E5[Live Telemetry Screen]
+        D --&gt; E6[Job Manager Screen]
+        D --&gt; E7[Benchmark Screen]
+        D --&gt; E8[Export Bay Screen]
+        D --&gt; E9[Chat Studio Screen]
+    end
+
+    subgraph IPC_Bridge ["Asynchronous Inter-Process Bridge"]
+        D &lt;--&gt;|IPC / Heartbeat Verification| F[TrainingProcessController]
+        F &lt;--&gt;|SQLite Batched Telemetry| G[(runs/telemetry.db)]
+        F &lt;--&gt;|Run Manifest &amp; Process Signals| H[manifest.json &amp; stop_event]
+    end
+
+    subgraph Engine_Layer ["Computational Engine Layer (Pure Python / PyTorch)"]
+        F --&gt;|Spawns Detached Process| I[training_worker.py]
+        I --&gt; J[training_orchestrator.py]
+        J --&gt; K[MicroGPT / Transformer Architecture]
+        J --&gt; L[LoRA Injected Adapters]
+        J --&gt; M[Streaming DataLoader &amp; TokenDataset]
+        M --&gt; N[Binary Memory Maps: train_tokens.npy &amp; train_targets.npy]
+        E2 --&gt;|Data Compilation| O[dataset_build.py &amp; data_core.py]
+        O --&gt; P[BPE Tokenizer: tokenizer.py]
+        O --&gt; Q[Prompt Loss Masking: target_masking.py]
+        E8 --&gt;|Model Export| R[export.py: GGUF / SafeTensors / HF]
+        E9 --&gt;|Local Chat| S[llama_chat.py &amp; microgpt_chat.py]
+    end</code></pre>
+<h3 id="key-architectural-principles">Key Architectural Principles<a class="headerlink" href="#key-architectural-principles" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Unidirectional Dependency</strong>: <code>engine/</code> never imports <code>interface/</code>. All communication between the backend and UI occurs through standard files, signals, or SQLite tables.</li>
+<li><strong>Crash-Resilient Detached Training</strong>: Long-running training jobs execute in an independent operating system process. Closing the desktop UI detaches from the worker without aborting the run. Upon reopening, the IDE verifies the process identity (PID + creation timestamp) and seamlessly reattaches.</li>
+<li><strong>Zero-Copy Memory-Mapped Arrays</strong>: Tokenized datasets are stored as raw NumPy binary arrays (<code>.npy</code>), allowing gigabyte-scale datasets to be loaded instantaneously without memory bloat.</li>
+</ol>
+<hr />
+<h2 id="2-data-ingestion-tokenization-target-masking">2. Data Ingestion, Tokenization &amp; Target Masking<a class="headerlink" href="#2-data-ingestion-tokenization-target-masking" title="Permanent link">&para;</a></h2>
+<p>The ingestion pipeline converts heterogeneous multi-format files into structured, tokenized binary streams.</p>
+<pre class="mermaid"><code>flowchart LR
+    A[Raw Source Data&lt;br/&gt;.txt, .md, .pdf, .jsonl] --&gt; B{Document Stage / Kind}
+    B --&gt;|Prose / Technical Text| C[clean_text&lt;br/&gt;Whitespace Normalization]
+    B --&gt;|Source Code Files| D[clean_code&lt;br/&gt;Preserve Indentation &amp; Fences]
+    B --&gt;|Instruction / Chat| E[JSONL Parser&lt;br/&gt;Extract Turns]
+    C &amp; D &amp; E --&gt; F[Diversity &amp; Repetition Filter&lt;br/&gt;MAX_REPETITIVE_UNIT_RATIO = 0.80&lt;br/&gt;MIN_UNIQUE_UNITS = 100]
+    F --&gt; G[BPE Tokenizer Training&lt;br/&gt;Byte-Pair Encoding]
+    G --&gt; H[Prompt Loss Masking Engine&lt;br/&gt;target_masking.py]
+    H --&gt; I[Tokens Array&lt;br/&gt;train_tokens.npy]
+    H --&gt; J[Targets Array with -100 Masks&lt;br/&gt;train_targets.npy]</code></pre>
+<h3 id="21-indentation-preserving-code-ingestion">2.1 Indentation-Preserving Code Ingestion<a class="headerlink" href="#21-indentation-preserving-code-ingestion" title="Permanent link">&para;</a></h3>
+<p>In <a href="file:///e:/AI_Projects/LLM-IDE/engine/data_core.py">engine/data_core.py</a>, prose text is normalized using <code>clean_text</code>, which trims excessive whitespace. However, programming languages rely strictly on indentation and newlines (Python indentation, C/C++ brackets, YAML structures). </p>
+<p>The <code>clean_code</code> function ensures:
+- Line endings are unified to <code>\n</code>.
+- Horizontal tabs and leading indentation spaces are <strong>preserved exactly</strong>.
+- Excessive vertical blank lines (<span class="arithmatex">\(\ge 4\)</span>) are compressed to triple newlines (<code>\n\n\n</code>), preventing document fragmentation while retaining block separation.</p>
+<h3 id="22-adaptive-diversity-repetition-filtering">2.2 Adaptive Diversity &amp; Repetition Filtering<a class="headerlink" href="#22-adaptive-diversity-repetition-filtering" title="Permanent link">&para;</a></h3>
+<p>To prevent models from memorizing artificial boilerplate or synthetic web scraping padding, <a href="file:///e:/AI_Projects/LLM-IDE/engine/dataset_corpus.py">engine/dataset_corpus.py</a> implements diversity filtering:
+- <strong>Repetitive Unit Ratio</strong>:
+  $<span class="arithmatex">\(\text{Ratio} = \frac{\text{Duplicate Units}}{\text{Total Units}}\)</span>$
+  Documents exceeding <code>MAX_REPETITIVE_UNIT_RATIO = 0.80</code> (80%) are filtered out.
+- <strong>Absolute Richness Override</strong>:
+  Large technical manuals, API references, and monolithic codebases naturally repeat boilerplate (e.g. <code>import</code>, <code>return 0;</code>, <code>class</code>, chapter titles). If a file contains <span class="arithmatex">\(\ge 100\)</span> unique substantial units (<code>MIN_UNIQUE_UNITS_FOR_DIVERSITY = 100</code>), it is classified as rich technical material and is <strong>never</strong> rejected.</p>
+<h3 id="23-prompt-loss-masking-ignore_index-100">2.3 Prompt Loss Masking (<code>IGNORE_INDEX = -100</code>)<a class="headerlink" href="#23-prompt-loss-masking-ignore_index-100" title="Permanent link">&para;</a></h3>
+<p>In standard language modeling, cross-entropy loss is computed over all tokens. However, in instruction, conversation, code, and tool-calling fine-tuning, training the model to predict the prompt/question causes catastrophic forgetting and wastes capacity memorizing queries.</p>
+<p><a href="file:///e:/AI_Projects/LLM-IDE/engine/target_masking.py">engine/target_masking.py</a> applies token target masking:
+1. <strong>Boundary Regex</strong>: Searches for conversation role headers:
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>(?:^|\n)(?:System|User|Assistant):
+</span></code></pre></div>
+2. <strong>Span Detection</strong>: Pinpoints exact byte offsets corresponding to assistant completion spans.
+3. <strong>Mask Assignment</strong>: All tokens belonging to <code>System:</code> guidance, <code>User:</code> queries, and structural formatting are assigned the PyTorch cross-entropy ignore value:
+   $<span class="arithmatex">\(\text{Target}[i] = -100 \quad (\text{if token } i \text{ is in prompt span})\)</span>$
+   $<span class="arithmatex">\(\text{Target}[i] = \text{Token}[i] \quad (\text{if token } i \text{ is in assistant completion})\)</span>$</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Tokens:  [System: You are an expert python coder.\nUser: Write a factorial function.\nAssistant: def factorial(n):\n    return 1 if n&lt;=1 else n*factorial(n-1)&lt;eos&gt;]
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Targets: [-100,   -100, -100, -100, -100, -100, ... -100, -100, -100, -100, -100,  def, factorial, (n, ):, \n,    return, 1, if, ..., &lt;eos&gt;]
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>                                                                                   ^ Loss computed ONLY from here onward
+</span></code></pre></div>
+<hr />
+<h2 id="3-neural-architecture-transformer-internals">3. Neural Architecture &amp; Transformer Internals<a class="headerlink" href="#3-neural-architecture-transformer-internals" title="Permanent link">&para;</a></h2>
+<p>The core model in <a href="file:///e:/AI_Projects/LLM-IDE/engine/model.py">engine/model.py</a> is a highly configurable, modern decoder-only generative transformer (<code>MicroGPT</code>).</p>
+<pre class="mermaid"><code>graph TD
+    subgraph Transformer_Block ["Transformer Layer (Repeated N_Layer Times)"]
+        IN[Input Tensor: X] --&gt; N1[RMSNorm / LayerNorm]
+        N1 --&gt; ATTN[Self-Attention: MHA / GQA / MQA&lt;br/&gt;+ Rotary Positional Embeddings (RoPE)&lt;br/&gt;+ PyTorch Scaled Dot-Product Attention]
+        ATTN --&gt; RES1[Residual Addition: X + Attn(X)]
+        RES1 --&gt; N2[RMSNorm / LayerNorm]
+        N2 --&gt; FFN[Feed-Forward Network&lt;br/&gt;SwiGLU: SiLU(W_gate X) * (W_up X) * W_down&lt;br/&gt;or Standard GELU MLP]
+        FFN --&gt; RES2[Residual Addition: RES1 + FFN(RES1)]
+    end</code></pre>
+<h3 id="31-rotary-position-embeddings-rope">3.1 Rotary Position Embeddings (RoPE)<a class="headerlink" href="#31-rotary-position-embeddings-rope" title="Permanent link">&para;</a></h3>
+<p>Instead of absolute positional embedding tables that fail to extrapolate beyond the training sequence length, <code>MicroGPT</code> uses Rotary Positional Embeddings. For a query or key vector at position <span class="arithmatex">\(m\)</span>, RoPE rotates pairs of coordinates in the complex plane:</p>
+<div class="arithmatex">\[R_{\Theta, m}^d = \text{diag}\left(R_{\theta_1, m}, R_{\theta_2, m}, \dots, R_{\theta_{d/2}, m}\right)\]</div>
+<p>where <span class="arithmatex">\(\theta_i = \theta_{\text{base}}^{-2(i-1)/d}\)</span>. The base frequency <span class="arithmatex">\(\theta_{\text{base}}\)</span> is configurable from <span class="arithmatex">\(10,000.0\)</span> to <span class="arithmatex">\(500,000.0\)</span>, supporting extended context lengths without positional collapse.</p>
+<h3 id="32-attention-mechanisms-mha-gqa-mqa">3.2 Attention Mechanisms: MHA, GQA &amp; MQA<a class="headerlink" href="#32-attention-mechanisms-mha-gqa-mqa" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Multi-Head Attention (MHA)</strong>: Equal number of Query (<span class="arithmatex">\(Q\)</span>), Key (<span class="arithmatex">\(K\)</span>), and Value (<span class="arithmatex">\(V\)</span>) heads (<span class="arithmatex">\(H_Q = H_K = H_V\)</span>).</li>
+<li><strong>Grouped-Query Attention (GQA)</strong>: <span class="arithmatex">\(H_Q\)</span> query heads are grouped across <span class="arithmatex">\(H_{KV}\)</span> key/value heads (<span class="arithmatex">\(H_{KV} &lt; H_Q\)</span>). Reduces KV-cache memory during inference by a factor of <span class="arithmatex">\(H_Q / H_{KV}\)</span> while maintaining near-MHA representation quality.</li>
+<li><strong>Multi-Query Attention (MQA)</strong>: A single <span class="arithmatex">\(K\)</span> and <span class="arithmatex">\(V\)</span> head shared across all <span class="arithmatex">\(Q\)</span> heads (<span class="arithmatex">\(H_{KV} = 1\)</span>). Maximizes generation throughput on memory-bandwidth-constrained consumer GPUs.</li>
+</ul>
+<h3 id="33-activation-functions-feed-forward">3.3 Activation Functions &amp; Feed-Forward<a class="headerlink" href="#33-activation-functions-feed-forward" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Standard GELU</strong>:
+  $<span class="arithmatex">\(\text{FFN}(x) = \text{GELU}(x W_1 + b_1) W_2 + b_2\)</span>$</li>
+<li><strong>SwiGLU (LLaMA-Style)</strong>:
+  $<span class="arithmatex">\(\text{SwiGLU}(x) = \left(\text{SiLU}(x W_{\text{gate}}) \odot (x W_{\text{up}})\right) W_{\text{down}}\)</span>$
+  SwiGLU provides superior non-linear capacity per parameter, eliminating training instability and enabling faster loss convergence.</li>
+</ul>
+<h3 id="34-architecture-presets">3.4 Architecture Presets<a class="headerlink" href="#34-architecture-presets" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Preset</th>
+<th style="text-align: left;">Parameters</th>
+<th style="text-align: left;">Layers (<code>n_layer</code>)</th>
+<th style="text-align: left;">Heads (<code>n_head</code>)</th>
+<th style="text-align: left;">KV Heads (<code>n_kv_head</code>)</th>
+<th style="text-align: left;">Embedding (<code>n_embd</code>)</th>
+<th style="text-align: left;">Context Length</th>
+<th style="text-align: left;">Target Hardware</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Tiny</strong></td>
+<td style="text-align: left;">~15M</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">256</td>
+<td style="text-align: left;">512</td>
+<td style="text-align: left;">CPU / 4GB VRAM</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Small</strong></td>
+<td style="text-align: left;">~45M</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">512</td>
+<td style="text-align: left;">1,024</td>
+<td style="text-align: left;">6GB – 8GB VRAM</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Medium</strong></td>
+<td style="text-align: left;">~125M</td>
+<td style="text-align: left;">12</td>
+<td style="text-align: left;">12</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">768</td>
+<td style="text-align: left;">2,048</td>
+<td style="text-align: left;">8GB – 12GB VRAM</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Base</strong></td>
+<td style="text-align: left;">~350M</td>
+<td style="text-align: left;">24</td>
+<td style="text-align: left;">16</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">1,024</td>
+<td style="text-align: left;">4,096</td>
+<td style="text-align: left;">16GB – 24GB VRAM</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-training-orchestration-process-supervision">4. Training Orchestration &amp; Process Supervision<a class="headerlink" href="#4-training-orchestration-process-supervision" title="Permanent link">&para;</a></h2>
+<p>Training deep neural networks on consumer workstations requires robust failure isolation, process supervision, and dynamic resource adaptation.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant UI as PySide6 GUI (app.py)
+    participant TPC as TrainingProcessController
+    participant Worker as Subprocess (training_worker.py)
+    participant DB as SQLite (runs/telemetry.db)
+    participant Model as PyTorch Training Loop
+
+    UI-&gt;&gt;TPC: start_training(request)
+    TPC-&gt;&gt;Worker: spawn detached process (flags: CREATE_NEW_PROCESS_GROUP)
+    Worker-&gt;&gt;TPC: write manifest.json (PID, create_time, run_id)
+    loop Every Training Step
+        Worker-&gt;&gt;Model: Forward pass + Loss Masking + Backprop
+        Worker-&gt;&gt;DB: write step telemetry (loss, lr, tokens/s, VRAM)
+        TPC-&gt;&gt;DB: poll latest telemetry
+        TPC-&gt;&gt;UI: emit telemetry_updated signal (smooth 30fps refresh)
+    end
+    alt User Closes IDE
+        UI-&gt;&gt;TPC: detach()
+        Note over Worker: Worker continues running in background
+        UI-&gt;&gt;UI: Reopened later
+        UI-&gt;&gt;TPC: attach_to_existing_run()
+        TPC-&gt;&gt;Worker: verify PID &amp; create_time
+        TPC-&gt;&gt;UI: Resume live telemetry chart
+    else Stop Requested
+        UI-&gt;&gt;TPC: stop_training()
+        TPC-&gt;&gt;Worker: set stop_event flag
+        Worker-&gt;&gt;Worker: save final checkpoint &amp; exit cleanly
+    end</code></pre>
+<h3 id="41-process-identity-verification">4.1 Process Identity Verification<a class="headerlink" href="#41-process-identity-verification" title="Permanent link">&para;</a></h3>
+<p>In <a href="file:///e:/AI_Projects/LLM-IDE/engine/training_process_controller.py">engine/training_process_controller.py</a>, processes are identified not merely by operating system PID (which can be recycled by the OS), but by a composite tuple:
+$<span class="arithmatex">\(\text{Identity} = (\text{PID}, \text{Process Creation Timestamp}, \text{Run UUID})\)</span>$
+This guarantees the IDE never issues termination or polling signals to an unrelated process that inherited a recycled PID.</p>
+<h3 id="42-hardware-adaptive-optimization">4.2 Hardware-Adaptive Optimization<a class="headerlink" href="#42-hardware-adaptive-optimization" title="Permanent link">&para;</a></h3>
+<p>Before initializing the optimizer and data loader, <a href="file:///e:/AI_Projects/LLM-IDE/engine/training_orchestrator.py">engine/training_orchestrator.py</a> inspects the host hardware:
+- Queries <code>torch.cuda.get_device_properties()</code>.
+- If available VRAM is constrained (e.g. <span class="arithmatex">\(\le 8\text{ GB}\)</span>), it automatically scales down micro-batch size and scales up gradient accumulation steps:
+  $<span class="arithmatex">\(\text{Effective Batch Size} = \text{Micro Batch Size} \times \text{Gradient Accumulation Steps}\)</span>$
+- Enables PyTorch <code>torch.cuda.amp.GradScaler</code> for dynamic FP16/BF16 loss scaling, preventing underflow without blowing out VRAM allocations.</p>
+<h3 id="43-validation-stride-without-overlap">4.3 Validation Stride Without Overlap<a class="headerlink" href="#43-validation-stride-without-overlap" title="Permanent link">&para;</a></h3>
+<p>In standard sequential datasets, setting validation stride to <span class="arithmatex">\(1\)</span> forces the validation loop to evaluate the same 1,000 tokens repeatedly across windows. DrunkenBot LLM-IDE enforces:
+$<span class="arithmatex">\(\text{Validation Stride} = \max(1, \text{Context Length})\)</span>$
+This guarantees that 50 evaluation batches evaluate up to <strong>400,000+ distinct non-overlapping tokens</strong> drawn across the validation set, providing true generalization loss measurements.</p>
+<hr />
+<h2 id="5-parameter-efficient-fine-tuning-peft-lora">5. Parameter-Efficient Fine-Tuning (PEFT / LoRA)<a class="headerlink" href="#5-parameter-efficient-fine-tuning-peft-lora" title="Permanent link">&para;</a></h2>
+<p>Fine-tuning an entire model can be computationally prohibitive and risks catastrophic forgetting. DrunkenBot LLM-IDE integrates native Low-Rank Adaptation (LoRA) in <a href="file:///e:/AI_Projects/LLM-IDE/engine/lora.py">engine/lora.py</a>.</p>
+<pre class="mermaid"><code>flowchart LR
+    X[Input Activation: X] --&gt; W0[Frozen Pretrained Weights: W_0]
+    X --&gt; A[LoRA Matrix A: r x k&lt;br/&gt;Initialized ~ N(0, sigma^2)]
+    A --&gt; B[LoRA Matrix B: d x r&lt;br/&gt;Initialized = 0]
+    B --&gt; S[Scaling Factor: alpha / r]
+    W0 --&gt; ADD((+))
+    S --&gt; ADD
+    ADD --&gt; Y[Output Activation: Y]</code></pre>
+<h3 id="51-mathematical-formulation">5.1 Mathematical Formulation<a class="headerlink" href="#51-mathematical-formulation" title="Permanent link">&para;</a></h3>
+<p>For a frozen linear layer <span class="arithmatex">\(W_0 \in \mathbb{R}^{d \times k}\)</span>, LoRA decomposes the weight update into two low-rank matrices <span class="arithmatex">\(A\)</span> and <span class="arithmatex">\(B\)</span>:</p>
+<div class="arithmatex">\[W = W_0 + \Delta W = W_0 + \frac{\alpha}{r} (B \cdot A)\]</div>
+<p>where <span class="arithmatex">\(r \ll \min(d, k)\)</span> is the rank, and <span class="arithmatex">\(\alpha\)</span> is a constant scaling hyperparameter.
+- <strong>Initialization</strong>: <span class="arithmatex">\(A\)</span> is initialized from a Gaussian distribution <span class="arithmatex">\(\mathcal{N}(0, \sigma^2)\)</span>, and <span class="arithmatex">\(B\)</span> is initialized to zero. At step <span class="arithmatex">\(0\)</span>, <span class="arithmatex">\(\Delta W = 0\)</span>, so the model starts with its exact pretrained behavior.
+- <strong>Target Projections</strong>:
+  - <strong>Attention Only</strong>: Injects adapters into query (<span class="arithmatex">\(W_q\)</span>), key (<span class="arithmatex">\(W_k\)</span>), value (<span class="arithmatex">\(W_v\)</span>), and output (<span class="arithmatex">\(W_o\)</span>) projections.
+  - <strong>Attention + MLP</strong>: Additionally injects adapters into feed-forward up/down projection layers (<span class="arithmatex">\(W_{\text{gate}}, W_{\text{up}}, W_{\text{down}}\)</span>). Recommended for <strong>Code Fine-Tuning</strong> and <strong>Tool-Calling</strong> where syntactic rules and structural logic require MLP representation capacity.</p>
+<hr />
+<h2 id="6-machine-bound-encrypted-licensing-subsystem">6. Machine-Bound Encrypted Licensing Subsystem<a class="headerlink" href="#6-machine-bound-encrypted-licensing-subsystem" title="Permanent link">&para;</a></h2>
+<p>The application features a secure, local-first licensing system implemented in <a href="file:///e:/AI_Projects/LLM-IDE/engine/license_client.py">engine/license_client.py</a>.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant App as Application Startup (_ensure_valid_license)
+    participant Vault as Local Encrypted Vault (license_vault.enc)
+    participant Crypto as DPAPI + Fernet Decryption
+    participant Server as Remote License Server (drunkenbot.store)
+    participant Dialog as LicenseActivationDialog
+
+    App-&gt;&gt;Vault: Check if license_vault.enc exists
+    alt Vault Exists
+        Vault-&gt;&gt;Crypto: Decrypt with Machine-Bound Key &amp; DPAPI
+        alt Decryption Valid &amp; Machine Matches
+            Crypto-&gt;&gt;App: Return LicenseCheckResult(valid=True) (~1ms)
+            App-&gt;&gt;App: Launch IDE immediately (Zero Network Lag)
+        else Decryption Fails / Machine Mismatch
+            Crypto-&gt;&gt;App: Return invalid
+        end
+    end
+    alt No Valid Local Vault
+        App-&gt;&gt;Server: Attempt online validation with stored key
+        alt Server Confirms Valid
+            Server-&gt;&gt;Vault: Save encrypted metadata bound to this machine
+            App-&gt;&gt;App: Launch IDE in licensed mode
+        else Server Fails / No Stored Key
+            App-&gt;&gt;Dialog: Show LicenseActivationDialog
+            Dialog-&gt;&gt;User: Collect activation key
+            Dialog-&gt;&gt;Server: Online activation request
+            Server-&gt;&gt;Vault: Write machine-bound encrypted vault
+            Dialog-&gt;&gt;App: Accepted
+        end
+    end</code></pre>
+<h3 id="61-two-layer-machine-bound-cryptography">6.1 Two-Layer Machine-Bound Cryptography<a class="headerlink" href="#61-two-layer-machine-bound-cryptography" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Layer 1: PBKDF2-HMAC-SHA256 Authenticated Fernet</strong>:</li>
+<li>Derives a 256-bit symmetric key using 50,000 iterations from the local persistent <code>machine_id</code>, hardware MAC node (<code>uuid.getnode()</code>), and dedicated application salt.</li>
+<li>Uses AES-128-CBC with HMAC-SHA256 authentication. Any bit-level file tampering or unauthorized modification raises <code>InvalidToken</code>.</li>
+<li><strong>Layer 2: Windows DPAPI Machine &amp; User Binding</strong>:</li>
+<li>On Windows, the ciphertext is further wrapped using <code>CryptProtectData</code> via <code>ctypes.windll.crypt32</code>.</li>
+<li>Binds the data directly to the user's Windows security descriptor and local TPM master key. If the file is copied to another machine or account, <code>CryptUnprotectData</code> fails at the OS level.</li>
+</ol>
+<h3 id="62-local-first-launch-guarantee">6.2 Local-First Launch Guarantee<a class="headerlink" href="#62-local-first-launch-guarantee" title="Permanent link">&para;</a></h3>
+<p>Rather than blocking startup for multiple remote HTTP retries, <code>check_license_at_launch()</code> verifies <code>check_local_license()</code> first. Valid installations start in under 1 millisecond with zero network dependencies.</p>
+<hr />
+<h2 id="7-export-bay-model-serialization-subsystem">7. Export Bay &amp; Model Serialization Subsystem<a class="headerlink" href="#7-export-bay-model-serialization-subsystem" title="Permanent link">&para;</a></h2>
+<p>The Export Bay in <a href="file:///e:/AI_Projects/LLM-IDE/engine/export.py">engine/export.py</a> converts raw PyTorch checkpoints into standardized industry formats.</p>
+<pre class="mermaid"><code>flowchart TD
+    A[Trained Checkpoint&lt;br/&gt;checkpoint_step_XXXX.pt] --&gt; B[Export Bay Pipeline]
+    B --&gt; C[Standalone Bundle&lt;br/&gt;final_model.pt + tokenizer.json]
+    B --&gt; D[HuggingFace Transformers Format&lt;br/&gt;config.json + model.safetensors]
+    B --&gt; E[Quantized FP16 Checkpoint]
+    B --&gt; F[GGUF Binary via llama.cpp&lt;br/&gt;model.gguf: f16 / q8_0 / q4_k_m]</code></pre>
+<h3 id="71-serialization-formats">7.1 Serialization Formats<a class="headerlink" href="#71-serialization-formats" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Model Bundle</strong>: Bundles the raw PyTorch weights, BPE vocabulary, training lineage, and config dataclasses into a self-contained archive.</li>
+<li><strong>HuggingFace Packaging</strong>: Exports model tensors into SafeTensors (<code>model.safetensors</code>) alongside standard HuggingFace metadata (<code>config.json</code>, <code>generation_config.json</code>, <code>special_tokens_map.json</code>). Enables loading directly via:
+   <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoModelForCausalLM</span><span class="p">,</span> <span class="n">AutoTokenizer</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">"path/to/exported_hf"</span><span class="p">)</span>
+</span></code></pre></div></li>
+<li><strong>GGUF Quantization Engine</strong>:</li>
+<li>Interfaces with <code>llama.cpp</code> conversion scripts.</li>
+<li>Compiles model weights into quantized GGUF representations:<ul>
+<li><code>f16</code>: Full 16-bit floating point precision.</li>
+<li><code>q8_0</code>: 8-bit integer quantization (near-lossless perplexity).</li>
+<li><code>q4_k_m</code>: 4-bit medium k-quantization (optimal memory-to-accuracy balance for consumer GPUs and CPU RAM).</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="8-local-inference-chat-engine">8. Local Inference &amp; Chat Engine<a class="headerlink" href="#8-local-inference-chat-engine" title="Permanent link">&para;</a></h2>
+<p>The Chat Studio provides real-time local text generation with streamed Markdown rendering in <a href="file:///e:/AI_Projects/LLM-IDE/interface/tabs/chat_tab.py">interface/tabs/chat_tab.py</a> and <a href="file:///e:/AI_Projects/LLM-IDE/engine/llama_chat.py">engine/llama_chat.py</a>.</p>
+<h3 id="81-inference-execution-flow">8.1 Inference Execution Flow<a class="headerlink" href="#81-inference-execution-flow" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Dynamic Backend Selection</strong>: Supports loading native PyTorch <code>MicroGPT</code> checkpoints with full KV-caching or compiled GGUF models via <code>llama-cpp-python</code>.</li>
+<li><strong>GPU Offloading</strong>: Configurable <code>n_gpu_layers</code> parameter (<code>-1</code> for full GPU offload, or partial split between VRAM and system RAM).</li>
+<li><strong>Sampling Pipeline</strong>:</li>
+<li>Temperature scaling: <span class="arithmatex">\(P(w_i) \propto \exp(z_i / T)\)</span></li>
+<li>Nucleus Sampling (Top-p): Filters to the smallest set of tokens whose cumulative probability exceeds <span class="arithmatex">\(p\)</span>.</li>
+<li>Top-k Filtering: Truncates vocabulary to the top <span class="arithmatex">\(k\)</span> candidates.</li>
+<li>Frequency &amp; Repetition Penalty: Penalizes previously generated tokens to eliminate degenerate loops.</li>
+<li><strong>Reasoning / Thinking Effort Control</strong>:</li>
+<li>Supports models trained with chain-of-thought tokens (<code>&lt;think&gt;...&lt;/think&gt;</code>).</li>
+<li>The UI includes selectable reasoning effort presets (<code>Light</code>, <code>Balanced</code>, <code>Deep</code>) that control generation token budget and temperature modulation during internal reasoning passes.</li>
+</ol>
+<hr />
+<h2 id="9-ui-component-architecture-screen-reference">9. UI Component Architecture &amp; Screen Reference<a class="headerlink" href="#9-ui-component-architecture-screen-reference" title="Permanent link">&para;</a></h2>
+<p>The desktop application is constructed from modular screen builders defined in <a href="file:///e:/AI_Projects/LLM-IDE/interface/screens/screen_builders.py">interface/screens/screen_builders.py</a>.</p>
+<h3 id="91-screen-catalog">9.1 Screen Catalog<a class="headerlink" href="#91-screen-catalog" title="Permanent link">&para;</a></h3>
+<h4 id="1-dataset-blueprint-screen_builders0">1. Dataset Blueprint (<code>SCREEN_BUILDERS[0]</code>)<a class="headerlink" href="#1-dataset-blueprint-screen_builders0" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>File</strong>: <a href="file:///e:/AI_Projects/LLM-IDE/interface/screens/dataset_plan_screen.py">interface/screens/dataset_plan_screen.py</a></li>
+<li><strong>UI Screenshot</strong>:</li>
+</ul>
+<p><img alt="Dataset Blueprint" src="../ref/01_dataset_blueprint.png" /></p>
+<ul>
+<li><strong>Components</strong>: Category tree view, token estimator, vocabulary preview, external dataset manager.</li>
+</ul>
+<h4 id="2-dataset-ingestion-screen_builders1">2. Dataset Ingestion (<code>SCREEN_BUILDERS[1]</code>)<a class="headerlink" href="#2-dataset-ingestion-screen_builders1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>File</strong>: <a href="file:///e:/AI_Projects/LLM-IDE/interface/screens/dataset_screen.py">interface/screens/dataset_screen.py</a></li>
+<li><strong>UI Screenshot</strong>:</li>
+</ul>
+<p><img alt="Dataset Ingestion" src="../ref/02_dataset_ingestion.png" /></p>
+<ul>
+<li><strong>Components</strong>: Tokenizer training configuration, context window slider, prompt loss masking toggles, BPE build runner.</li>
+</ul>
+<h4 id="3-neural-forge-training-screen_builders2">3. Neural Forge Training (<code>SCREEN_BUILDERS[2]</code>)<a class="headerlink" href="#3-neural-forge-training-screen_builders2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>File</strong>: <a href="file:///e:/AI_Projects/LLM-IDE/interface/screens/training_screen.py">interface/screens/training_screen.py</a></li>
+<li><strong>UI Screenshot</strong>:</li>
+</ul>
+<p><img alt="Neural Forge" src="../ref/03_model_training.png" /></p>
+<ul>
+<li><strong>Components</strong>: Transformer architectural hyperparameters (layers, heads, RoPE theta, SDPA, SwiGLU), optimizer controls (AdamW, cosine warmup), device selection.</li>
+</ul>
+<h4 id="4-fine-tuning-lab-screen_builders3">4. Fine-Tuning Lab (<code>SCREEN_BUILDERS[3]</code>)<a class="headerlink" href="#4-fine-tuning-lab-screen_builders3" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>File</strong>: <a href="file:///e:/AI_Projects/LLM-IDE/interface/screens/fine_tuning_screen.py">interface/screens/fine_tuning_screen.py</a></li>
+<li><strong>UI Screenshot</strong>:</li>
+</ul>
+<p><img alt="Fine-Tuning Lab" src="../ref/04_fine_tuning.png" /></p>
+<ul>
+<li><strong>Components</strong>: Adaptation mode selector (Instruction, Conversation, Code, Tool-Call), LoRA rank/alpha inputs, target module selector, compatibility checker.</li>
+</ul>
+<h4 id="5-live-telemetry-screen_builders4">5. Live Telemetry (<code>SCREEN_BUILDERS[4]</code>)<a class="headerlink" href="#5-live-telemetry-screen_builders4" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>File</strong>: <a href="file:///e:/AI_Projects/LLM-IDE/interface/screens/live_screen.py">interface/screens/live_screen.py</a></li>
+<li><strong>UI Screenshot</strong>:</li>
+</ul>
+<p><img alt="Live Telemetry" src="../ref/05_live_training.png" /></p>
+<ul>
+<li><strong>Components</strong>: Real-time loss curves (train vs validation), step counter, learning rate gauge, tokens per second meter, GPU VRAM monitor.</li>
+</ul>
+<h4 id="6-job-manager-screen_builders5">6. Job Manager (<code>SCREEN_BUILDERS[5]</code>)<a class="headerlink" href="#6-job-manager-screen_builders5" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>File</strong>: <a href="file:///e:/AI_Projects/LLM-IDE/interface/screens/job_manager_screen.py">interface/screens/job_manager_screen.py</a></li>
+<li><strong>UI Screenshot</strong>:</li>
+</ul>
+<p><img alt="Job Manager" src="../ref/06_job_manager.png" /></p>
+<ul>
+<li><strong>Components</strong>: Background process list, manifest viewer, PID monitor, reattach and cooperative stop controls.</li>
+</ul>
+<h4 id="7-benchmark-suite-screen_builders6">7. Benchmark Suite (<code>SCREEN_BUILDERS[6]</code>)<a class="headerlink" href="#7-benchmark-suite-screen_builders6" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>File</strong>: <a href="file:///e:/AI_Projects/LLM-IDE/interface/screens/benchmark_screen.py">interface/screens/benchmark_screen.py</a></li>
+<li><strong>UI Screenshot</strong>:</li>
+</ul>
+<p><img alt="Benchmark Suite" src="../ref/07_benchmarks.png" /></p>
+<ul>
+<li><strong>Components</strong>: Benchmark prompt library, perplexity evaluator, latency profiler, checkpoint comparative analyzer.</li>
+</ul>
+<h4 id="8-export-bay-screen_builders7">8. Export Bay (<code>SCREEN_BUILDERS[7]</code>)<a class="headerlink" href="#8-export-bay-screen_builders7" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>File</strong>: <a href="file:///e:/AI_Projects/LLM-IDE/interface/screens/export_screen.py">interface/screens/export_screen.py</a></li>
+<li><strong>UI Screenshot</strong>:</li>
+</ul>
+<p><img alt="Export Bay" src="../ref/08_export_bay.png" /></p>
+<ul>
+<li><strong>Components</strong>: Output format selector (SafeTensors, HF, GGUF), quantization preset selector (FP16, Q8_0, Q4_K_M), export task monitor.</li>
+</ul>
+<h4 id="9-chat-studio-screen_builders8">9. Chat Studio (<code>SCREEN_BUILDERS[8]</code>)<a class="headerlink" href="#9-chat-studio-screen_builders8" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>File</strong>: <a href="file:///e:/AI_Projects/LLM-IDE/interface/screens/chat_screen.py">interface/screens/chat_screen.py</a></li>
+<li><strong>UI Screenshot</strong>:</li>
+</ul>
+<p><img alt="Chat Studio" src="../ref/09_chat_interface.png" /></p>
+<ul>
+<li><strong>Components</strong>: Markdown conversation view, reasoning effort dropdown, system prompt editor, temperature / top-p / top-k sliders.</li>
+</ul>
+<hr />
+<h2 id="10-verification-test-suite-architecture">10. Verification &amp; Test Suite Architecture<a class="headerlink" href="#10-verification-test-suite-architecture" title="Permanent link">&para;</a></h2>
+<p>The repository enforces strict regression testing across all layers via pytest.
+- <strong>Test Directory</strong>: <code>tests/</code> (28 dedicated test files, 140 automated test cases).
+- <strong>Core Verification Suites</strong>:
+  - <code>test_license_encryption.py</code>: Validates DPAPI + Fernet key derivation, tamper resistance, machine ID binding, and local-first launch precedence.
+  - <code>test_code_fine_tune.py</code>: Validates code indentation preservation, syntax boundaries, and <code>train_targets.npy</code> generation.
+  - <code>test_tool_call_target_masking.py</code>: Validates JSON schema function calling and prompt masking.
+  - <code>test_target_masking.py</code>: Validates <code>IGNORE_INDEX = -100</code> assignment across complex dialogue turns.
+  - <code>test_training_process_controller.py</code>: Validates process supervision, heartbeat tracking, and detached resumption.
+- <strong>Execution</strong>:
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>-o<span class="w"> </span><span class="nv">pythonpath</span><span class="o">=</span>.<span class="w"> </span>tests/<span class="w"> </span>-k<span class="w"> </span><span class="s2">"not slow"</span><span class="w"> </span>-q
+</span></code></pre></div>
+  <em>(140 passed, 0 failed in 82s)</em>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
