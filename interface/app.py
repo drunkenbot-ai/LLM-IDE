@@ -173,6 +173,7 @@ from interface.screens.fine_tuning_screen import FineTuningScreenMixin
 from interface.screens.fine_tuning_run import FineTuningRunMixin
 from interface.screens.live_screen import LiveScreenMixin
 from interface.screens.job_manager_screen import JobManagerScreenMixin
+from interface.screens.cluster_screen import ClusterScreenMixin
 from inference.ui.benchmark_screen import BenchmarkScreenMixin
 from interface.screens.export_screen import ExportScreenMixin
 from inference.ui.chat_screen import ChatScreenMixin
@@ -200,6 +201,7 @@ class MainWindow(
     FineTuningRunMixin,
     LiveScreenMixin,
     JobManagerScreenMixin,
+    ClusterScreenMixin,
     BenchmarkScreenMixin,
     ExportScreenMixin,
     ChatScreenMixin,

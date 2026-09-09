@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from PySide6.QtCore import Qt
+from interface.tabs.cluster_tab import build_cluster_card
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -134,67 +135,8 @@ def build_job_manager_tab(window) -> QWidget:
     coordinator_card.setMinimumHeight(230)
     root.addWidget(coordinator_card, 0)
 
-    runpod_form = QFormLayout()
-    window._configure_form(runpod_form)
-    window.runpod_api_key = QLineEdit()
-    window.runpod_api_key.setEchoMode(QLineEdit.Password)
-    window._tip(window.runpod_api_key, "RunPod API key. Stored in runpod_config.json inside the project folder.")
-    window.runpod_gpu_type = QComboBox()
-    window.runpod_gpu_type.setEditable(True)
-    window.runpod_gpu_type.addItems([
-        "NVIDIA GeForce RTX 4090",
-        "NVIDIA RTX A5000",
-        "NVIDIA A40",
-        "NVIDIA L40S",
-        "NVIDIA A100 80GB PCIe",
-        "NVIDIA H100 80GB HBM3",
-    ])
-    window._tip(window.runpod_gpu_type, "Preferred RunPod GPU type. Availability depends on RunPod capacity.")
-    window.runpod_cloud_type = QComboBox()
-    window.runpod_cloud_type.addItems(["COMMUNITY", "SECURE"])
-    window._tip(window.runpod_cloud_type, "Community is usually cheaper. Secure is more controlled and often more predictable.")
-    window.runpod_image = QLineEdit("runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04")
-    window._tip(window.runpod_image, "Docker image used for the cloud worker. The default PyTorch image installs this app's worker bundle at startup.")
-    window.runpod_container_disk = window._spin(20, 500, 80)
-    window._tip(window.runpod_container_disk, "Temporary container disk in GB. Larger values help with dependency install and cache.")
-    window.runpod_volume_gb = window._spin(20, 1000, 40)
-    window._tip(window.runpod_volume_gb, "Persistent Pod volume in GB mounted at /workspace.")
-    window.runpod_min_ram = window._spin(8, 512, 16)
-    window._tip(window.runpod_min_ram, "Minimum system RAM per GPU in GB.")
-    window.runpod_min_vcpu = window._spin(2, 128, 4)
-    window._tip(window.runpod_min_vcpu, "Minimum virtual CPUs per GPU.")
-    window.runpod_spot = QCheckBox("Use interruptible cheaper pods")
-    window.runpod_spot.setChecked(True)
-    window._tip(window.runpod_spot, "Interruptible pods cost less but may be reclaimed. Checkpoints make recovery easier.")
-    window.runpod_auto_terminate = QCheckBox("Exit worker after one job")
-    window.runpod_auto_terminate.setChecked(True)
-    window._tip(window.runpod_auto_terminate, "Worker claims one job and exits. Verify the Pod has stopped in RunPod when the job completes.")
-    window.runpod_save_button = QPushButton("Save RunPod Settings")
-    window.runpod_save_button.clicked.connect(window.save_runpod_settings)
-    window._tip(window.runpod_save_button, "Save RunPod settings to runpod_config.json.")
-    window.runpod_launch_button = QPushButton("Launch RunPod Worker")
-    window.runpod_launch_button.clicked.connect(window.launch_runpod_worker_for_current_training)
-    window._tip(window.runpod_launch_button, "Publish the current training job and create a RunPod cloud worker to claim it.")
-    runpod_buttons = QHBoxLayout()
-    runpod_buttons.addWidget(window.runpod_save_button)
-    runpod_buttons.addWidget(window.runpod_launch_button)
-    runpod_buttons.addStretch(1)
-    runpod_form.addRow("API key", window.runpod_api_key)
-    runpod_form.addRow("GPU", window.runpod_gpu_type)
-    runpod_form.addRow("Cloud", window.runpod_cloud_type)
-    runpod_form.addRow("Image", window.runpod_image)
-    runpod_form.addRow("Disk / volume", _inline_widgets(window.runpod_container_disk, window.runpod_volume_gb))
-    runpod_form.addRow("RAM / vCPU", _inline_widgets(window.runpod_min_ram, window.runpod_min_vcpu))
-    runpod_form.addRow("", window.runpod_spot)
-    runpod_form.addRow("", window.runpod_auto_terminate)
-    runpod_form.addRow("", runpod_buttons)
-    window.runpod_status_label = QLabel("RunPod: not configured")
-    window.runpod_status_label.setObjectName("Metric")
-    window.runpod_status_label.setWordWrap(True)
-    runpod_form.addRow("Status", window.runpod_status_label)
-    runpod_card = window._card("RUNPOD CLOUD GPU", runpod_form)
-    runpod_card.setMinimumHeight(330)
-    root.addWidget(runpod_card, 0)
+    cluster_card = build_cluster_card(window)
+    root.addWidget(cluster_card, 0)
 
     window.job_worker_table = _table(
         ["Worker", "Status", "Backend", "Device", "Last Seen", "Active Job", "CPU/RAM/GPU", "Labels"]
@@ -213,7 +155,6 @@ def build_job_manager_tab(window) -> QWidget:
 
     window.job_manager_progress = window._thin_progress()
     page_layout.addWidget(window.job_manager_progress)
-    window.load_runpod_settings()
     window.refresh_job_manager_tab()
     return page
 
@@ -235,7 +176,7 @@ def _table(headers: list[str]) -> QTableWidget:
     table.setEditTriggers(QTableWidget.NoEditTriggers)
     table.verticalHeader().setVisible(False)
     table.horizontalHeader().setStretchLastSection(True)
-    table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+    table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
     table.setMinimumHeight(170)
     return table
 
@@ -276,17 +217,24 @@ def _inline_widgets(*widgets: QWidget) -> QWidget:
 
 
 def set_table_rows(table: QTableWidget, rows: list[list[str]]) -> None:
-    """Replace all table rows.
+    """Replace all table rows efficiently with diff caching.
 
     Args:
         table: Table widget.
         rows: Row values.
     """
+    if getattr(table, "_rendered_row_cache", None) == rows:
+        return
+    table._rendered_row_cache = [list(r) for r in rows]
 
-    table.setRowCount(len(rows))
-    for row_index, row in enumerate(rows):
-        for column_index, value in enumerate(row):
-            item = QTableWidgetItem(value)
-            item.setToolTip(value)
-            table.setItem(row_index, column_index, item)
+    table.setUpdatesEnabled(False)
+    try:
+        table.setRowCount(len(rows))
+        for row_index, row in enumerate(rows):
+            for column_index, value in enumerate(row):
+                item = QTableWidgetItem(value)
+                item.setToolTip(value)
+                table.setItem(row_index, column_index, item)
+    finally:
+        table.setUpdatesEnabled(True)
 

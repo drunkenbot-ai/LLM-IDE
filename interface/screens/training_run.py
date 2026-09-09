@@ -331,6 +331,9 @@ class TrainingRunMixin:
         """Collect training options and start model training."""
 
         launch_target = self._training_launch_target_value()
+        if launch_target == "cluster":
+            self.launch_cluster_training_job()
+            return
         if launch_target == "runpod":
             self.launch_runpod_worker_for_current_training()
             return

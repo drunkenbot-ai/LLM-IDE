@@ -232,14 +232,17 @@ class FineTuningRunMixin:
         """Collect fine-tuning options and start adaptation training."""
 
         fine_tune_launch = self._fine_tune_launch_target_value()
-        if fine_tune_launch in {"remote", "runpod"}:
+        if fine_tune_launch in {"remote", "runpod", "cluster"}:
             stage_ok, stage_message = self._fine_tune_dataset_stage_status()
             self.refresh_fine_tune_workflow()
             if not stage_ok:
                 self.fine_tune_log.append(stage_message)
                 QMessageBox.warning(self, "Fine-tune blocked", stage_message)
                 return
-            if fine_tune_launch == "runpod":
+            if fine_tune_launch == "cluster":
+                self.launch_cluster_training_job()
+                self.fine_tune_log.append("Cluster Local SGD fine-tune job launched. Watch Job Manager for round synchronization.")
+            elif fine_tune_launch == "runpod":
                 self.launch_runpod_worker_for_current_training(training_mode="fine_tune", stage=self._training_stage_value())
                 self.fine_tune_log.append("RunPod fine-tune job launched. Watch Job Manager for worker assignment and progress.")
             else:

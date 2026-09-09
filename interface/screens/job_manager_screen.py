@@ -13,6 +13,8 @@ class JobManagerScreenMixin:
 
         if not hasattr(self, "job_worker_table"):
             return
+        if hasattr(self, "pages") and self.pages.currentIndex() != 5:
+            return
         workers = self.job_manager.list_workers()
         jobs = self.job_manager.list_jobs()
         heartbeats = self.job_manager.state_store.latest_heartbeats()
@@ -72,6 +74,8 @@ class JobManagerScreenMixin:
         self.job_queue_count_label.setText(f"Queued jobs: {queued_count}")
         self.job_db_label.setText(f"State DB: {self.job_manager.state_store.db_path}")
         self.job_manager_progress.setValue(100)
+        if hasattr(self, "refresh_cluster_status"):
+            self.refresh_cluster_status()
 
     def pause_all_managed_jobs(self) -> None:
         """Pause all managed jobs."""
@@ -154,133 +158,30 @@ class JobManagerScreenMixin:
         self.job_manager_log.append("Coordinator API stopped.")
 
     def _runpod_config_path(self) -> Path:
-        """Return the active RunPod config path.
-
-        Returns:
-            Project-local RunPod config path when a project is open.
-        """
-
+        """Return the active RunPod config path (deprecated)."""
         project_dir = self.current_project_file.parent if self.current_project_file is not None else None
         return default_runpod_config_path(project_dir)
 
     def load_runpod_settings(self) -> None:
-        """Load RunPod settings into the Job Manager UI."""
-
-        if not hasattr(self, "runpod_api_key"):
-            return
-        config_path = self._runpod_config_path()
-        try:
-            config = load_runpod_config(config_path)
-        except Exception as exc:
-            LOGGER.error("Could not load RunPod config: %s", exc)
-            self.runpod_status_label.setText(f"RunPod config error: {exc}")
-            return
-        self.runpod_api_key.setText(config.api_key)
-        self._set_combo_text(self.runpod_gpu_type, config.gpu_type_id)
-        self._set_combo_text(self.runpod_cloud_type, config.cloud_type)
-        self.runpod_image.setText(config.image_name)
-        self.runpod_container_disk.setValue(config.container_disk_gb)
-        self.runpod_volume_gb.setValue(config.volume_gb)
-        self.runpod_min_ram.setValue(config.min_ram_per_gpu)
-        self.runpod_min_vcpu.setValue(config.min_vcpu_per_gpu)
-        self.runpod_spot.setChecked(config.interruptible)
-        self.runpod_auto_terminate.setChecked(config.auto_terminate)
-        status = "configured" if config.api_key.strip() else "API key needed"
-        self.runpod_status_label.setText(f"RunPod: {status} ({config_path})")
+        """RunPod support has been dropped."""
+        pass
 
     def save_runpod_settings(self) -> None:
-        """Save RunPod settings from the Job Manager UI."""
+        """RunPod support has been dropped."""
+        pass
 
-        config = self._runpod_config_from_ui()
-        config_path = self._runpod_config_path()
-        save_runpod_config(config_path, config)
-        self.runpod_status_label.setText(f"RunPod settings saved: {config_path}")
-        self.job_manager_log.append(f"RunPod settings saved: {config_path}")
-        LOGGER.info("RunPod settings saved: %s", config_path)
-
-    def _runpod_config_from_ui(self) -> RunPodConfig:
-        """Collect RunPod settings from the UI.
-
-        Returns:
-            RunPod configuration.
-        """
-
-        return RunPodConfig(
-            api_key=self.runpod_api_key.text().strip(),
-            image_name=self.runpod_image.text().strip(),
-            gpu_type_id=self.runpod_gpu_type.currentText().strip(),
-            gpu_count=1,
-            cloud_type=self.runpod_cloud_type.currentText().strip(),
-            interruptible=self.runpod_spot.isChecked(),
-            container_disk_gb=self.runpod_container_disk.value(),
-            volume_gb=self.runpod_volume_gb.value(),
-            min_vcpu_per_gpu=self.runpod_min_vcpu.value(),
-            min_ram_per_gpu=self.runpod_min_ram.value(),
-            auto_terminate=self.runpod_auto_terminate.isChecked(),
-            worker_labels="runpod,gpu",
-        )
+    def _runpod_config_from_ui(self) -> Any:
+        """RunPod support has been dropped."""
+        return None
 
     def launch_runpod_worker_for_current_training(self, training_mode: str = "pretrain", stage: str = "base") -> None:
-        """Publish the current training job and launch a RunPod worker Pod.
-
-        Args:
-            training_mode: Training mode for the queued job.
-            stage: Dataset/training stage label.
-        """
-
-        if isinstance(training_mode, bool):
-            training_mode = "pretrain"
-            stage = "base"
-        try:
-            config = self._runpod_config_from_ui()
-            save_runpod_config(self._runpod_config_path(), config)
-            coordinator_url = self.coordinator_public_url.text().strip().rstrip("/")
-            if not public_url_is_cloud_reachable(coordinator_url):
-                raise ValueError(
-                    "RunPod needs a public Worker URL. Start a tunnel or set Worker URL to a public address, "
-                    "not localhost/127.0.0.1."
-                )
-            if self.coordinator_server is None:
-                self.start_coordinator_server()
-                if self.coordinator_server is None:
-                    return
-            job, bundle_path = self._publish_remote_training_job_spec(
-                training_mode=training_mode,
-                stage=stage,
-                backend_label="runpod",
-            )
-            artifact_root = Path(self.coordinator_artifact_root.text().strip()).expanduser()
-            bootstrap_path = create_runpod_worker_bundle(Path(_app.__file__).resolve().parents[2], artifact_root)
-            bootstrap_url = f"{coordinator_url}/artifacts/{bootstrap_path.name}"
-            worker_id = f"runpod-{job.job_id}"
-            pod_name = f"micro-llm-{self._safe_project_name(self.search_box.text().strip() or 'project')}-{job.job_id[-8:]}"
-            result = RunPodClient(config.api_key).create_worker_pod(
-                config=config,
-                pod_name=pod_name,
-                worker_id=worker_id,
-                coordinator_url=coordinator_url,
-                bootstrap_url=bootstrap_url,
-            )
-            managed = self.job_manager.get_job(job.job_id)
-            managed.spec.metadata["runpod_pod_id"] = result.pod_id
-            managed.spec.metadata["runpod_worker_id"] = result.worker_id
-            managed.spec.metadata["runpod_cost_per_hour"] = result.cost_per_hour
-            self.job_manager._persist_job(job.job_id)
-        except Exception as exc:
-            LOGGER.exception("RunPod launch failed")
-            QMessageBox.warning(self, "RunPod launch failed", str(exc))
-            if hasattr(self, "runpod_status_label"):
-                self.runpod_status_label.setText(f"RunPod launch failed: {exc}")
-            return
-        self.runpod_status_label.setText(
-            f"RunPod pod {result.pod_id} launched for {job.job_id} ({result.gpu_name}, {result.cost_per_hour}/hr)"
+        """Inform user that RunPod integration has been discontinued."""
+        QMessageBox.information(
+            self,
+            "RunPod Discontinued",
+            "RunPod cloud integration has been discontinued. Please use the Port-Blocked Cluster "
+            "subsystem (Local SGD over shared network storage) or local/remote workers.",
         )
-        self.job_manager_log.append(f"RunPod pod launched: {result.pod_id}")
-        self.job_manager_log.append(f"RunPod worker: {result.worker_id}")
-        self.job_manager_log.append(f"RunPod GPU: {result.gpu_name}, cost/hr: {result.cost_per_hour}")
-        self.job_manager_log.append(f"Worker bootstrap: {result.bootstrap_url}")
-        self.project_state.setText("RunPod worker launched")
-        self.refresh_job_manager_tab()
 
     def publish_remote_training_job(self, training_mode: str = "pretrain", stage: str = "base") -> None:
         """Bundle the current training setup and queue it for remote workers.

@@ -78,7 +78,7 @@ class WindowCoreMixin:
         self.coordinator_server: Optional[CoordinatorApiServer] = None
         self.coordinator_thread: Optional[Thread] = None
         self.job_manager_timer = QTimer(self)
-        self.job_manager_timer.setInterval(2500)
+        self.job_manager_timer.setInterval(4000)
         self.job_manager_timer.timeout.connect(self.refresh_job_manager_tab)
 
         self.theme_name = current_theme()
