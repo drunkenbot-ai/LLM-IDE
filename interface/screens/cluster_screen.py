@@ -42,7 +42,13 @@ class ClusterCoordinatorThread(QThread):
         from cluster.coordinator import ClusterCoordinator
         coordinator = ClusterCoordinator(self.bus, self.job_id)
 
+        # Signal coordinator liveness immediately on start
+        if hasattr(self.bus, "touch_job"):
+            self.bus.touch_job(self.job_id)
+
         def _on_round_progress(metrics: dict[str, Any]) -> None:
+            if hasattr(self.bus, "touch_job"):
+                self.bus.touch_job(self.job_id)
             self.round_telemetry_ready.emit(metrics)
 
         success = coordinator.run_job(
@@ -126,11 +132,17 @@ class ClusterScreenMixin:
         # Check local worker process liveness
         if hasattr(self, "_local_worker_procs") and self._local_worker_procs:
             alive = {}
+            bus = self._get_cluster_bus()
+            import socket
+            hostname = socket.gethostname()
             for dev, proc in list(self._local_worker_procs.items()):
                 if proc.poll() is None:
                     alive[dev] = proc
                 else:
                     self._log_cluster_event(f"Local worker for '{dev}' exited (code {proc.poll()}).")
+                    if bus:
+                        wid = f"{hostname}_{dev.replace(':', '_')}"
+                        bus.heartbeat(wid, status="OFFLINE", current_job_id=None)
             self._local_worker_procs = alive
             if hasattr(self, "cluster_local_worker_btn"):
                 if alive:
@@ -472,8 +484,20 @@ class ClusterScreenMixin:
             self._log_cluster_event(f"Cluster job {job_id} successfully completed all rounds.")
             if hasattr(self, "cluster_status_label"):
                 self.cluster_status_label.setText("Status: Completed")
+            if hasattr(self, "project_state"):
+                self.project_state.setText("Completed")
+            if hasattr(self, "train_status"):
+                self.train_status.setText("Training: completed")
         else:
             self._log_cluster_event(f"Cluster job {job_id} stopped or cancelled.")
+            if hasattr(self, "project_state"):
+                self.project_state.setText("Idle")
+            if hasattr(self, "train_status"):
+                self.train_status.setText("Training: idle")
+
+        if hasattr(self, "stop_training_button"):
+            self.stop_training_button.setEnabled(False)
+
         self.refresh_cluster_status()
 
     def pause_cluster_job(self) -> None:
@@ -510,6 +534,12 @@ class ClusterScreenMixin:
             bus.set_job_status(active["job_id"], "STOPPED")
             self._log_cluster_event(f"Signal STOP set for job {active['job_id']}.")
             self.refresh_cluster_status()
+        if hasattr(self, "stop_training_button"):
+            self.stop_training_button.setEnabled(False)
+        if hasattr(self, "project_state"):
+            self.project_state.setText("Stopped")
+        if hasattr(self, "train_status"):
+            self.train_status.setText("Training: idle")
 
     def toggle_local_cluster_worker(self) -> None:
         """Start or stop independent local cluster worker background processes for all detected GPUs."""
@@ -520,6 +550,9 @@ class ClusterScreenMixin:
         active_procs = {d: p for d, p in self._local_worker_procs.items() if p.poll() is None}
         if active_procs:
             self._log_cluster_event(f"Stopping {len(active_procs)} local worker process(es)...")
+            bus = self._get_cluster_bus()
+            import socket
+            hostname = socket.gethostname()
             for dev, proc in active_procs.items():
                 try:
                     proc.terminate()
@@ -530,6 +563,9 @@ class ClusterScreenMixin:
                         proc.wait(timeout=1.0)
                 except Exception as exc:
                     self._log_cluster_event(f"Error terminating worker {dev}: {exc}")
+                if bus:
+                    wid = f"{hostname}_{dev.replace(':', '_')}"
+                    bus.heartbeat(wid, status="OFFLINE", current_job_id=None)
             self._local_worker_procs.clear()
             if hasattr(self, "cluster_local_worker_btn"):
                 self.cluster_local_worker_btn.setText("Start Local Worker(s)")
@@ -732,18 +768,23 @@ class ClusterScreenMixin:
                 scrollbar.setValue(scrollbar.maximum())
 
     def stop_cluster_worker(self, worker_id: str) -> None:
-        """Send STOP command to a specific worker."""
+        """Send STOP command to a specific worker and immediately mark it OFFLINE."""
         # Terminate if local
         if hasattr(self, "_local_worker_procs"):
             for dev, proc in list(self._local_worker_procs.items()):
                 tag = dev.replace(":", "_")
                 if tag in worker_id and proc.poll() is None:
-                    proc.terminate()
+                    try:
+                        proc.terminate()
+                        proc.wait(timeout=1.0)
+                    except Exception:
+                        proc.kill()
 
         bus = self._get_cluster_bus()
         if bus:
             bus.set_worker_command(worker_id, "STOP")
-            self._log_cluster_event(f"Sent STOP command to worker '{worker_id}'.")
+            bus.heartbeat(worker_id, status="OFFLINE", current_job_id=None)
+            self._log_cluster_event(f"Sent STOP command to worker '{worker_id}' (marked OFFLINE).")
             self.refresh_cluster_status()
 
     def restart_cluster_worker(self, worker_id: str) -> None:

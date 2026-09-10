@@ -332,6 +332,12 @@ class TrainingRunMixin:
 
         launch_target = self._training_launch_target_value()
         if launch_target == "cluster":
+            if hasattr(self, "stop_training_button"):
+                self.stop_training_button.setEnabled(True)
+            if hasattr(self, "project_state"):
+                self.project_state.setText("Training")
+            if hasattr(self, "train_status"):
+                self.train_status.setText("Training: Cluster (Local SGD)")
             self.launch_cluster_training_job()
             return
         if launch_target == "runpod":

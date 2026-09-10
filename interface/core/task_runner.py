@@ -202,6 +202,18 @@ class TaskRunnerMixin:
             event.ignore()
             QTimer.singleShot(500, self.close)
             return
+        if hasattr(self, "_local_worker_procs") and self._local_worker_procs:
+            for dev, proc in list(self._local_worker_procs.items()):
+                try:
+                    if proc.poll() is None:
+                        proc.terminate()
+                except Exception:
+                    pass
+        if hasattr(self, "stop_cluster_job"):
+            try:
+                self.stop_cluster_job()
+            except Exception:
+                pass
         if self.coordinator_server is not None:
             self.stop_coordinator_server()
         super().closeEvent(event)
