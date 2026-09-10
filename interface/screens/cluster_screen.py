@@ -56,6 +56,17 @@ class ClusterCoordinatorThread(QThread):
         self._stop_event.set()
 
 
+def _sanitize_for_json(obj: Any) -> Any:
+    """Recursively convert Paths and non-primitive types to JSON-serializable structures."""
+    if isinstance(obj, Path):
+        return str(obj)
+    if isinstance(obj, dict):
+        return {str(k): _sanitize_for_json(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple, set)):
+        return [_sanitize_for_json(v) for v in obj]
+    return obj
+
+
 class ClusterScreenMixin:
     """Mixin for MainWindow handling distributed Local SGD cluster operations."""
 
@@ -278,7 +289,21 @@ class ClusterScreenMixin:
             return
 
         try:
-            # Build configs
+            # Ensure dataset is accessible to all cluster workers on shared storage
+            try:
+                is_under_shared = Path(dataset_path).resolve().is_relative_to(bus.shared_dir.resolve())
+            except Exception:
+                is_under_shared = False
+
+            if not is_under_shared:
+                shared_candidate = bus.shared_dir / Path(dataset_path).name
+                if not shared_candidate.exists() or shared_candidate.stat().st_size != Path(dataset_path).stat().st_size:
+                    self._log_cluster_event(f"Copying dataset to shared storage for cluster workers: {shared_candidate.name}...")
+                    import shutil
+                    shutil.copyfile(dataset_path, shared_candidate)
+                dataset_path = str(shared_candidate)
+
+            # Build configs and sanitize non-primitive types (WindowsPath, etc.)
             model_cfg = dataclasses.asdict(self._current_model_config()) if hasattr(self, "_current_model_config") else {
                 "vocab_size": 1000,
                 "context_length": 512,
@@ -290,6 +315,9 @@ class ClusterScreenMixin:
                 "learning_rate": 3e-4,
                 "batch_size": 4,
             }
+
+            model_cfg = _sanitize_for_json(model_cfg)
+            training_cfg = _sanitize_for_json(training_cfg)
 
             job_id = f"cluster_job_{int(time.time())}"
             sync_steps = self.cluster_sync_steps.value() if hasattr(self, "cluster_sync_steps") else 250
