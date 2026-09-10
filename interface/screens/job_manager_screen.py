@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QMessageBox, QTextEdit
 
 from interface.tabs.job_manager_tab import set_table_rows
 
@@ -244,14 +244,17 @@ class JobManagerScreenMixin:
 
     def clear_active_cluster_log(self) -> None:
         """Clear whichever diagnostic log tab is currently active."""
-        if not hasattr(self, "cluster_log_tabs"):
+        tabs = getattr(self, "cluster_details_tabs", getattr(self, "cluster_log_tabs", None))
+        if not tabs:
             return
-        cur_idx = self.cluster_log_tabs.currentIndex()
-        if cur_idx == 0 and hasattr(self, "job_events_log"):
+        cur_widget = tabs.currentWidget()
+        if isinstance(cur_widget, QTextEdit):
+            cur_widget.clear()
+        elif cur_widget == getattr(self, "job_events_log", None):
             self.job_events_log.clear()
-        elif cur_idx == 1 and hasattr(self, "cluster_worker_log"):
+        elif cur_widget == getattr(self, "cluster_worker_log", None):
             self.cluster_worker_log.clear()
-        elif cur_idx == 2 and hasattr(self, "cluster_log"):
+        elif cur_widget == getattr(self, "cluster_log", None):
             self.cluster_log.clear()
 
     # -------------------------------------------------------------------------

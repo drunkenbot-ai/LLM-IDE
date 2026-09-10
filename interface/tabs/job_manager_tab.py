@@ -1,11 +1,9 @@
 """Thinkbox Deadline & Fox Renderfarm inspired Cluster Job Monitor.
 
-Provides a unified split-pane management console for:
-1. Master Jobs Monitor (Job list with status, progress, speed, round fraction, timestamps).
-2. Selected Job Tasks & Data Shards (Rank breakdown, worker assignment, loss per shard).
-3. Studio Worker Fleet (Hardware utilization, VRAM/RAM/CPU telemetry, node status).
-4. Running Diagnostic Log Console (Job logs, worker console/error logs, cluster events).
-5. Smart Master Controls (Launch, Pause, Resume, Stop, Re-queue/Restart, Debug).
+Layout:
+- Left Column (Full Height): Training Jobs Monitor (master job table).
+- Right Column Top: Tabbed details widget containing Tasks & Data Shards + Diagnostic Logs.
+- Right Column Bottom: Cluster Worker Fleet & Hardware Utilization table.
 """
 
 from __future__ import annotations
@@ -168,12 +166,12 @@ def build_job_manager_tab(window) -> QWidget:
     page_layout.addWidget(header_box)
 
     # -------------------------------------------------------------------------
-    # 2. Split Master Jobs View (Deadline Top Split: Jobs on Left, Tasks on Right)
+    # 2. Main Horizontal Splitter: Left = Jobs Monitor (Full Height), Right = Details & Fleet
     # -------------------------------------------------------------------------
-    top_splitter = QSplitter(Qt.Horizontal)
-    top_splitter.setChildrenCollapsible(False)
+    main_splitter = QSplitter(Qt.Horizontal)
+    main_splitter.setChildrenCollapsible(False)
 
-    # Left: Master Jobs Table
+    # LEFT PANE: Full Height Training Jobs Monitor (Green Area)
     jobs_card = QFrame()
     jobs_card.setObjectName("Card")
     jobs_layout = QVBoxLayout(jobs_card)
@@ -183,47 +181,72 @@ def build_job_manager_tab(window) -> QWidget:
     jobs_header = QHBoxLayout()
     jobs_header.addWidget(QLabel("<b>TRAINING JOBS MONITOR</b>"))
     jobs_header.addStretch(1)
-    window.jobs_summary_label = QLabel("0 jobs listed")
+    window.jobs_summary_label = QLabel("0 total jobs")
     window.jobs_summary_label.setObjectName("Metric")
     jobs_header.addWidget(window.jobs_summary_label)
     jobs_layout.addLayout(jobs_header)
 
     window.cluster_jobs_table = _styled_table(
         ["Status", "Job ID", "Model / Config", "Progress", "Loss", "Speed", "Rounds", "Created"],
-        min_height=170,
+        min_height=260,
     )
     window.cluster_jobs_table.itemSelectionChanged.connect(window.on_cluster_job_selected)
     jobs_layout.addWidget(window.cluster_jobs_table, 1)
 
-    top_splitter.addWidget(jobs_card)
+    main_splitter.addWidget(jobs_card)
 
-    # Right: Tasks & Shards Table for Selected Job
-    tasks_card = QFrame()
-    tasks_card.setObjectName("Card")
-    tasks_layout = QVBoxLayout(tasks_card)
-    tasks_layout.setContentsMargins(10, 8, 10, 8)
-    tasks_layout.setSpacing(6)
+    # RIGHT PANE: Vertical Splitter (Top: Tasks/Logs Tabs, Bottom: Worker Fleet)
+    right_splitter = QSplitter(Qt.Vertical)
+    right_splitter.setChildrenCollapsible(False)
 
-    tasks_header = QHBoxLayout()
-    window.selected_job_title_label = QLabel("<b>TASKS & DATA SHARDS</b> (Select a job)")
-    tasks_header.addWidget(window.selected_job_title_label)
-    tasks_header.addStretch(1)
-    tasks_layout.addLayout(tasks_header)
+    # RIGHT TOP: Tab Widget containing Tasks & Shards + Running Diagnostic Logs
+    details_card = QFrame()
+    details_card.setObjectName("Card")
+    details_layout = QVBoxLayout(details_card)
+    details_layout.setContentsMargins(10, 8, 10, 8)
+    details_layout.setSpacing(6)
 
+    details_header = QHBoxLayout()
+    window.selected_job_title_label = QLabel("<b>JOB DETAILS & DIAGNOSTICS</b> (Select a job)")
+    details_header.addWidget(window.selected_job_title_label)
+    details_header.addStretch(1)
+
+    clear_log_btn = QPushButton("Clear Console")
+    clear_log_btn.setMaximumWidth(120)
+    clear_log_btn.clicked.connect(lambda: window.clear_active_cluster_log())
+    details_header.addWidget(clear_log_btn)
+    details_layout.addLayout(details_header)
+
+    window.cluster_details_tabs = QTabWidget()
+
+    # Tab 1: Tasks & Data Shards
     window.cluster_tasks_table = _styled_table(
         ["Shard", "Status", "Assigned Worker", "Device", "Round", "Loss", "Speed"],
-        min_height=170,
+        min_height=140,
     )
-    tasks_layout.addWidget(window.cluster_tasks_table, 1)
+    window.cluster_details_tabs.addTab(window.cluster_tasks_table, "Tasks & Data Shards")
 
-    top_splitter.addWidget(tasks_card)
-    top_splitter.setSizes([620, 480])
+    # Tab 2: Selected Job Events Log
+    window.job_events_log = QTextEdit()
+    window.job_events_log.setReadOnly(True)
+    window.job_events_log.setPlaceholderText("Logs and progress events for the selected training job will appear here...")
+    window.cluster_details_tabs.addTab(window.job_events_log, "Job Event Log")
 
-    page_layout.addWidget(top_splitter, 3)
+    # Tab 3: Selected Worker Diagnostics (stdout/stderr from SQLite)
+    window.cluster_worker_log = QTextEdit()
+    window.cluster_worker_log.setReadOnly(True)
+    window.cluster_worker_log.setPlaceholderText("Select a worker row in the fleet table below to inspect its real-time console and error logs...")
+    window.cluster_details_tabs.addTab(window.cluster_worker_log, "Worker Diagnostics")
 
-    # -------------------------------------------------------------------------
-    # 3. Discovered Cluster Worker Fleet Table
-    # -------------------------------------------------------------------------
+    # Tab 4: Overall Cluster Event Stream
+    window.cluster_log = QTextEdit()
+    window.cluster_log.setReadOnly(True)
+    window.cluster_details_tabs.addTab(window.cluster_log, "Cluster Event Stream")
+
+    details_layout.addWidget(window.cluster_details_tabs, 1)
+    right_splitter.addWidget(details_card)
+
+    # RIGHT BOTTOM: Discovered Cluster Worker Fleet Table (Red Area)
     fleet_card = QFrame()
     fleet_card.setObjectName("Card")
     fleet_layout = QVBoxLayout(fleet_card)
@@ -247,58 +270,22 @@ def build_job_manager_tab(window) -> QWidget:
     window.cluster_worker_table.itemSelectionChanged.connect(window.on_cluster_worker_selected)
     fleet_layout.addWidget(window.cluster_worker_table, 1)
 
-    page_layout.addWidget(fleet_card, 2)
+    right_splitter.addWidget(fleet_card)
+    right_splitter.setSizes([320, 320])
+
+    main_splitter.addWidget(right_splitter)
+    main_splitter.setSizes([620, 580])
+
+    page_layout.addWidget(main_splitter, 1)
 
     # -------------------------------------------------------------------------
-    # 4. Running Diagnostic Log Console (Fox Renderfarm style with tabs)
-    # -------------------------------------------------------------------------
-    log_card = QFrame()
-    log_card.setObjectName("Card")
-    log_layout = QVBoxLayout(log_card)
-    log_layout.setContentsMargins(10, 8, 10, 8)
-    log_layout.setSpacing(6)
-
-    log_header = QHBoxLayout()
-    log_header.addWidget(QLabel("<b>RUNNING DIAGNOSTIC LOGS</b>"))
-    log_header.addStretch(1)
-    clear_log_btn = QPushButton("Clear Console")
-    clear_log_btn.setMaximumWidth(120)
-    clear_log_btn.clicked.connect(lambda: window.clear_active_cluster_log())
-    log_header.addWidget(clear_log_btn)
-    log_layout.addLayout(log_header)
-
-    window.cluster_log_tabs = QTabWidget()
-
-    # Tab 1: Selected Job Events
-    window.job_events_log = QTextEdit()
-    window.job_events_log.setReadOnly(True)
-    window.job_events_log.setMinimumHeight(100)
-    window.job_events_log.setPlaceholderText("Logs and progress events for the selected training job will appear here...")
-    window.cluster_log_tabs.addTab(window.job_events_log, "Selected Job Events")
-
-    # Tab 2: Selected Worker Diagnostics (stdout/stderr from SQLite)
-    window.cluster_worker_log = QTextEdit()
-    window.cluster_worker_log.setReadOnly(True)
-    window.cluster_worker_log.setMinimumHeight(100)
-    window.cluster_worker_log.setPlaceholderText("Select a worker row in the fleet table to inspect its real-time console and error logs...")
-    window.cluster_log_tabs.addTab(window.cluster_worker_log, "Worker Diagnostics")
-
-    # Tab 3: Overall Cluster Stream
-    window.cluster_log = QTextEdit()
-    window.cluster_log.setReadOnly(True)
-    window.cluster_log.setMinimumHeight(100)
-    window.cluster_log_tabs.addTab(window.cluster_log, "Cluster Event Stream")
-
-    log_layout.addWidget(window.cluster_log_tabs, 1)
-    page_layout.addWidget(log_card, 2)
-
-    # -------------------------------------------------------------------------
-    # 5. Bottom Progress Bar & Compatibility Aliases
+    # 3. Bottom Progress Bar & Compatibility Aliases
     # -------------------------------------------------------------------------
     window.job_manager_progress = window._thin_progress()
     page_layout.addWidget(window.job_manager_progress)
 
     # Backward compatibility bindings
+    window.cluster_log_tabs = window.cluster_details_tabs
     window.job_worker_table = window.cluster_worker_table
     window.job_table = window.cluster_jobs_table
     window.job_manager_log = window.cluster_log
