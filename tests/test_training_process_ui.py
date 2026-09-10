@@ -94,10 +94,8 @@ def test_pretraining_and_fine_tuning_share_standalone_controller() -> None:
     assert "_launch_local_training(" in fine_tuning_source
     assert "_run_task(" not in pretraining_source
     assert "_run_task(" not in fine_tuning_source
-    assert "publish_remote_training_job" in pretraining_source
-    assert "publish_remote_training_job" in fine_tuning_source
-    assert "launch_runpod_worker_for_current_training" in pretraining_source
-    assert "launch_runpod_worker_for_current_training" in fine_tuning_source
+    assert "launch_cluster_training_job" in pretraining_source
+    assert "launch_cluster_training_job" in fine_tuning_source
 
 
 def test_hidden_live_page_skips_expensive_snapshot_render(monkeypatch) -> None:

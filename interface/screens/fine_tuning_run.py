@@ -17,9 +17,8 @@ class FineTuningRunMixin:
 
         if not hasattr(self, "fine_tune_launch_target"):
             return "local"
-        if self.fine_tune_launch_target.currentText() == "RunPod cloud":
-            return "runpod"
-        return "remote" if self.fine_tune_launch_target.currentText() == "Remote workers" else "local"
+        text = self.fine_tune_launch_target.currentText()
+        return "cluster" if "Cluster" in text else "local"
 
     def _fine_tune_output_path(self) -> Path:
         """Return the selected fine-tune output folder.

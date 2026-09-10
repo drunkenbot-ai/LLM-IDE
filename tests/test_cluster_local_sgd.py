@@ -725,4 +725,68 @@ def test_storage_bus_truncate_journal_mode(tmp_path: Path) -> None:
         assert mode.upper() in {"TRUNCATE", "MEMORY", "DELETE"}
 
 
+def test_get_active_job_sweeps_stale_jobs(tmp_path: Path) -> None:
+    """Verify get_active_job automatically marks uncoordinated jobs with stale updated_at as STOPPED."""
+    bus = ClusterStorageBus(tmp_path)
+
+    # 1. Create a job that is stale (updated_at 100 seconds ago)
+    bus.create_job("stale_job", {}, {}, "/dummy.npy")
+    with bus._connect() as conn:
+        conn.execute("UPDATE jobs SET status = 'RUNNING', updated_at = ? WHERE job_id = 'stale_job';", (time.time() - 100.0,))
+
+    # When querying with max_stale_seconds=30.0, the stale job should be swept to STOPPED
+    active = bus.get_active_job(max_stale_seconds=30.0)
+    assert active is None
+
+    # Verify in DB that it was marked STOPPED
+    stale_rec = bus.get_job("stale_job")
+    assert stale_rec is not None
+    assert stale_rec["status"] == "STOPPED"
+
+    # 2. Create a fresh active job
+    bus.create_job("fresh_job", {}, {}, "/dummy.npy")
+    bus.set_job_status("fresh_job", "RUNNING")
+    active = bus.get_active_job(max_stale_seconds=30.0)
+    assert active is not None
+    assert active["job_id"] == "fresh_job"
+
+
+def test_touch_job_coordinator_liveness(tmp_path: Path) -> None:
+    """Verify touch_job updates updated_at timestamp to signal coordinator activity."""
+    bus = ClusterStorageBus(tmp_path)
+    bus.create_job("coordinated_job", {}, {}, "/dummy.npy")
+
+    old_time = time.time() - 50.0
+    with bus._connect() as conn:
+        conn.execute("UPDATE jobs SET updated_at = ? WHERE job_id = 'coordinated_job';", (old_time,))
+
+    # Touch job
+    bus.touch_job("coordinated_job")
+
+    rec = bus.get_job("coordinated_job")
+    assert rec is not None
+    assert rec["updated_at"] > old_time + 40.0
+
+
+def test_list_workers_offline_override(tmp_path: Path) -> None:
+    """Verify list_workers marks explicitly OFFLINE or STOPPED workers as OFFLINE regardless of heartbeat freshness."""
+    bus = ClusterStorageBus(tmp_path)
+    bus.register_worker("w_offline", "host1", "RTX 3090", 24.0)
+
+    # Heartbeat with fresh timestamp (0 seconds ago) but status='OFFLINE'
+    bus.heartbeat("w_offline", status="OFFLINE")
+
+    workers = bus.list_workers(active_within_seconds=60.0)
+    assert len(workers) == 1
+    assert workers[0]["status"] == "OFFLINE"
+    assert workers[0]["is_online"] is False
+
+    # Set to IDLE -> should now be online
+    bus.heartbeat("w_offline", status="IDLE")
+    workers = bus.list_workers(active_within_seconds=60.0)
+    assert workers[0]["status"] == "IDLE"
+    assert workers[0]["is_online"] is True
+
+
+
 

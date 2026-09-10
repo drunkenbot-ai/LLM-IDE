@@ -555,10 +555,54 @@ class StandaloneStorageBus:
             return cursor.rowcount
         return int(self._run_with_retry(_op, default_on_error=0))
 
-    def get_active_job(self) -> Optional[dict[str, Any]]:
+    def touch_job(self, job_id: str) -> None:
+        """Update job updated_at timestamp to signal active coordinator heartbeat."""
+        now = time.time()
+        def _op(conn: sqlite3.Connection) -> None:
+            conn.execute("UPDATE jobs SET updated_at = ? WHERE job_id = ?;", (now, job_id))
+        self._run_with_retry(_op, silent=True)
+
+    def set_worker_status(self, worker_id: str, status: str) -> None:
+        """Explicitly set a worker's status (e.g. 'OFFLINE', 'IDLE')."""
+        self.heartbeat(worker_id, status=status, current_job_id=None)
+
+    def list_workers(self, active_within_seconds: float = 60.0) -> list[dict[str, Any]]:
+        """List all workers, calculating online status based on heartbeat freshness."""
+        now = time.time()
+        def _op(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+            cursor = conn.execute("SELECT * FROM workers ORDER BY created_at ASC;")
+            return [dict(r) for r in cursor.fetchall()]
+        rows = self._run_with_retry(_op, default_on_error=[])
+
+        results = []
+        for r in rows:
+            data = dict(r)
+            last_hb = float(data.get("last_heartbeat") or 0)
+            is_fresh = (now - last_hb) < active_within_seconds
+            stored_status = str(data.get("status") or "OFFLINE").upper()
+            if not is_fresh or stored_status in {"OFFLINE", "STOPPED"}:
+                data["is_online"] = False
+                data["status"] = "OFFLINE"
+            else:
+                data["is_online"] = True
+            results.append(data)
+        return results
+
+    def get_active_job(self, max_stale_seconds: float = 3600.0) -> Optional[dict[str, Any]]:
+        now = time.time()
         def _op(conn: sqlite3.Connection) -> Optional[dict[str, Any]]:
+            if max_stale_seconds > 0:
+                conn.execute(
+                    """
+                    UPDATE jobs
+                    SET status = 'STOPPED', updated_at = ?
+                    WHERE status IN ('RUNNING', 'QUEUED')
+                      AND (? - updated_at) > ?;
+                    """,
+                    (now, now, max_stale_seconds),
+                )
             cursor = conn.execute(
-                "SELECT * FROM jobs WHERE status IN ('RUNNING', 'QUEUED', 'PAUSED') ORDER BY created_at ASC LIMIT 1;"
+                "SELECT * FROM jobs WHERE status IN ('RUNNING', 'QUEUED', 'PAUSED') ORDER BY created_at DESC LIMIT 1;"
             )
             row = cursor.fetchone()
             if not row:
@@ -1077,7 +1121,10 @@ class StandaloneWorker:
     def log(self, message: str, level: str = "INFO") -> None:
         """Write diagnostic log to stdout and central SQLite worker_logs table."""
         timestamp_str = time.strftime("%H:%M:%S")
-        print(f"[{timestamp_str}] [{level}] [Worker {self.worker_id}] {message}", flush=True)
+        try:
+            print(f"[{timestamp_str}] [{level}] [Worker {self.worker_id}] {message}", flush=True)
+        except Exception:
+            pass
         try:
             self.bus.write_worker_log(self.worker_id, message, level=level)
         except Exception:
@@ -1087,12 +1134,63 @@ class StandaloneWorker:
         metrics = collect_system_metrics(self.device_str, self.vram_gb)
         self.bus.heartbeat(self.worker_id, status=status, current_job_id=current_job_id, metrics=metrics)
 
+    def _restart_process(self) -> None:
+        """Cleanly respawn this worker process and exit."""
+        self.log(f"Respawning worker process for {self.worker_id}...")
+        self.bus.set_worker_command(self.worker_id, None)
+        if hasattr(self, "_cleanup_func"):
+            import atexit
+            try:
+                atexit.unregister(self._cleanup_func)
+            except Exception:
+                pass
+        self._heartbeat(status="OFFLINE", current_job_id=None)
+        release_singleton_lock(self.device_tag)
+        time.sleep(0.3)
+        try:
+            flags = 0
+            if sys.platform == "win32":
+                DETACHED_PROCESS = 0x00000008
+                CREATE_NEW_PROCESS_GROUP = 0x00000200
+                CREATE_NO_WINDOW = 0x08000000
+                flags = DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW
+            log_path = Path(tempfile.gettempdir()) / "cluster_worker_local.log"
+            log_file = open(log_path, "a", encoding="utf-8")
+            subprocess.Popen(
+                [sys.executable] + sys.argv,
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                creationflags=flags,
+                close_fds=True,
+            )
+        except Exception as exc:
+            self.log(f"Failed to respawn worker process: {exc}", level="ERROR")
+        sys.exit(0)
+
     def run(self, poll_interval: float = 3.0) -> None:
         """Main worker loop: registers heartbeat, claims jobs, and trains across rounds."""
         self.log(f"Node online: {self.worker_id}")
         self.log(f"Host: {self.hostname} | Device: {self.device_str} ({self.gpu_name}, {self.vram_gb} GB VRAM)")
         self.log(f"Central Storage: {self.bus.shared_dir.resolve()} | PID: {os.getpid()} ({self.device_tag})")
         self.log("Waiting for cluster jobs...")
+
+        def _cleanup():
+            try:
+                self.bus.heartbeat(self.worker_id, status="OFFLINE", current_job_id=None)
+                release_singleton_lock(self.device_tag)
+            except Exception:
+                pass
+
+        import atexit, signal
+        self._cleanup_func = _cleanup
+        atexit.register(_cleanup)
+        try:
+            signal.signal(signal.SIGINT, lambda s, f: sys.exit(0))
+            signal.signal(signal.SIGTERM, lambda s, f: sys.exit(0))
+            if hasattr(signal, "SIGBREAK"):
+                signal.signal(signal.SIGBREAK, lambda s, f: sys.exit(0))
+        except Exception:
+            pass
 
         while True:
             try:
@@ -1104,16 +1202,19 @@ class StandaloneWorker:
                     release_singleton_lock(self.device_tag)
                     sys.exit(0)
                 elif cmd == "RESTART":
-                    self.log(f"Received RESTART command. Resetting...")
-                    self.bus.set_worker_command(self.worker_id, None)
-                    self._heartbeat(status="IDLE", current_job_id=None)
-                    time.sleep(1.0)
+                    self.log(f"Received RESTART command. Respawning process...")
+                    self._restart_process()
 
                 self._heartbeat(status="IDLE", current_job_id=None)
                 active_job = self.bus.get_active_job()
 
-                if active_job and active_job.get("status") in {"RUNNING", "QUEUED"}:
-                    self._execute_job(active_job, poll_interval=poll_interval)
+                if active_job:
+                    status = active_job.get("status")
+                    jid = active_job.get("job_id", "")
+                    if status == "RUNNING" and not self.bus.is_stopped(jid):
+                        self._execute_job(active_job, poll_interval=poll_interval)
+                    elif status == "QUEUED":
+                        self._heartbeat(status="READY", current_job_id=jid)
             except Exception as exc:
                 self.log(f"Transient error in worker poll loop: {exc}", level="WARNING")
 
@@ -1123,6 +1224,19 @@ class StandaloneWorker:
         job_id = job["job_id"]
         self.log(f">>> Claimed job: {job_id}")
         self._heartbeat(status="PREPARING", current_job_id=job_id)
+
+        model = None
+        optimizer = None
+        dataloader = None
+        dataloader_iter = None
+        dataset = None
+        token_array = None
+        global_weights = None
+        batch = None
+        x = None
+        y = None
+        logits = None
+        loss = None
 
         try:
             shard_idx, total_shards = self.bus.claim_job_slot(job_id, self.worker_id)
@@ -1165,6 +1279,7 @@ class StandaloneWorker:
             model = build_worker_model(model_cfg, self.device_str)
             optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
             self.log(f"Initialized model for {self.worker_id} on {self.device_str}. Ready to train.")
+            self._heartbeat(status="READY", current_job_id=job_id)
         except Exception as exc:
             import traceback
             tb = traceback.format_exc()
@@ -1189,6 +1304,9 @@ class StandaloneWorker:
                     self._heartbeat(status="OFFLINE", current_job_id=None)
                     release_singleton_lock(self.device_tag)
                     sys.exit(0)
+                elif cmd == "RESTART":
+                    print(f"[ClusterWorker] Received RESTART command during job {job_id}.")
+                    self._restart_process()
 
                 # Handle cooperative pause
                 while self.bus.is_paused(job_id):
@@ -1227,8 +1345,22 @@ class StandaloneWorker:
                 start_time = time.time()
                 tokens_processed = 0
                 step_losses = []
-                for _ in range(sync_steps):
+                for step_idx in range(sync_steps):
+                    if step_idx % 5 == 0:
+                        cmd = self.bus.get_worker_command(self.worker_id)
+                        if cmd == "STOP":
+                            self.log("Received STOP command during training. Shutting down...")
+                            self.bus.set_worker_command(self.worker_id, None)
+                            self._heartbeat(status="OFFLINE", current_job_id=None)
+                            release_singleton_lock(self.device_tag)
+                            sys.exit(0)
+                        elif cmd == "RESTART":
+                            self.log("Received RESTART command during training. Restarting process...")
+                            self._restart_process()
+                    if step_idx % 20 == 0:
+                        self._heartbeat(status="TRAINING", current_job_id=job_id)
                     if self.bus.is_stopped(job_id):
+                        self.log(f"Job {job_id} stopped. Aborting training loop.")
                         return
                     try:
                         batch = next(dataloader_iter)
@@ -1254,6 +1386,7 @@ class StandaloneWorker:
                 print(f"[ClusterWorker] Finished round {cur_round} (avg loss: {avg_loss:.4f}, speed: {tokens_per_sec:.0f} tok/s). Depositing weights & telemetry...")
 
                 # Save local weights
+                self._heartbeat(status="DEPOSITING", current_job_id=job_id)
                 self.bus.save_worker_weights(
                     job_id=job_id,
                     round_num=cur_round,
@@ -1300,6 +1433,42 @@ class StandaloneWorker:
             self.log(f"Training failed for job {job_id}:\n{tb}", level="ERROR")
             self._heartbeat(status="ERROR", current_job_id=job_id)
             return
+        finally:
+            # Explicitly free model weights, optimizer states, and CUDA memory
+            try:
+                if model is not None:
+                    model.to("cpu")
+            except Exception:
+                pass
+
+            model = None
+            optimizer = None
+            dataloader = None
+            dataloader_iter = None
+            dataset = None
+            token_array = None
+            global_weights = None
+            batch = None
+            x = None
+            y = None
+            logits = None
+            loss = None
+
+            import gc
+            gc.collect()
+            if torch.cuda.is_available():
+                try:
+                    torch.cuda.empty_cache()
+                    torch.cuda.ipc_collect()
+                except Exception:
+                    pass
+
+            try:
+                cmd = self.bus.get_worker_command(self.worker_id)
+                if cmd != "STOP":
+                    self._heartbeat(status="IDLE", current_job_id=None)
+            except Exception:
+                pass
 
 
 # =============================================================================
