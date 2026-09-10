@@ -345,15 +345,28 @@ class ClusterScreenMixin:
                         vocab_size = v
                         break
 
-            # Fallback: inspect token array upper bound
+            # Fallback: inspect token array upper bound and metadata
             if os.path.exists(dataset_path):
                 try:
                     import numpy as np
                     tok_arr = np.load(dataset_path, mmap_mode="r")
-                    sample_slice = tok_arr[:min(len(tok_arr), 100000)]
-                    if len(sample_slice) > 0:
-                        max_in_arr = int(np.max(sample_slice))
-                        vocab_size = max(vocab_size, max_in_arr + 1)
+                    arr_len = len(tok_arr)
+                    if arr_len <= 10_000_000:
+                        max_in_arr = int(np.max(tok_arr))
+                    else:
+                        slices = [
+                            tok_arr[:200000],
+                            tok_arr[arr_len // 4 : (arr_len // 4) + 200000],
+                            tok_arr[arr_len // 2 : (arr_len // 2) + 200000],
+                            tok_arr[(3 * arr_len) // 4 : ((3 * arr_len) // 4) + 200000],
+                            tok_arr[-200000:],
+                        ]
+                        max_in_arr = max(int(np.max(s)) for s in slices if len(s) > 0)
+                    if max_in_arr > 0:
+                        safe_v = ((max_in_arr + 1 + 255) // 256) * 256
+                        if 31000 <= max_in_arr < 32000:
+                            safe_v = max(safe_v, 32000)
+                        vocab_size = max(vocab_size, safe_v)
                 except Exception:
                     pass
 
