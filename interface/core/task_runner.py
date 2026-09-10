@@ -202,18 +202,16 @@ class TaskRunnerMixin:
             event.ignore()
             QTimer.singleShot(500, self.close)
             return
-        if hasattr(self, "_local_worker_procs") and self._local_worker_procs:
-            for dev, proc in list(self._local_worker_procs.items()):
-                try:
-                    if proc.poll() is None:
-                        proc.terminate()
-                except Exception:
-                    pass
-        if hasattr(self, "stop_cluster_job"):
+        # Auto-save project state on exit so all UI parameters persist
+        if getattr(self, "current_project_file", None) is not None:
             try:
-                self.stop_cluster_job()
-            except Exception:
-                pass
+                self.save_project()
+                LOGGER.info("Project state auto-saved on exit: %s", self.current_project_file)
+            except Exception as exc:
+                LOGGER.warning("Could not auto-save project on exit: %s", exc)
+
+        # Note: Background cluster jobs and local worker daemons are intentionally
+        # preserved across IDE restarts. They continue training unhindered in the background.
         if getattr(self, "coordinator_server", None) is not None:
             self.stop_coordinator_server()
         super().closeEvent(event)

@@ -166,6 +166,8 @@ class ProjectManagerMixin:
         self.dataset_log.append(f"Opened project: {project_file}")
         self.dataset_log.append(f"Notifier config: {self.current_project_file.parent / 'notifier_config.json'}")
         self.refresh_model_estimate()
+        if hasattr(self, "refresh_job_manager_tab"):
+            QTimer.singleShot(100, self.refresh_job_manager_tab)
 
     def _project_dialog_start_dir(self) -> str:
         """Return the best initial folder for project dialogs.

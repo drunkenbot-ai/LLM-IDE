@@ -392,10 +392,10 @@ class ProjectStateMixin:
                 "system_prompt": self.system_prompt.toPlainText(),
             },
             "distributed": {
-                "host": self.coordinator_host.text(),
-                "port": self.coordinator_port.value(),
-                "artifact_root": self.coordinator_artifact_root.text(),
-                "public_url": self.coordinator_public_url.text(),
+                "host": self.coordinator_host.text() if hasattr(self, "coordinator_host") else "0.0.0.0",
+                "port": self.coordinator_port.value() if hasattr(self, "coordinator_port") else 8765,
+                "artifact_root": self.coordinator_artifact_root.text() if hasattr(self, "coordinator_artifact_root") else str(Path.home() / ".drunkenbot_ide" / "artifacts"),
+                "public_url": self.coordinator_public_url.text() if hasattr(self, "coordinator_public_url") else "http://127.0.0.1:8765",
             },
             "cluster": {
                 "shared_dir": self.cluster_shared_dir.text() if hasattr(self, "cluster_shared_dir") else "",
