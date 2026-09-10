@@ -67,7 +67,9 @@ def build_cluster_card(window) -> QWidget:
     window._configure_form(form)
 
     # Central Shared Drive path
-    window.cluster_shared_dir = QLineEdit(str(Path.home() / "llm_cluster_shared"))
+    import os
+    default_shared = os.environ.get("LLM_SHARED_PATH") or os.environ.get("LLM_SHARED_DIR") or str(Path.home() / "llm_cluster_shared")
+    window.cluster_shared_dir = QLineEdit(str(default_shared))
     window._tip(window.cluster_shared_dir, "Path to centralized network storage folder (SMB/NFS/NAS) shared across all worker machines.")
 
     shared_dir_row = QHBoxLayout()
@@ -161,6 +163,21 @@ def build_cluster_card(window) -> QWidget:
     )
     window.cluster_worker_table.setContextMenuPolicy(Qt.CustomContextMenu)
     window.cluster_worker_table.customContextMenuRequested.connect(window.show_cluster_worker_context_menu)
+    window.cluster_worker_table.itemSelectionChanged.connect(window.on_cluster_worker_selected)
+
+    # Worker diagnostic log viewer
+    worker_log_header = QHBoxLayout()
+    window.cluster_selected_worker_label = QLabel("<b>WORKER DIAGNOSTIC LOGS</b> (Select a worker in the table above)")
+    worker_log_header.addWidget(window.cluster_selected_worker_label)
+    worker_log_header.addStretch(1)
+    window.cluster_refresh_worker_logs_btn = QPushButton("Refresh Worker Logs")
+    window.cluster_refresh_worker_logs_btn.clicked.connect(window.refresh_selected_worker_logs)
+    worker_log_header.addWidget(window.cluster_refresh_worker_logs_btn)
+
+    window.cluster_worker_log = QTextEdit()
+    window.cluster_worker_log.setReadOnly(True)
+    window.cluster_worker_log.setMinimumHeight(120)
+    window.cluster_worker_log.setPlaceholderText("Select a worker row above to inspect its real-time console and error logs from shared database...")
 
     window.cluster_log = QTextEdit()
     window.cluster_log.setReadOnly(True)
@@ -173,6 +190,8 @@ def build_cluster_card(window) -> QWidget:
     holder_layout.addLayout(form)
     holder_layout.addWidget(QLabel("<b>DISCOVERED CLUSTER WORKER FLEET</b>"))
     holder_layout.addWidget(window.cluster_worker_table)
+    holder_layout.addLayout(worker_log_header)
+    holder_layout.addWidget(window.cluster_worker_log)
     holder_layout.addWidget(QLabel("<b>CLUSTER EVENT LOG</b>"))
     holder_layout.addWidget(window.cluster_log)
 

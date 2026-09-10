@@ -166,13 +166,17 @@ def build(*, clean: bool, runtime_dir: Path | None = None, gpu: bool = False) ->
     _remove_deep_license_dirs(bundle / "runtime" / "Lib" / "site-packages")
     shutil.copy2(_require_path(ROOT / "run_app.py"), bundle / "run_app.py")
     shutil.copy2(_require_path(PACKAGING_ROOT / "runtime_setup.py"), bundle / "runtime_setup.py")
-    for package_name in ("engine", "interface"):
-        shutil.copytree(
-            ROOT / package_name,
-            bundle / package_name,
-            ignore=shutil.ignore_patterns("default_data", "__pycache__", "*.pyc"),
-            dirs_exist_ok=True,
-        )
+    if (ROOT / "cluster_worker.py").exists():
+        shutil.copy2(ROOT / "cluster_worker.py", bundle / "cluster_worker.py")
+    for package_name in ("engine", "interface", "cluster", "inference"):
+        pkg_dir = ROOT / package_name
+        if pkg_dir.exists():
+            shutil.copytree(
+                pkg_dir,
+                bundle / package_name,
+                ignore=shutil.ignore_patterns("default_data", "__pycache__", "*.pyc"),
+                dirs_exist_ok=True,
+            )
     if target == "windows":
         # Keep compiler output outside the PyInstaller source tree.
         installer_output_dir = OUTPUT_ROOT

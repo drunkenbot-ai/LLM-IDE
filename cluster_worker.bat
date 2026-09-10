@@ -42,12 +42,17 @@ if "%1"=="--status" (
     goto :eof
 )
 
-rem Check LLM_SHARED_DIR or arguments
+rem Check LLM_SHARED_PATH or LLM_SHARED_DIR
+if "%LLM_SHARED_DIR%"=="" (
+    if not "%LLM_SHARED_PATH%"=="" (
+        set "LLM_SHARED_DIR=%LLM_SHARED_PATH%"
+    )
+)
 if "%LLM_SHARED_DIR%"=="" (
     if "%1"=="" (
-        echo [ClusterWorker] Environment variable LLM_SHARED_DIR is not set.
+        echo [ClusterWorker] Environment variable LLM_SHARED_PATH or LLM_SHARED_DIR is not set.
         echo [ClusterWorker] Please either:
-        echo   1. set LLM_SHARED_DIR=\\nas\shared_folder   ^(or a local directory like C:\llm_cluster^)
+        echo   1. set LLM_SHARED_PATH=\\nas\shared_folder   ^(or a local directory like C:\llm_cluster^)
         echo   2. Run: cluster_worker.bat --shared-dir C:\llm_cluster
         echo.
     )

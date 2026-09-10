@@ -137,6 +137,13 @@ class ProjectStateMixin:
                 "artifact_root": str(Path.home() / ".drunkenbot_ide" / "artifacts"),
                 "public_url": "http://127.0.0.1:8765",
             },
+            "cluster": {
+                "shared_dir": os.environ.get("LLM_SHARED_PATH") or os.environ.get("LLM_SHARED_DIR") or str(Path.home() / "llm_cluster_shared"),
+                "sync_steps": 250,
+                "max_rounds": 10,
+                "sync_timeout": 180,
+                "min_workers": 1,
+            },
             "artifacts": {},
         }
 
@@ -389,6 +396,13 @@ class ProjectStateMixin:
                 "port": self.coordinator_port.value(),
                 "artifact_root": self.coordinator_artifact_root.text(),
                 "public_url": self.coordinator_public_url.text(),
+            },
+            "cluster": {
+                "shared_dir": self.cluster_shared_dir.text() if hasattr(self, "cluster_shared_dir") else "",
+                "sync_steps": self.cluster_sync_steps.value() if hasattr(self, "cluster_sync_steps") else 250,
+                "max_rounds": self.cluster_max_rounds.value() if hasattr(self, "cluster_max_rounds") else 10,
+                "sync_timeout": self.cluster_sync_timeout.value() if hasattr(self, "cluster_sync_timeout") else 180,
+                "min_workers": self.cluster_min_workers.value() if hasattr(self, "cluster_min_workers") else 1,
             },
             "artifacts": {
                 "dataset_summary": self._read_json_if_exists(dataset_dir / "dataset_summary.json") if dataset_dir else None,
