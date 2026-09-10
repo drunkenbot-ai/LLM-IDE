@@ -357,6 +357,13 @@ class TrainingRunMixin:
             from cluster.cluster_worker import get_all_running_worker_pids
             if not get_all_running_worker_pids() and hasattr(self, "start_local_cluster_workers"):
                 self.start_local_cluster_workers()
+
+            if hasattr(self, "train_button"):
+                self.train_button.setEnabled(False)
+                self.train_button.setText("Training...")
+            if hasattr(self, "stop_training_button"):
+                self.stop_training_button.setEnabled(True)
+                self.stop_training_button.setText("Stop")
             return
         self.active_training_log = self.training_log
         self.active_training_progress = self.training_progress

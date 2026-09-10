@@ -310,6 +310,30 @@ class JobManagerScreenMixin:
                     self.project_state.setText("Training")
                 if hasattr(self, "stop_training_button"):
                     self.stop_training_button.setEnabled(True)
+                if hasattr(self, "train_button") and self.train_button.isEnabled():
+                    self.train_button.setEnabled(False)
+                    self.train_button.setText("Training...")
+                if hasattr(self, "fine_tune_button") and self.fine_tune_button.isEnabled():
+                    self.fine_tune_button.setEnabled(False)
+                    self.fine_tune_button.setText("Fine-Tuning...")
+            elif cur_st in {"STOPPED", "COMPLETED", "FAILED"}:
+                if not getattr(self, "training_controller", None) or not getattr(self.training_controller, "active", False):
+                    if hasattr(self, "train_button") and not self.train_button.isEnabled():
+                        self.train_button.setEnabled(True)
+                        self.train_button.setText("Start Training")
+                    if hasattr(self, "fine_tune_button") and not self.fine_tune_button.isEnabled():
+                        self.fine_tune_button.setEnabled(True)
+                        self.fine_tune_button.setText("Start Fine-Tune")
+                    if hasattr(self, "stop_training_button") and self.stop_training_button.isEnabled():
+                        self.stop_training_button.setEnabled(False)
+        else:
+            if not getattr(self, "training_controller", None) or not getattr(self.training_controller, "active", False):
+                if hasattr(self, "train_button") and self.train_button.text() == "Training...":
+                    self.train_button.setEnabled(True)
+                    self.train_button.setText("Start Training")
+                if hasattr(self, "fine_tune_button") and self.fine_tune_button.text() == "Fine-Tuning...":
+                    self.fine_tune_button.setEnabled(True)
+                    self.fine_tune_button.setText("Start Fine-Tune")
 
                 # Populate Training Tab Charts from loaded rounds
                 rounds = data.get("rounds", [])

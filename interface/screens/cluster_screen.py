@@ -406,6 +406,20 @@ class ClusterScreenMixin:
             if not get_all_running_worker_pids() and hasattr(self, "start_local_cluster_workers"):
                 self.start_local_cluster_workers()
 
+            if hasattr(self, "train_button"):
+                self.train_button.setEnabled(False)
+                self.train_button.setText("Training...")
+            if hasattr(self, "fine_tune_button"):
+                self.fine_tune_button.setEnabled(False)
+                self.fine_tune_button.setText("Fine-Tuning...")
+            if hasattr(self, "stop_training_button"):
+                self.stop_training_button.setEnabled(True)
+                self.stop_training_button.setText("Stop")
+            if hasattr(self, "project_state"):
+                self.project_state.setText("Training")
+            if hasattr(self, "train_status"):
+                self.train_status.setText(f"Training: Cluster (Local SGD) - Round 0/{max_rounds}")
+
             self.refresh_cluster_status()
 
         except Exception as exc:
@@ -540,6 +554,12 @@ class ClusterScreenMixin:
 
         if hasattr(self, "stop_training_button"):
             self.stop_training_button.setEnabled(False)
+        if hasattr(self, "train_button"):
+            self.train_button.setEnabled(True)
+            self.train_button.setText("Start Training")
+        if hasattr(self, "fine_tune_button"):
+            self.fine_tune_button.setEnabled(True)
+            self.fine_tune_button.setText("Start Fine-Tune")
 
         self.refresh_cluster_status()
 
@@ -552,6 +572,9 @@ class ClusterScreenMixin:
         if active:
             bus.set_job_status(active["job_id"], "PAUSED")
             self._log_cluster_event(f"Signal PAUSE set for job {active['job_id']}.")
+            if hasattr(self, "train_button"):
+                self.train_button.setEnabled(True)
+                self.train_button.setText("Resume Training")
             self.refresh_cluster_status()
 
     def _is_coordinator_running(self, bus: ClusterStorageBus, job_id: str) -> bool:
@@ -636,8 +659,15 @@ class ClusterScreenMixin:
             self.start_local_cluster_workers()
 
         # Synchronize Training Tab status and buttons
+        if hasattr(self, "train_button"):
+            self.train_button.setEnabled(False)
+            self.train_button.setText("Training...")
+        if hasattr(self, "fine_tune_button"):
+            self.fine_tune_button.setEnabled(False)
+            self.fine_tune_button.setText("Fine-Tuning...")
         if hasattr(self, "stop_training_button"):
             self.stop_training_button.setEnabled(True)
+            self.stop_training_button.setText("Stop")
         if hasattr(self, "project_state"):
             self.project_state.setText("Training")
         if hasattr(self, "train_status"):
@@ -687,6 +717,12 @@ class ClusterScreenMixin:
                 self.refresh_job_manager_tab()
         if hasattr(self, "stop_training_button"):
             self.stop_training_button.setEnabled(False)
+        if hasattr(self, "train_button"):
+            self.train_button.setEnabled(True)
+            self.train_button.setText("Start Training")
+        if hasattr(self, "fine_tune_button"):
+            self.fine_tune_button.setEnabled(True)
+            self.fine_tune_button.setText("Start Fine-Tune")
         if hasattr(self, "project_state"):
             self.project_state.setText("Stopped")
         if hasattr(self, "train_status"):

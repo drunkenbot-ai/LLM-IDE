@@ -167,6 +167,12 @@ class TrainingProcessMixin:
                 self.stop_cluster_job()
             if hasattr(self, "stop_training_button"):
                 self.stop_training_button.setEnabled(False)
+            if hasattr(self, "train_button"):
+                self.train_button.setEnabled(True)
+                self.train_button.setText("Start Training")
+            if hasattr(self, "fine_tune_button"):
+                self.fine_tune_button.setEnabled(True)
+                self.fine_tune_button.setText("Start Fine-Tune")
             if hasattr(self, "project_state"):
                 self.project_state.setText("Stopped")
             if hasattr(self, "train_status"):

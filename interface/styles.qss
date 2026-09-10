@@ -181,6 +181,44 @@ QComboBox QAbstractItemView::item:selected {
     color: #f5b041;
 }
 
+QTabWidget::pane {
+    border: 1px solid #333333;
+    border-radius: 6px;
+    background: #141414;
+    top: -1px;
+}
+
+QTabBar::tab {
+    background: #1f1f1f;
+    color: #dddddd;
+    border: 1px solid #3a3a3a;
+    border-bottom: none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    padding: 6px 14px;
+    margin-right: 3px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+QTabBar::tab:hover {
+    background: #2a2a2a;
+    color: #ffffff;
+    border-color: #555555;
+}
+
+QTabBar::tab:selected {
+    background: #141414;
+    color: #f5b041;
+    border: 1px solid #333333;
+    border-top: 2px solid #f5b041;
+    border-bottom: 1px solid #141414;
+}
+
+QTabBar::tab:!selected {
+    margin-top: 2px;
+}
+
 QCheckBox {
     color: #dddddd;
     spacing: 8px;
