@@ -400,6 +400,12 @@ class ClusterScreenMixin:
             bus.set_job_status(job_id, "RUNNING")
             self._log_cluster_event(f"Successfully queued job {job_id} across cluster.")
             self._start_cluster_coordinator(bus, job_id)
+
+            # Auto-launch local worker(s) if none are running on this host
+            from cluster.cluster_worker import get_all_running_worker_pids
+            if not get_all_running_worker_pids() and hasattr(self, "start_local_cluster_workers"):
+                self.start_local_cluster_workers()
+
             self.refresh_cluster_status()
 
         except Exception as exc:
@@ -624,6 +630,11 @@ class ClusterScreenMixin:
         else:
             self._log_cluster_event(f"Coordinator daemon for {jid} is already active.")
 
+        # Auto-launch local worker(s) if none are running on this host
+        from cluster.cluster_worker import get_all_running_worker_pids
+        if not get_all_running_worker_pids() and hasattr(self, "start_local_cluster_workers"):
+            self.start_local_cluster_workers()
+
         # Synchronize Training Tab status and buttons
         if hasattr(self, "stop_training_button"):
             self.stop_training_button.setEnabled(True)
@@ -839,6 +850,18 @@ class ClusterScreenMixin:
         """Cleanly terminate and re-launch local worker processes."""
         from cluster.cluster_worker import get_all_running_worker_pids
         self._log_cluster_event("Restarting local cluster worker processes...")
+        # Clear any pending commands for this host in the cluster database
+        bus = self._get_cluster_bus()
+        if bus:
+            import socket
+            host = socket.gethostname().lower()
+            try:
+                for w in bus.list_workers():
+                    wid = str(w.get("worker_id", ""))
+                    if host in wid.lower():
+                        bus.set_worker_command(wid, None)
+            except Exception:
+                pass
         self.stop_local_cluster_workers()
         # Wait up to 2 seconds for previous worker processes to exit and release lock files
         for _ in range(10):
@@ -1006,9 +1029,16 @@ class ClusterScreenMixin:
         bus = self._get_cluster_bus()
 
         if is_local:
-            parts = worker_id.split("_", 1)
-            tag = parts[1] if len(parts) > 1 else "default"
-            dev = tag.replace("_", ":")
+            if "_cuda_" in worker_id:
+                tag = "cuda_" + worker_id.rsplit("_cuda_", 1)[1]
+                dev = tag.replace("_", ":")
+            elif worker_id.endswith("_cpu"):
+                tag = "cpu"
+                dev = "cpu"
+            else:
+                parts = worker_id.rsplit("_", 1)
+                tag = parts[1] if len(parts) > 1 else "default"
+                dev = tag.replace("_", ":")
 
             self._log_cluster_event(f"Restarting local worker '{worker_id}' (device: {dev})...")
 
@@ -1038,6 +1068,7 @@ class ClusterScreenMixin:
 
             if bus:
                 bus.heartbeat(worker_id, status="OFFLINE", current_job_id=None)
+                bus.set_worker_command(worker_id, None)
 
             # 3. Launch fresh worker for this device
             path_str = self.cluster_shared_dir.text().strip() if hasattr(self, "cluster_shared_dir") else ""

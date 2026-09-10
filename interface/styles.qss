@@ -102,7 +102,7 @@ QLabel#MessageMeta {
     font-weight: 700;
 }
 
-QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox {
+QLineEdit, QSpinBox, QDoubleSpinBox {
     background: #111111;
     color: #f0f0f0;
     border: 1px solid #555555;
@@ -111,9 +111,74 @@ QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox {
     min-height: 20px;
 }
 
-QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QComboBox:focus {
+QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus {
     border-color: #f5b041;
     background: #181818;
+}
+
+QComboBox {
+    background: #111111;
+    color: #f0f0f0;
+    border: 1px solid #555555;
+    border-radius: 7px;
+    padding: 5px 24px 5px 8px;
+    min-height: 20px;
+}
+
+QComboBox:focus, QComboBox:on {
+    border-color: #f5b041;
+    background: #181818;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 22px;
+    border-left: 1px solid #444444;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    background: #1a1a1a;
+}
+
+QComboBox::down-arrow {
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #d4d4d4;
+    margin-right: 2px;
+}
+
+QComboBox::down-arrow:hover {
+    border-top: 5px solid #f5b041;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    selection-background-color: #333333;
+    selection-color: #f5b041;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    padding: 4px;
+    outline: none;
+}
+
+QComboBox QAbstractItemView::item {
+    min-height: 26px;
+    padding: 4px 8px;
+    color: #f0f0f0;
+    background-color: #1a1a1a;
+}
+
+QComboBox QAbstractItemView::item:hover {
+    background-color: #2a2a2a;
+    color: #f5b041;
+}
+
+QComboBox QAbstractItemView::item:selected {
+    background-color: #333333;
+    color: #f5b041;
 }
 
 QCheckBox {

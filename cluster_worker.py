@@ -1121,7 +1121,10 @@ class StandaloneWorker:
     def log(self, message: str, level: str = "INFO") -> None:
         """Write diagnostic log to stdout and central SQLite worker_logs table."""
         timestamp_str = time.strftime("%H:%M:%S")
-        print(f"[{timestamp_str}] [{level}] [Worker {self.worker_id}] {message}", flush=True)
+        try:
+            print(f"[{timestamp_str}] [{level}] [Worker {self.worker_id}] {message}", flush=True)
+        except Exception:
+            pass
         try:
             self.bus.write_worker_log(self.worker_id, message, level=level)
         except Exception:
@@ -1135,6 +1138,12 @@ class StandaloneWorker:
         """Cleanly respawn this worker process and exit."""
         self.log(f"Respawning worker process for {self.worker_id}...")
         self.bus.set_worker_command(self.worker_id, None)
+        if hasattr(self, "_cleanup_func"):
+            import atexit
+            try:
+                atexit.unregister(self._cleanup_func)
+            except Exception:
+                pass
         self._heartbeat(status="OFFLINE", current_job_id=None)
         release_singleton_lock(self.device_tag)
         time.sleep(0.3)
@@ -1145,7 +1154,15 @@ class StandaloneWorker:
                 CREATE_NEW_PROCESS_GROUP = 0x00000200
                 CREATE_NO_WINDOW = 0x08000000
                 flags = DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW
-            subprocess.Popen([sys.executable] + sys.argv, creationflags=flags, close_fds=True)
+            log_path = Path(tempfile.gettempdir()) / "cluster_worker_local.log"
+            log_file = open(log_path, "a", encoding="utf-8")
+            subprocess.Popen(
+                [sys.executable] + sys.argv,
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                creationflags=flags,
+                close_fds=True,
+            )
         except Exception as exc:
             self.log(f"Failed to respawn worker process: {exc}", level="ERROR")
         sys.exit(0)
@@ -1165,6 +1182,7 @@ class StandaloneWorker:
                 pass
 
         import atexit, signal
+        self._cleanup_func = _cleanup
         atexit.register(_cleanup)
         try:
             signal.signal(signal.SIGINT, lambda s, f: sys.exit(0))
@@ -1248,6 +1266,7 @@ class StandaloneWorker:
             model = build_worker_model(model_cfg, self.device_str)
             optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
             self.log(f"Initialized model for {self.worker_id} on {self.device_str}. Ready to train.")
+            self._heartbeat(status="READY", current_job_id=job_id)
         except Exception as exc:
             import traceback
             tb = traceback.format_exc()
@@ -1325,6 +1344,8 @@ class StandaloneWorker:
                         elif cmd == "RESTART":
                             self.log("Received RESTART command during training. Restarting process...")
                             self._restart_process()
+                    if step_idx % 20 == 0:
+                        self._heartbeat(status="TRAINING", current_job_id=job_id)
                     if self.bus.is_stopped(job_id):
                         self.log(f"Job {job_id} stopped. Aborting training loop.")
                         return
@@ -1352,6 +1373,7 @@ class StandaloneWorker:
                 print(f"[ClusterWorker] Finished round {cur_round} (avg loss: {avg_loss:.4f}, speed: {tokens_per_sec:.0f} tok/s). Depositing weights & telemetry...")
 
                 # Save local weights
+                self._heartbeat(status="DEPOSITING", current_job_id=job_id)
                 self.bus.save_worker_weights(
                     job_id=job_id,
                     round_num=cur_round,

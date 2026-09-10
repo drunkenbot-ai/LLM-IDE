@@ -352,6 +352,11 @@ class TrainingRunMixin:
                 self.resume_cluster_job(existing_job["job_id"])
             else:
                 self.launch_cluster_training_job()
+
+            # Ensure local cluster worker(s) are running so the job is processed immediately
+            from cluster.cluster_worker import get_all_running_worker_pids
+            if not get_all_running_worker_pids() and hasattr(self, "start_local_cluster_workers"):
+                self.start_local_cluster_workers()
             return
         self.active_training_log = self.training_log
         self.active_training_progress = self.training_progress
