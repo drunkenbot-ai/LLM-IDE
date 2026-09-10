@@ -79,11 +79,7 @@ class TrainingScreenMixin:
         """
 
         text = self.training_launch_target.currentText()
-        if text == "Cluster (Local SGD)":
-            return "cluster"
-        if text == "RunPod cloud":
-            return "runpod"
-        return "remote" if text == "Remote workers" else "local"
+        return "cluster" if "Cluster" in text else "local"
 
     def _architecture_style_config(self) -> dict[str, Any]:
         """Return ModelConfig keyword arguments for the selected block style.

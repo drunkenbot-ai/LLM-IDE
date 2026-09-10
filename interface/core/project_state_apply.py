@@ -91,15 +91,16 @@ class ProjectStateApplyMixin:
         self._set_combo_text(self.architecture_style, str(training.get("architecture_style", self.architecture_style.currentText())))
         self._set_combo_by_data(self.training_launch_target, str(training.get("launch_target", "local")), {
             "local": "Local machine",
-            "remote": "Remote workers",
+            "remote": "Cluster (Local SGD)",
             "cluster": "Cluster (Local SGD)",
-            "runpod": "RunPod cloud",
+            "runpod": "Cluster (Local SGD)",
         })
         if hasattr(self, "fine_tune_launch_target"):
             self._set_combo_by_data(self.fine_tune_launch_target, str(training.get("fine_tune_launch_target", "local")), {
                 "local": "Local machine",
-                "remote": "Remote workers",
-                "runpod": "RunPod cloud",
+                "remote": "Cluster (Local SGD)",
+                "cluster": "Cluster (Local SGD)",
+                "runpod": "Cluster (Local SGD)",
             })
         self.n_embd.setValue(int(training.get("n_embd", self.n_embd.value())))
         self.n_head.setValue(int(training.get("n_head", self.n_head.value())))

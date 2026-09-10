@@ -340,12 +340,6 @@ class TrainingRunMixin:
                 self.train_status.setText("Training: Cluster (Local SGD)")
             self.launch_cluster_training_job()
             return
-        if launch_target == "runpod":
-            self.launch_runpod_worker_for_current_training()
-            return
-        if launch_target == "remote":
-            self.publish_remote_training_job()
-            return
         self.active_training_log = self.training_log
         self.active_training_progress = self.training_progress
         self.active_training_final_button_text = "Start Training"

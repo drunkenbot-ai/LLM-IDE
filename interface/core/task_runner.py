@@ -214,7 +214,7 @@ class TaskRunnerMixin:
                 self.stop_cluster_job()
             except Exception:
                 pass
-        if self.coordinator_server is not None:
+        if getattr(self, "coordinator_server", None) is not None:
             self.stop_coordinator_server()
         super().closeEvent(event)
 

@@ -284,11 +284,11 @@ def build_training_tab(window) -> QWidget:
     runtime = QFormLayout()
     window._configure_form(runtime)
     window.training_launch_target = QComboBox()
-    window.training_launch_target.addItems(["Local machine", "Remote workers", "Cluster (Local SGD)"])
+    window.training_launch_target.addItems(["Local machine", "Cluster (Local SGD)"])
     window.training_launch_target.setMaximumWidth(260)
     window._tip(
         window.training_launch_target,
-        "Local runs training on this computer. Remote publishes a job for workers. Cluster runs distributed training via shared storage.",
+        "Local machine runs training directly on this computer. Cluster (Local SGD) distributes training across networked GPU nodes via shared storage.",
     )
     runtime.addRow("Launch", window.training_launch_target)
     window.training_process_status = QLabel("Worker: detached | Run: - | PID: -")

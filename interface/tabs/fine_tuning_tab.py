@@ -138,11 +138,11 @@ def build_fine_tuning_tab(window) -> QWidget:
     runtime_form = QFormLayout()
     window._configure_form(runtime_form)
     window.fine_tune_launch_target = QComboBox()
-    window.fine_tune_launch_target.addItems(["Local machine", "Remote workers", "RunPod cloud"])
+    window.fine_tune_launch_target.addItems(["Local machine", "Cluster (Local SGD)"])
     window.fine_tune_launch_target.setMaximumWidth(300)
     window._tip(
         window.fine_tune_launch_target,
-        "Local runs fine-tuning on this computer. Remote queues it for workers. RunPod creates a cloud GPU worker automatically.",
+        "Local machine runs fine-tuning directly on this computer. Cluster (Local SGD) distributes fine-tuning across networked GPU nodes via shared storage.",
     )
     window.fine_tune_runtime_hint = QLabel("Uses AI tab device, precision, resume, and checkpoint settings.")
     window.fine_tune_runtime_hint.setObjectName("Metric")

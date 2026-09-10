@@ -1173,8 +1173,13 @@ class StandaloneWorker:
                 self._heartbeat(status="IDLE", current_job_id=None)
                 active_job = self.bus.get_active_job()
 
-                if active_job and active_job.get("status") in {"RUNNING", "QUEUED"}:
-                    self._execute_job(active_job, poll_interval=poll_interval)
+                if active_job:
+                    status = active_job.get("status")
+                    jid = active_job.get("job_id", "")
+                    if status == "RUNNING" and not self.bus.is_stopped(jid):
+                        self._execute_job(active_job, poll_interval=poll_interval)
+                    elif status == "QUEUED":
+                        self._heartbeat(status="READY", current_job_id=jid)
             except Exception as exc:
                 self.log(f"Transient error in worker poll loop: {exc}", level="WARNING")
 

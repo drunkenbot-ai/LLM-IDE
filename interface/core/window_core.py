@@ -74,11 +74,10 @@ class WindowCoreMixin:
         self.spinner_timer.timeout.connect(self._tick_spinner)
         self.progress_timer = QTimer(self)
         self.progress_timer.timeout.connect(self._drain_progress_queue)
-        self.job_manager = JobManager()
-        self.coordinator_server: Optional[CoordinatorApiServer] = None
-        self.coordinator_thread: Optional[Thread] = None
+        self.coordinator_server = None
+        self.job_manager = None
         self.job_manager_timer = QTimer(self)
-        self.job_manager_timer.setInterval(4000)
+        self.job_manager_timer.setInterval(3000)
         self.job_manager_timer.timeout.connect(self.refresh_job_manager_tab)
 
         self.theme_name = current_theme()
