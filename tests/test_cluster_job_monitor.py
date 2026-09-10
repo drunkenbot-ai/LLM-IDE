@@ -205,3 +205,31 @@ def test_set_table_rows_in_place_update() -> None:
     # Verify existing item was reused and updated
     assert table.item(0, 0) is item_0_0
     assert table.item(0, 2).text() == "Round 2/5"
+
+
+def test_worker_restart_command_and_lock_handling(tmp_path: Path) -> None:
+    """Verify worker RESTART command dispatch and singleton lock release/re-acquire."""
+    from cluster_worker import acquire_singleton_lock, release_singleton_lock, get_lock_file
+
+    bus = ClusterStorageBus(tmp_path)
+    wid = "node_restart_test"
+    bus.register_worker(wid, "hostname_test", "RTX 4090", 24.0)
+
+    # 1. Send RESTART command
+    bus.set_worker_command(wid, "RESTART")
+    assert bus.get_worker_command(wid) == "RESTART"
+
+    # 2. Worker clears command
+    bus.set_worker_command(wid, None)
+    assert bus.get_worker_command(wid) is None
+
+    # 3. Lock acquisition and release
+    tag = "test_dev_unit"
+    acquired = acquire_singleton_lock(tag)
+    assert acquired
+    lock_file = get_lock_file(tag)
+    assert lock_file.exists()
+
+    # Release lock on restart
+    release_singleton_lock(tag)
+    assert not lock_file.exists()

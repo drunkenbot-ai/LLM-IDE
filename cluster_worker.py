@@ -1131,6 +1131,25 @@ class StandaloneWorker:
         metrics = collect_system_metrics(self.device_str, self.vram_gb)
         self.bus.heartbeat(self.worker_id, status=status, current_job_id=current_job_id, metrics=metrics)
 
+    def _restart_process(self) -> None:
+        """Cleanly respawn this worker process and exit."""
+        self.log(f"Respawning worker process for {self.worker_id}...")
+        self.bus.set_worker_command(self.worker_id, None)
+        self._heartbeat(status="OFFLINE", current_job_id=None)
+        release_singleton_lock(self.device_tag)
+        time.sleep(0.3)
+        try:
+            flags = 0
+            if sys.platform == "win32":
+                DETACHED_PROCESS = 0x00000008
+                CREATE_NEW_PROCESS_GROUP = 0x00000200
+                CREATE_NO_WINDOW = 0x08000000
+                flags = DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW
+            subprocess.Popen([sys.executable] + sys.argv, creationflags=flags, close_fds=True)
+        except Exception as exc:
+            self.log(f"Failed to respawn worker process: {exc}", level="ERROR")
+        sys.exit(0)
+
     def run(self, poll_interval: float = 3.0) -> None:
         """Main worker loop: registers heartbeat, claims jobs, and trains across rounds."""
         self.log(f"Node online: {self.worker_id}")
@@ -1165,10 +1184,8 @@ class StandaloneWorker:
                     release_singleton_lock(self.device_tag)
                     sys.exit(0)
                 elif cmd == "RESTART":
-                    self.log(f"Received RESTART command. Resetting...")
-                    self.bus.set_worker_command(self.worker_id, None)
-                    self._heartbeat(status="IDLE", current_job_id=None)
-                    time.sleep(1.0)
+                    self.log(f"Received RESTART command. Respawning process...")
+                    self._restart_process()
 
                 self._heartbeat(status="IDLE", current_job_id=None)
                 active_job = self.bus.get_active_job()
@@ -1255,6 +1272,9 @@ class StandaloneWorker:
                     self._heartbeat(status="OFFLINE", current_job_id=None)
                     release_singleton_lock(self.device_tag)
                     sys.exit(0)
+                elif cmd == "RESTART":
+                    print(f"[ClusterWorker] Received RESTART command during job {job_id}.")
+                    self._restart_process()
 
                 # Handle cooperative pause
                 while self.bus.is_paused(job_id):
@@ -1302,6 +1322,9 @@ class StandaloneWorker:
                             self._heartbeat(status="OFFLINE", current_job_id=None)
                             release_singleton_lock(self.device_tag)
                             sys.exit(0)
+                        elif cmd == "RESTART":
+                            self.log("Received RESTART command during training. Restarting process...")
+                            self._restart_process()
                     if self.bus.is_stopped(job_id):
                         self.log(f"Job {job_id} stopped. Aborting training loop.")
                         return

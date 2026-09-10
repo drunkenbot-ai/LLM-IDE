@@ -176,6 +176,10 @@ def build_job_manager_tab(window) -> QWidget:
     window.cluster_clean_offline_btn.clicked.connect(window.clean_offline_cluster_workers)
     window._tip(window.cluster_clean_offline_btn, "Purge offline and stale workers from the fleet directory.")
 
+    window.cluster_restart_local_btn = QPushButton("🔄 Restart Local")
+    window.cluster_restart_local_btn.clicked.connect(window.restart_local_cluster_workers)
+    window._tip(window.cluster_restart_local_btn, "Terminate and immediately re-launch all local cluster worker processes.")
+
     actions_row.addWidget(window.cluster_launch_btn)
     actions_row.addWidget(window.cluster_resume_btn)
     actions_row.addWidget(window.cluster_pause_btn)
@@ -185,6 +189,7 @@ def build_job_manager_tab(window) -> QWidget:
     actions_row.addSpacing(16)
     actions_row.addStretch(1)
     actions_row.addWidget(window.cluster_local_worker_btn)
+    actions_row.addWidget(window.cluster_restart_local_btn)
     actions_row.addWidget(window.cluster_clean_offline_btn)
 
     header_layout.addLayout(actions_row)
