@@ -1225,6 +1225,19 @@ class StandaloneWorker:
         self.log(f">>> Claimed job: {job_id}")
         self._heartbeat(status="PREPARING", current_job_id=job_id)
 
+        model = None
+        optimizer = None
+        dataloader = None
+        dataloader_iter = None
+        dataset = None
+        token_array = None
+        global_weights = None
+        batch = None
+        x = None
+        y = None
+        logits = None
+        loss = None
+
         try:
             shard_idx, total_shards = self.bus.claim_job_slot(job_id, self.worker_id)
             self.log(f"Assigned data shard slot {shard_idx + 1} of {total_shards} total nodes")
@@ -1421,6 +1434,35 @@ class StandaloneWorker:
             self._heartbeat(status="ERROR", current_job_id=job_id)
             return
         finally:
+            # Explicitly free model weights, optimizer states, and CUDA memory
+            try:
+                if model is not None:
+                    model.to("cpu")
+            except Exception:
+                pass
+
+            model = None
+            optimizer = None
+            dataloader = None
+            dataloader_iter = None
+            dataset = None
+            token_array = None
+            global_weights = None
+            batch = None
+            x = None
+            y = None
+            logits = None
+            loss = None
+
+            import gc
+            gc.collect()
+            if torch.cuda.is_available():
+                try:
+                    torch.cuda.empty_cache()
+                    torch.cuda.ipc_collect()
+                except Exception:
+                    pass
+
             try:
                 cmd = self.bus.get_worker_command(self.worker_id)
                 if cmd != "STOP":
