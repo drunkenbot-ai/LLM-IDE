@@ -92,6 +92,7 @@ class ProjectStateApplyMixin:
         self._set_combo_by_data(self.training_launch_target, str(training.get("launch_target", "local")), {
             "local": "Local machine",
             "remote": "Remote workers",
+            "cluster": "Cluster (Local SGD)",
             "runpod": "RunPod cloud",
         })
         if hasattr(self, "fine_tune_launch_target"):
@@ -213,6 +214,24 @@ class ProjectStateApplyMixin:
             self.coordinator_port.setValue(int(distributed.get("port", self.coordinator_port.value())))
             self.coordinator_artifact_root.setText(str(distributed.get("artifact_root", self.coordinator_artifact_root.text())))
             self.coordinator_public_url.setText(str(distributed.get("public_url", self.coordinator_public_url.text())))
+
+        cluster = data.get("cluster", {})
+        if hasattr(self, "cluster_shared_dir"):
+            saved_shared = str(cluster.get("shared_dir", "")).strip()
+            if saved_shared:
+                self.cluster_shared_dir.setText(saved_shared)
+            elif not self.cluster_shared_dir.text().strip() or self.cluster_shared_dir.text().strip().endswith("llm_cluster_shared"):
+                env_shared = os.environ.get("LLM_SHARED_PATH") or os.environ.get("LLM_SHARED_DIR")
+                if env_shared:
+                    self.cluster_shared_dir.setText(env_shared)
+            if hasattr(self, "cluster_sync_steps") and "sync_steps" in cluster:
+                self.cluster_sync_steps.setValue(int(cluster["sync_steps"]))
+            if hasattr(self, "cluster_max_rounds") and "max_rounds" in cluster:
+                self.cluster_max_rounds.setValue(int(cluster["max_rounds"]))
+            if hasattr(self, "cluster_sync_timeout") and "sync_timeout" in cluster:
+                self.cluster_sync_timeout.setValue(int(cluster["sync_timeout"]))
+            if hasattr(self, "cluster_min_workers") and "min_workers" in cluster:
+                self.cluster_min_workers.setValue(int(cluster["min_workers"]))
         self._update_tokenizer_strategy_controls()
         self._update_training_mode_controls()
         self._restore_artifact_status(data.get("artifacts", {}))

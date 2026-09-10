@@ -357,6 +357,17 @@ class ClusterScreenMixin:
 
     def _on_cluster_round_telemetry(self, telemetry: dict[str, Any]) -> None:
         """Receive round telemetry from the coordinator thread and update charts and UI chips."""
+        if telemetry.get("type") == "round_waiting":
+            round_num = int(telemetry.get("round", 0))
+            ready_w = int(telemetry.get("ready_workers", 0))
+            total_p = int(telemetry.get("total_participants", 1))
+            elapsed_s = float(telemetry.get("elapsed_seconds", 0.0))
+            if hasattr(self, "cluster_status_label"):
+                self.cluster_status_label.setText(
+                    f"Status: Waiting for round {round_num + 1} weights ({ready_w}/{total_p} ready, {elapsed_s:.0f}s)"
+                )
+            return
+
         round_num = int(telemetry.get("round", 0))
         cur_round = round_num + 1
         max_rounds = int(telemetry.get("max_rounds", 10))
@@ -600,6 +611,8 @@ class ClusterScreenMixin:
         worker_id = worker_id_item.text().strip()
 
         menu = QMenu(self)
+        view_logs_act = menu.addAction(f"View Logs for '{worker_id}'")
+        menu.addSeparator()
         stop_act = menu.addAction(f"Stop Worker '{worker_id}'")
         restart_act = menu.addAction(f"Restart Worker '{worker_id}'")
         menu.addSeparator()
@@ -609,12 +622,68 @@ class ClusterScreenMixin:
         global_pos = viewport.mapToGlobal(pos) if viewport else pos
         selected_act = menu.exec(global_pos)
 
-        if selected_act == stop_act:
+        if selected_act == view_logs_act:
+            self._load_worker_logs_for(worker_id)
+        elif selected_act == stop_act:
             self.stop_cluster_worker(worker_id)
         elif selected_act == restart_act:
             self.restart_cluster_worker(worker_id)
         elif selected_act == delete_act:
             self.delete_cluster_worker(worker_id)
+
+    def on_cluster_worker_selected(self) -> None:
+        """Handle worker table selection to load and display diagnostic logs."""
+        if not hasattr(self, "cluster_worker_table") or not hasattr(self, "cluster_worker_log"):
+            return
+        selected_rows = self.cluster_worker_table.selectedItems()
+        if not selected_rows:
+            return
+        row = selected_rows[0].row()
+        worker_id_item = self.cluster_worker_table.item(row, 0)
+        if not worker_id_item:
+            return
+        worker_id = worker_id_item.text().strip()
+        self._load_worker_logs_for(worker_id)
+
+    def refresh_selected_worker_logs(self) -> None:
+        """Refresh logs for the currently selected worker node."""
+        if hasattr(self, "cluster_worker_table") and hasattr(self, "cluster_worker_log"):
+            self.on_cluster_worker_selected()
+
+    def _load_worker_logs_for(self, worker_id: str) -> None:
+        """Query SQLite database for worker logs and render into cluster_worker_log text widget."""
+        bus = self._get_cluster_bus()
+        if not bus:
+            if hasattr(self, "cluster_worker_log"):
+                self.cluster_worker_log.setPlainText("Shared storage not accessible.")
+            return
+
+        try:
+            logs = bus.get_worker_logs(worker_id, limit=250)
+        except Exception as exc:
+            if hasattr(self, "cluster_worker_log"):
+                self.cluster_worker_log.setPlainText(f"Failed to query worker logs: {exc}")
+            return
+
+        if hasattr(self, "cluster_selected_worker_label"):
+            self.cluster_selected_worker_label.setText(f"<b>WORKER DIAGNOSTIC LOGS: {worker_id}</b> ({len(logs)} entries)")
+
+        if hasattr(self, "cluster_worker_log"):
+            if not logs:
+                self.cluster_worker_log.setPlainText(f"No diagnostic logs recorded yet for worker '{worker_id}'.")
+                return
+
+            formatted = []
+            for item in logs:
+                t_str = time.strftime("%H:%M:%S", time.localtime(item.get("timestamp", 0)))
+                lvl = item.get("level", "INFO")
+                msg = item.get("message", "")
+                formatted.append(f"[{t_str}] [{lvl}] {msg}")
+
+            self.cluster_worker_log.setPlainText("\n".join(formatted))
+            scrollbar = self.cluster_worker_log.verticalScrollBar()
+            if scrollbar:
+                scrollbar.setValue(scrollbar.maximum())
 
     def stop_cluster_worker(self, worker_id: str) -> None:
         """Send STOP command to a specific worker."""

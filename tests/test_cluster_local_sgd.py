@@ -672,3 +672,20 @@ def test_durable_checkpoints_storage(tmp_path: Path) -> None:
     final_path = bus.get_checkpoints_dir(job_id) / "final_model.pt"
     assert final_path.exists()
 
+
+def test_worker_sqlite_logging(tmp_path: Path) -> None:
+    """Verify worker log entries are written to and retrieved from SQLite bus."""
+    bus = ClusterStorageBus(tmp_path)
+    wid = "node_gpu_0"
+
+    bus.write_worker_log(wid, "Starting worker engine...", level="INFO")
+    bus.write_worker_log(wid, "CUDA out of memory", level="ERROR")
+
+    logs = bus.get_worker_logs(wid)
+    assert len(logs) == 2
+    assert logs[0]["message"] == "Starting worker engine..."
+    assert logs[0]["level"] == "INFO"
+    assert logs[1]["message"] == "CUDA out of memory"
+    assert logs[1]["level"] == "ERROR"
+
+
