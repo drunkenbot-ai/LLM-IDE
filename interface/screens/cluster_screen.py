@@ -424,8 +424,14 @@ class ClusterScreenMixin:
 
         try:
             log_file = open(coord_log_path, "a", encoding="utf-8")
+            root_dir = Path(__file__).resolve().parent.parent.parent
+            coord_script = root_dir / "cluster_coordinator.py"
+            if coord_script.exists():
+                cmd = [worker_exe, str(coord_script), "--shared-dir", shared_path_str, "--job-id", job_id]
+            else:
+                cmd = [worker_exe, "-m", "cluster.coordinator", "--shared-dir", shared_path_str, "--job-id", job_id]
             proc = subprocess.Popen(
-                [worker_exe, "-m", "cluster.coordinator", "--shared-dir", shared_path_str, "--job-id", job_id],
+                cmd,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,
                 creationflags=flags,
@@ -542,19 +548,98 @@ class ClusterScreenMixin:
             self._log_cluster_event(f"Signal PAUSE set for job {active['job_id']}.")
             self.refresh_cluster_status()
 
-    def resume_cluster_job(self) -> None:
-        """Resume paused cluster job."""
+    def _is_coordinator_running(self, bus: ClusterStorageBus, job_id: str) -> bool:
+        """Check if coordinator process is currently running for this job."""
+        if hasattr(self, "_coordinator_proc") and self._coordinator_proc:
+            if self._coordinator_proc.poll() is None:
+                return True
+        pid_file = bus.jobs_dir / job_id / "coordinator.pid"
+        if pid_file.exists():
+            try:
+                pid = int(pid_file.read_text(encoding="utf-8").strip())
+                import psutil
+                if psutil.pid_exists(pid):
+                    p = psutil.Process(pid)
+                    if p.is_running() and p.status() != psutil.STATUS_ZOMBIE:
+                        return True
+            except Exception:
+                pass
+        return False
+
+    def resume_cluster_job(self, job_id: Optional[str] = None) -> None:
+        """Resume execution of a cluster job (selected, active, or specified by job_id)."""
         bus = self._get_cluster_bus()
         if not bus:
             return
-        active = bus.get_active_job()
-        if active:
-            bus.set_job_status(active["job_id"], "RUNNING")
-            self._log_cluster_event(f"Signal RESUME set for job {active['job_id']}.")
-            self.refresh_cluster_status()
+
+        target_job = None
+        # 1. Check explicitly passed job_id
+        if job_id:
+            target_job = bus.get_job(job_id)
+
+        # 2. Check user-selected job from table
+        if not target_job and getattr(self, "_selected_cluster_job_id", None):
+            target_job = bus.get_job(self._selected_cluster_job_id)
+
+        # 3. Check active job in database
+        if not target_job:
+            target_job = bus.get_active_job()
+
+        # 4. Check latest incomplete job in database
+        if not target_job:
+            for j in bus.list_all_jobs(limit=10):
+                if int(j.get("current_round", 0)) < int(j.get("max_rounds", 10)) and j.get("status") not in {"COMPLETED"}:
+                    target_job = j
+                    break
+
+        if not target_job:
+            QMessageBox.information(
+                self,
+                "Resume Job",
+                "No incomplete cluster job found to resume.\n\n"
+                "Please select a job in the table or click 'Launch New Job' to start a new job.",
+            )
+            return
+
+        jid = target_job["job_id"]
+        cur_round = int(target_job.get("current_round", 0))
+        max_rounds = int(target_job.get("max_rounds", 10))
+
+        if cur_round >= max_rounds or target_job.get("status") == "COMPLETED":
+            QMessageBox.information(
+                self,
+                "Job Completed",
+                f"Job '{jid}' has already completed all {max_rounds} rounds.\n\n"
+                "To run again, click 'Re-queue' to reset it or 'Launch New Job'.",
+            )
+            return
+
+        # Mark job as RUNNING in SQLite and clean up pause.sig & stop.sig
+        bus.set_job_status(jid, "RUNNING")
+        self._log_cluster_event(f"Resumed cluster job {jid} (Round {cur_round}/{max_rounds}).")
+
+        # Spawn coordinator daemon if not already running
+        if not self._is_coordinator_running(bus, jid):
+            self._start_cluster_coordinator(bus, jid)
+        else:
+            self._log_cluster_event(f"Coordinator daemon for {jid} is already active.")
+
+        # Synchronize Training Tab status and buttons
+        if hasattr(self, "stop_training_button"):
+            self.stop_training_button.setEnabled(True)
+        if hasattr(self, "project_state"):
+            self.project_state.setText("Training")
+        if hasattr(self, "train_status"):
+            self.train_status.setText(f"Training: Cluster (Local SGD) - Round {cur_round}/{max_rounds}")
+        if hasattr(self, "cluster_status_label"):
+            self.cluster_status_label.setText(f"Status: Running ({jid})")
+
+        self.refresh_cluster_status()
+        if hasattr(self, "refresh_job_manager_tab"):
+            self.refresh_job_manager_tab()
 
     def stop_cluster_job(self) -> None:
-        """Stop active cluster job."""
+        """Stop active or selected cluster job and terminate coordinator daemon."""
         if hasattr(self, "_coordinator_thread") and self._coordinator_thread:
             self._coordinator_thread.stop()
         if hasattr(self, "_coordinator_proc") and self._coordinator_proc:
@@ -566,11 +651,29 @@ class ClusterScreenMixin:
         bus = self._get_cluster_bus()
         if not bus:
             return
+        target_job_id = None
         active = bus.get_active_job()
         if active:
-            bus.set_job_status(active["job_id"], "STOPPED")
-            self._log_cluster_event(f"Signal STOP set for job {active['job_id']}.")
+            target_job_id = active["job_id"]
+        elif getattr(self, "_selected_cluster_job_id", None):
+            target_job_id = self._selected_cluster_job_id
+
+        if target_job_id:
+            bus.set_job_status(target_job_id, "STOPPED")
+            self._log_cluster_event(f"Signal STOP set for job {target_job_id}.")
+            pid_file = bus.jobs_dir / target_job_id / "coordinator.pid"
+            if pid_file.exists():
+                try:
+                    cpid = int(pid_file.read_text(encoding="utf-8").strip())
+                    import psutil
+                    if psutil.pid_exists(cpid):
+                        psutil.Process(cpid).terminate()
+                    pid_file.unlink(missing_ok=True)
+                except Exception:
+                    pass
             self.refresh_cluster_status()
+            if hasattr(self, "refresh_job_manager_tab"):
+                self.refresh_job_manager_tab()
         if hasattr(self, "stop_training_button"):
             self.stop_training_button.setEnabled(False)
         if hasattr(self, "project_state"):
@@ -744,6 +847,8 @@ class ClusterScreenMixin:
             removed = bus.delete_offline_workers(stale_threshold_seconds=60.0)
             self._log_cluster_event(f"Cleaned {removed} offline / stale worker(s) from database.")
             self.refresh_cluster_status()
+            if hasattr(self, "refresh_job_manager_tab"):
+                self.refresh_job_manager_tab()
         except Exception as exc:
             self._log_cluster_event(f"Error cleaning offline workers: {exc}")
 

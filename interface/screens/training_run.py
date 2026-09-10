@@ -332,13 +332,26 @@ class TrainingRunMixin:
 
         launch_target = self._training_launch_target_value()
         if launch_target == "cluster":
-            if hasattr(self, "stop_training_button"):
-                self.stop_training_button.setEnabled(True)
-            if hasattr(self, "project_state"):
-                self.project_state.setText("Training")
-            if hasattr(self, "train_status"):
-                self.train_status.setText("Training: Cluster (Local SGD)")
-            self.launch_cluster_training_job()
+            bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
+            existing_job = None
+            if bus:
+                sel_id = getattr(self, "_selected_cluster_job_id", None)
+                if sel_id:
+                    j = bus.get_job(sel_id)
+                    if j and int(j.get("current_round", 0)) < int(j.get("max_rounds", 10)) and j.get("status") != "COMPLETED":
+                        existing_job = j
+                if not existing_job:
+                    existing_job = bus.get_active_job()
+                if not existing_job:
+                    for j in bus.list_all_jobs(limit=10):
+                        if int(j.get("current_round", 0)) < int(j.get("max_rounds", 10)) and j.get("status") not in {"COMPLETED"}:
+                            existing_job = j
+                            break
+
+            if existing_job:
+                self.resume_cluster_job(existing_job["job_id"])
+            else:
+                self.launch_cluster_training_job()
             return
         self.active_training_log = self.training_log
         self.active_training_progress = self.training_progress

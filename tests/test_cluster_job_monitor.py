@@ -148,3 +148,60 @@ def test_delete_job_and_cleanup(tmp_path: Path) -> None:
     assert bus.get_job(job_id) is None
     assert len(bus.get_job_tasks(job_id)) == 0
     assert not job_dir.exists()
+
+
+def test_job_resume_clears_signals(tmp_path: Path) -> None:
+    """Verify that transitioning a job to RUNNING unlinks both stop.sig and pause.sig."""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "test_resume_sig"
+    bus.create_job(
+        job_id=job_id,
+        model_config={},
+        training_config={},
+        dataset_path=str(tmp_path / "tokens.npy"),
+        max_rounds=5,
+    )
+
+    # 1. Stop job
+    bus.set_job_status(job_id, "STOPPED")
+    assert bus.is_stopped(job_id)
+
+    # 2. Resume job
+    bus.set_job_status(job_id, "RUNNING")
+    assert not bus.is_stopped(job_id)
+    assert not bus.is_paused(job_id)
+
+    # 3. Pause job
+    bus.set_job_status(job_id, "PAUSED")
+    assert bus.is_paused(job_id)
+    assert not bus.is_stopped(job_id)
+
+    # 4. Resume from paused
+    bus.set_job_status(job_id, "RUNNING")
+    assert not bus.is_paused(job_id)
+    assert not bus.is_stopped(job_id)
+
+
+def test_set_table_rows_in_place_update() -> None:
+    """Verify set_table_rows updates table cells in-place without clearing items when row count matches."""
+    from PySide6.QtWidgets import QApplication, QTableWidget
+    from interface.tabs.job_manager_tab import set_table_rows
+
+    app = QApplication.instance() or QApplication([])
+    table = QTableWidget(0, 3)
+
+    initial_rows = [["RUNNING", "job_1", "Round 1/5"], ["STOPPED", "job_2", "Round 0/5"]]
+    set_table_rows(table, initial_rows)
+
+    assert table.rowCount() == 2
+    item_0_0 = table.item(0, 0)
+    assert item_0_0 is not None
+    assert item_0_0.text() == "RUNNING"
+
+    # Update with new values but same row count
+    updated_rows = [["RUNNING", "job_1", "Round 2/5"], ["STOPPED", "job_2", "Round 0/5"]]
+    set_table_rows(table, updated_rows)
+
+    # Verify existing item was reused and updated
+    assert table.item(0, 0) is item_0_0
+    assert table.item(0, 2).text() == "Round 2/5"

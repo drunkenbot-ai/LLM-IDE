@@ -45,20 +45,32 @@ def _styled_table(headers: list[str], min_height: int = 140) -> QTableWidget:
 
 
 def set_table_rows(table: QTableWidget, rows: list[list[str]]) -> None:
-    """Replace all table rows efficiently with diff caching."""
+    """Replace or update table rows efficiently without resetting selection, scroll, or layout."""
     if getattr(table, "_rendered_row_cache", None) == rows:
         return
     table._rendered_row_cache = [list(r) for r in rows]
 
     table.setUpdatesEnabled(False)
+    table.blockSignals(True)
     try:
-        table.setRowCount(len(rows))
+        current_count = table.rowCount()
+        new_count = len(rows)
+        if current_count != new_count:
+            table.setRowCount(new_count)
+
         for row_index, row in enumerate(rows):
             for column_index, value in enumerate(row):
-                item = QTableWidgetItem(value)
-                item.setToolTip(value)
-                table.setItem(row_index, column_index, item)
+                item = table.item(row_index, column_index)
+                if item is None:
+                    item = QTableWidgetItem(value)
+                    item.setToolTip(value)
+                    table.setItem(row_index, column_index, item)
+                else:
+                    if item.text() != value:
+                        item.setText(value)
+                        item.setToolTip(value)
     finally:
+        table.blockSignals(False)
         table.setUpdatesEnabled(True)
 
 
@@ -104,9 +116,9 @@ def build_job_manager_tab(window) -> QWidget:
 
     header_layout.addLayout(title_row)
 
-    # Storage Path & Action Controls Row
-    controls_row = QHBoxLayout()
-    controls_row.setSpacing(8)
+    # Storage Path Row
+    storage_row = QHBoxLayout()
+    storage_row.setSpacing(8)
 
     default_shared = (
         os.environ.get("LLM_SHARED_PATH")
@@ -120,23 +132,27 @@ def build_job_manager_tab(window) -> QWidget:
     window.cluster_browse_btn = QPushButton("Browse...")
     window.cluster_browse_btn.clicked.connect(window.browse_cluster_shared_dir)
 
-    controls_row.addWidget(QLabel("<b>Shared Storage:</b>"))
-    controls_row.addWidget(window.cluster_shared_dir, 1)
-    controls_row.addWidget(window.cluster_browse_btn)
-    controls_row.addSpacing(12)
+    storage_row.addWidget(QLabel("<b>Shared Storage:</b>"))
+    storage_row.addWidget(window.cluster_shared_dir, 1)
+    storage_row.addWidget(window.cluster_browse_btn)
+    header_layout.addLayout(storage_row)
 
-    # Master Action Buttons
-    window.cluster_launch_btn = QPushButton("▶ Launch Job")
+    # Action Toolbar Row (Separate row with stable layout and fixed sizing)
+    actions_row = QHBoxLayout()
+    actions_row.setSpacing(8)
+
+    # Master Job Action Buttons
+    window.cluster_launch_btn = QPushButton("▶ Launch New Job")
     window.cluster_launch_btn.clicked.connect(window.launch_cluster_training_job)
-    window._tip(window.cluster_launch_btn, "Queue and dispatch a distributed Local SGD training job across the cluster.")
+    window._tip(window.cluster_launch_btn, "Queue and dispatch a new distributed Local SGD training job.")
+
+    window.cluster_resume_btn = QPushButton("▶ Resume")
+    window.cluster_resume_btn.clicked.connect(window.resume_cluster_job)
+    window._tip(window.cluster_resume_btn, "Resume execution of selected or active cluster job.")
 
     window.cluster_pause_btn = QPushButton("⏸ Pause")
     window.cluster_pause_btn.clicked.connect(window.pause_cluster_job)
     window._tip(window.cluster_pause_btn, "Send cooperative PAUSE signal to active cluster job.")
-
-    window.cluster_resume_btn = QPushButton("▶ Resume")
-    window.cluster_resume_btn.clicked.connect(window.resume_cluster_job)
-    window._tip(window.cluster_resume_btn, "Resume execution of paused cluster job.")
 
     window.cluster_stop_btn = QPushButton("⏹ Stop")
     window.cluster_stop_btn.clicked.connect(window.stop_cluster_job)
@@ -146,7 +162,13 @@ def build_job_manager_tab(window) -> QWidget:
     window.cluster_requeue_btn.clicked.connect(window.requeue_selected_cluster_job)
     window._tip(window.cluster_requeue_btn, "Re-queue the selected job to allow restarting or resuming.")
 
+    window.cluster_delete_btn = QPushButton("🗑 Delete Job")
+    window.cluster_delete_btn.clicked.connect(window.delete_selected_cluster_job)
+    window._tip(window.cluster_delete_btn, "Permanently delete the selected job and its saved round checkpoints.")
+
+    # Cluster Fleet Action Buttons
     window.cluster_local_worker_btn = QPushButton("⚡ Start Local Worker(s)")
+    window.cluster_local_worker_btn.setMinimumWidth(220)
     window.cluster_local_worker_btn.clicked.connect(window.toggle_local_cluster_worker)
     window._tip(window.cluster_local_worker_btn, "Spawn background cluster worker processes on this workstation for all detected GPUs.")
 
@@ -154,15 +176,18 @@ def build_job_manager_tab(window) -> QWidget:
     window.cluster_clean_offline_btn.clicked.connect(window.clean_offline_cluster_workers)
     window._tip(window.cluster_clean_offline_btn, "Purge offline and stale workers from the fleet directory.")
 
-    controls_row.addWidget(window.cluster_launch_btn)
-    controls_row.addWidget(window.cluster_pause_btn)
-    controls_row.addWidget(window.cluster_resume_btn)
-    controls_row.addWidget(window.cluster_stop_btn)
-    controls_row.addWidget(window.cluster_requeue_btn)
-    controls_row.addWidget(window.cluster_local_worker_btn)
-    controls_row.addWidget(window.cluster_clean_offline_btn)
+    actions_row.addWidget(window.cluster_launch_btn)
+    actions_row.addWidget(window.cluster_resume_btn)
+    actions_row.addWidget(window.cluster_pause_btn)
+    actions_row.addWidget(window.cluster_stop_btn)
+    actions_row.addWidget(window.cluster_requeue_btn)
+    actions_row.addWidget(window.cluster_delete_btn)
+    actions_row.addSpacing(16)
+    actions_row.addStretch(1)
+    actions_row.addWidget(window.cluster_local_worker_btn)
+    actions_row.addWidget(window.cluster_clean_offline_btn)
 
-    header_layout.addLayout(controls_row)
+    header_layout.addLayout(actions_row)
     page_layout.addWidget(header_box)
 
     # -------------------------------------------------------------------------
@@ -181,7 +206,7 @@ def build_job_manager_tab(window) -> QWidget:
     jobs_header = QHBoxLayout()
     jobs_header.addWidget(QLabel("<b>TRAINING JOBS MONITOR</b>"))
     jobs_header.addStretch(1)
-    window.jobs_summary_label = QLabel("0 total jobs")
+    window.jobs_summary_label = QLabel("0 jobs")
     window.jobs_summary_label.setObjectName("Metric")
     jobs_header.addWidget(window.jobs_summary_label)
     jobs_layout.addLayout(jobs_header)
@@ -190,6 +215,8 @@ def build_job_manager_tab(window) -> QWidget:
         ["Status", "Job ID", "Model / Config", "Progress", "Loss", "Speed", "Rounds", "Created"],
         min_height=260,
     )
+    window.cluster_jobs_table.setContextMenuPolicy(Qt.CustomContextMenu)
+    window.cluster_jobs_table.customContextMenuRequested.connect(window.show_cluster_jobs_context_menu)
     window.cluster_jobs_table.itemSelectionChanged.connect(window.on_cluster_job_selected)
     jobs_layout.addWidget(window.cluster_jobs_table, 1)
 

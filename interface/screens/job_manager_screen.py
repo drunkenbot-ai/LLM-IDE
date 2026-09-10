@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import tempfile
 import threading
 import time
 from pathlib import Path
 from typing import Any, Optional
 
-from PySide6.QtCore import QObject, Qt, Signal
-from PySide6.QtWidgets import QMessageBox, QTextEdit
+from PySide6.QtCore import QObject, QPoint, Qt, Signal
+from PySide6.QtWidgets import QMenu, QMessageBox, QTextEdit
 
 from cluster.cluster_worker import get_all_running_worker_pids
 from interface.tabs.job_manager_tab import set_table_rows
@@ -200,6 +201,16 @@ class JobManagerScreenMixin:
                         except Exception:
                             pass
 
+                # Read local worker log tail
+                worker_log_tail = ""
+                local_log_file = Path(tempfile.gettempdir()) / "cluster_worker_local.log"
+                if local_log_file.exists():
+                    try:
+                        w_lines = local_log_file.read_text(encoding="utf-8", errors="replace").splitlines()
+                        worker_log_tail = "\n".join(w_lines[-50:])
+                    except Exception:
+                        pass
+
                 # Check running local worker PIDs
                 running_pids = get_all_running_worker_pids()
 
@@ -212,6 +223,7 @@ class JobManagerScreenMixin:
                     "manifest_text": "\n".join(manifest_lines),
                     "rounds": rounds,
                     "coord_log_tail": coord_log_tail,
+                    "worker_log_tail": worker_log_tail,
                     "running_workers_count": len(running_pids),
                 }
                 bridge.data_ready.emit(payload)
@@ -243,12 +255,13 @@ class JobManagerScreenMixin:
         if chosen_job_id:
             for row_idx, r in enumerate(job_rows):
                 if len(r) > 1 and r[1] == chosen_job_id:
-                    self.cluster_jobs_table.selectRow(row_idx)
+                    if self.cluster_jobs_table.currentRow() != row_idx:
+                        self.cluster_jobs_table.selectRow(row_idx)
                     break
         self.cluster_jobs_table.blockSignals(False)
 
         if hasattr(self, "jobs_summary_label"):
-            self.jobs_summary_label.setText(f"{data.get('total_jobs', len(job_rows))} total jobs")
+            self.jobs_summary_label.setText(f"{data.get('total_jobs', len(job_rows))} jobs")
 
         if hasattr(self, "job_manager_progress"):
             self.job_manager_progress.setValue(100)
@@ -262,14 +275,28 @@ class JobManagerScreenMixin:
 
         # Update Job Events Log
         if hasattr(self, "job_events_log") and manifest_text:
-            self.job_events_log.setPlainText(manifest_text)
+            if self.job_events_log.toPlainText() != manifest_text:
+                sb = self.job_events_log.verticalScrollBar()
+                at_bottom = sb.value() >= (sb.maximum() - 8)
+                self.job_events_log.setPlainText(manifest_text)
+                if at_bottom:
+                    sb.setValue(sb.maximum())
 
-        # Update Local Worker button state
+        # Update Worker Diagnostics Log
+        if hasattr(self, "cluster_worker_log") and data.get("worker_log_tail"):
+            w_tail = data["worker_log_tail"]
+            if self.cluster_worker_log.toPlainText() != w_tail:
+                sb = self.cluster_worker_log.verticalScrollBar()
+                at_bottom = sb.value() >= (sb.maximum() - 8)
+                self.cluster_worker_log.setPlainText(w_tail)
+                if at_bottom:
+                    sb.setValue(sb.maximum())
+
+        # Update Local Worker button state (guard against redundant text/size updates)
         if hasattr(self, "cluster_local_worker_btn"):
-            if running_workers > 0:
-                self.cluster_local_worker_btn.setText(f"Stop Local Worker(s) ({running_workers} active)")
-            else:
-                self.cluster_local_worker_btn.setText("Start Local Worker(s)")
+            new_btn_txt = f"Stop Local Worker(s) ({running_workers} active)" if running_workers > 0 else "Start Local Worker(s)"
+            if self.cluster_local_worker_btn.text() != new_btn_txt:
+                self.cluster_local_worker_btn.setText(new_btn_txt)
 
         # Synchronize Training Tab status and Stop button if a cluster job is active
         if active_job:
@@ -366,6 +393,112 @@ class JobManagerScreenMixin:
             self.refresh_job_manager_tab()
         else:
             QMessageBox.warning(self, "Re-queue Failed", f"Could not re-queue job '{job_id}'.")
+
+    def delete_selected_cluster_job(self) -> None:
+        """Permanently delete the selected cluster job from database and shared storage."""
+        bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
+        if not bus:
+            return
+
+        job_id = getattr(self, "_selected_cluster_job_id", None)
+        if not job_id and hasattr(self, "cluster_jobs_table"):
+            row = self.cluster_jobs_table.currentRow()
+            if row >= 0:
+                item = self.cluster_jobs_table.item(row, 1)
+                if item:
+                    job_id = item.text().strip()
+
+        if not job_id:
+            QMessageBox.information(self, "Select Job", "Please select a job in the table to delete.")
+            return
+
+        reply = QMessageBox.question(
+            self,
+            "Delete Cluster Job",
+            f"Are you sure you want to permanently delete job '{job_id}'?\n\n"
+            "This will remove the job record, worker history, and all stored round checkpoints from shared storage.",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if reply != QMessageBox.Yes:
+            return
+
+        # Stop coordinator if running for this job
+        if hasattr(self, "_coordinator_proc") and self._coordinator_proc:
+            try:
+                self._coordinator_proc.terminate()
+            except Exception:
+                pass
+        pid_file = bus.jobs_dir / job_id / "coordinator.pid"
+        if pid_file.exists():
+            try:
+                cpid = int(pid_file.read_text(encoding="utf-8").strip())
+                import psutil
+                if psutil.pid_exists(cpid):
+                    psutil.Process(cpid).terminate()
+                pid_file.unlink(missing_ok=True)
+            except Exception:
+                pass
+
+        success = bus.delete_job(job_id)
+        if success:
+            if getattr(self, "_selected_cluster_job_id", None) == job_id:
+                self._selected_cluster_job_id = None
+            msg = f"Permanently deleted cluster job '{job_id}'."
+            if hasattr(self, "_log_cluster_event"):
+                self._log_cluster_event(msg)
+            if hasattr(self, "job_events_log"):
+                self.job_events_log.clear()
+            self.refresh_job_manager_tab()
+            if hasattr(self, "refresh_cluster_status"):
+                self.refresh_cluster_status()
+        else:
+            QMessageBox.warning(self, "Delete Failed", f"Could not delete job '{job_id}'. Check storage permissions.")
+
+    def show_cluster_jobs_context_menu(self, pos: QPoint) -> None:
+        """Display right-click context menu for selected job in the jobs table."""
+        if not hasattr(self, "cluster_jobs_table"):
+            return
+        row = self.cluster_jobs_table.rowAt(pos.y())
+        if row < 0:
+            return
+        self.cluster_jobs_table.selectRow(row)
+        item = self.cluster_jobs_table.item(row, 1)
+        if not item:
+            return
+        job_id = item.text().strip()
+        self._selected_cluster_job_id = job_id
+
+        menu = QMenu(self)
+        resume_act = menu.addAction("▶ Resume Job")
+        pause_act = menu.addAction("⏸ Pause Job")
+        stop_act = menu.addAction("⏹ Stop Job")
+        requeue_act = menu.addAction("🔄 Re-queue Job")
+        menu.addSeparator()
+        delete_act = menu.addAction("🗑 Delete Job")
+
+        action = menu.exec(self.cluster_jobs_table.viewport().mapToGlobal(pos))
+        if action == resume_act:
+            if hasattr(self, "resume_cluster_job"):
+                self.resume_cluster_job(job_id)
+        elif action == pause_act:
+            bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
+            if bus:
+                bus.set_job_status(job_id, "PAUSED")
+                if hasattr(self, "_log_cluster_event"):
+                    self._log_cluster_event(f"Paused job {job_id}.")
+                self.refresh_job_manager_tab()
+        elif action == stop_act:
+            bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
+            if bus:
+                bus.set_job_status(job_id, "STOPPED")
+                if hasattr(self, "_log_cluster_event"):
+                    self._log_cluster_event(f"Stopped job {job_id}.")
+                self.refresh_job_manager_tab()
+        elif action == requeue_act:
+            self.requeue_selected_cluster_job()
+        elif action == delete_act:
+            self.delete_selected_cluster_job()
 
     def clear_active_cluster_log(self) -> None:
         """Clear whichever diagnostic log tab is currently active."""

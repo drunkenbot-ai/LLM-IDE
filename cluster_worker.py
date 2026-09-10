@@ -588,7 +588,7 @@ class StandaloneStorageBus:
             results.append(data)
         return results
 
-    def get_active_job(self, max_stale_seconds: float = 60.0) -> Optional[dict[str, Any]]:
+    def get_active_job(self, max_stale_seconds: float = 3600.0) -> Optional[dict[str, Any]]:
         now = time.time()
         def _op(conn: sqlite3.Connection) -> Optional[dict[str, Any]]:
             if max_stale_seconds > 0:
