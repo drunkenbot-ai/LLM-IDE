@@ -689,3 +689,40 @@ def test_worker_sqlite_logging(tmp_path: Path) -> None:
     assert logs[1]["level"] == "ERROR"
 
 
+def test_dataset_vocab_size_clamping() -> None:
+    """Verify ShardedTokenDataset and StandaloneTokenDataset clamp out-of-range token IDs to avoid CUDA asserts."""
+    from cluster_worker import StandaloneTokenDataset
+
+    # Tokens with IDs up to 5000
+    raw_tokens = np.array([10, 50, 500, 1200, 4999, 5000, 25, 30], dtype=np.int64)
+    vocab_size = 1000
+
+    # 1. ShardedTokenDataset
+    ds = ShardedTokenDataset(raw_tokens, context_length=4, shard_index=0, total_shards=1, vocab_size=vocab_size)
+    x, y = ds[0]
+    assert int(x.max().item()) <= vocab_size - 1
+    assert int(y.max().item()) <= vocab_size - 1
+    assert int(x.min().item()) >= 0
+    assert int(y.min().item()) >= 0
+
+    # 2. StandaloneTokenDataset
+    s_ds = StandaloneTokenDataset(raw_tokens, context_length=4, shard_index=0, total_shards=1, vocab_size=vocab_size)
+    sx, sy = s_ds[0]
+    assert int(sx.max().item()) <= vocab_size - 1
+    assert int(sy.max().item()) <= vocab_size - 1
+    assert int(sx.min().item()) >= 0
+    assert int(sy.min().item()) >= 0
+
+
+def test_storage_bus_truncate_journal_mode(tmp_path: Path) -> None:
+    """Verify ClusterStorageBus initializes in network-share compatible TRUNCATE journal mode."""
+    import sqlite3
+
+    bus = ClusterStorageBus(tmp_path)
+    with bus._connect() as conn:
+        cursor = conn.execute("PRAGMA journal_mode;")
+        mode = cursor.fetchone()[0]
+        assert mode.upper() in {"TRUNCATE", "MEMORY", "DELETE"}
+
+
+

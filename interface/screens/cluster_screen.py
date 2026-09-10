@@ -301,16 +301,62 @@ class ClusterScreenMixin:
                     self._log_cluster_event(f"Copying dataset to shared storage for cluster workers: {shared_candidate.name}...")
                     import shutil
                     shutil.copyfile(dataset_path, shared_candidate)
+                # Also copy tokenizer/summary metadata if available in dataset folder
+                orig_dir = Path(dataset_path).parent
+                for meta_file in ["dataset_summary.json", "tokenizer.json"]:
+                    src_meta = orig_dir / meta_file
+                    dst_meta = bus.shared_dir / meta_file
+                    if src_meta.exists() and (not dst_meta.exists() or dst_meta.stat().st_size != src_meta.stat().st_size):
+                        try:
+                            import shutil
+                            shutil.copyfile(src_meta, dst_meta)
+                        except Exception:
+                            pass
                 dataset_path = str(shared_candidate)
 
+            # Determine vocabulary size accurately from dataset / tokenizer metadata
+            vocab_size = 0
+            candidate_dirs = [
+                Path(dataset_path).parent,
+                bus.shared_dir,
+                Path(self.train_data_dir.text().strip()) if hasattr(self, "train_data_dir") and self.train_data_dir.text().strip() else None,
+                Path(self.output_dir_edit.text().strip()) if hasattr(self, "output_dir_edit") and self.output_dir_edit.text().strip() else None,
+            ]
+            for c_dir in candidate_dirs:
+                if c_dir and c_dir.exists() and hasattr(self, "_current_training_vocab_size"):
+                    v = self._current_training_vocab_size(c_dir)
+                    if v > 0:
+                        vocab_size = v
+                        break
+
+            # Fallback: inspect token array upper bound
+            if os.path.exists(dataset_path):
+                try:
+                    import numpy as np
+                    tok_arr = np.load(dataset_path, mmap_mode="r")
+                    sample_slice = tok_arr[:min(len(tok_arr), 100000)]
+                    if len(sample_slice) > 0:
+                        max_in_arr = int(np.max(sample_slice))
+                        vocab_size = max(vocab_size, max_in_arr + 1)
+                except Exception:
+                    pass
+
+            if vocab_size <= 0:
+                vocab_size = 1000
+
             # Build configs and sanitize non-primitive types (WindowsPath, etc.)
-            model_cfg = dataclasses.asdict(self._current_model_config()) if hasattr(self, "_current_model_config") else {
-                "vocab_size": 1000,
-                "context_length": 512,
-                "embedding_size": 256,
-                "head_count": 4,
-                "layer_count": 4,
-            }
+            if hasattr(self, "_current_model_config"):
+                model_cfg = dataclasses.asdict(self._current_model_config(vocab_size=vocab_size))
+            else:
+                model_cfg = {
+                    "vocab_size": vocab_size,
+                    "context_length": 512,
+                    "embedding_size": 256,
+                    "head_count": 4,
+                    "layer_count": 4,
+                }
+            model_cfg["vocab_size"] = max(int(model_cfg.get("vocab_size", 0) or 0), vocab_size)
+
             training_cfg = dataclasses.asdict(self._current_training_config()) if hasattr(self, "_current_training_config") else {
                 "learning_rate": 3e-4,
                 "batch_size": 4,
