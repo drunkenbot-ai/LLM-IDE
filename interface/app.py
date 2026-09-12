@@ -146,7 +146,7 @@ _LOGO_FONT_FAMILY: Optional[str] = None
 
 from interface.startup import (
     ProjectChoiceDialog, StartupValidationSplash, _apply_windows_taskbar_icon,
-    _run_startup_validations,
+    _run_startup_validations, is_dev_mode,
 )
 from interface.startup_validation import _run_startup_tests
 from interface.core.window_core import WindowCoreMixin
@@ -292,27 +292,30 @@ def main(app: Optional[QApplication] = None, splash: Optional[StartupSplash] = N
             app.quit()
             app.setProperty("startup_aborted", True)
         return
-    try:
-        _run_startup_validations(splash)
-    except Exception as exc:
-        LOGGER.exception("Startup validation failed")
-        splash.append_log(f"[FAIL] Startup blocked: {exc}")
-        splash.close()
-        proceed = QMessageBox.question(
-            None,
-            "Startup validation failed",
-            "One or more startup checks failed.\n\n"
-            f"{exc}\n\n"
-            "Do you want to continue anyway?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
-        )
-        if proceed != QMessageBox.Yes:
-            if not owns_app:
-                app.quit()
-                app.setProperty("startup_aborted", True)
-            return
-        LOGGER.warning("User chose to continue after failed startup validation.")
+    if is_dev_mode():
+        try:
+            _run_startup_validations(splash, dev_mode=True)
+        except Exception as exc:
+            LOGGER.exception("Startup validation failed")
+            splash.append_log(f"[FAIL] Startup blocked: {exc}")
+            splash.close()
+            proceed = QMessageBox.question(
+                None,
+                "Startup validation failed",
+                "One or more startup checks failed.\n\n"
+                f"{exc}\n\n"
+                "Do you want to continue anyway?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+            if proceed != QMessageBox.Yes:
+                if not owns_app:
+                    app.quit()
+                    app.setProperty("startup_aborted", True)
+                return
+            LOGGER.warning("User chose to continue after failed startup validation.")
+    else:
+        LOGGER.info("Starting in standard mode (-dev flag not set); skipping startup test suite.")
     splash.close()
     while True:
         chooser = ProjectChoiceDialog()

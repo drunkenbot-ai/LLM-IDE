@@ -13,3 +13,4 @@ pyqtgraph
 psutil
 datasets
 cryptography
+pytest>=8.0

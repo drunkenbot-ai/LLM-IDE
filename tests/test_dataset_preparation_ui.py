@@ -3,8 +3,6 @@ from __future__ import annotations
 from queue import Queue
 from types import SimpleNamespace
 
-import pytest
-
 from interface import app as interface_app
 
 

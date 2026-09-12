@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import importlib
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -16,6 +17,35 @@ from engine.app_logging import DEFAULT_LOG_DIR
 APP_HOME_DIR = Path.home() / ".drunkenbot_ide"
 DEFAULT_CACHE_DIR = APP_HOME_DIR / "cache"
 DEFAULT_PROJECTS_DIR = APP_HOME_DIR / "projects"
+
+
+def is_dev_mode(args: Optional[list[str]] = None) -> bool:
+    """Return True if running in developer mode (-dev flag or DRUNKENBOT_DEV set).
+
+    Args:
+        args: Optional list of argument strings. If not provided, checks sys.argv,
+              QApplication arguments, and environment variables.
+    """
+    dev_flags = {"-dev", "--dev"}
+    if args is not None:
+        return any(str(arg).strip().lower() in dev_flags for arg in args)
+
+    if any(str(arg).strip().lower() in dev_flags for arg in getattr(sys, "argv", [])):
+        return True
+
+    app = QApplication.instance()
+    if app is not None:
+        try:
+            if any(str(arg).strip().lower() in dev_flags for arg in app.arguments()):
+                return True
+        except Exception:
+            pass
+
+    env_val = os.environ.get("DRUNKENBOT_DEV", "") or os.environ.get("DRUNKENBOT_DEV_MODE", "")
+    if env_val.strip().lower() in ("1", "true", "yes", "on"):
+        return True
+
+    return False
 
 
 def _validate_writable_directory(path: Path) -> None:
@@ -78,8 +108,14 @@ def _run_startup_tests(repo_root: Path, tests_root: Path, on_test: Optional[Any]
         raise RuntimeError(f"Startup tests failed.\n{tail}")
 
 
-def _run_startup_validations(splash: StartupValidationSplash) -> None:
+def _run_startup_validations(
+    splash: StartupValidationSplash,
+    dev_mode: Optional[bool] = None,
+) -> None:
     """Run startup checks shown on the splash screen."""
+    if dev_mode is None:
+        dev_mode = is_dev_mode()
+
     # ``interface`` is a top-level package after the engine/interface split.
     repo_root = Path(__file__).resolve().parents[1]
     tests_root = repo_root / "tests"
@@ -93,23 +129,29 @@ def _run_startup_validations(splash: StartupValidationSplash) -> None:
         ("Checking projects folder", lambda: _validate_writable_directory(DEFAULT_PROJECTS_DIR)),
         ("Checking required imports", lambda: [importlib.import_module(name) for name in required_modules]),
     ]
-    # Populate the checklist before the subprocess starts.  Test callbacks
-    # update these entries while unittest is streaming verbose output.
-    splash.set_checks(_discover_test_labels(tests_root) if tests_root.is_dir() else [])
-    if tests_root.is_dir():
-        steps.append((
-            "Running test suite",
-            lambda: _run_startup_tests(
-                repo_root,
-                tests_root,
-                lambda label: (
-                    splash.add_check(_test_display_name(label)),
-                    splash.mark_check_done(_test_display_name(label)),
+
+    if dev_mode:
+        # Populate the checklist before the subprocess starts.  Test callbacks
+        # update these entries while unittest is streaming verbose output.
+        splash.set_checks(_discover_test_labels(tests_root) if tests_root.is_dir() else [])
+        if tests_root.is_dir():
+            steps.append((
+                "Running test suite",
+                lambda: _run_startup_tests(
+                    repo_root,
+                    tests_root,
+                    lambda label: (
+                        splash.add_check(_test_display_name(label)),
+                        splash.mark_check_done(_test_display_name(label)),
+                    ),
                 ),
-            ),
-        ))
+            ))
+        else:
+            splash.append_log("Repository tests are not included in this packaged installation; skipping test suite.")
     else:
-        splash.append_log("Repository tests are not included in this packaged installation; skipping test suite.")
+        splash.set_checks([])
+        splash.append_log("Standard mode: skipping test suite (use -dev to run startup tests).")
+
     splash.append_log(f"Workspace: {repo_root}")
     for index, (label, action) in enumerate(steps, start=1):
         splash.update_step(f"{label}...", index - 1, len(steps))
