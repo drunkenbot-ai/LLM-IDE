@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from interface.training_process_controller import (
     MAX_EVENT_HISTORY,
     MAX_METRIC_HISTORY,

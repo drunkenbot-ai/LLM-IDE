@@ -71,7 +71,7 @@ def test_encryption_roundtrip(temp_license_env):
     encrypted = encrypt_license_metadata(payload, machine_id)
     assert isinstance(encrypted, bytes)
     assert len(encrypted) > 0
-    assert not b"DBIDE-TEST-1234-5678-ABCD" in encrypted  # Key is encrypted, not plaintext
+    assert b"DBIDE-TEST-1234-5678-ABCD" not in encrypted  # Key is encrypted, not plaintext
 
     decrypted = decrypt_license_metadata(encrypted, machine_id)
     assert decrypted == payload

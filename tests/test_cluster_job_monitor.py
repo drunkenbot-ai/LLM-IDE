@@ -186,7 +186,7 @@ def test_set_table_rows_in_place_update() -> None:
     from PySide6.QtWidgets import QApplication, QTableWidget
     from interface.tabs.job_manager_tab import set_table_rows
 
-    app = QApplication.instance() or QApplication([])
+    _app = QApplication.instance() or QApplication([])
     table = QTableWidget(0, 3)
 
     initial_rows = [["RUNNING", "job_1", "Round 1/5"], ["STOPPED", "job_2", "Round 0/5"]]

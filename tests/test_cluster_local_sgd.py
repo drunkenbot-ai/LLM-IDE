@@ -715,8 +715,6 @@ def test_dataset_vocab_size_clamping() -> None:
 
 def test_storage_bus_truncate_journal_mode(tmp_path: Path) -> None:
     """Verify ClusterStorageBus initializes in network-share compatible TRUNCATE journal mode."""
-    import sqlite3
-
     bus = ClusterStorageBus(tmp_path)
     with bus._connect() as conn:
         cursor = conn.execute("PRAGMA journal_mode;")

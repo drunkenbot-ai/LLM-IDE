@@ -537,7 +537,7 @@ class ClusterScreenMixin:
         if hasattr(self, "cluster_round_label"):
             self.cluster_round_label.setText(f"Round: {cur_round} / {max_rounds}")
 
-        worker_breakdown = ", ".join(f"{w}: {l:.4f}" for w, l in worker_losses.items())
+        worker_breakdown = ", ".join(f"{w}: {loss_val:.4f}" for w, loss_val in worker_losses.items())
         msg = f"Round {cur_round}/{max_rounds} complete | Loss: {global_loss:.4f} | Aggregate Speed: {speed:,.0f} tok/s | Workers: {workers_count}"
         if worker_breakdown:
             msg += f" ({worker_breakdown})"

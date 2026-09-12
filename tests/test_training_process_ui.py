@@ -6,6 +6,7 @@ from pathlib import Path
 from queue import Queue
 from types import SimpleNamespace
 
+import pytest
 from PySide6.QtGui import QCloseEvent
 
 from interface import app as interface_app
