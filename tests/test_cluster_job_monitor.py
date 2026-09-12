@@ -13,7 +13,6 @@ import tempfile
 import time
 from pathlib import Path
 
-import pytest
 import torch
 
 from cluster.bus import ClusterStorageBus

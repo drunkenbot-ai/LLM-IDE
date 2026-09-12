@@ -12,7 +12,11 @@ Verifies:
 from __future__ import annotations
 
 import json
-import pytest
+try:
+    import pytest
+except ImportError:
+    import unittest
+    raise unittest.SkipTest("pytest is not installed")
 from PySide6.QtWidgets import QApplication
 
 # 1. Headless core imports (Must succeed without Qt)
