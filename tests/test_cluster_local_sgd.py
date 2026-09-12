@@ -874,6 +874,44 @@ def test_worker_deposits_telemetry_and_coordinator_aggregates(tmp_path: Path) ->
     worker_2.stop()
 
 
+def test_cmd_worker_rejects_duplicate(tmp_path: Path) -> None:
+    """Verify cmd_worker returns non-zero when a worker is already running for the device."""
+    import argparse
+    import subprocess
+    import sys
+    from cluster.cli import cmd_worker
+    from cluster.cluster_worker import get_device_tag, get_lock_file, release_singleton_lock
+    from cluster.worker import get_hardware_info
+
+    dev_str, _, _ = get_hardware_info("cpu")
+    tag = get_device_tag(dev_str)
+    release_singleton_lock(tag)
+
+    args = argparse.Namespace(
+        shared_dir=str(tmp_path),
+        worker_id="dup_test_worker",
+        device="cpu",
+        heartbeat_interval=5.0,
+        poll_interval=1.0,
+        detach=False,
+    )
+
+    # Spawn an independent background dummy process to simulate an already-running worker
+    sub = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(15)"])
+    lock_file = get_lock_file(tag)
+    lock_file.write_text(str(sub.pid))
+
+    try:
+        ret = cmd_worker(args)
+        assert ret != 0, "cmd_worker must exit with non-zero when another worker is active"
+    finally:
+        sub.terminate()
+        sub.wait(timeout=3.0)
+        lock_file.unlink(missing_ok=True)
+        release_singleton_lock(tag)
+
+
+
 
 
 
