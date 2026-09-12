@@ -357,11 +357,6 @@ class TrainingRunMixin:
             else:
                 self.launch_cluster_training_job()
 
-            # Ensure local cluster worker(s) are running so the job is processed immediately
-            from cluster.cluster_worker import get_all_running_worker_pids
-            if not get_all_running_worker_pids() and hasattr(self, "start_local_cluster_workers"):
-                self.start_local_cluster_workers()
-
             if hasattr(self, "train_button"):
                 self.train_button.setEnabled(False)
                 self.train_button.setText("Training...")

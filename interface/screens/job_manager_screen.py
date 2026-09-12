@@ -56,6 +56,18 @@ class JobManagerScreenMixin:
 
         bridge = self._ensure_job_monitor_bridge()
         target_selection = self._selected_cluster_job_id
+        selected_worker_id = getattr(self, "_selected_worker_id", None)
+        if hasattr(self, "cluster_worker_table"):
+            try:
+                selected_items = self.cluster_worker_table.selectedItems()
+                if selected_items:
+                    row = selected_items[0].row()
+                    item = self.cluster_worker_table.item(row, 0)
+                    if item and item.text().strip():
+                        selected_worker_id = item.text().strip()
+                        self._selected_worker_id = selected_worker_id
+            except Exception:
+                pass
 
         def _bg_poll() -> None:
             try:
@@ -201,15 +213,37 @@ class JobManagerScreenMixin:
                         except Exception:
                             pass
 
-                # Read local worker log tail
+                # Read diagnostics for the selected worker from shared database
                 worker_log_tail = ""
-                local_log_file = Path(tempfile.gettempdir()) / "cluster_worker_local.log"
-                if local_log_file.exists():
+                worker_label = ""
+                if selected_worker_id and bus:
                     try:
-                        w_lines = local_log_file.read_text(encoding="utf-8", errors="replace").splitlines()
-                        worker_log_tail = "\n".join(w_lines[-50:])
-                    except Exception:
-                        pass
+                        w_logs = bus.get_worker_logs(selected_worker_id, limit=200)
+                        if w_logs:
+                            formatted = []
+                            for entry in w_logs:
+                                t_str = time.strftime("%H:%M:%S", time.localtime(entry.get("timestamp", 0)))
+                                lvl = entry.get("level", "INFO")
+                                msg = entry.get("message", "")
+                                formatted.append(f"[{t_str}] [{lvl}] {msg}")
+                            worker_log_tail = "\n".join(formatted)
+                        else:
+                            worker_log_tail = f"No diagnostic logs recorded yet in database for worker '{selected_worker_id}'."
+                        worker_label = f"Worker Diagnostics ({selected_worker_id})"
+                    except Exception as exc:
+                        worker_log_tail = f"Failed to load logs for worker '{selected_worker_id}': {exc}"
+                        worker_label = f"Worker Diagnostics ({selected_worker_id})"
+
+                # Fall back to local worker log file if no specific worker is selected
+                if not worker_log_tail:
+                    local_log_file = Path(tempfile.gettempdir()) / "cluster_worker_local.log"
+                    if local_log_file.exists():
+                        try:
+                            w_lines = local_log_file.read_text(encoding="utf-8", errors="replace").splitlines()
+                            worker_log_tail = "\n".join(w_lines[-50:])
+                            worker_label = "Worker Diagnostics (Local Worker)"
+                        except Exception:
+                            pass
 
                 # Check running local worker PIDs
                 running_pids = get_all_running_worker_pids()
@@ -224,6 +258,7 @@ class JobManagerScreenMixin:
                     "rounds": rounds,
                     "coord_log_tail": coord_log_tail,
                     "worker_log_tail": worker_log_tail,
+                    "worker_label": worker_label,
                     "running_workers_count": len(running_pids),
                 }
                 bridge.data_ready.emit(payload)
@@ -291,6 +326,13 @@ class JobManagerScreenMixin:
                 self.cluster_worker_log.setPlainText(w_tail)
                 if at_bottom:
                     sb.setValue(sb.maximum())
+
+        # Update Worker Diagnostics tab title if present
+        if hasattr(self, "cluster_details_tabs") and data.get("worker_label"):
+            for i in range(self.cluster_details_tabs.count()):
+                if self.cluster_details_tabs.tabText(i).startswith("Worker Diagnostics"):
+                    self.cluster_details_tabs.setTabText(i, data["worker_label"])
+                    break
 
         # Update Local Worker button state (guard against redundant text/size updates)
         if hasattr(self, "cluster_local_worker_btn"):

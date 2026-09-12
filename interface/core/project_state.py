@@ -141,8 +141,8 @@ class ProjectStateMixin:
                 "shared_dir": os.environ.get("LLM_SHARED_PATH") or os.environ.get("LLM_SHARED_DIR") or str(Path.home() / "llm_cluster_shared"),
                 "sync_steps": 250,
                 "max_rounds": 10,
-                "sync_timeout": 180,
-                "min_workers": 1,
+                "sync_timeout": 1800,
+                "min_workers": 2,
             },
             "artifacts": {},
         }
@@ -401,8 +401,8 @@ class ProjectStateMixin:
                 "shared_dir": self.cluster_shared_dir.text() if hasattr(self, "cluster_shared_dir") else "",
                 "sync_steps": self.cluster_sync_steps.value() if hasattr(self, "cluster_sync_steps") else 250,
                 "max_rounds": self.cluster_max_rounds.value() if hasattr(self, "cluster_max_rounds") else 10,
-                "sync_timeout": self.cluster_sync_timeout.value() if hasattr(self, "cluster_sync_timeout") else 180,
-                "min_workers": self.cluster_min_workers.value() if hasattr(self, "cluster_min_workers") else 1,
+                "sync_timeout": self.cluster_sync_timeout.value() if hasattr(self, "cluster_sync_timeout") else 1800,
+                "min_workers": self.cluster_min_workers.value() if hasattr(self, "cluster_min_workers") else 2,
             },
             "artifacts": {
                 "dataset_summary": self._read_json_if_exists(dataset_dir / "dataset_summary.json") if dataset_dir else None,

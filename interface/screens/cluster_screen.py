@@ -397,8 +397,8 @@ class ClusterScreenMixin:
             job_id = f"cluster_job_{int(time.time())}"
             sync_steps = self.cluster_sync_steps.value() if hasattr(self, "cluster_sync_steps") else 250
             max_rounds = self.cluster_max_rounds.value() if hasattr(self, "cluster_max_rounds") else 10
-            sync_timeout = float(self.cluster_sync_timeout.value() if hasattr(self, "cluster_sync_timeout") else 180)
-            min_workers = self.cluster_min_workers.value() if hasattr(self, "cluster_min_workers") else 1
+            sync_timeout = float(self.cluster_sync_timeout.value() if hasattr(self, "cluster_sync_timeout") else 1800)
+            min_workers = self.cluster_min_workers.value() if hasattr(self, "cluster_min_workers") else 2
 
             bus.create_job(
                 job_id=job_id,
@@ -790,6 +790,12 @@ class ClusterScreenMixin:
 
     def start_local_cluster_workers(self) -> None:
         """Launch background worker processes on this workstation for all detected GPUs."""
+        now = time.time()
+        last_launch = getattr(self, "_last_worker_launch_time", 0.0)
+        if now - last_launch < 3.0:
+            return
+        self._last_worker_launch_time = now
+
         if not hasattr(self, "_local_worker_procs"):
             self._local_worker_procs = {}
 
@@ -986,6 +992,7 @@ class ClusterScreenMixin:
         if not worker_id_item:
             return
         worker_id = worker_id_item.text().strip()
+        self._selected_worker_id = worker_id
         self._load_worker_logs_for(worker_id)
 
     def refresh_selected_worker_logs(self) -> None:

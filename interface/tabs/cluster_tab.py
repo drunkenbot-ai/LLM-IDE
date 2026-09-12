@@ -87,9 +87,9 @@ def build_cluster_card(window) -> QWidget:
     window._tip(window.cluster_sync_steps, "Local training steps (K) each worker completes before synchronizing weights.")
     window.cluster_max_rounds = window._spin(1, 1000, 10)
     window._tip(window.cluster_max_rounds, "Total periodic synchronization rounds to execute.")
-    window.cluster_sync_timeout = window._spin(15, 3600, 180)
+    window.cluster_sync_timeout = window._spin(15, 7200, 1800)
     window._tip(window.cluster_sync_timeout, "Straggler timeout in seconds before proceeding with weight averaging without slow workers.")
-    window.cluster_min_workers = window._spin(1, 64, 1)
+    window.cluster_min_workers = window._spin(1, 64, 2)
     window._tip(window.cluster_min_workers, "Minimum number of workers that must deposit weights before round averaging can proceed.")
 
     hparams_row = QHBoxLayout()

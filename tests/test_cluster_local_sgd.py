@@ -18,6 +18,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.nn as nn
+from torch.utils.data import DataLoader
 
 from cluster.bus import ClusterStorageBus
 from cluster.coordinator import ClusterCoordinator, average_state_dicts
@@ -783,6 +784,95 @@ def test_list_workers_offline_override(tmp_path: Path) -> None:
     workers = bus.list_workers(active_within_seconds=60.0)
     assert workers[0]["status"] == "IDLE"
     assert workers[0]["is_online"] is True
+
+
+def test_worker_deposits_telemetry_and_coordinator_aggregates(tmp_path: Path) -> None:
+    """Verify workers deposit telemetry and coordinator computes valid global loss and throughput."""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "telemetry_test_job"
+    bus.create_job(
+        job_id=job_id,
+        model_config={"vocab_size": 256, "embedding_size": 64, "head_count": 2, "layer_count": 2, "context_length": 16},
+        training_config={"learning_rate": 1e-3, "batch_size": 2},
+        dataset_path="/dummy.npy",
+        max_rounds=1,
+        sync_interval_steps=5,
+        min_workers=2,
+    )
+
+    worker_1 = ClusterWorker(bus, worker_id="node_mumws4351", device="cpu")
+    worker_2 = ClusterWorker(bus, worker_id="node_mumws4857", device="cpu")
+
+    model = build_model_from_config({"vocab_size": 256, "embedding_size": 64, "head_count": 2, "layer_count": 2}, "cpu")
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
+
+    # Synthetic tokens
+    tokens = np.random.randint(0, 255, size=500, dtype=np.int64)
+    ds = ShardedTokenDataset(tokens, context_length=16, shard_index=0, total_shards=2, vocab_size=256)
+    loader = DataLoader(ds, batch_size=2)
+
+    # Worker 1 runs round
+    loss_1, _ = worker_1.run_training_round(
+        job_id=job_id,
+        round_num=0,
+        model=model,
+        optimizer=optimizer,
+        dataloader=loader,
+        dataloader_iter=iter(loader),
+        steps_per_round=5,
+    )
+    assert loss_1 > 0.0
+    metrics_1 = worker_1._last_round_metrics
+    assert metrics_1["tokens_processed"] > 0
+    assert metrics_1["tokens_per_sec"] > 0.0
+
+    # Save weights & telemetry for worker 1
+    bus.save_worker_weights(job_id, 0, "node_mumws4351", {k: v.clone() for k, v in model.state_dict().items()})
+    bus.save_worker_telemetry(job_id, 0, "node_mumws4351", {
+        "worker_id": "node_mumws4351",
+        "round": 0,
+        "steps_completed": 5,
+        "avg_loss": round(loss_1, 4),
+        "tokens_processed": metrics_1["tokens_processed"],
+        "tokens_per_sec": round(metrics_1["tokens_per_sec"], 1),
+        "timestamp": time.time(),
+    })
+
+    # Save weights & telemetry for worker 2
+    bus.save_worker_weights(job_id, 0, "node_mumws4857", {k: v.clone() for k, v in model.state_dict().items()})
+    bus.save_worker_telemetry(job_id, 0, "node_mumws4857", {
+        "worker_id": "node_mumws4857",
+        "round": 0,
+        "steps_completed": 5,
+        "avg_loss": 5.4321,
+        "tokens_processed": 160,
+        "tokens_per_sec": 3200.0,
+        "timestamp": time.time(),
+    })
+
+    # Verify telemetry files exist on disk
+    t1 = bus.load_worker_telemetry(job_id, 0, "node_mumws4351")
+    t2 = bus.load_worker_telemetry(job_id, 0, "node_mumws4857")
+    assert t1 is not None and t1["avg_loss"] == round(loss_1, 4)
+    assert t2 is not None and t2["avg_loss"] == 5.4321
+
+    # Coordinator averages round
+    coordinator = ClusterCoordinator(bus, job_id)
+    avg_state = coordinator.wait_and_average_round(0)
+    assert avg_state is not None
+
+    # Verify global summary in database
+    rounds = bus.get_all_round_history(job_id)
+    assert len(rounds) == 1
+    r0 = rounds[0]
+    assert r0["avg_loss"] > 0.0
+    assert r0["metrics"]["aggregate_tokens_per_sec"] > 0.0
+    assert "node_mumws4351" in r0["participating_workers"]
+    assert "node_mumws4857" in r0["participating_workers"]
+
+    worker_1.stop()
+    worker_2.stop()
+
 
 
 
