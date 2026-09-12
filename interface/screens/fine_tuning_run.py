@@ -269,7 +269,7 @@ class FineTuningRunMixin:
             return
         self.active_training_output_dir = training_config.output_dir
         self._prepare_fine_tune_run_folder(training_config)
-        self.fine_tune_log.append("")
+        self.fine_tune_log.clear()
         self.fine_tune_progress.setValue(0)
         self.training_progress.setValue(0)
         self.fine_tune_eta_metric.setText("ETA: -")

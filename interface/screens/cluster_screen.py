@@ -841,6 +841,13 @@ class ClusterScreenMixin:
             CREATE_NO_WINDOW = 0x08000000
             flags = DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW
 
+        # Fresh local worker log file if no workers are currently running
+        if not get_all_running_worker_pids():
+            try:
+                log_path.write_text(f"--- Worker session started at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n", encoding="utf-8")
+            except Exception:
+                pass
+
         started_count = 0
         for dev in devices:
             tag = get_device_tag(dev)

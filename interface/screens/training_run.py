@@ -348,6 +348,10 @@ class TrainingRunMixin:
                             existing_job = j
                             break
 
+            if hasattr(self, "training_log"):
+                self.training_log.clear()
+                self.training_log.append("Starting Cluster Training (Local SGD)...")
+
             if existing_job:
                 self.resume_cluster_job(existing_job["job_id"])
             else:
@@ -379,7 +383,7 @@ class TrainingRunMixin:
         if not self._run_training_preflight(model_config, training_config):
             return
         self.active_training_output_dir = training_config.output_dir
-        self.training_log.append("")
+        self.training_log.clear()
         self.training_progress.setValue(0)
         self.training_epoch_metric.setText("Epoch: -")
         self.training_step_metric.setText("Step: -")

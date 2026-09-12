@@ -326,6 +326,35 @@ class JobManagerScreenMixin:
                         self.fine_tune_button.setText("Start Fine-Tune")
                     if hasattr(self, "stop_training_button") and self.stop_training_button.isEnabled():
                         self.stop_training_button.setEnabled(False)
+
+            # Populate Training Tab Charts from loaded rounds
+            rounds = data.get("rounds", [])
+            if rounds:
+                last_r = rounds[-1]
+                eff_step = int(last_r.get("metrics", {}).get("effective_step", c_round * 250))
+                g_loss = float(last_r.get("avg_loss", 0.0))
+                spd = float(last_r.get("metrics", {}).get("aggregate_tokens_per_sec", 0.0))
+                if hasattr(self, "training_loss_metric"):
+                    self.training_loss_metric.setText(f"Train loss: {g_loss:.4f}")
+                if hasattr(self, "training_speed_metric"):
+                    self.training_speed_metric.setText(f"Speed: {spd:,.0f} tok/s")
+                if hasattr(self, "training_step_metric"):
+                    self.training_step_metric.setText(f"Step: {eff_step} (Round {c_round}/{m_rounds})")
+                if hasattr(self, "loss_chart") and self.loss_chart:
+                    self.loss_chart.add_metrics(eff_step, g_loss, None)
+                if hasattr(self, "throughput_chart") and self.throughput_chart:
+                    self.throughput_chart.add_values(eff_step, spd)
+
+            # Append coordinator log tail to training log if not yet present
+            coord_tail = data.get("coord_log_tail", "")
+            job_id = active_job.get("job_id", "")
+            if coord_tail and hasattr(self, "training_log") and job_id:
+                current_text = self.training_log.toPlainText()
+                if f"Job: {job_id}" not in current_text:
+                    self.training_log.append(
+                        f"\n=== Attached to Active Cluster Job: {job_id} ===\n"
+                        f"{coord_tail}\n"
+                    )
         else:
             if not getattr(self, "training_controller", None) or not getattr(self.training_controller, "active", False):
                 if hasattr(self, "train_button") and self.train_button.text() == "Training...":
@@ -334,34 +363,6 @@ class JobManagerScreenMixin:
                 if hasattr(self, "fine_tune_button") and self.fine_tune_button.text() == "Fine-Tuning...":
                     self.fine_tune_button.setEnabled(True)
                     self.fine_tune_button.setText("Start Fine-Tune")
-
-                # Populate Training Tab Charts from loaded rounds
-                rounds = data.get("rounds", [])
-                if rounds:
-                    last_r = rounds[-1]
-                    eff_step = int(last_r.get("metrics", {}).get("effective_step", c_round * 250))
-                    g_loss = float(last_r.get("avg_loss", 0.0))
-                    spd = float(last_r.get("metrics", {}).get("aggregate_tokens_per_sec", 0.0))
-                    if hasattr(self, "training_loss_metric"):
-                        self.training_loss_metric.setText(f"Train loss: {g_loss:.4f}")
-                    if hasattr(self, "training_speed_metric"):
-                        self.training_speed_metric.setText(f"Speed: {spd:,.0f} tok/s")
-                    if hasattr(self, "training_step_metric"):
-                        self.training_step_metric.setText(f"Step: {eff_step} (Round {c_round}/{m_rounds})")
-                    if hasattr(self, "loss_chart") and self.loss_chart:
-                        self.loss_chart.add_metrics(eff_step, g_loss, None)
-                    if hasattr(self, "throughput_chart") and self.throughput_chart:
-                        self.throughput_chart.add_values(eff_step, spd)
-
-                # Append coordinator log tail to training log if not yet present
-                coord_tail = data.get("coord_log_tail", "")
-                if coord_tail and hasattr(self, "training_log"):
-                    current_text = self.training_log.toPlainText()
-                    if f"Job: {active_job.get('job_id')}" not in current_text:
-                        self.training_log.append(
-                            f"\n=== Attached to Active Cluster Job: {active_job.get('job_id')} ===\n"
-                            f"{coord_tail}\n"
-                        )
 
     def on_cluster_job_selected(self) -> None:
         """Handle selection change in the Master Jobs Table: load tasks and diagnostic logs."""
