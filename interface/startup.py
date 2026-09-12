@@ -31,6 +31,7 @@ from .startup_validation import (
     _run_startup_tests,
     _run_startup_validations,
     _validate_writable_directory,
+    is_dev_mode,
 )
 from .theme import DARK_THEME, apply_theme, current_theme, load_startup_theme
 
@@ -204,7 +205,7 @@ class StartupValidationSplash(QDialog):
         header.addLayout(title_box, 1)
         root.addLayout(header)
 
-        self.step_label = QLabel("Preparing checks...")
+        self.step_label = QLabel("Starting DrunkenBot-IDE...")
         self.step_label.setObjectName("Step")
         root.addWidget(self.step_label)
 
@@ -331,10 +332,7 @@ class ProjectChoiceDialog(QDialog):
         title.setAlignment(Qt.AlignLeft)
         root.addWidget(title)
 
-        body = QLabel(
-            "Startup checks are complete.\n"
-            "Choose how you want to begin with DrunkenBot-IDE."
-        )
+        body = QLabel("Choose how you want to begin with DrunkenBot-IDE.")
         body.setObjectName("Body")
         body.setAlignment(Qt.AlignLeft)
         root.addWidget(body)

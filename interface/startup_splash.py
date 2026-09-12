@@ -51,7 +51,7 @@ class StartupSplash(QDialog):
         header.addSpacing(10)
         header.addWidget(title, 1)
         layout.addLayout(header)
-        self.status = QLabel("Preparing checks...")
+        self.status = QLabel("Starting DrunkenBot-IDE...")
         self.status.setObjectName("Step")
         layout.addWidget(self.status)
         self.progress = QProgressBar()
