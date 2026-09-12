@@ -19,6 +19,16 @@ from cluster.bus import ClusterStorageBus
 from interface.tabs.cluster_tab import set_cluster_table_rows
 
 
+def _format_cluster_duration(seconds: float) -> str:
+    """Format seconds into HH:MM:SS or MM:SS string."""
+    s = int(round(max(seconds, 0.0)))
+    m, s = divmod(s, 60)
+    h, m = divmod(m, 60)
+    if h > 0:
+        return f"{h:02d}:{m:02d}:{s:02d}"
+    return f"{m:02d}:{s:02d}"
+
+
 class ClusterTelemetryBridge(QObject):
     """Qt signal bridge for thread-safe worker telemetry updates."""
 
@@ -261,6 +271,31 @@ class ClusterScreenMixin:
                     self.project_state.setText("Training")
                 if hasattr(self, "stop_training_button"):
                     self.stop_training_button.setEnabled(True)
+                sync_k = int(active_job.get("sync_interval_steps") or 250)
+                tot_steps = int(max_rounds) * sync_k
+                cur_eff_step = int(cur_round) * sync_k
+                if hasattr(self, "training_step_metric"):
+                    self.training_step_metric.setText(f"Step: {cur_eff_step} / {tot_steps} (Round {cur_round}/{max_rounds})")
+                if hasattr(self, "training_epoch_metric"):
+                    self.training_epoch_metric.setText(f"Round: {cur_round}/{max_rounds}")
+                if hasattr(self, "training_progress"):
+                    self.training_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
+                if hasattr(self, "training_health_metric"):
+                    self.training_health_metric.setText("Health: OPTIMAL")
+                tcfg = active_job.get("training_config", {})
+                if isinstance(tcfg, str):
+                    try:
+                        import json
+                        tcfg = json.loads(tcfg)
+                    except Exception:
+                        tcfg = {}
+                lr = tcfg.get("learning_rate")
+                if lr and hasattr(self, "training_lr_metric"):
+                    self.training_lr_metric.setText(f"LR: {float(lr):.2e}")
+                if workers and hasattr(self, "training_vram_metric"):
+                    vram_vals = [float(w.get("vram_used_gb") or 0.0) for w in workers if float(w.get("vram_used_gb") or 0.0) > 0]
+                    if vram_vals:
+                        self.training_vram_metric.setText(f"VRAM: {max(vram_vals):.1f} GB")
         else:
             if hasattr(self, "cluster_status_label"):
                 self.cluster_status_label.setText("Status: Fleet Idle")
@@ -505,6 +540,11 @@ class ClusterScreenMixin:
         workers_count = int(telemetry.get("ready_workers_count", 0))
         worker_losses = telemetry.get("worker_losses", {})
 
+        bus = self._get_cluster_bus()
+        job = bus.get_job(telemetry.get("job_id", "")) if bus else None
+        sync_interval = int(job.get("sync_interval_steps") or 250) if job else 250
+        total_steps = max_rounds * sync_interval
+
         # 1. Update Training Tab Charts & Metrics
         if hasattr(self, "loss_chart") and self.loss_chart:
             self.loss_chart.add_metrics(effective_step, global_loss, None)
@@ -517,9 +557,74 @@ class ClusterScreenMixin:
         if hasattr(self, "training_speed_metric"):
             self.training_speed_metric.setText(f"Speed: {speed:,.0f} tok/s")
         if hasattr(self, "training_step_metric"):
-            self.training_step_metric.setText(f"Step: {effective_step} (Round {cur_round}/{max_rounds})")
+            self.training_step_metric.setText(f"Step: {effective_step} / {total_steps} (Round {cur_round}/{max_rounds})")
+        if hasattr(self, "training_epoch_metric"):
+            self.training_epoch_metric.setText(f"Round: {cur_round}/{max_rounds}")
         if hasattr(self, "training_progress"):
             self.training_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
+        if hasattr(self, "training_health_metric"):
+            self.training_health_metric.setText("Health: OPTIMAL" if global_loss < 7.0 else "Health: STABLE")
+
+        # ETA calculation
+        now = time.time()
+        if not hasattr(self, "_cluster_round_times") or not self._cluster_round_times:
+            self._cluster_round_times = []
+        self._cluster_round_times.append(now)
+
+        remaining_rounds = max(0, max_rounds - cur_round)
+        if remaining_rounds == 0:
+            eta_str = "00:00"
+        elif len(self._cluster_round_times) >= 2:
+            avg_round_sec = (self._cluster_round_times[-1] - self._cluster_round_times[0]) / (len(self._cluster_round_times) - 1)
+            eta_seconds = remaining_rounds * avg_round_sec
+            eta_str = _format_cluster_duration(eta_seconds)
+        elif job and job.get("created_at"):
+            elapsed_job = now - float(job["created_at"])
+            avg_round_sec = elapsed_job / max(cur_round, 1)
+            eta_seconds = remaining_rounds * avg_round_sec
+            eta_str = _format_cluster_duration(eta_seconds)
+        elif speed > 0:
+            batch_sz = 2
+            ctx_len = 1024
+            if job:
+                tcfg = job.get("training_config", {})
+                if isinstance(tcfg, str):
+                    try:
+                        import json
+                        tcfg = json.loads(tcfg)
+                    except Exception:
+                        tcfg = {}
+                batch_sz = int(tcfg.get("batch_size") or 2)
+                ctx_len = int(tcfg.get("context_length") or 1024)
+            tokens_per_round = sync_interval * batch_sz * ctx_len * max(workers_count, 1)
+            eta_seconds = (remaining_rounds * tokens_per_round) / max(speed, 1.0)
+            eta_str = _format_cluster_duration(eta_seconds)
+        else:
+            eta_str = "-"
+
+        if hasattr(self, "training_eta_metric"):
+            self.training_eta_metric.setText(f"ETA: {eta_str}")
+
+        if job:
+            tcfg = job.get("training_config", {})
+            if isinstance(tcfg, str):
+                try:
+                    import json
+                    tcfg = json.loads(tcfg)
+                except Exception:
+                    tcfg = {}
+            lr = tcfg.get("learning_rate")
+            if lr and hasattr(self, "training_lr_metric"):
+                self.training_lr_metric.setText(f"LR: {float(lr):.2e}")
+
+        if hasattr(self, "training_vram_metric") and hasattr(self, "_cached_cluster_bus") and self._cached_cluster_bus:
+            try:
+                workers = self._cached_cluster_bus.list_workers()
+                vram_vals = [float(w.get("vram_used_gb") or 0.0) for w in workers if float(w.get("vram_used_gb") or 0.0) > 0]
+                if vram_vals:
+                    self.training_vram_metric.setText(f"VRAM: {max(vram_vals):.1f} GB")
+            except Exception:
+                pass
 
         # 2. Update Live Tab Metrics
         if hasattr(self, "live_loss_metric"):
