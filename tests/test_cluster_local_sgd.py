@@ -911,6 +911,133 @@ def test_cmd_worker_rejects_duplicate(tmp_path: Path) -> None:
         release_singleton_lock(tag)
 
 
+def test_worker_job_compatibility_gatekeeping(tmp_path: Path) -> None:
+    """Verify that ClusterWorker gatekeeping rejects incompatible jobs and refuses slot claim."""
+    bus = ClusterStorageBus(tmp_path)
+    worker = ClusterWorker(bus=bus, worker_id="compat_node_01", device="cpu")
+
+    try:
+        # 1. Non-existent dataset
+        incompat_job_1 = {
+            "job_id": "job_missing_ds",
+            "dataset_path": str(tmp_path / "nonexistent.npy"),
+            "training_config": {},
+            "model_config": {},
+        }
+        compat, reason = worker.is_job_compatible(incompat_job_1)
+        assert compat is False
+        assert "not accessible" in reason.lower()
+
+        # 2. Target worker whitelist exclusion
+        valid_dataset_path = tmp_path / "train_tokens.npy"
+        np.save(valid_dataset_path, np.arange(100, dtype=np.int32))
+
+        incompat_job_2 = {
+            "job_id": "job_whitelist",
+            "dataset_path": str(valid_dataset_path),
+            "target_workers": ["other_node_99"],
+            "training_config": {},
+            "model_config": {},
+        }
+        compat, reason = worker.is_job_compatible(incompat_job_2)
+        assert compat is False
+        assert "target_workers" in reason
+
+        # 3. Degraded worker status
+        worker._current_status = "DEGRADED"
+        compat, reason = worker.is_job_compatible({
+            "job_id": "job_valid",
+            "dataset_path": str(valid_dataset_path),
+            "training_config": {},
+            "model_config": {},
+        })
+        assert compat is False
+        assert "degraded" in reason.lower()
+
+        # 4. Bus level slot claiming rejection for degraded worker
+        bus.heartbeat(worker.worker_id, status="DEGRADED")
+        bus.create_job(
+            job_id="job_bus_guard",
+            model_config={"vocab_size": 100},
+            training_config={"batch_size": 2},
+            dataset_path=str(valid_dataset_path),
+        )
+        import pytest
+        with pytest.raises(RuntimeError, match="status 'DEGRADED'"):
+            bus.claim_job_slot("job_bus_guard", worker.worker_id)
+    finally:
+        worker.stop()
+
+
+def test_cluster_validation_loss_evaluation(tmp_path: Path) -> None:
+    """Verify that worker evaluates validation loss on val_tokens.npy and coordinator aggregates it."""
+    bus = ClusterStorageBus(tmp_path)
+
+    # Create dummy train and val datasets
+    train_npy = tmp_path / "train_tokens.npy"
+    val_npy = tmp_path / "val_tokens.npy"
+    np.save(train_npy, np.random.randint(0, 50, size=2048, dtype=np.int32))
+    np.save(val_npy, np.random.randint(0, 50, size=512, dtype=np.int32))
+
+    job_id = "job_val_test"
+    model_cfg = {
+        "vocab_size": 64,
+        "context_length": 32,
+        "embedding_size": 32,
+        "head_count": 2,
+        "layer_count": 2,
+    }
+    training_cfg = {
+        "learning_rate": 1e-3,
+        "batch_size": 2,
+        "precision": "float32",
+        "use_amp": False,
+    }
+
+    bus.create_job(
+        job_id=job_id,
+        model_config=model_cfg,
+        training_config=training_cfg,
+        dataset_path=str(train_npy),
+        max_rounds=1,
+        sync_interval_steps=5,
+        min_workers=1,
+    )
+
+    worker = ClusterWorker(bus=bus, worker_id="val_node_01", device="cpu")
+    job = bus.get_job(job_id)
+    assert job is not None
+
+    import threading
+    worker_thread = threading.Thread(target=lambda: worker.execute_job(job, poll_interval=0.1), daemon=True)
+    worker_thread.start()
+
+    try:
+        # Coordinator aggregates round and includes val_loss in summary
+        coordinator = ClusterCoordinator(bus=bus, job_id=job_id)
+        global_state = coordinator.wait_for_round_and_aggregate(round_num=0, poll_interval_seconds=0.1)
+        assert global_state is not None
+        worker_thread.join(timeout=10.0)
+
+        # Check worker telemetry recorded val_loss
+        tel = bus.load_worker_telemetry(job_id, round_num=0, worker_id=worker.worker_id)
+        assert tel is not None
+        assert "val_loss" in tel
+        assert tel["val_loss"] is not None
+        assert isinstance(tel["val_loss"], float)
+        assert tel["val_loss"] > 0.0
+
+        history = bus.get_all_round_history(job_id)
+        assert len(history) == 1
+        summary_metrics = history[0]["metrics"]
+        assert "val_loss" in summary_metrics
+        assert summary_metrics["val_loss"] == tel["val_loss"]
+    finally:
+        worker.stop()
+        worker_thread.join(timeout=2.0)
+
+
+
 
 
 

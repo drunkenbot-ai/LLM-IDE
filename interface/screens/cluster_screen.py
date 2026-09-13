@@ -352,9 +352,9 @@ class ClusterScreenMixin:
                     self._log_cluster_event(f"Copying dataset to shared storage for cluster workers: {shared_candidate.name}...")
                     import shutil
                     shutil.copyfile(dataset_path, shared_candidate)
-                # Also copy tokenizer/summary metadata if available in dataset folder
+                # Also copy tokenizer/summary metadata and validation tokens if available in dataset folder
                 orig_dir = Path(dataset_path).parent
-                for meta_file in ["dataset_summary.json", "tokenizer.json"]:
+                for meta_file in ["dataset_summary.json", "tokenizer.json", "val_tokens.npy"]:
                     src_meta = orig_dir / meta_file
                     dst_meta = bus.shared_dir / meta_file
                     if src_meta.exists() and (not dst_meta.exists() or dst_meta.stat().st_size != src_meta.stat().st_size):
@@ -364,6 +364,19 @@ class ClusterScreenMixin:
                         except Exception:
                             pass
                 dataset_path = str(shared_candidate)
+            else:
+                # If dataset is already under shared drive, make sure val_tokens.npy is alongside it
+                orig_dir = Path(dataset_path).parent
+                cand_val = orig_dir / "val_tokens.npy"
+                if cand_val.exists():
+                    self._log_cluster_event(f"Detected validation tokens on shared storage: {cand_val.name}")
+
+            # Check fleet for degraded/incompatible workers and warn
+            fleet = bus.list_workers()
+            incompat_nodes = [w for w in fleet if str(w.get("status")).upper() in {"DEGRADED", "INCOMPATIBLE"}]
+            if incompat_nodes:
+                incompat_str = ", ".join(f"{w['worker_id']} ({w.get('status')})" for w in incompat_nodes)
+                self._log_cluster_event(f"[Fleet Safety] Guard active: {len(incompat_nodes)} node(s) marked incompatible and will not be assigned: {incompat_str}")
 
             # Determine vocabulary size accurately from dataset / tokenizer metadata
             vocab_size = 0
@@ -526,6 +539,12 @@ class ClusterScreenMixin:
         max_rounds = int(telemetry.get("max_rounds", 10))
         effective_step = int(telemetry.get("effective_step", 0))
         global_loss = float(telemetry.get("global_loss", 0.0))
+        val_loss = telemetry.get("val_loss")
+        if val_loss is not None:
+            try:
+                val_loss = float(val_loss)
+            except (ValueError, TypeError):
+                val_loss = None
         speed = float(telemetry.get("aggregate_tokens_per_sec", 0.0))
         workers_count = int(telemetry.get("ready_workers_count", 0))
         worker_losses = telemetry.get("worker_losses", {})
@@ -537,13 +556,18 @@ class ClusterScreenMixin:
 
         # 1. Update Training Tab Charts & Metrics
         if hasattr(self, "loss_chart") and self.loss_chart:
-            self.loss_chart.add_metrics(effective_step, global_loss, None)
+            self.loss_chart.add_metrics(effective_step, global_loss, val_loss)
 
         if hasattr(self, "throughput_chart") and self.throughput_chart:
             self.throughput_chart.add_values(effective_step, speed)
 
         if hasattr(self, "training_loss_metric"):
             self.training_loss_metric.setText(f"Train loss: {global_loss:.4f}")
+        if hasattr(self, "training_val_metric"):
+            if val_loss is not None:
+                self.training_val_metric.setText(f"Val loss: {val_loss:.4f}")
+            else:
+                self.training_val_metric.setText("Val loss: -")
         if hasattr(self, "training_speed_metric"):
             self.training_speed_metric.setText(f"Speed: {speed:,.0f} tok/s")
         if hasattr(self, "training_step_metric"):
@@ -553,7 +577,10 @@ class ClusterScreenMixin:
         if hasattr(self, "training_progress"):
             self.training_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
         if hasattr(self, "training_health_metric"):
-            self.training_health_metric.setText("Health: OPTIMAL" if global_loss < 7.0 else "Health: STABLE")
+            if val_loss is not None and val_loss > global_loss * 2.0:
+                self.training_health_metric.setText("Health: high val loss")
+            else:
+                self.training_health_metric.setText("Health: OPTIMAL" if global_loss < 7.0 else "Health: STABLE")
 
         # ETA calculation
         now = time.time()
@@ -627,13 +654,19 @@ class ClusterScreenMixin:
             self.live_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
 
         # 3. Update Cluster Tab
+        val_suffix = f" (Val: {val_loss:.4f})" if val_loss is not None else ""
         if hasattr(self, "cluster_status_label"):
-            self.cluster_status_label.setText(f"Status: Round {cur_round}/{max_rounds} (Loss: {global_loss:.4f})")
+            self.cluster_status_label.setText(f"Status: Round {cur_round}/{max_rounds} (Loss: {global_loss:.4f}{val_suffix})")
         if hasattr(self, "cluster_round_label"):
             self.cluster_round_label.setText(f"Round: {cur_round} / {max_rounds}")
+        if hasattr(self, "cluster_loss_label"):
+            self.cluster_loss_label.setText(f"Loss: {global_loss:.4f}")
+        if hasattr(self, "cluster_val_loss_label"):
+            self.cluster_val_loss_label.setText(f"Val Loss: {val_loss:.4f}" if val_loss is not None else "Val Loss: -")
 
         worker_breakdown = ", ".join(f"{w}: {loss_val:.4f}" for w, loss_val in worker_losses.items())
-        msg = f"Round {cur_round}/{max_rounds} complete | Loss: {global_loss:.4f} | Aggregate Speed: {speed:,.0f} tok/s | Workers: {workers_count}"
+        val_log_str = f" | Val Loss: {val_loss:.4f}" if val_loss is not None else ""
+        msg = f"Round {cur_round}/{max_rounds} complete | Loss: {global_loss:.4f}{val_log_str} | Aggregate Speed: {speed:,.0f} tok/s | Workers: {workers_count}"
         if worker_breakdown:
             msg += f" ({worker_breakdown})"
         self._log_cluster_event(msg)

@@ -150,10 +150,16 @@ def build_cluster_card(window) -> QWidget:
     window.cluster_workers_label.setObjectName("Metric")
     window.cluster_round_label = QLabel("Round: -")
     window.cluster_round_label.setObjectName("Metric")
+    window.cluster_loss_label = QLabel("Loss: -")
+    window.cluster_loss_label.setObjectName("Metric")
+    window.cluster_val_loss_label = QLabel("Val Loss: -")
+    window.cluster_val_loss_label.setObjectName("Metric")
 
     status_row.addWidget(window.cluster_status_label)
     status_row.addWidget(window.cluster_workers_label)
     status_row.addWidget(window.cluster_round_label)
+    status_row.addWidget(window.cluster_loss_label)
+    status_row.addWidget(window.cluster_val_loss_label)
     status_row.addStretch(1)
     form.addRow("Telemetry", status_row)
 
