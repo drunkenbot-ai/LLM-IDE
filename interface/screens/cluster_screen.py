@@ -570,10 +570,17 @@ class ClusterScreenMixin:
                 self.training_val_metric.setText("Val loss: -")
         if hasattr(self, "training_speed_metric"):
             self.training_speed_metric.setText(f"Speed: {speed:,.0f} tok/s")
+        epoch_val = telemetry.get("epoch")
+        target_epochs = telemetry.get("target_epochs", 1)
+
         if hasattr(self, "training_step_metric"):
-            self.training_step_metric.setText(f"Step: {effective_step} / {total_steps} (Round {cur_round}/{max_rounds})")
+            self.training_step_metric.setText(f"Step: {effective_step:,} / {total_steps:,} (Round {cur_round}/{max_rounds})")
         if hasattr(self, "training_epoch_metric"):
-            self.training_epoch_metric.setText(f"Round: {cur_round}/{max_rounds}")
+            if epoch_val is not None:
+                epoch_pct = (epoch_val / max(target_epochs, 1)) * 100.0
+                self.training_epoch_metric.setText(f"Epoch: {epoch_val:.2f}/{target_epochs} ({epoch_pct:.1f}%)")
+            else:
+                self.training_epoch_metric.setText(f"Round: {cur_round}/{max_rounds}")
         if hasattr(self, "training_progress"):
             self.training_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
         if hasattr(self, "training_health_metric"):
@@ -649,7 +656,12 @@ class ClusterScreenMixin:
         if hasattr(self, "live_tokens_metric"):
             self.live_tokens_metric.setText(f"Tokens/sec: {speed:,.0f}")
         if hasattr(self, "live_step_metric"):
-            self.live_step_metric.setText(f"Step: {effective_step}")
+            self.live_step_metric.setText(f"Step: {effective_step:,}")
+        if hasattr(self, "live_epoch_metric"):
+            if epoch_val is not None:
+                self.live_epoch_metric.setText(f"Epoch: {epoch_val:.2f}/{target_epochs}")
+            else:
+                self.live_epoch_metric.setText(f"Round: {cur_round}/{max_rounds}")
         if hasattr(self, "live_progress"):
             self.live_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
 
@@ -666,7 +678,8 @@ class ClusterScreenMixin:
 
         worker_breakdown = ", ".join(f"{w}: {loss_val:.4f}" for w, loss_val in worker_losses.items())
         val_log_str = f" | Val Loss: {val_loss:.4f}" if val_loss is not None else ""
-        msg = f"Round {cur_round}/{max_rounds} complete | Loss: {global_loss:.4f}{val_log_str} | Aggregate Speed: {speed:,.0f} tok/s | Workers: {workers_count}"
+        epoch_log_str = f" | Epoch: {epoch_val:.2f}/{target_epochs}" if epoch_val is not None else ""
+        msg = f"Round {cur_round}/{max_rounds} complete{epoch_log_str} | Loss: {global_loss:.4f}{val_log_str} | Aggregate Speed: {speed:,.0f} tok/s | Workers: {workers_count}"
         if worker_breakdown:
             msg += f" ({worker_breakdown})"
         self._log_cluster_event(msg)
@@ -1322,3 +1335,55 @@ class ClusterScreenMixin:
             self.refresh_cluster_status()
             if hasattr(self, "refresh_job_manager_tab"):
                 self.refresh_job_manager_tab()
+
+    def calculate_cluster_rounds_from_epochs(self) -> None:
+        """Calculate and set Max rounds based on Training Tab epochs, batch size, context length, and active workers."""
+        try:
+            import math
+            import numpy as np
+
+            # Locate dataset
+            dataset_path = ""
+            if hasattr(self, "dataset_path") and self.dataset_path.text().strip():
+                dataset_path = self.dataset_path.text().strip()
+            elif hasattr(self, "cluster_shared_dir") and self.cluster_shared_dir.text().strip():
+                shared_ds = Path(self.cluster_shared_dir.text().strip()) / "train_tokens.npy"
+                if shared_ds.exists():
+                    dataset_path = str(shared_ds)
+
+            if not dataset_path or not os.path.exists(dataset_path):
+                QMessageBox.warning(self, "Dataset Missing", "Please select a valid dataset in the Training Tab first.")
+                return
+
+            arr = np.load(dataset_path, mmap_mode="r")
+            total_tokens = int(len(arr))
+
+            epochs = int(self.epochs.value()) if hasattr(self, "epochs") else 1
+            batch_size = int(self.batch_size.value()) if hasattr(self, "batch_size") else 2
+            context_length = int(self.context_length.value()) if hasattr(self, "context_length") else 1024
+            sync_steps = int(self.cluster_sync_steps.value()) if hasattr(self, "cluster_sync_steps") else 250
+
+            bus = self._get_cluster_bus()
+            workers = bus.list_workers() if bus else []
+            active_workers = len([w for w in workers if w.get("status") in {"IDLE", "READY", "TRAINING"}]) or 1
+
+            tokens_per_round = active_workers * sync_steps * batch_size * context_length
+            total_needed_tokens = total_tokens * epochs
+            needed_rounds = max(1, math.ceil(total_needed_tokens / max(tokens_per_round, 1)))
+
+            if hasattr(self, "cluster_max_rounds"):
+                self.cluster_max_rounds.setValue(min(needed_rounds, self.cluster_max_rounds.maximum()))
+
+            total_steps_est = needed_rounds * sync_steps
+            info_msg = (
+                f"Dataset: {total_tokens:,} tokens\n"
+                f"Target Epochs: {epochs}\n"
+                f"Fleet Workers: {active_workers}\n"
+                f"Tokens / Round: {tokens_per_round:,}\n\n"
+                f"Calculated Max Rounds: {needed_rounds:,} rounds ({total_steps_est:,} steps per worker)\n"
+                f"Max rounds spinner updated to {needed_rounds:,}."
+            )
+            self._log_cluster_event(f"Calculated {needed_rounds:,} rounds for {epochs} epoch(s) on {total_tokens:,} tokens.")
+            QMessageBox.information(self, "Rounds Calculated", info_msg)
+        except Exception as exc:
+            QMessageBox.warning(self, "Calculation Error", f"Failed to calculate rounds:\n{exc}")
