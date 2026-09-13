@@ -187,7 +187,10 @@ def build_main_shell(window, app_name: str) -> QWidget:
         page = builder(window)
         page.setObjectName("Page")
         window.pages.addWidget(page)
+    window.training_page_index = 2
+    window.fine_tuning_page_index = 3
     window.live_page_index = 4
+    window.job_manager_page_index = 5
     body.addWidget(window.pages, 1)
     root.addLayout(body, 1)
 

@@ -357,7 +357,7 @@ class TrainingRunMixin:
             if existing_job:
                 self.resume_cluster_job(existing_job["job_id"])
             else:
-                self.launch_cluster_training_job()
+                self.launch_cluster_training_job(training_mode="pretrain")
 
             if hasattr(self, "train_button"):
                 self.train_button.setEnabled(False)

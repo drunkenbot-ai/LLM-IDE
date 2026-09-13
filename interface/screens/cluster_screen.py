@@ -555,11 +555,14 @@ class ClusterScreenMixin:
             return
 
         if training_mode is None:
-            if hasattr(self, "_fine_tune_launch_target_value") and hasattr(self, "pages") and hasattr(self, "fine_tuning_page_index"):
-                if self.pages.currentIndex() == self.fine_tuning_page_index:
+            if hasattr(self, "pages") and self.pages is not None:
+                ft_idx = getattr(self, "fine_tuning_page_index", 3)
+                if self.pages.currentIndex() == ft_idx:
                     training_mode = "fine_tune"
-        if training_mode is None:
-            training_mode = "fine_tune" if hasattr(self, "_training_mode_value") and self._training_mode_value() == "fine_tune" else "pretrain"
+                else:
+                    training_mode = "pretrain"
+            else:
+                training_mode = "pretrain"
 
         is_fine_tune = (training_mode == "fine_tune")
 
@@ -573,15 +576,24 @@ class ClusterScreenMixin:
 
         # Find dataset path (train_tokens.npy or configured dataset)
         dataset_path = None
-        if is_fine_tune:
-            if hasattr(self, "train_data_dir") and self.train_data_dir.text().strip():
-                candidate = Path(self.train_data_dir.text().strip()) / "train_tokens.npy"
-                if candidate.exists():
-                    dataset_path = str(candidate)
-            if not dataset_path and hasattr(self, "dataset_dir") and self.dataset_dir.text().strip():
-                candidate = Path(self.dataset_dir.text().strip()) / "train_tokens.npy"
-                if candidate.exists():
-                    dataset_path = str(candidate)
+        for dir_attr in ("train_data_dir", "dataset_dir"):
+            if hasattr(self, dir_attr):
+                val = getattr(self, dir_attr).text().strip()
+                if val:
+                    p = Path(val)
+                    if p.is_file() and p.suffix == ".npy":
+                        dataset_path = str(p)
+                        break
+                    cand = p / "train_tokens.npy"
+                    if cand.exists():
+                        dataset_path = str(cand)
+                        break
+                    if p.is_dir():
+                        npys = list(p.glob("*.npy"))
+                        if npys:
+                            train_cand = [f for f in npys if "train" in f.name.lower()]
+                            dataset_path = str(train_cand[0] if train_cand else npys[0])
+                            break
 
         if not dataset_path and hasattr(self, "_dataset_manifest_path"):
             manifest_dir = Path(self._dataset_manifest_path()).parent
