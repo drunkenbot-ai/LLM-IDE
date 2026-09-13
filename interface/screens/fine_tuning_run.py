@@ -239,8 +239,8 @@ class FineTuningRunMixin:
                 QMessageBox.warning(self, "Fine-tune blocked", stage_message)
                 return
             if fine_tune_launch == "cluster":
-                self.launch_cluster_training_job()
-                self.fine_tune_log.append("Cluster Local SGD fine-tune job launched. Watch Job Manager for round synchronization.")
+                self.launch_cluster_training_job(training_mode="fine_tune")
+                self.fine_tune_log.append("Cluster Local SGD fine-tune job launched. Watch Fine-Tuning Lab and Cluster tab for round synchronization.")
             elif fine_tune_launch == "runpod":
                 self.launch_runpod_worker_for_current_training(training_mode="fine_tune", stage=self._training_stage_value())
                 self.fine_tune_log.append("RunPod fine-tune job launched. Watch Job Manager for worker assignment and progress.")

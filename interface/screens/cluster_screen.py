@@ -15,8 +15,49 @@ from typing import Any, Optional
 from PySide6.QtCore import QObject, QThread, QTimer, Signal
 from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
 
+import sqlite3
 from cluster.bus import ClusterStorageBus
 from interface.tabs.cluster_tab import set_cluster_table_rows
+
+# Backward compatibility polyfill in case cluster submodule on remote/network clone is out of sync
+if not hasattr(ClusterStorageBus, "is_worker_enabled"):
+    def _is_worker_enabled(self: Any, worker_id: str) -> bool:
+        def _op(conn: sqlite3.Connection) -> bool:
+            cursor = conn.execute("SELECT enabled FROM workers WHERE worker_id = ?;", (worker_id,))
+            row = cursor.fetchone()
+            if row is not None and row[0] is not None:
+                return bool(row[0])
+            return True
+        return self._run_with_retry(_op, default_on_error=True)
+    ClusterStorageBus.is_worker_enabled = _is_worker_enabled  # type: ignore[attr-defined]
+
+if not hasattr(ClusterStorageBus, "set_worker_enabled"):
+    def _set_worker_enabled(self: Any, worker_id: str, enabled: bool) -> None:
+        val = 1 if enabled else 0
+        def _op(conn: sqlite3.Connection) -> None:
+            try:
+                conn.execute("ALTER TABLE workers ADD COLUMN enabled INTEGER DEFAULT 1;")
+            except Exception:
+                pass
+            conn.execute(
+                "UPDATE workers SET enabled = ?, status = CASE WHEN ? = 0 THEN 'DISABLED' ELSE 'IDLE' END WHERE worker_id = ?;",
+                (val, val, worker_id),
+            )
+            if not enabled:
+                conn.execute(
+                    "UPDATE job_participants SET status = 'DROPPED' WHERE worker_id = ?;",
+                    (worker_id,),
+                )
+        self._run_with_retry(_op)
+    ClusterStorageBus.set_worker_enabled = _set_worker_enabled  # type: ignore[attr-defined]
+
+if not hasattr(ClusterStorageBus, "delete_worker"):
+    def _delete_worker(self: Any, worker_id: str) -> bool:
+        def _op(conn: sqlite3.Connection) -> bool:
+            cursor = conn.execute("DELETE FROM workers WHERE worker_id = ?;", (worker_id,))
+            return cursor.rowcount > 0
+        return bool(self._run_with_retry(_op, default_on_error=False))
+    ClusterStorageBus.delete_worker = _delete_worker  # type: ignore[attr-defined]
 
 
 def _format_cluster_duration(seconds: float) -> str:
@@ -295,10 +336,24 @@ class ClusterScreenMixin:
             if hasattr(self, "cluster_round_label"):
                 self.cluster_round_label.setText(f"Round: {cur_round} / {max_rounds}")
 
+            tcfg = active_job.get("training_config", {})
+            if isinstance(tcfg, str):
+                try:
+                    import json
+                    tcfg = json.loads(tcfg)
+                except Exception:
+                    tcfg = {}
+            job_type = str(active_job.get("job_type") or tcfg.get("training_mode") or "pretrain").lower()
+            is_fine_tune = (job_type == "fine_tune")
+
             latest_r = active_job.get("_latest_round")
+            g_loss = None
+            v_loss = None
+            spd = None
             if latest_r:
                 g_loss = latest_r.get("avg_loss")
                 v_loss = latest_r.get("metrics", {}).get("val_loss")
+                spd = latest_r.get("metrics", {}).get("aggregate_tokens_per_sec")
                 if hasattr(self, "cluster_loss_label") and g_loss is not None:
                     self.cluster_loss_label.setText(f"Loss: {g_loss:.4f}")
                 if hasattr(self, "cluster_val_loss_label"):
@@ -308,40 +363,75 @@ class ClusterScreenMixin:
                 if hasattr(self, "training_val_metric"):
                     self.training_val_metric.setText(f"Val loss: {float(v_loss):.4f}" if v_loss is not None else "Val loss: -")
 
+                # Update Fine-Tuning screen metric chips
+                if is_fine_tune:
+                    if hasattr(self, "fine_tune_loss_metric") and g_loss is not None:
+                        self.fine_tune_loss_metric.setText(f"Train loss: {g_loss:.4f}")
+                    if hasattr(self, "fine_tune_val_metric"):
+                        self.fine_tune_val_metric.setText(f"Val loss: {float(v_loss):.4f}" if v_loss is not None else "Val loss: -")
+                    if hasattr(self, "fine_tune_speed_metric") and spd is not None:
+                        self.fine_tune_speed_metric.setText(f"Speed: {float(spd):,.0f} tok/s")
+
+                    # Append to fine_tune_log on new round
+                    last_logged = getattr(self, f"_last_fine_tune_logged_{jid}", -1)
+                    r_num = latest_r.get("round_number", cur_round - 1)
+                    if r_num > last_logged and hasattr(self, "fine_tune_log"):
+                        setattr(self, f"_last_fine_tune_logged_{jid}", r_num)
+                        r_workers = ", ".join(latest_r.get("participating_workers", []))
+                        val_str = f" | Validation Loss {float(v_loss):.4f}" if v_loss is not None else ""
+                        spd_val = float(spd or 0.0)
+                        self.fine_tune_log.append(f"• Round {r_num + 1}: Global Loss {float(g_loss or 0.0):.4f}{val_str} | Speed: {spd_val:,.0f} tok/s | Workers: [{r_workers}]")
+
             if st == "RUNNING":
+                prefix = "Fine-Tuning" if is_fine_tune else "Training"
                 if hasattr(self, "train_status"):
-                    self.train_status.setText(f"Training: Cluster (Local SGD) - Round {cur_round}/{max_rounds}")
+                    self.train_status.setText(f"{prefix}: Cluster (Local SGD) - Round {cur_round}/{max_rounds}")
                 if hasattr(self, "project_state"):
-                    self.project_state.setText("Training")
+                    self.project_state.setText(prefix)
                 if hasattr(self, "stop_training_button"):
                     self.stop_training_button.setEnabled(True)
+                if hasattr(self, "stop_fine_tune_button"):
+                    self.stop_fine_tune_button.setEnabled(True)
+
                 sync_k = int(active_job.get("sync_interval_steps") or 250)
                 tot_steps = int(max_rounds) * sync_k
                 cur_eff_step = int(cur_round) * sync_k
+                prog_val = int((cur_round / max(max_rounds, 1)) * 100)
+
                 if hasattr(self, "training_step_metric"):
                     self.training_step_metric.setText(f"Step: {cur_eff_step} / {tot_steps} (Round {cur_round}/{max_rounds})")
                 if hasattr(self, "training_epoch_metric"):
                     self.training_epoch_metric.setText(f"Round: {cur_round}/{max_rounds}")
                 if hasattr(self, "training_progress"):
-                    self.training_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
+                    self.training_progress.setValue(prog_val)
                 if hasattr(self, "training_health_metric"):
                     self.training_health_metric.setText("Health: OPTIMAL")
-                tcfg = active_job.get("training_config", {})
-                if isinstance(tcfg, str):
-                    try:
-                        import json
-                        tcfg = json.loads(tcfg)
-                    except Exception:
-                        tcfg = {}
+
+                if is_fine_tune:
+                    if hasattr(self, "fine_tune_step_metric"):
+                        self.fine_tune_step_metric.setText(f"Step: {cur_eff_step} / {tot_steps} (Round {cur_round}/{max_rounds})")
+                    if hasattr(self, "fine_tune_epoch_metric"):
+                        self.fine_tune_epoch_metric.setText(f"Round: {cur_round}/{max_rounds}")
+                    if hasattr(self, "fine_tune_progress"):
+                        self.fine_tune_progress.setValue(prog_val)
+                    if hasattr(self, "fine_tune_process_status"):
+                        self.fine_tune_process_status.setText(f"Cluster Local SGD | Job: {jid} | Round {cur_round}/{max_rounds} | Workers: {online_count}")
+                    if hasattr(self, "fine_tune_button"):
+                        self.fine_tune_button.setEnabled(False)
+                        self.fine_tune_button.setText("Fine-Tuning...")
+
                 lr = tcfg.get("learning_rate")
                 if lr and hasattr(self, "training_lr_metric"):
                     self.training_lr_metric.setText(f"LR: {float(lr):.2e}")
+                if lr and is_fine_tune and hasattr(self, "fine_tune_lr_metric"):
+                    self.fine_tune_lr_metric.setText(f"LR: {float(lr):.2e}")
+
                 if workers and hasattr(self, "training_vram_metric"):
                     vram_vals = [float(w.get("vram_used_gb") or 0.0) for w in workers if float(w.get("vram_used_gb") or 0.0) > 0]
                     if vram_vals:
                         self.training_vram_metric.setText(f"VRAM: {max(vram_vals):.1f} GB")
 
-                # Calculate ETA and Total Elapsed Time for Training Tab
+                # Calculate ETA and Total Elapsed Time
                 created_at = float(active_job.get("created_at") or 0.0)
                 now = time.time()
                 if created_at > 0 and hasattr(self, "training_elapsed_metric"):
@@ -357,22 +447,128 @@ class ClusterScreenMixin:
                     eta_str = "-"
                 if hasattr(self, "training_eta_metric"):
                     self.training_eta_metric.setText(f"ETA: {eta_str}")
+                if is_fine_tune and hasattr(self, "fine_tune_eta_metric"):
+                    self.fine_tune_eta_metric.setText(f"ETA: {eta_str}")
+
+            elif st == "COMPLETED":
+                if hasattr(self, "train_button"):
+                    self.train_button.setEnabled(True)
+                    self.train_button.setText("Start Training")
+                if hasattr(self, "stop_training_button"):
+                    self.stop_training_button.setEnabled(False)
+                if hasattr(self, "fine_tune_button"):
+                    self.fine_tune_button.setEnabled(True)
+                    self.fine_tune_button.setText("Start Fine-Tune")
+                if hasattr(self, "stop_fine_tune_button"):
+                    self.stop_fine_tune_button.setEnabled(False)
+                if hasattr(self, "project_state"):
+                    self.project_state.setText("Completed")
+                if hasattr(self, "train_status"):
+                    self.train_status.setText("Training: Completed")
+                if is_fine_tune:
+                    if hasattr(self, "fine_tune_process_status"):
+                        self.fine_tune_process_status.setText("Job Completed: All rounds finished.")
+                    if hasattr(self, "fine_tune_progress"):
+                        self.fine_tune_progress.setValue(100)
+                    if not getattr(self, f"_cluster_job_synced_{jid}", False):
+                        setattr(self, f"_cluster_job_synced_{jid}", True)
+                        self._sync_completed_cluster_artifacts_to_project(active_job)
+
+            elif st in ("STOPPED", "FAILED"):
+                if hasattr(self, "train_button"):
+                    self.train_button.setEnabled(True)
+                    self.train_button.setText("Start Training")
+                if hasattr(self, "stop_training_button"):
+                    self.stop_training_button.setEnabled(False)
+                if hasattr(self, "fine_tune_button"):
+                    self.fine_tune_button.setEnabled(True)
+                    self.fine_tune_button.setText("Start Fine-Tune")
+                if hasattr(self, "stop_fine_tune_button"):
+                    self.stop_fine_tune_button.setEnabled(False)
+                if hasattr(self, "project_state"):
+                    self.project_state.setText("Stopped")
+                if hasattr(self, "train_status"):
+                    self.train_status.setText(f"Training: {st.capitalize()}")
+                if is_fine_tune:
+                    if hasattr(self, "fine_tune_process_status"):
+                        self.fine_tune_process_status.setText(f"Job {st.capitalize()} by operator.")
         else:
             if hasattr(self, "cluster_status_label"):
                 self.cluster_status_label.setText("Status: Fleet Idle")
             if hasattr(self, "cluster_round_label"):
                 self.cluster_round_label.setText("Round: -")
 
-    def launch_cluster_training_job(self) -> None:
+    def _sync_completed_cluster_artifacts_to_project(self, active_job: dict[str, Any]) -> None:
+        """Copy completed cluster training artifacts to the local project output folder."""
+        bus = self._get_cluster_bus()
+        if not bus:
+            return
+        jid = active_job["job_id"]
+        ckpt_dir = bus.get_checkpoints_dir(jid)
+        job_type = str(active_job.get("job_type", "pretrain"))
+
+        target_dir = None
+        if job_type == "fine_tune":
+            target_dir = self._fine_tune_output_path() if hasattr(self, "_fine_tune_output_path") else None
+        elif hasattr(self, "model_dir") and self.model_dir.text().strip():
+            target_dir = Path(self.model_dir.text().strip())
+
+        if not target_dir:
+            return
+
+        try:
+            target_dir = Path(target_dir)
+            target_dir.mkdir(parents=True, exist_ok=True)
+            for fname in ("final_model.pt", "adapter_model.pt", "final_model_merged.pt", "latest_checkpoint.pt", "training_summary.json", "model_lineage.json"):
+                src = ckpt_dir / fname
+                if src.exists():
+                    dst = target_dir / fname
+                    import shutil
+                    shutil.copyfile(src, dst)
+            if job_type == "fine_tune" and hasattr(self, "fine_tune_log"):
+                self.fine_tune_log.append(f"[Cluster] Synced final fine-tune artifacts to: {target_dir}")
+        except Exception as exc:
+            if hasattr(self, "fine_tune_log"):
+                self.fine_tune_log.append(f"[Cluster Warning] Could not sync artifacts to {target_dir}: {exc}")
+
+
+    def launch_cluster_training_job(self, training_mode: Optional[str] = None) -> None:
         """Submit a distributed Local SGD training job to the shared drive."""
         bus = self._get_cluster_bus()
         if not bus:
             QMessageBox.warning(self, "Cluster Error", "Please configure a valid shared storage directory first.")
             return
 
+        if training_mode is None:
+            if hasattr(self, "_fine_tune_launch_target_value") and hasattr(self, "pages") and hasattr(self, "fine_tuning_page_index"):
+                if self.pages.currentIndex() == self.fine_tuning_page_index:
+                    training_mode = "fine_tune"
+        if training_mode is None:
+            training_mode = "fine_tune" if hasattr(self, "_training_mode_value") and self._training_mode_value() == "fine_tune" else "pretrain"
+
+        is_fine_tune = (training_mode == "fine_tune")
+
+        base_checkpoint = None
+        if is_fine_tune:
+            base_txt = self.fine_tune_checkpoint.text().strip() if hasattr(self, "fine_tune_checkpoint") else ""
+            if not base_txt or not os.path.exists(base_txt):
+                QMessageBox.warning(self, "Base Model Missing", "A valid base model checkpoint is required for cluster fine-tuning.")
+                return
+            base_checkpoint = base_txt
+
         # Find dataset path (train_tokens.npy or configured dataset)
         dataset_path = None
-        if hasattr(self, "_dataset_manifest_path"):
+        if is_fine_tune:
+            if hasattr(self, "train_data_dir") and self.train_data_dir.text().strip():
+                candidate = Path(self.train_data_dir.text().strip()) / "train_tokens.npy"
+                if candidate.exists():
+                    dataset_path = str(candidate)
+            if not dataset_path and hasattr(self, "dataset_dir") and self.dataset_dir.text().strip():
+                candidate = Path(self.dataset_dir.text().strip()) / "train_tokens.npy"
+                if candidate.exists():
+                    dataset_path = str(candidate)
+
+        if not dataset_path and hasattr(self, "_dataset_manifest_path"):
             manifest_dir = Path(self._dataset_manifest_path()).parent
             candidate = manifest_dir / "train_tokens.npy"
             if candidate.exists():
@@ -485,10 +681,29 @@ class ClusterScreenMixin:
                 }
             model_cfg["vocab_size"] = max(int(model_cfg.get("vocab_size", 0) or 0), vocab_size)
 
-            training_cfg = dataclasses.asdict(self._current_training_config()) if hasattr(self, "_current_training_config") else {
-                "learning_rate": 3e-4,
-                "batch_size": 4,
-            }
+            if hasattr(self, "_current_training_config"):
+                training_cfg = dataclasses.asdict(self._current_training_config(training_mode=training_mode))
+            else:
+                training_cfg = {
+                    "learning_rate": 3e-4,
+                    "batch_size": 4,
+                    "training_mode": training_mode,
+                }
+
+            peft_method = training_cfg.get("peft_method", "none")
+            if is_fine_tune and hasattr(self, "_peft_method_value"):
+                peft_method = self._peft_method_value()
+                training_cfg["peft_method"] = peft_method
+
+            lora_config = None
+            if is_fine_tune and peft_method == "lora":
+                lora_config = {
+                    "rank": int(self.lora_rank.value()) if hasattr(self, "lora_rank") else int(training_cfg.get("lora_rank", 8)),
+                    "alpha": float(self.lora_alpha.value()) if hasattr(self, "lora_alpha") else float(training_cfg.get("lora_alpha", 16.0)),
+                    "dropout": float(self.lora_dropout.value()) if hasattr(self, "lora_dropout") else float(training_cfg.get("lora_dropout", 0.05)),
+                    "target_modules": self._lora_target_value() if hasattr(self, "_lora_target_value") else str(training_cfg.get("lora_target_modules", "attention")),
+                }
+                training_cfg["lora_config"] = lora_config
 
             model_cfg = _sanitize_for_json(model_cfg)
             training_cfg = _sanitize_for_json(training_cfg)
@@ -523,6 +738,10 @@ class ClusterScreenMixin:
                 sync_interval_steps=sync_steps,
                 min_workers=min_workers,
                 sync_timeout_seconds=sync_timeout,
+                job_type=training_mode,
+                base_checkpoint_path=base_checkpoint,
+                peft_method=peft_method,
+                lora_config=lora_config,
             )
             bus.set_job_status(job_id, "RUNNING")
             self._log_cluster_event(f"Successfully queued job {job_id} across cluster.")
@@ -542,10 +761,25 @@ class ClusterScreenMixin:
             if hasattr(self, "stop_training_button"):
                 self.stop_training_button.setEnabled(True)
                 self.stop_training_button.setText("Stop")
+            if hasattr(self, "stop_fine_tune_button"):
+                self.stop_fine_tune_button.setEnabled(True)
+                self.stop_fine_tune_button.setText("Stop")
             if hasattr(self, "project_state"):
-                self.project_state.setText("Training")
+                self.project_state.setText("Fine-Tuning" if is_fine_tune else "Training")
             if hasattr(self, "train_status"):
-                self.train_status.setText(f"Training: Cluster (Local SGD) - Round 0/{max_rounds}")
+                self.train_status.setText(f"{'Fine-Tuning' if is_fine_tune else 'Training'}: Cluster (Local SGD) - Round 0/{max_rounds}")
+
+            if is_fine_tune:
+                if hasattr(self, "fine_tune_process_status"):
+                    self.fine_tune_process_status.setText(f"Cluster Local SGD | Job: {job_id} | Status: QUEUED")
+                if hasattr(self, "fine_tune_log"):
+                    self.fine_tune_log.append(f"[Cluster] Queued fine-tuning job {job_id} (Rounds: {max_rounds}, Sync: {sync_steps} steps).")
+                    if peft_method == "lora" and lora_config:
+                        self.fine_tune_log.append(f"[Cluster] PEFT: LoRA (rank={lora_config['rank']}, alpha={lora_config['alpha']}, targets={lora_config['target_modules']}).")
+                    else:
+                        self.fine_tune_log.append("[Cluster] PEFT: Full fine-tune.")
+                    if base_checkpoint:
+                        self.fine_tune_log.append(f"[Cluster] Base checkpoint staged from: {base_checkpoint}")
 
             self.refresh_cluster_status()
 
@@ -1180,7 +1414,7 @@ class ClusterScreenMixin:
         view_logs_act = menu.addAction(f"View Logs for '{worker_id}'")
         menu.addSeparator()
         bus = self._get_cluster_bus()
-        is_enabled = bus.is_worker_enabled(worker_id) if bus else True
+        is_enabled = getattr(bus, "is_worker_enabled", lambda wid: True)(worker_id) if bus else True
         if is_enabled:
             toggle_act = menu.addAction(f"Disable Worker '{worker_id}' (Keep active, pause job pickup)")
         else:
@@ -1211,9 +1445,11 @@ class ClusterScreenMixin:
         bus = self._get_cluster_bus()
         if not bus:
             return
-        current = bus.is_worker_enabled(worker_id)
+        current = getattr(bus, "is_worker_enabled", lambda wid: True)(worker_id)
         new_val = not current
-        bus.set_worker_enabled(worker_id, new_val)
+        set_enabled_fn = getattr(bus, "set_worker_enabled", None)
+        if callable(set_enabled_fn):
+            set_enabled_fn(worker_id, new_val)
         st_str = "ENABLED (Job pickup: Active)" if new_val else "DISABLED (Job pickup: Paused)"
         self._log_cluster_event(f"Worker '{worker_id}' is now {st_str}.")
         self.refresh_cluster_status()
@@ -1442,7 +1678,9 @@ class ClusterScreenMixin:
 
         bus = self._get_cluster_bus()
         if bus:
-            bus.delete_worker(worker_id)
+            del_fn = getattr(bus, "delete_worker", None)
+            if callable(del_fn):
+                del_fn(worker_id)
             self._log_cluster_event(f"Removed worker '{worker_id}' from cluster database.")
             self.refresh_cluster_status()
             if hasattr(self, "refresh_job_manager_tab"):

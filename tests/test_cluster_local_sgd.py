@@ -1138,6 +1138,308 @@ def test_job_manifest_log_formatting_with_validation_loss(tmp_path: Path) -> Non
     assert log_line == expected
 
 
+def test_cluster_fine_tuning_job_creation_and_staging(tmp_path: Path) -> None:
+    """Verify cluster fine-tuning job creation, base model staging, and metadata persistence."""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "cluster_fine_tune_staging_test"
+
+    # Create dummy base checkpoint
+    base_ckpt_path = tmp_path / "pretrained_base.pt"
+    dummy_weights = {
+        "transformer.wte.weight": torch.randn(256, 64),
+        "transformer.h.0.attn.c_attn.weight": torch.randn(192, 64),
+    }
+    torch.save({"model_state_dict": dummy_weights, "model_config": {"vocab_size": 256, "embedding_size": 64}}, base_ckpt_path)
+
+    lora_cfg = {
+        "rank": 8,
+        "alpha": 16.0,
+        "dropout": 0.05,
+        "target_modules": "attention",
+    }
+
+    bus.create_job(
+        job_id=job_id,
+        model_config={"vocab_size": 256, "embedding_size": 64},
+        training_config={"learning_rate": 5e-5, "batch_size": 4},
+        dataset_path=str(tmp_path / "instruction_tokens.npy"),
+        max_rounds=5,
+        sync_interval_steps=100,
+        min_workers=1,
+        job_type="fine_tune",
+        base_checkpoint_path=str(base_ckpt_path),
+        peft_method="lora",
+        lora_config=lora_cfg,
+    )
+
+    job = bus.get_job(job_id)
+    assert job is not None
+    assert job["job_type"] == "fine_tune"
+    assert job["peft_method"] == "lora"
+    assert job["lora_config"]["rank"] == 8
+    assert job["lora_config"]["alpha"] == 16.0
+    assert job["base_checkpoint_path"] is not None
+
+    # Verify base model was staged to shared storage jobs folder
+    staged_base = tmp_path / "jobs" / job_id / "base_model.pt"
+    assert staged_base.exists()
+
+    # Verify load_base_model_weights loads the exact weights
+    loaded_base = bus.load_base_model_weights(job_id, device="cpu")
+    assert loaded_base is not None
+    assert "transformer.wte.weight" in loaded_base
+    torch.testing.assert_close(loaded_base["transformer.wte.weight"], dummy_weights["transformer.wte.weight"])
+
+
+def test_cluster_worker_lora_adapters_and_freezing() -> None:
+    """Verify LoRA adapter application and non-LoRA parameter freezing on workers."""
+    from cluster.worker import LoRALinear, apply_lora_adapters, freeze_non_lora_parameters, lora_state_dict
+
+    class SimpleNet(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.attn = nn.Module()
+            self.attn.q_proj = nn.Linear(32, 32)
+            self.attn.v_proj = nn.Linear(32, 32)
+            self.mlp = nn.Module()
+            self.mlp.fc = nn.Linear(32, 64)
+
+    net = SimpleNet()
+    total_before = sum(p.numel() for p in net.parameters())
+
+    # Apply LoRA adapters to attention projections
+    num_wrapped = apply_lora_adapters(net, rank=4, alpha=8.0, dropout=0.0, target_modules="attention")
+    assert num_wrapped == 2
+    assert isinstance(net.attn.q_proj, LoRALinear)
+    assert isinstance(net.attn.v_proj, LoRALinear)
+    assert not isinstance(net.mlp.fc, LoRALinear)
+
+    # Freeze non-LoRA parameters
+    freeze_non_lora_parameters(net)
+
+    trainable_params = [p for p in net.parameters() if p.requires_grad]
+    trainable_names = [name for name, p in net.named_parameters() if p.requires_grad]
+
+    assert len(trainable_params) > 0
+    # Trainable parameters must strictly be LoRA parameters
+    for name in trainable_names:
+        assert "lora_a" in name or "lora_b" in name
+
+    # Base linear weights must be frozen
+    assert net.attn.q_proj.base.weight.requires_grad is False
+    assert net.mlp.fc.weight.requires_grad is False
+
+    # Extract adapter state dict
+    adapters = lora_state_dict(net)
+    assert len(adapters) == 4  # q_proj.lora_a, q_proj.lora_b, v_proj.lora_a, v_proj.lora_b
+
+
+def test_coordinator_fine_tune_lora_checkpoint_export(tmp_path: Path) -> None:
+    """Verify coordinator exports adapter_model.pt and final_model_merged.pt on final round of fine-tune job."""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "coordinator_lora_export_test"
+
+    model_cfg = {"vocab_size": 256, "context_length": 32, "embedding_size": 32, "head_count": 2, "layer_count": 1}
+    lora_cfg = {"rank": 4, "alpha": 8.0, "dropout": 0.0, "target_modules": "attention"}
+
+    bus.create_job(
+        job_id=job_id,
+        model_config=model_cfg,
+        training_config={"batch_size": 2},
+        dataset_path=str(tmp_path / "train.npy"),
+        max_rounds=1,
+        sync_interval_steps=10,
+        min_workers=1,
+        job_type="fine_tune",
+        peft_method="lora",
+        lora_config=lora_cfg,
+    )
+
+    from cluster.worker import build_model_from_config, apply_lora_adapters, freeze_non_lora_parameters
+    worker_model = build_model_from_config(model_cfg, "cpu")
+    apply_lora_adapters(worker_model, rank=4, alpha=8.0, dropout=0.0, target_modules="attention")
+    freeze_non_lora_parameters(worker_model)
+
+    bus.claim_job_slot(job_id, "worker_01")
+    bus.save_worker_weights(job_id, 0, "worker_01", worker_model.state_dict())
+    bus.save_worker_telemetry(job_id, 0, "worker_01", {
+        "worker_id": "worker_01",
+        "round": 0,
+        "steps_completed": 10,
+        "avg_loss": 3.456,
+        "tokens_processed": 500,
+        "tokens_per_sec": 1200.0,
+        "timestamp": time.time(),
+    })
+
+    coordinator = ClusterCoordinator(bus, job_id)
+    global_weights = coordinator.wait_and_average_round(round_num=0)
+    assert global_weights is not None
+
+    ckpt_dir = bus.get_checkpoints_dir(job_id)
+    assert (ckpt_dir / "latest_checkpoint.pt").exists()
+    assert (ckpt_dir / "final_model.pt").exists()
+    assert (ckpt_dir / "adapter_model.pt").exists()
+    assert (ckpt_dir / "final_model_merged.pt").exists()
+    assert (ckpt_dir / "training_summary.json").exists()
+    assert (ckpt_dir / "model_lineage.json").exists()
+
+    # Verify adapter checkpoint contents
+    loaded_adapter = torch.load(ckpt_dir / "adapter_model.pt", map_location="cpu")
+    assert "adapter_state_dict" in loaded_adapter
+    assert len(loaded_adapter["adapter_state_dict"]) > 0
+
+
+def test_cluster_telemetry_reflection_on_fine_tuning_screen(tmp_path: Path) -> None:
+    """Verify _apply_cluster_telemetry updates all Fine-Tuning screen metric chips and log."""
+    from interface.screens.cluster_screen import ClusterScreenMixin
+
+    class _MockChip:
+        def __init__(self) -> None:
+            self.text = ""
+        def setText(self, t: str) -> None:
+            self.text = t
+
+    class _MockProgress:
+        def __init__(self) -> None:
+            self.value = 0
+        def setValue(self, v: int) -> None:
+            self.value = v
+
+    class _MockButton:
+        def __init__(self) -> None:
+            self.enabled = True
+            self.text = ""
+        def setEnabled(self, e: bool) -> None:
+            self.enabled = e
+        def setText(self, t: str) -> None:
+            self.text = t
+
+    class _MockLog:
+        def __init__(self) -> None:
+            self.lines: list[str] = []
+        def append(self, t: str) -> None:
+            self.lines.append(t)
+
+    class _ScreenHost(ClusterScreenMixin):
+        def __init__(self) -> None:
+            self.fine_tune_loss_metric = _MockChip()
+            self.fine_tune_val_metric = _MockChip()
+            self.fine_tune_step_metric = _MockChip()
+            self.fine_tune_epoch_metric = _MockChip()
+            self.fine_tune_speed_metric = _MockChip()
+            self.fine_tune_lr_metric = _MockChip()
+            self.fine_tune_eta_metric = _MockChip()
+            self.fine_tune_progress = _MockProgress()
+            self.fine_tune_process_status = _MockChip()
+            self.fine_tune_log = _MockLog()
+            self.fine_tune_button = _MockButton()
+            self.stop_fine_tune_button = _MockButton()
+
+    host = _ScreenHost()
+    active_job = {
+        "job_id": "cluster_ft_telemetry_test",
+        "job_type": "fine_tune",
+        "status": "RUNNING",
+        "current_round": 2,
+        "max_rounds": 10,
+        "sync_interval_steps": 250,
+        "training_config": {"learning_rate": 3e-5},
+        "_latest_round": {
+            "round_number": 1,
+            "avg_loss": 4.1234,
+            "participating_workers": ["worker_a", "worker_b"],
+            "metrics": {
+                "val_loss": 4.5678,
+                "aggregate_tokens_per_sec": 32000.0,
+            },
+        },
+    }
+
+    host._apply_cluster_telemetry(workers=[{"is_online": True}], active_job=active_job)
+
+    assert "4.1234" in host.fine_tune_loss_metric.text
+    assert "4.5678" in host.fine_tune_val_metric.text
+    assert "32,000" in host.fine_tune_speed_metric.text
+    assert "Round 2/10" in host.fine_tune_step_metric.text
+    assert "2/10" in host.fine_tune_epoch_metric.text
+    assert host.fine_tune_progress.value == 20
+    assert "Cluster Local SGD" in host.fine_tune_process_status.text
+    assert host.fine_tune_button.enabled is False
+    assert host.stop_fine_tune_button.enabled is True
+    assert len(host.fine_tune_log.lines) == 1
+    assert "Global Loss 4.1234" in host.fine_tune_log.lines[0]
+    assert "Validation Loss 4.5678" in host.fine_tune_log.lines[0]
+
+
+def test_cluster_screen_resilient_worker_bus_fallbacks() -> None:
+    """Verify cluster_screen handles legacy or out-of-sync buses missing is_worker_enabled without AttributeError."""
+    from interface.screens.cluster_screen import ClusterScreenMixin
+
+    class _LegacyBusWithoutNewMethods:
+        """Simulates an older ClusterStorageBus before worker enable/disable was added."""
+        pass
+
+    class _TestHost(ClusterScreenMixin):
+        def __init__(self) -> None:
+            self._bus = _LegacyBusWithoutNewMethods()
+            self.logged_events: list[str] = []
+
+        def _get_cluster_bus(self):
+            return self._bus
+
+        def _log_cluster_event(self, msg: str) -> None:
+            self.logged_events.append(msg)
+
+        def refresh_cluster_status(self) -> None:
+            pass
+
+    host = _TestHost()
+
+    # Must not raise AttributeError: 'ClusterStorageBus' object has no attribute 'is_worker_enabled'
+    host.toggle_cluster_worker_enabled("worker_legacy_01")
+    assert len(host.logged_events) == 1
+    assert "worker_legacy_01" in host.logged_events[0]
+
+    # Must not raise AttributeError on delete_worker
+    host.delete_cluster_worker("worker_legacy_01")
+    assert any("Removed worker 'worker_legacy_01'" in ev for ev in host.logged_events)
+
+
+def test_storage_bus_malformed_db_self_healing(tmp_path: Path) -> None:
+    """Verify that when SQLite encounters a malformed database disk image, it self-heals without raising an unhandled DatabaseError."""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "job_corrupt_test"
+
+    # Create job and worker
+    bus.create_job(
+        job_id=job_id,
+        model_config={"vocab_size": 100},
+        training_config={"lr": 0.01},
+        dataset_path=str(tmp_path / "data.npy"),
+    )
+    bus.heartbeat("worker_heal_test", status="IDLE")
+
+    # Corrupt the database file by overwriting it with invalid bytes
+    with open(bus.db_path, "r+b") as f:
+        f.seek(100)
+        f.write(b"CORRUPTED_GARBAGE_BYTES" * 20)
+
+    # Calling delete_job or list_all_jobs on the malformed DB should trigger self-healing
+    res = bus.delete_job(job_id)
+    assert res is True
+
+    # Check that a corrupt backup was generated
+    backups = list(tmp_path.glob("cluster.db.corrupt_*"))
+    assert len(backups) >= 1
+
+    # Check that a fresh working database was restored and can process new queries
+    bus.register_worker("worker_after_healing", "host1", "RTX 4090", 24.0)
+    bus.heartbeat("worker_after_healing", status="IDLE")
+    workers = bus.list_workers()
+    assert any(w["worker_id"] == "worker_after_healing" for w in workers)
+
+
 
 
 

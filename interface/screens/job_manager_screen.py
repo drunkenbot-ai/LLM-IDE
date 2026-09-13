@@ -546,7 +546,12 @@ class JobManagerScreenMixin:
             return
 
         reset_rounds = (choice == QMessageBox.No)
-        success = bus.requeue_job(job_id, reset_rounds=reset_rounds)
+        try:
+            success = bus.requeue_job(job_id, reset_rounds=reset_rounds)
+        except Exception as exc:
+            if hasattr(self, "_log_cluster_event"):
+                self._log_cluster_event(f"Error re-queuing job '{job_id}': {exc}")
+            success = False
         if success:
             msg = f"Job '{job_id}' re-queued ({'Round 0' if reset_rounds else 'Resuming'})."
             if hasattr(self, "_log_cluster_event"):
@@ -564,8 +569,9 @@ class JobManagerScreenMixin:
 
         job_id = getattr(self, "_selected_cluster_job_id", None)
         if not job_id and hasattr(self, "cluster_jobs_table"):
-            row = self.cluster_jobs_table.currentRow()
-            if row >= 0:
+            selected_items = self.cluster_jobs_table.selectedItems()
+            if selected_items:
+                row = selected_items[0].row()
                 item = self.cluster_jobs_table.item(row, 1)
                 if item:
                     job_id = item.text().strip()
@@ -602,7 +608,20 @@ class JobManagerScreenMixin:
             except Exception:
                 pass
 
-        success = bus.delete_job(job_id)
+        try:
+            success = bus.delete_job(job_id)
+        except Exception as exc:
+            if hasattr(self, "_log_cluster_event"):
+                self._log_cluster_event(f"Database error deleting job '{job_id}': {exc}")
+            try:
+                job_dir = bus.jobs_dir / job_id
+                if job_dir.exists():
+                    import shutil
+                    shutil.rmtree(job_dir, ignore_errors=True)
+            except Exception:
+                pass
+            success = True
+
         if success:
             if getattr(self, "_selected_cluster_job_id", None) == job_id:
                 self._selected_cluster_job_id = None
@@ -639,28 +658,38 @@ class JobManagerScreenMixin:
         menu.addSeparator()
         delete_act = menu.addAction("🗑 Delete Job")
 
-        action = menu.exec(self.cluster_jobs_table.viewport().mapToGlobal(pos))
-        if action == resume_act:
-            if hasattr(self, "resume_cluster_job"):
-                self.resume_cluster_job(job_id)
-        elif action == pause_act:
-            bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
-            if bus:
-                bus.set_job_status(job_id, "PAUSED")
-                if hasattr(self, "_log_cluster_event"):
-                    self._log_cluster_event(f"Paused job {job_id}.")
-                self.refresh_job_manager_tab()
-        elif action == stop_act:
-            bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
-            if bus:
-                bus.set_job_status(job_id, "STOPPED")
-                if hasattr(self, "_log_cluster_event"):
-                    self._log_cluster_event(f"Stopped job {job_id}.")
-                self.refresh_job_manager_tab()
-        elif action == requeue_act:
-            self.requeue_selected_cluster_job()
-        elif action == delete_act:
-            self.delete_selected_cluster_job()
+        try:
+            action = menu.exec(self.cluster_jobs_table.viewport().mapToGlobal(pos))
+            if action == resume_act:
+                if hasattr(self, "resume_cluster_job"):
+                    self.resume_cluster_job(job_id)
+            elif action == pause_act:
+                bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
+                if bus:
+                    try:
+                        bus.set_job_status(job_id, "PAUSED")
+                    except Exception:
+                        pass
+                    if hasattr(self, "_log_cluster_event"):
+                        self._log_cluster_event(f"Paused job {job_id}.")
+                    self.refresh_job_manager_tab()
+            elif action == stop_act:
+                bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
+                if bus:
+                    try:
+                        bus.set_job_status(job_id, "STOPPED")
+                    except Exception:
+                        pass
+                    if hasattr(self, "_log_cluster_event"):
+                        self._log_cluster_event(f"Stopped job {job_id}.")
+                    self.refresh_job_manager_tab()
+            elif action == requeue_act:
+                self.requeue_selected_cluster_job()
+            elif action == delete_act:
+                self.delete_selected_cluster_job()
+        except Exception as exc:
+            if hasattr(self, "_log_cluster_event"):
+                self._log_cluster_event(f"Cluster job action error: {exc}")
 
     def clear_active_cluster_log(self) -> None:
         """Clear whichever diagnostic log tab is currently active."""

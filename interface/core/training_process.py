@@ -162,11 +162,26 @@ class TrainingProcessMixin:
 
     def stop_training_process(self) -> None:
         """Request cooperative stop, or verified force stop after its timeout."""
+        is_cluster = False
         if hasattr(self, "_training_launch_target_value") and self._training_launch_target_value() == "cluster":
+            is_cluster = True
+        elif hasattr(self, "_fine_tune_launch_target_value") and self._fine_tune_launch_target_value() == "cluster":
+            is_cluster = True
+        elif hasattr(self, "_get_cluster_bus"):
+            try:
+                bus = self._get_cluster_bus()
+                if bus and bus.get_active_job():
+                    is_cluster = True
+            except Exception:
+                pass
+
+        if is_cluster:
             if hasattr(self, "stop_cluster_job"):
                 self.stop_cluster_job()
             if hasattr(self, "stop_training_button"):
                 self.stop_training_button.setEnabled(False)
+            if hasattr(self, "stop_fine_tune_button"):
+                self.stop_fine_tune_button.setEnabled(False)
             if hasattr(self, "train_button"):
                 self.train_button.setEnabled(True)
                 self.train_button.setText("Start Training")
@@ -177,6 +192,8 @@ class TrainingProcessMixin:
                 self.project_state.setText("Stopped")
             if hasattr(self, "train_status"):
                 self.train_status.setText("Training: idle")
+            if hasattr(self, "fine_tune_process_status"):
+                self.fine_tune_process_status.setText("Job Stopped by operator.")
             return
         try:
             if self.training_force_stop_available:
