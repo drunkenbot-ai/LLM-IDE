@@ -399,8 +399,21 @@ class ProjectStateMixin:
             },
             "cluster": {
                 "shared_dir": self.cluster_shared_dir.text() if hasattr(self, "cluster_shared_dir") else "",
-                "sync_steps": self.cluster_sync_steps.value() if hasattr(self, "cluster_sync_steps") else 250,
-                "max_rounds": self.cluster_max_rounds.value() if hasattr(self, "cluster_max_rounds") else 10,
+                "sync_steps": (
+                    self.train_cluster_sync_steps.value()
+                    if hasattr(self, "train_cluster_sync_steps")
+                    else (self.cluster_sync_steps.value() if hasattr(self, "cluster_sync_steps") else 250)
+                ),
+                "max_rounds": (
+                    self.train_cluster_max_rounds.value()
+                    if hasattr(self, "train_cluster_max_rounds")
+                    else (self.cluster_max_rounds.value() if hasattr(self, "cluster_max_rounds") else 10)
+                ),
+                "auto_sync_epochs": (
+                    self.train_cluster_auto_sync.isChecked()
+                    if hasattr(self, "train_cluster_auto_sync")
+                    else (self.cluster_auto_sync_epochs.isChecked() if hasattr(self, "cluster_auto_sync_epochs") else True)
+                ),
                 "sync_timeout": self.cluster_sync_timeout.value() if hasattr(self, "cluster_sync_timeout") else 1800,
                 "min_workers": self.cluster_min_workers.value() if hasattr(self, "cluster_min_workers") else 2,
             },

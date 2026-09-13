@@ -13,6 +13,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QCheckBox,
     QFrame,
     QHBoxLayout,
     QHeaderView,
@@ -137,7 +138,7 @@ def build_job_manager_tab(window) -> QWidget:
     storage_row.addWidget(window.cluster_browse_btn)
     header_layout.addLayout(storage_row)
 
-    # Local SGD Parameters Row (Sync interval, Max rounds, Sync from Epochs)
+    # Local SGD Parameters Row (Sync interval, Max rounds, Auto-sync with Training Tab)
     hparams_row = QHBoxLayout()
     hparams_row.setSpacing(8)
 
@@ -145,9 +146,12 @@ def build_job_manager_tab(window) -> QWidget:
     window._tip(window.cluster_sync_steps, "Local training steps (K) each worker completes before synchronizing weights.")
     window.cluster_max_rounds = window._spin(1, 100000, 10)
     window._tip(window.cluster_max_rounds, "Total periodic synchronization rounds to execute.")
-    window.cluster_calc_rounds_btn = QPushButton("Sync from Epochs")
-    window.cluster_calc_rounds_btn.clicked.connect(window.calculate_cluster_rounds_from_epochs)
-    window._tip(window.cluster_calc_rounds_btn, "Auto-calculate Max rounds to match the target Epochs configured in the Training Tab.")
+    window.cluster_auto_sync_epochs = QCheckBox("Auto-sync from Epochs")
+    window.cluster_auto_sync_epochs.setChecked(True)
+    window._tip(window.cluster_auto_sync_epochs, "Automatically synchronize Max rounds with the target Epochs configured in the Training Tab.")
+    window.cluster_calc_rounds_btn = QPushButton("Recalculate")
+    window.cluster_calc_rounds_btn.clicked.connect(lambda: window.calculate_cluster_rounds_from_epochs(quiet=False))
+    window._tip(window.cluster_calc_rounds_btn, "Inspect calculation details and verify Max rounds against target Epochs.")
     window.cluster_sync_timeout = window._spin(15, 7200, 1800)
     window._tip(window.cluster_sync_timeout, "Straggler timeout in seconds before proceeding with weight averaging without slow workers.")
     window.cluster_min_workers = window._spin(1, 64, 2)
@@ -157,6 +161,7 @@ def build_job_manager_tab(window) -> QWidget:
     hparams_row.addWidget(window.cluster_sync_steps)
     hparams_row.addWidget(QLabel("<b>Max Rounds:</b>"))
     hparams_row.addWidget(window.cluster_max_rounds)
+    hparams_row.addWidget(window.cluster_auto_sync_epochs)
     hparams_row.addWidget(window.cluster_calc_rounds_btn)
     hparams_row.addWidget(QLabel("<b>Straggler Timeout (s):</b>"))
     hparams_row.addWidget(window.cluster_sync_timeout)
@@ -164,6 +169,15 @@ def build_job_manager_tab(window) -> QWidget:
     hparams_row.addWidget(window.cluster_min_workers)
     hparams_row.addStretch(1)
     header_layout.addLayout(hparams_row)
+
+    info_row = QHBoxLayout()
+    window.cluster_sync_info_label = QLabel("⚡ Auto-synced from Training Tab: Configuring...")
+    window.cluster_sync_info_label.setObjectName("Metric")
+    window.cluster_sync_info_label.setWordWrap(True)
+    window.cluster_sync_info_label.setStyleSheet("color: #4ade80; font-size: 11px; padding: 2px 4px;")
+    info_row.addWidget(window.cluster_sync_info_label)
+    info_row.addStretch(1)
+    header_layout.addLayout(info_row)
 
     # Action Toolbar Row (Separate row with stable layout and fixed sizing)
     actions_row = QHBoxLayout()

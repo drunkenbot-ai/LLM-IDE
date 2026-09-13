@@ -332,6 +332,8 @@ class TrainingRunMixin:
 
         launch_target = self._training_launch_target_value()
         if launch_target == "cluster":
+            if hasattr(self, "auto_sync_cluster_rounds_from_epochs"):
+                self.auto_sync_cluster_rounds_from_epochs()
             bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
             existing_job = None
             if bus:

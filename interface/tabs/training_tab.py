@@ -291,6 +291,49 @@ def build_training_tab(window) -> QWidget:
         "Local machine runs training directly on this computer. Cluster (Local SGD) distributes training across networked GPU nodes via shared storage.",
     )
     runtime.addRow("Launch", window.training_launch_target)
+
+    window.train_cluster_group = QWidget()
+    window.train_cluster_group.setObjectName("ClusterSettingsGroup")
+    cluster_form = QFormLayout(window.train_cluster_group)
+    cluster_form.setContentsMargins(0, 4, 0, 4)
+    cluster_form.setSpacing(6)
+    window._configure_form(cluster_form)
+
+    window.train_cluster_sync_steps = window._spin(10, 5000, 250)
+    window._tip(
+        window.train_cluster_sync_steps,
+        "Local training steps (K) each worker completes before synchronizing weights across the cluster.",
+    )
+    window.train_cluster_max_rounds = window._spin(1, 100000, 10)
+    window._tip(
+        window.train_cluster_max_rounds,
+        "Total periodic synchronization rounds to execute across the cluster.",
+    )
+    window.train_cluster_auto_sync = QCheckBox("Auto-sync from Target Epochs")
+    window.train_cluster_auto_sync.setChecked(True)
+    window._tip(
+        window.train_cluster_auto_sync,
+        "Automatically recalculate Max rounds to match target Epochs based on active fleet size, batch size, and context length.",
+    )
+
+    window.train_cluster_plan_label = QLabel("⚡ Cluster Plan: Configuring...")
+    window.train_cluster_plan_label.setObjectName("Metric")
+    window.train_cluster_plan_label.setWordWrap(True)
+    window.train_cluster_plan_label.setStyleSheet("color: #4ade80; font-size: 11px; padding: 2px;")
+
+    cluster_form.addRow("Sync interval (K)", window.train_cluster_sync_steps)
+    cluster_form.addRow("Max rounds", window.train_cluster_max_rounds)
+    cluster_form.addRow("", window.train_cluster_auto_sync)
+    cluster_form.addRow("Cluster plan", window.train_cluster_plan_label)
+
+    runtime.addRow("Cluster SGD", window.train_cluster_group)
+
+    def _toggle_cluster_settings(target_text: str) -> None:
+        is_cluster = "Cluster" in str(target_text)
+        window.train_cluster_group.setVisible(is_cluster)
+
+    window.training_launch_target.currentTextChanged.connect(_toggle_cluster_settings)
+    _toggle_cluster_settings(window.training_launch_target.currentText())
     window.training_process_status = QLabel("Worker: detached | Run: - | PID: -")
     window.training_process_status.setObjectName("Metric")
     window.training_process_status.setWordWrap(True)

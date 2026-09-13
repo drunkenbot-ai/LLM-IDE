@@ -14,6 +14,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QCheckBox,
     QFormLayout,
     QHBoxLayout,
     QHeaderView,
@@ -87,9 +88,12 @@ def build_cluster_card(window) -> QWidget:
     window._tip(window.cluster_sync_steps, "Local training steps (K) each worker completes before synchronizing weights.")
     window.cluster_max_rounds = window._spin(1, 100000, 10)
     window._tip(window.cluster_max_rounds, "Total periodic synchronization rounds to execute.")
-    window.cluster_calc_rounds_btn = QPushButton("Sync from Epochs")
-    window.cluster_calc_rounds_btn.clicked.connect(window.calculate_cluster_rounds_from_epochs)
-    window._tip(window.cluster_calc_rounds_btn, "Auto-calculate Max rounds to match the target Epochs configured in the Training Tab.")
+    window.cluster_auto_sync_epochs = QCheckBox("Auto-sync from Epochs")
+    window.cluster_auto_sync_epochs.setChecked(True)
+    window._tip(window.cluster_auto_sync_epochs, "Automatically synchronize Max rounds with the target Epochs configured in the Training Tab.")
+    window.cluster_calc_rounds_btn = QPushButton("Recalculate")
+    window.cluster_calc_rounds_btn.clicked.connect(lambda: window.calculate_cluster_rounds_from_epochs(quiet=False))
+    window._tip(window.cluster_calc_rounds_btn, "Inspect calculation details and verify Max rounds against target Epochs.")
     window.cluster_sync_timeout = window._spin(15, 7200, 1800)
     window._tip(window.cluster_sync_timeout, "Straggler timeout in seconds before proceeding with weight averaging without slow workers.")
     window.cluster_min_workers = window._spin(1, 64, 2)
@@ -100,6 +104,7 @@ def build_cluster_card(window) -> QWidget:
     hparams_row.addWidget(window.cluster_sync_steps)
     hparams_row.addWidget(QLabel("Max rounds:"))
     hparams_row.addWidget(window.cluster_max_rounds)
+    hparams_row.addWidget(window.cluster_auto_sync_epochs)
     hparams_row.addWidget(window.cluster_calc_rounds_btn)
     hparams_row.addWidget(QLabel("Straggler timeout (s):"))
     hparams_row.addWidget(window.cluster_sync_timeout)
@@ -107,6 +112,12 @@ def build_cluster_card(window) -> QWidget:
     hparams_row.addWidget(window.cluster_min_workers)
     hparams_row.addStretch(1)
     form.addRow("Local SGD parameters", hparams_row)
+
+    window.cluster_sync_info_label = QLabel("⚡ Auto-synced from Training Tab: Configuring...")
+    window.cluster_sync_info_label.setObjectName("Metric")
+    window.cluster_sync_info_label.setWordWrap(True)
+    window.cluster_sync_info_label.setStyleSheet("color: #4ade80; font-size: 11px; padding: 2px 4px;")
+    form.addRow("Cluster SGD Plan", window.cluster_sync_info_label)
 
     # Action Buttons
     action_row = QHBoxLayout()

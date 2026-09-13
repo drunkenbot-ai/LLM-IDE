@@ -190,4 +190,8 @@ def build_main_shell(window, app_name: str) -> QWidget:
     window.live_page_index = 4
     body.addWidget(window.pages, 1)
     root.addLayout(body, 1)
+
+    if hasattr(window, "connect_cluster_training_sync"):
+        window.connect_cluster_training_sync()
+
     return shell

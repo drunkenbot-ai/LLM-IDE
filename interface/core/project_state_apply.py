@@ -227,8 +227,16 @@ class ProjectStateApplyMixin:
                     self.cluster_shared_dir.setText(env_shared)
             if hasattr(self, "cluster_sync_steps") and "sync_steps" in cluster:
                 self.cluster_sync_steps.setValue(int(cluster["sync_steps"]))
+            if hasattr(self, "train_cluster_sync_steps") and "sync_steps" in cluster:
+                self.train_cluster_sync_steps.setValue(int(cluster["sync_steps"]))
             if hasattr(self, "cluster_max_rounds") and "max_rounds" in cluster:
                 self.cluster_max_rounds.setValue(int(cluster["max_rounds"]))
+            if hasattr(self, "train_cluster_max_rounds") and "max_rounds" in cluster:
+                self.train_cluster_max_rounds.setValue(int(cluster["max_rounds"]))
+            if hasattr(self, "cluster_auto_sync_epochs") and "auto_sync_epochs" in cluster:
+                self.cluster_auto_sync_epochs.setChecked(bool(cluster["auto_sync_epochs"]))
+            if hasattr(self, "train_cluster_auto_sync") and "auto_sync_epochs" in cluster:
+                self.train_cluster_auto_sync.setChecked(bool(cluster["auto_sync_epochs"]))
             if hasattr(self, "cluster_sync_timeout") and "sync_timeout" in cluster:
                 self.cluster_sync_timeout.setValue(int(cluster["sync_timeout"]))
             if hasattr(self, "cluster_min_workers") and "min_workers" in cluster:

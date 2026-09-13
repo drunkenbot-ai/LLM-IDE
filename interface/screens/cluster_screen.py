@@ -208,6 +208,10 @@ class ClusterScreenMixin:
             online_count = sum(1 for w in workers if w.get("is_online"))
             if hasattr(self, "cluster_workers_label"):
                 self.cluster_workers_label.setText(f"Active Workers: {online_count} / {len(workers)}")
+            if online_count != getattr(self, "_last_synced_active_workers", None):
+                self._last_synced_active_workers = online_count
+                if hasattr(self, "auto_sync_cluster_rounds_from_epochs"):
+                    self.auto_sync_cluster_rounds_from_epochs()
 
             if hasattr(self, "cluster_worker_table"):
                 rows = []
@@ -432,9 +436,24 @@ class ClusterScreenMixin:
             model_cfg = _sanitize_for_json(model_cfg)
             training_cfg = _sanitize_for_json(training_cfg)
 
+            if hasattr(self, "auto_sync_cluster_rounds_from_epochs"):
+                self.auto_sync_cluster_rounds_from_epochs()
+
             job_id = f"cluster_job_{int(time.time())}"
-            sync_steps = self.cluster_sync_steps.value() if hasattr(self, "cluster_sync_steps") else 250
-            max_rounds = self.cluster_max_rounds.value() if hasattr(self, "cluster_max_rounds") else 10
+            if hasattr(self, "train_cluster_sync_steps"):
+                sync_steps = self.train_cluster_sync_steps.value()
+            elif hasattr(self, "cluster_sync_steps"):
+                sync_steps = self.cluster_sync_steps.value()
+            else:
+                sync_steps = 250
+
+            if hasattr(self, "train_cluster_max_rounds"):
+                max_rounds = self.train_cluster_max_rounds.value()
+            elif hasattr(self, "cluster_max_rounds"):
+                max_rounds = self.cluster_max_rounds.value()
+            else:
+                max_rounds = 10
+
             sync_timeout = float(self.cluster_sync_timeout.value() if hasattr(self, "cluster_sync_timeout") else 1800)
             min_workers = self.cluster_min_workers.value() if hasattr(self, "cluster_min_workers") else 2
 
@@ -1336,54 +1355,258 @@ class ClusterScreenMixin:
             if hasattr(self, "refresh_job_manager_tab"):
                 self.refresh_job_manager_tab()
 
-    def calculate_cluster_rounds_from_epochs(self) -> None:
-        """Calculate and set Max rounds based on Training Tab epochs, batch size, context length, and active workers."""
+    def calculate_cluster_rounds_from_epochs(self, quiet: bool = False) -> Optional[dict[str, Any]]:
+        """Calculate and set Max rounds based on Training Tab epochs, batch size, context length, and active workers.
+
+        Args:
+            quiet: If True, do not show modal message boxes; update UI labels/spinboxes silently.
+
+        Returns:
+            Dictionary containing calculated training plan, or None if dataset cannot be resolved.
+        """
         try:
+            import json
             import math
             import numpy as np
 
-            # Locate dataset
-            dataset_path = ""
+            # 1. Locate dataset tokens from configured training paths
+            total_tokens = 0
+            candidate_paths: list[Path] = []
+            if hasattr(self, "train_data_dir") and self.train_data_dir.text().strip():
+                candidate_paths.append(Path(self.train_data_dir.text().strip()))
+            if hasattr(self, "cluster_shared_dir") and self.cluster_shared_dir.text().strip():
+                candidate_paths.append(Path(self.cluster_shared_dir.text().strip()))
+            if hasattr(self, "output_dir_edit") and self.output_dir_edit.text().strip():
+                candidate_paths.append(Path(self.output_dir_edit.text().strip()))
             if hasattr(self, "dataset_path") and self.dataset_path.text().strip():
-                dataset_path = self.dataset_path.text().strip()
-            elif hasattr(self, "cluster_shared_dir") and self.cluster_shared_dir.text().strip():
-                shared_ds = Path(self.cluster_shared_dir.text().strip()) / "train_tokens.npy"
-                if shared_ds.exists():
-                    dataset_path = str(shared_ds)
+                candidate_paths.append(Path(self.dataset_path.text().strip()))
 
-            if not dataset_path or not os.path.exists(dataset_path):
-                QMessageBox.warning(self, "Dataset Missing", "Please select a valid dataset in the Training Tab first.")
-                return
+            for cand in candidate_paths:
+                if not cand.exists():
+                    continue
+                # If candidate is a directory, inspect dataset_summary.json first (fastest, zero .npy disk I/O)
+                if cand.is_dir():
+                    summary_path = cand / "dataset_summary.json"
+                    if summary_path.exists():
+                        try:
+                            meta = json.loads(summary_path.read_text(encoding="utf-8"))
+                            t_count = int(meta.get("train_token_count") or meta.get("token_count") or 0)
+                            if t_count > 0:
+                                total_tokens = t_count
+                                break
+                        except Exception:
+                            pass
+                    npy_path = cand / "train_tokens.npy"
+                    if npy_path.exists():
+                        try:
+                            arr = np.load(str(npy_path), mmap_mode="r")
+                            total_tokens = int(arr.shape[0])
+                            break
+                        except Exception:
+                            pass
+                elif cand.is_file() and cand.suffix == ".npy":
+                    try:
+                        arr = np.load(str(cand), mmap_mode="r")
+                        total_tokens = int(arr.shape[0])
+                        break
+                    except Exception:
+                        pass
 
-            arr = np.load(dataset_path, mmap_mode="r")
-            total_tokens = int(len(arr))
+            if total_tokens <= 0:
+                info_text = "⚡ Cluster Plan: Select dataset in Training Tab to calculate rounds from Epochs."
+                if hasattr(self, "train_cluster_plan_label"):
+                    self.train_cluster_plan_label.setText(info_text)
+                if hasattr(self, "cluster_sync_info_label"):
+                    self.cluster_sync_info_label.setText(info_text)
+                if not quiet:
+                    QMessageBox.warning(
+                        self,
+                        "Dataset Missing",
+                        "Please select a valid dataset folder containing dataset_summary.json or train_tokens.npy in the Training Tab first.",
+                    )
+                return None
 
+            # 2. Extract Training hyperparameters from UI controls
             epochs = int(self.epochs.value()) if hasattr(self, "epochs") else 1
             batch_size = int(self.batch_size.value()) if hasattr(self, "batch_size") else 2
-            context_length = int(self.context_length.value()) if hasattr(self, "context_length") else 1024
-            sync_steps = int(self.cluster_sync_steps.value()) if hasattr(self, "cluster_sync_steps") else 250
 
+            if hasattr(self, "train_context_length"):
+                context_length = int(self.train_context_length.value())
+            elif hasattr(self, "context_length"):
+                context_length = int(self.context_length.value())
+            else:
+                context_length = 1024
+
+            if hasattr(self, "train_cluster_sync_steps"):
+                sync_steps = int(self.train_cluster_sync_steps.value())
+            elif hasattr(self, "cluster_sync_steps"):
+                sync_steps = int(self.cluster_sync_steps.value())
+            else:
+                sync_steps = 250
+
+            # 3. Query cluster fleet bus for active workers
             bus = self._get_cluster_bus()
             workers = bus.list_workers() if bus else []
-            active_workers = len([w for w in workers if w.get("status") in {"IDLE", "READY", "TRAINING"}]) or 1
+            active_workers = len([w for w in workers if w.get("status") in {"IDLE", "READY", "TRAINING", "BUSY"}])
+            if active_workers == 0:
+                active_workers = max(
+                    1,
+                    int(self.cluster_min_workers.value()) if hasattr(self, "cluster_min_workers") else 1,
+                )
 
+            # 4. Calculate distributed Local SGD token consumption and required rounds
             tokens_per_round = active_workers * sync_steps * batch_size * context_length
             total_needed_tokens = total_tokens * epochs
             needed_rounds = max(1, math.ceil(total_needed_tokens / max(tokens_per_round, 1)))
-
-            if hasattr(self, "cluster_max_rounds"):
-                self.cluster_max_rounds.setValue(min(needed_rounds, self.cluster_max_rounds.maximum()))
-
             total_steps_est = needed_rounds * sync_steps
-            info_msg = (
-                f"Dataset: {total_tokens:,} tokens\n"
-                f"Target Epochs: {epochs}\n"
-                f"Fleet Workers: {active_workers}\n"
-                f"Tokens / Round: {tokens_per_round:,}\n\n"
-                f"Calculated Max Rounds: {needed_rounds:,} rounds ({total_steps_est:,} steps per worker)\n"
-                f"Max rounds spinner updated to {needed_rounds:,}."
+
+            # 5. Check if auto-sync is enabled before updating spinboxes
+            auto_sync = True
+            if hasattr(self, "train_cluster_auto_sync"):
+                auto_sync = self.train_cluster_auto_sync.isChecked()
+            elif hasattr(self, "cluster_auto_sync_epochs"):
+                auto_sync = self.cluster_auto_sync_epochs.isChecked()
+
+            if auto_sync or not quiet:
+                if hasattr(self, "train_cluster_max_rounds"):
+                    self.train_cluster_max_rounds.blockSignals(True)
+                    self.train_cluster_max_rounds.setValue(min(needed_rounds, self.train_cluster_max_rounds.maximum()))
+                    self.train_cluster_max_rounds.blockSignals(False)
+                if hasattr(self, "cluster_max_rounds"):
+                    self.cluster_max_rounds.blockSignals(True)
+                    self.cluster_max_rounds.setValue(min(needed_rounds, self.cluster_max_rounds.maximum()))
+                    self.cluster_max_rounds.blockSignals(False)
+
+            # 6. Update informational badges on Training and Cluster pages
+            worker_s = "s" if active_workers != 1 else ""
+            short_plan = (
+                f"⚡ Auto-sync: {epochs} Epoch(s) ({total_needed_tokens:,} tok) ➔ "
+                f"{needed_rounds:,} Rounds @ K={sync_steps} (~{total_steps_est:,} steps/worker across {active_workers} worker{worker_s})"
             )
-            self._log_cluster_event(f"Calculated {needed_rounds:,} rounds for {epochs} epoch(s) on {total_tokens:,} tokens.")
-            QMessageBox.information(self, "Rounds Calculated", info_msg)
+            if hasattr(self, "train_cluster_plan_label"):
+                self.train_cluster_plan_label.setText(short_plan)
+            if hasattr(self, "cluster_sync_info_label"):
+                self.cluster_sync_info_label.setText(short_plan)
+
+            self._log_cluster_event(
+                f"Cluster auto-plan: {needed_rounds:,} rounds for {epochs} epoch(s) on {total_tokens:,} tokens ({active_workers} worker(s))."
+            )
+
+            if not quiet:
+                info_msg = (
+                    f"Dataset: {total_tokens:,} tokens\n"
+                    f"Target Epochs: {epochs}\n"
+                    f"Fleet Workers: {active_workers}\n"
+                    f"Batch Size: {batch_size}, Context Length: {context_length}\n"
+                    f"Tokens / Round: {tokens_per_round:,}\n\n"
+                    f"Calculated Max Rounds: {needed_rounds:,} rounds ({total_steps_est:,} steps per worker)\n"
+                    f"Max rounds spinner updated to {needed_rounds:,}."
+                )
+                QMessageBox.information(self, "Rounds Calculated", info_msg)
+
+            return {
+                "total_tokens": total_tokens,
+                "epochs": epochs,
+                "active_workers": active_workers,
+                "sync_steps": sync_steps,
+                "batch_size": batch_size,
+                "context_length": context_length,
+                "tokens_per_round": tokens_per_round,
+                "total_needed_tokens": total_needed_tokens,
+                "needed_rounds": needed_rounds,
+                "steps_per_worker": total_steps_est,
+            }
         except Exception as exc:
-            QMessageBox.warning(self, "Calculation Error", f"Failed to calculate rounds:\n{exc}")
+            if not quiet:
+                QMessageBox.warning(self, "Calculation Error", f"Failed to calculate rounds:\n{exc}")
+            return None
+
+    def auto_sync_cluster_rounds_from_epochs(self) -> None:
+        """Quietly recalculate cluster rounds from epochs if auto-sync is enabled."""
+        auto_sync = True
+        if hasattr(self, "train_cluster_auto_sync"):
+            auto_sync = self.train_cluster_auto_sync.isChecked()
+        elif hasattr(self, "cluster_auto_sync_epochs"):
+            auto_sync = self.cluster_auto_sync_epochs.isChecked()
+        if auto_sync:
+            self.calculate_cluster_rounds_from_epochs(quiet=True)
+
+    def connect_cluster_training_sync(self) -> None:
+        """Wire reactive two-way synchronization between Training Tab and Cluster Local SGD settings."""
+        # 1. Sync Interval (K steps) bidirectional binding
+        if hasattr(self, "train_cluster_sync_steps") and hasattr(self, "cluster_sync_steps") and self.train_cluster_sync_steps is not self.cluster_sync_steps:
+            def _sync_k_from_train(val: int) -> None:
+                if self.cluster_sync_steps.value() != val:
+                    self.cluster_sync_steps.blockSignals(True)
+                    self.cluster_sync_steps.setValue(val)
+                    self.cluster_sync_steps.blockSignals(False)
+                self.auto_sync_cluster_rounds_from_epochs()
+
+            def _sync_k_from_cluster(val: int) -> None:
+                if self.train_cluster_sync_steps.value() != val:
+                    self.train_cluster_sync_steps.blockSignals(True)
+                    self.train_cluster_sync_steps.setValue(val)
+                    self.train_cluster_sync_steps.blockSignals(False)
+                self.auto_sync_cluster_rounds_from_epochs()
+
+            self.train_cluster_sync_steps.valueChanged.connect(_sync_k_from_train)
+            self.cluster_sync_steps.valueChanged.connect(_sync_k_from_cluster)
+        elif hasattr(self, "cluster_sync_steps"):
+            self.cluster_sync_steps.valueChanged.connect(lambda _: self.auto_sync_cluster_rounds_from_epochs())
+        elif hasattr(self, "train_cluster_sync_steps"):
+            self.train_cluster_sync_steps.valueChanged.connect(lambda _: self.auto_sync_cluster_rounds_from_epochs())
+
+        # 2. Max Rounds bidirectional binding
+        if hasattr(self, "train_cluster_max_rounds") and hasattr(self, "cluster_max_rounds") and self.train_cluster_max_rounds is not self.cluster_max_rounds:
+            def _sync_rounds_from_train(val: int) -> None:
+                if self.cluster_max_rounds.value() != val:
+                    self.cluster_max_rounds.blockSignals(True)
+                    self.cluster_max_rounds.setValue(val)
+                    self.cluster_max_rounds.blockSignals(False)
+
+            def _sync_rounds_from_cluster(val: int) -> None:
+                if self.train_cluster_max_rounds.value() != val:
+                    self.train_cluster_max_rounds.blockSignals(True)
+                    self.train_cluster_max_rounds.setValue(val)
+                    self.train_cluster_max_rounds.blockSignals(False)
+
+            self.train_cluster_max_rounds.valueChanged.connect(_sync_rounds_from_train)
+            self.cluster_max_rounds.valueChanged.connect(_sync_rounds_from_cluster)
+
+        # 3. Auto-sync checkbox bidirectional binding
+        if hasattr(self, "train_cluster_auto_sync") and hasattr(self, "cluster_auto_sync_epochs") and self.train_cluster_auto_sync is not self.cluster_auto_sync_epochs:
+            def _sync_auto_from_train(checked: bool) -> None:
+                if self.cluster_auto_sync_epochs.isChecked() != checked:
+                    self.cluster_auto_sync_epochs.blockSignals(True)
+                    self.cluster_auto_sync_epochs.setChecked(checked)
+                    self.cluster_auto_sync_epochs.blockSignals(False)
+                if checked:
+                    self.calculate_cluster_rounds_from_epochs(quiet=True)
+
+            def _sync_auto_from_cluster(checked: bool) -> None:
+                if self.train_cluster_auto_sync.isChecked() != checked:
+                    self.train_cluster_auto_sync.blockSignals(True)
+                    self.train_cluster_auto_sync.setChecked(checked)
+                    self.train_cluster_auto_sync.blockSignals(False)
+                if checked:
+                    self.calculate_cluster_rounds_from_epochs(quiet=True)
+
+            self.train_cluster_auto_sync.toggled.connect(_sync_auto_from_train)
+            self.cluster_auto_sync_epochs.toggled.connect(_sync_auto_from_cluster)
+        else:
+            cb = getattr(self, "train_cluster_auto_sync", None) or getattr(self, "cluster_auto_sync_epochs", None)
+            if cb:
+                cb.toggled.connect(lambda checked: self.calculate_cluster_rounds_from_epochs(quiet=True) if checked else None)
+
+        # 4. Wire reactive recalculation to Training Tab hyperparameter changes
+        if hasattr(self, "epochs"):
+            self.epochs.valueChanged.connect(lambda _: self.auto_sync_cluster_rounds_from_epochs())
+        if hasattr(self, "batch_size"):
+            self.batch_size.valueChanged.connect(lambda _: self.auto_sync_cluster_rounds_from_epochs())
+        if hasattr(self, "train_context_length"):
+            self.train_context_length.valueChanged.connect(lambda _: self.auto_sync_cluster_rounds_from_epochs())
+        if hasattr(self, "train_data_dir"):
+            self.train_data_dir.textChanged.connect(lambda _: self.auto_sync_cluster_rounds_from_epochs())
+
+        # 5. Run initial translation
+        self.auto_sync_cluster_rounds_from_epochs()
