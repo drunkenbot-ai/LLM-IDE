@@ -1335,6 +1335,8 @@ def test_cluster_telemetry_reflection_on_fine_tuning_screen(tmp_path: Path) -> N
             self.fine_tune_log = _MockLog()
             self.fine_tune_button = _MockButton()
             self.stop_fine_tune_button = _MockButton()
+            self.cluster_status_label = _MockChip()
+            self.cluster_round_label = _MockChip()
 
     host = _ScreenHost()
     active_job = {
@@ -1370,6 +1372,16 @@ def test_cluster_telemetry_reflection_on_fine_tuning_screen(tmp_path: Path) -> N
     assert len(host.fine_tune_log.lines) == 1
     assert "Global Loss 4.1234" in host.fine_tune_log.lines[0]
     assert "Validation Loss 4.5678" in host.fine_tune_log.lines[0]
+
+    # Verify that when fleet is idle (no active job, only running_pids or empty dict),
+    # _apply_cluster_telemetry does not raise KeyError: 'job_id' and resets labels to idle.
+    host._apply_cluster_telemetry(workers=[{"is_online": True}], active_job={"_running_pids": {}})
+    assert host.cluster_status_label.text == "Status: Fleet Idle"
+    assert host.cluster_round_label.text == "Round: -"
+
+    host._apply_cluster_telemetry(workers=[], active_job=None)
+    assert host.cluster_status_label.text == "Status: Fleet Idle"
+    assert host.cluster_round_label.text == "Round: -"
 
 
 def test_cluster_screen_resilient_worker_bus_fallbacks() -> None:

@@ -214,9 +214,9 @@ class ClusterScreenMixin:
                 bus = self._cached_cluster_bus
                 workers = bus.list_workers(active_within_seconds=60.0)
                 active_job = bus.get_active_job()
-                if active_job:
+                if active_job and active_job.get("job_id"):
                     try:
-                        rounds = bus.get_all_round_history(active_job["job_id"])
+                        rounds = bus.get_all_round_history(str(active_job["job_id"]))
                         if rounds:
                             active_job["_latest_round"] = rounds[-1]
                     except Exception:
@@ -339,8 +339,8 @@ class ClusterScreenMixin:
                         ])
                 set_cluster_table_rows(self.cluster_worker_table, rows)
 
-        if active_job:
-            jid = active_job["job_id"]
+        if active_job and active_job.get("job_id"):
+            jid = str(active_job["job_id"])
             st = str(active_job.get("status", "")).upper()
             cur_round = active_job.get("current_round", 0)
             max_rounds = active_job.get("max_rounds", 10)
@@ -514,9 +514,11 @@ class ClusterScreenMixin:
     def _sync_completed_cluster_artifacts_to_project(self, active_job: dict[str, Any]) -> None:
         """Copy completed cluster training artifacts to the local project output folder."""
         bus = self._get_cluster_bus()
-        if not bus:
+        if not bus or not active_job:
             return
-        jid = active_job["job_id"]
+        jid = active_job.get("job_id")
+        if not jid:
+            return
         ckpt_dir = bus.get_checkpoints_dir(jid)
         job_type = str(active_job.get("job_type", "pretrain"))
 
