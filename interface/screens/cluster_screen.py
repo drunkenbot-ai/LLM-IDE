@@ -74,6 +74,7 @@ class ClusterTelemetryBridge(QObject):
     """Qt signal bridge for thread-safe worker telemetry updates."""
 
     telemetry_ready = Signal(object, object, object)  # workers, active_job, error
+    worker_logs_ready = Signal(str, object, object)  # worker_id, logs, error
 
 
 class ClusterCoordinatorThread(QThread):
@@ -138,6 +139,7 @@ class ClusterScreenMixin:
         if self._cluster_bridge is None:
             self._cluster_bridge = ClusterTelemetryBridge()
             self._cluster_bridge.telemetry_ready.connect(self._apply_cluster_telemetry)
+            self._cluster_bridge.worker_logs_ready.connect(self._apply_worker_logs)
         return self._cluster_bridge
 
     def _get_cluster_bus(self) -> Optional[ClusterStorageBus]:
@@ -180,23 +182,6 @@ class ClusterScreenMixin:
 
     def refresh_cluster_status(self) -> None:
         """Poll the SQLite bus in a background thread to prevent UI thread freezing."""
-        # Check local worker process liveness (including detached daemons across restarts)
-        from cluster.cluster_worker import get_all_running_worker_pids
-        running_pids = get_all_running_worker_pids()
-        if hasattr(self, "_local_worker_procs") and self._local_worker_procs:
-            alive = {}
-            for dev, proc in list(self._local_worker_procs.items()):
-                if proc.poll() is None:
-                    alive[dev] = proc
-            self._local_worker_procs = alive
-
-        total_active_local = max(len(getattr(self, "_local_worker_procs", {})), len(running_pids))
-        if hasattr(self, "cluster_local_worker_btn"):
-            if total_active_local > 0:
-                self.cluster_local_worker_btn.setText(f"Stop Local Worker(s) ({total_active_local} active)")
-            else:
-                self.cluster_local_worker_btn.setText("Start Local Worker(s)")
-
         if not hasattr(self, "cluster_shared_dir"):
             return
         path_str = self.cluster_shared_dir.text().strip()
@@ -213,6 +198,10 @@ class ClusterScreenMixin:
 
         def _bg_poll() -> None:
             try:
+                # Offload local worker process liveness check to background thread
+                from cluster.cluster_worker import get_all_running_worker_pids
+                running_pids = get_all_running_worker_pids()
+
                 p = Path(path_str)
                 if not p.exists():
                     bridge.telemetry_ready.emit(None, None, "Folder not found")
@@ -232,6 +221,9 @@ class ClusterScreenMixin:
                             active_job["_latest_round"] = rounds[-1]
                     except Exception:
                         pass
+                else:
+                    active_job = {}
+                active_job["_running_pids"] = running_pids
                 bridge.telemetry_ready.emit(workers, active_job, None)
             except Exception as exc:
                 bridge.telemetry_ready.emit(None, None, str(exc))
@@ -252,14 +244,35 @@ class ClusterScreenMixin:
                 self.cluster_status_label.setText(f"Status: {error}")
             return
 
+        # Update local worker button from background-detected running PIDs without blocking UI
+        running_pids = active_job.get("_running_pids", {}) if active_job else getattr(self, "_last_running_pids", {})
+        self._last_running_pids = running_pids
+        if hasattr(self, "_local_worker_procs") and self._local_worker_procs:
+            alive = {}
+            for dev, proc in list(self._local_worker_procs.items()):
+                if proc.poll() is None:
+                    alive[dev] = proc
+            self._local_worker_procs = alive
+
+        total_active_local = max(len(getattr(self, "_local_worker_procs", {})), len(running_pids))
+        if hasattr(self, "cluster_local_worker_btn"):
+            if total_active_local > 0:
+                self.cluster_local_worker_btn.setText(f"Stop Local Worker(s) ({total_active_local} active)")
+            else:
+                self.cluster_local_worker_btn.setText("Start Local Worker(s)")
+
         if workers is not None:
+            self._cached_online_workers = workers
             online_count = sum(1 for w in workers if w.get("is_online"))
             if hasattr(self, "cluster_workers_label"):
                 self.cluster_workers_label.setText(f"Active Workers: {online_count} / {len(workers)}")
+            if hasattr(self, "fleet_utilization_label"):
+                vram_sum = sum(float(w.get("vram_used_gb") or 0.0) for w in workers)
+                self.fleet_utilization_label.setText(f"Nodes: {online_count}/{len(workers)} | VRAM: {vram_sum:.1f} GB")
             if online_count != getattr(self, "_last_synced_active_workers", None):
                 self._last_synced_active_workers = online_count
-                if hasattr(self, "auto_sync_cluster_rounds_from_epochs"):
-                    self.auto_sync_cluster_rounds_from_epochs()
+                if hasattr(self, "_schedule_debounced_auto_sync"):
+                    self._schedule_debounced_auto_sync()
 
             if hasattr(self, "cluster_worker_table"):
                 rows = []
@@ -1489,19 +1502,16 @@ class ClusterScreenMixin:
         if hasattr(self, "cluster_worker_table") and hasattr(self, "cluster_worker_log"):
             self.on_cluster_worker_selected()
 
-    def _load_worker_logs_for(self, worker_id: str) -> None:
-        """Query SQLite database for worker logs and render into cluster_worker_log text widget."""
-        bus = self._get_cluster_bus()
-        if not bus:
+    def _apply_worker_logs(
+        self,
+        worker_id: str,
+        logs: list[dict[str, Any]],
+        error: Optional[str] = None,
+    ) -> None:
+        """Render loaded worker diagnostic logs onto UI widgets on the main thread."""
+        if error:
             if hasattr(self, "cluster_worker_log"):
-                self.cluster_worker_log.setPlainText("Shared storage not accessible.")
-            return
-
-        try:
-            logs = bus.get_worker_logs(worker_id, limit=250)
-        except Exception as exc:
-            if hasattr(self, "cluster_worker_log"):
-                self.cluster_worker_log.setPlainText(f"Failed to query worker logs: {exc}")
+                self.cluster_worker_log.setPlainText(f"Failed to query worker logs: {error}")
             return
 
         if hasattr(self, "cluster_selected_worker_label"):
@@ -1523,6 +1533,28 @@ class ClusterScreenMixin:
             scrollbar = self.cluster_worker_log.verticalScrollBar()
             if scrollbar:
                 scrollbar.setValue(scrollbar.maximum())
+
+    def _load_worker_logs_for(self, worker_id: str) -> None:
+        """Query SQLite database for worker logs asynchronously to prevent UI thread freezing."""
+        bus = self._get_cluster_bus()
+        if not bus:
+            if hasattr(self, "cluster_worker_log"):
+                self.cluster_worker_log.setPlainText("Shared storage not accessible.")
+            return
+
+        if hasattr(self, "cluster_selected_worker_label"):
+            self.cluster_selected_worker_label.setText(f"<b>WORKER DIAGNOSTIC LOGS: {worker_id}</b> (Loading...)")
+
+        bridge = self._ensure_cluster_bridge()
+
+        def _bg_logs() -> None:
+            try:
+                logs = bus.get_worker_logs(worker_id, limit=250)
+                bridge.worker_logs_ready.emit(worker_id, logs, None)
+            except Exception as exc:
+                bridge.worker_logs_ready.emit(worker_id, [], str(exc))
+
+        threading.Thread(target=_bg_logs, daemon=True).start()
 
     def stop_cluster_worker(self, worker_id: str) -> None:
         """Send STOP command to a specific worker and immediately mark it OFFLINE."""
@@ -1686,62 +1718,78 @@ class ClusterScreenMixin:
             if hasattr(self, "refresh_job_manager_tab"):
                 self.refresh_job_manager_tab()
 
-    def calculate_cluster_rounds_from_epochs(self, quiet: bool = False) -> Optional[dict[str, Any]]:
+    def calculate_cluster_rounds_from_epochs(
+        self,
+        quiet: bool = False,
+        workers: Optional[list[dict[str, Any]]] = None,
+    ) -> Optional[dict[str, Any]]:
         """Calculate and set Max rounds based on Training Tab epochs, batch size, context length, and active workers.
 
         Args:
             quiet: If True, do not show modal message boxes; update UI labels/spinboxes silently.
+            workers: Optional pre-polled worker list to avoid main-thread SQLite queries.
 
         Returns:
             Dictionary containing calculated training plan, or None if dataset cannot be resolved.
         """
+        if getattr(self, "_calculating_cluster_rounds", False):
+            return None
+        self._calculating_cluster_rounds = True
         try:
             import json
             import math
             import numpy as np
 
-            # 1. Locate dataset tokens from configured training paths
-            total_tokens = 0
-            candidate_paths: list[Path] = []
-            if hasattr(self, "train_data_dir") and self.train_data_dir.text().strip():
-                candidate_paths.append(Path(self.train_data_dir.text().strip()))
-            if hasattr(self, "cluster_shared_dir") and self.cluster_shared_dir.text().strip():
-                candidate_paths.append(Path(self.cluster_shared_dir.text().strip()))
-            if hasattr(self, "output_dir_edit") and self.output_dir_edit.text().strip():
-                candidate_paths.append(Path(self.output_dir_edit.text().strip()))
-            if hasattr(self, "dataset_path") and self.dataset_path.text().strip():
-                candidate_paths.append(Path(self.dataset_path.text().strip()))
+            # 1. Locate dataset tokens with directory-level result caching
+            data_dir_str = self.train_data_dir.text().strip() if hasattr(self, "train_data_dir") else ""
+            dataset_path_str = self.dataset_path.text().strip() if hasattr(self, "dataset_path") else ""
+            data_cache_key = (data_dir_str, dataset_path_str)
 
-            for cand in candidate_paths:
-                if not cand.exists():
-                    continue
-                # If candidate is a directory, inspect dataset_summary.json first (fastest, zero .npy disk I/O)
-                if cand.is_dir():
-                    summary_path = cand / "dataset_summary.json"
-                    if summary_path.exists():
-                        try:
-                            meta = json.loads(summary_path.read_text(encoding="utf-8"))
-                            t_count = int(meta.get("train_token_count") or meta.get("token_count") or 0)
-                            if t_count > 0:
-                                total_tokens = t_count
+            total_tokens = 0
+            if getattr(self, "_cached_data_tokens_key", None) == data_cache_key and getattr(self, "_cached_total_tokens", 0) > 0:
+                total_tokens = self._cached_total_tokens
+            else:
+                candidate_paths: list[Path] = []
+                if data_dir_str:
+                    candidate_paths.append(Path(data_dir_str))
+                if hasattr(self, "output_dir_edit") and self.output_dir_edit.text().strip():
+                    candidate_paths.append(Path(self.output_dir_edit.text().strip()))
+                if dataset_path_str:
+                    candidate_paths.append(Path(dataset_path_str))
+
+                for cand in candidate_paths:
+                    if not cand.exists():
+                        continue
+                    if cand.is_dir():
+                        summary_path = cand / "dataset_summary.json"
+                        if summary_path.exists():
+                            try:
+                                meta = json.loads(summary_path.read_text(encoding="utf-8"))
+                                t_count = int(meta.get("train_token_count") or meta.get("token_count") or 0)
+                                if t_count > 0:
+                                    total_tokens = t_count
+                                    break
+                            except Exception:
+                                pass
+                        npy_path = cand / "train_tokens.npy"
+                        if npy_path.exists():
+                            try:
+                                arr = np.load(str(npy_path), mmap_mode="r")
+                                total_tokens = int(arr.shape[0])
                                 break
-                        except Exception:
-                            pass
-                    npy_path = cand / "train_tokens.npy"
-                    if npy_path.exists():
+                            except Exception:
+                                pass
+                    elif cand.is_file() and cand.suffix == ".npy":
                         try:
-                            arr = np.load(str(npy_path), mmap_mode="r")
+                            arr = np.load(str(cand), mmap_mode="r")
                             total_tokens = int(arr.shape[0])
                             break
                         except Exception:
                             pass
-                elif cand.is_file() and cand.suffix == ".npy":
-                    try:
-                        arr = np.load(str(cand), mmap_mode="r")
-                        total_tokens = int(arr.shape[0])
-                        break
-                    except Exception:
-                        pass
+
+                if total_tokens > 0:
+                    self._cached_data_tokens_key = data_cache_key
+                    self._cached_total_tokens = total_tokens
 
             if total_tokens <= 0:
                 info_text = "⚡ Cluster Plan: Select dataset in Training Tab to calculate rounds from Epochs."
@@ -1777,10 +1825,13 @@ class ClusterScreenMixin:
             elif hasattr(self, "train_cluster_sync_steps"):
                 sync_steps = int(self.train_cluster_sync_steps.value())
 
-            # 3. Query cluster fleet bus for active workers
-            bus = self._get_cluster_bus()
-            workers = bus.list_workers() if bus else []
-            active_workers = len([w for w in workers if w.get("status") in {"IDLE", "READY", "TRAINING", "BUSY"}])
+            # 3. Query cluster fleet bus for active workers (use pre-polled cache to avoid main-thread SQLite queries)
+            if workers is None:
+                workers = getattr(self, "_cached_online_workers", None)
+            if workers is None:
+                bus = self._get_cluster_bus()
+                workers = bus.list_workers() if bus else []
+            active_workers = len([w for w in (workers or []) if w.get("status") in {"IDLE", "READY", "TRAINING", "BUSY"} or w.get("is_online")])
             if active_workers == 0:
                 active_workers = max(
                     1,
@@ -1855,6 +1906,23 @@ class ClusterScreenMixin:
             if not quiet:
                 QMessageBox.warning(self, "Calculation Error", f"Failed to calculate rounds:\n{exc}")
             return None
+        finally:
+            self._calculating_cluster_rounds = False
+
+    def _schedule_debounced_auto_sync(self) -> None:
+        """Debounce auto-sync calculations by 500ms to prevent thrashing when workers join."""
+        from PySide6.QtCore import QCoreApplication
+        if QCoreApplication.instance() is None or not isinstance(self, QObject):
+            if hasattr(self, "auto_sync_cluster_rounds_from_epochs"):
+                self.auto_sync_cluster_rounds_from_epochs()
+            return
+
+        if not hasattr(self, "_auto_sync_timer") or self._auto_sync_timer is None:
+            self._auto_sync_timer = QTimer(self)
+            self._auto_sync_timer.setSingleShot(True)
+            self._auto_sync_timer.setInterval(500)
+            self._auto_sync_timer.timeout.connect(self.auto_sync_cluster_rounds_from_epochs)
+        self._auto_sync_timer.start()
 
     def auto_sync_cluster_rounds_from_epochs(self) -> None:
         """Quietly recalculate cluster rounds from epochs if auto-sync is enabled."""

@@ -50,9 +50,18 @@ class JobManagerScreenMixin:
         if not hasattr(self, "cluster_jobs_table"):
             return
 
+        # Check if Job Manager tab is currently active or if an active job needs monitoring
+        is_job_mgr_active = False
+        if hasattr(self, "pages") and hasattr(self.pages, "currentIndex"):
+            is_job_mgr_active = (self.pages.currentIndex() == 5)
+
         # Always refresh cluster fleet hardware telemetry in the background
         if hasattr(self, "refresh_cluster_status"):
             self.refresh_cluster_status()
+
+        # If user is not viewing the Job Manager tab and there is no active job, skip heavy job table polling
+        if not is_job_mgr_active and not getattr(self, "_has_active_cluster_job", False):
+            return
 
         bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
         if not bus:
@@ -304,6 +313,7 @@ class JobManagerScreenMixin:
         task_rows = data.get("task_rows", [])
         manifest_text = data.get("manifest_text", "")
         active_job = data.get("active_job")
+        self._has_active_cluster_job = bool(active_job and active_job.get("status") in {"RUNNING", "QUEUED"})
         running_workers = data.get("running_workers_count", 0)
 
         # Update Master Jobs Table

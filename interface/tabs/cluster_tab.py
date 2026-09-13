@@ -45,20 +45,50 @@ def _cluster_table(headers: list[str]) -> QTableWidget:
 
 
 def set_cluster_table_rows(table: QTableWidget, rows: list[list[str]]) -> None:
-    """Replace rows in a cluster table widget with diff caching."""
+    """Replace rows in a cluster table widget with in-place cell diffs and selection preservation."""
     if getattr(table, "_rendered_row_cache", None) == rows:
         return
     table._rendered_row_cache = [list(r) for r in rows]
 
     table.setUpdatesEnabled(False)
+    table.blockSignals(True)
     try:
-        table.setRowCount(len(rows))
+        # Remember currently selected worker_id to restore selection seamlessly
+        selected_wid = None
+        selected_items = table.selectedItems()
+        if selected_items:
+            sel_row = selected_items[0].row()
+            first_item = table.item(sel_row, 0)
+            if first_item:
+                selected_wid = first_item.text().strip()
+
+        current_count = table.rowCount()
+        new_count = len(rows)
+        if current_count != new_count:
+            table.setRowCount(new_count)
+
         for row_idx, row in enumerate(rows):
             for col_idx, val in enumerate(row):
-                item = QTableWidgetItem(val)
-                item.setToolTip(val)
-                table.setItem(row_idx, col_idx, item)
+                item = table.item(row_idx, col_idx)
+                if item is None:
+                    item = QTableWidgetItem(val)
+                    item.setToolTip(val)
+                    table.setItem(row_idx, col_idx, item)
+                else:
+                    if item.text() != val:
+                        item.setText(val)
+                        item.setToolTip(val)
+
+        # Restore selection if a matching worker is present
+        if selected_wid:
+            for r_idx in range(len(rows)):
+                item_0 = table.item(r_idx, 0)
+                if item_0 and item_0.text().strip() == selected_wid:
+                    if table.currentRow() != r_idx:
+                        table.selectRow(r_idx)
+                    break
     finally:
+        table.blockSignals(False)
         table.setUpdatesEnabled(True)
 
 
