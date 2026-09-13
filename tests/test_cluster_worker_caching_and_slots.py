@@ -120,3 +120,74 @@ def test_calculate_optimal_worker_slots():
             )
             assert slots == 3
 
+        # 4. Measured VRAM > 45% (e.g. 10 GB on 15.93 GB 5060 Ti) -> MUST return 1 slot
+        with patch("torch.cuda.get_device_properties", return_value=mock_props_16g):
+            slots, est_gb, node_gb = calculate_optimal_worker_slots(
+                model_cfg={},
+                training_cfg={},
+                device_str="cuda:0",
+                measured_vram_gb=10.0,
+            )
+            assert slots == 1
+
+        # 5. 100% VRAM utilization (15.9 GB on 15.93 GB 5060 Ti) -> MUST return 1 slot
+        with patch("torch.cuda.get_device_properties", return_value=mock_props_16g):
+            slots, est_gb, node_gb = calculate_optimal_worker_slots(
+                model_cfg={},
+                training_cfg={},
+                device_str="cuda:0",
+                measured_vram_gb=15.9,
+            )
+            assert slots == 1
+
+
+def test_check_and_spawn_auxiliary_slots_guards(tmp_path):
+    """Verify that auxiliary slots are NOT spawned when GPU is heavily utilized or disabled."""
+    from cluster.bus import ClusterStorageBus
+    from cluster.worker import ClusterWorker
+
+    bus = ClusterStorageBus(shared_dir=tmp_path / "shared")
+    worker = ClusterWorker(bus=bus, worker_id="test_node_1", device="cpu")
+
+    # Simulate CUDA device
+    worker.device_str = "cuda:0"
+
+    # 1. When GPU is 100% utilized (0 free memory), no slots should be spawned
+    with patch("torch.cuda.is_available", return_value=True), \
+         patch("torch.cuda.synchronize"), \
+         patch("torch.cuda.max_memory_reserved", return_value=int(15.9 * (1024 ** 3))), \
+         patch("torch.cuda.mem_get_info", return_value=(int(0.1 * (1024 ** 3)), int(16.0 * (1024 ** 3)))), \
+         patch("subprocess.Popen") as mock_popen:
+        
+        worker._check_and_spawn_auxiliary_slots(
+            job_id="test_job_1",
+            job={"model_config": {}, "training_config": {}},
+        )
+        assert len(worker._child_worker_procs) == 0
+        mock_popen.assert_not_called()
+
+    # 2. When CLUSTER_DISABLE_AUTO_SLOTS is set, no slots should be spawned
+    with patch.dict(os.environ, {"CLUSTER_DISABLE_AUTO_SLOTS": "1"}), \
+         patch("torch.cuda.is_available", return_value=True), \
+         patch("subprocess.Popen") as mock_popen:
+        
+        worker._check_and_spawn_auxiliary_slots(
+            job_id="test_job_1",
+            job={"model_config": {}, "training_config": {}},
+        )
+        assert len(worker._child_worker_procs) == 0
+        mock_popen.assert_not_called()
+
+    # 3. Ephemeral auxiliary child worker should NEVER spawn further slots
+    worker.ephemeral_job_id = "test_job_1"
+    with patch("torch.cuda.is_available", return_value=True), \
+         patch("subprocess.Popen") as mock_popen:
+        
+        worker._check_and_spawn_auxiliary_slots(
+            job_id="test_job_1",
+            job={"model_config": {}, "training_config": {}},
+        )
+        assert len(worker._child_worker_procs) == 0
+        mock_popen.assert_not_called()
+
+
