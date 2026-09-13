@@ -83,39 +83,40 @@ def test_cache_dataset_to_local():
 
 
 def test_calculate_optimal_worker_slots():
-    """Verify dynamic VRAM slot calculation for various GPU capacities."""
+    """Verify dynamic VRAM slot calculation for various GPU capacities with safety headroom."""
     # Test with simulated CUDA device info
     with patch("torch.cuda.is_available", return_value=True):
-        # 1. 8 GB GPU with 8 GB job requirement
+        # 1. 8 GB GPU with 6.5 GB job requirement -> should spawn 1 slot
         mock_props_8g = MagicMock()
         mock_props_8g.total_memory = int(8.0 * (1024 ** 3))
         with patch("torch.cuda.get_device_properties", return_value=mock_props_8g):
             slots, est_gb, node_gb = calculate_optimal_worker_slots(
                 model_cfg={},
-                training_cfg={"vram_required_gb": 7.5},
+                training_cfg={"vram_required_gb": 6.5},
                 device_str="cuda:0",
             )
             assert slots == 1
             assert node_gb == 8.0
 
-        # 2. 16 GB GPU with 7.5 GB job requirement -> should spawn 2 slots
+        # 2. 16 GB GPU with 6.5 GB job requirement -> should spawn 2 slots (capped to avoid OOM)
         mock_props_16g = MagicMock()
         mock_props_16g.total_memory = int(15.93 * (1024 ** 3))
         with patch("torch.cuda.get_device_properties", return_value=mock_props_16g):
             slots, est_gb, node_gb = calculate_optimal_worker_slots(
                 model_cfg={},
-                training_cfg={"vram_required_gb": 7.5},
+                training_cfg={"vram_required_gb": 6.5},
                 device_str="cuda:0",
             )
             assert slots == 2
 
-        # 3. 24 GB GPU with 7.5 GB job requirement -> should spawn 3 slots
+        # 3. 24 GB GPU with 6.5 GB job requirement -> should spawn 3 slots
         mock_props_24g = MagicMock()
         mock_props_24g.total_memory = int(24.0 * (1024 ** 3))
         with patch("torch.cuda.get_device_properties", return_value=mock_props_24g):
             slots, est_gb, node_gb = calculate_optimal_worker_slots(
                 model_cfg={},
-                training_cfg={"vram_required_gb": 7.5},
+                training_cfg={"vram_required_gb": 6.5},
                 device_str="cuda:0",
             )
             assert slots == 3
+

@@ -1437,12 +1437,14 @@ class ClusterScreenMixin:
             else:
                 context_length = 1024
 
-            if hasattr(self, "train_cluster_sync_steps"):
-                sync_steps = int(self.train_cluster_sync_steps.value())
+            # Standard derived sync interval (K steps per round)
+            sync_steps = 250
+            if hasattr(self, "eval_interval") and int(self.eval_interval.value()) > 0:
+                sync_steps = min(int(self.eval_interval.value()), 250)
             elif hasattr(self, "cluster_sync_steps"):
                 sync_steps = int(self.cluster_sync_steps.value())
-            else:
-                sync_steps = 250
+            elif hasattr(self, "train_cluster_sync_steps"):
+                sync_steps = int(self.train_cluster_sync_steps.value())
 
             # 3. Query cluster fleet bus for active workers
             bus = self._get_cluster_bus()
@@ -1460,27 +1462,29 @@ class ClusterScreenMixin:
             needed_rounds = max(1, math.ceil(total_needed_tokens / max(tokens_per_round, 1)))
             total_steps_est = needed_rounds * sync_steps
 
-            # 5. Check if auto-sync is enabled before updating spinboxes
-            auto_sync = True
-            if hasattr(self, "train_cluster_auto_sync"):
-                auto_sync = self.train_cluster_auto_sync.isChecked()
-            elif hasattr(self, "cluster_auto_sync_epochs"):
-                auto_sync = self.cluster_auto_sync_epochs.isChecked()
+            # Update internal state tracking
+            if hasattr(self, "train_cluster_sync_steps"):
+                self.train_cluster_sync_steps.blockSignals(True)
+                self.train_cluster_sync_steps.setValue(sync_steps)
+                self.train_cluster_sync_steps.blockSignals(False)
+            if hasattr(self, "cluster_sync_steps"):
+                self.cluster_sync_steps.blockSignals(True)
+                self.cluster_sync_steps.setValue(sync_steps)
+                self.cluster_sync_steps.blockSignals(False)
 
-            if auto_sync or not quiet:
-                if hasattr(self, "train_cluster_max_rounds"):
-                    self.train_cluster_max_rounds.blockSignals(True)
-                    self.train_cluster_max_rounds.setValue(min(needed_rounds, self.train_cluster_max_rounds.maximum()))
-                    self.train_cluster_max_rounds.blockSignals(False)
-                if hasattr(self, "cluster_max_rounds"):
-                    self.cluster_max_rounds.blockSignals(True)
-                    self.cluster_max_rounds.setValue(min(needed_rounds, self.cluster_max_rounds.maximum()))
-                    self.cluster_max_rounds.blockSignals(False)
+            if hasattr(self, "train_cluster_max_rounds"):
+                self.train_cluster_max_rounds.blockSignals(True)
+                self.train_cluster_max_rounds.setValue(min(needed_rounds, self.train_cluster_max_rounds.maximum()))
+                self.train_cluster_max_rounds.blockSignals(False)
+            if hasattr(self, "cluster_max_rounds"):
+                self.cluster_max_rounds.blockSignals(True)
+                self.cluster_max_rounds.setValue(min(needed_rounds, self.cluster_max_rounds.maximum()))
+                self.cluster_max_rounds.blockSignals(False)
 
-            # 6. Update informational badges on Training and Cluster pages
+            # 5. Update visual informational badges on Training and Cluster pages
             worker_s = "s" if active_workers != 1 else ""
             short_plan = (
-                f"⚡ Auto-sync: {epochs} Epoch(s) ({total_needed_tokens:,} tok) ➔ "
+                f"⚡ Fleet Plan: {epochs} Epoch(s) ({total_needed_tokens:,} tok) ➔ "
                 f"{needed_rounds:,} Rounds @ K={sync_steps} (~{total_steps_est:,} steps/worker across {active_workers} worker{worker_s})"
             )
             if hasattr(self, "train_cluster_plan_label"):
