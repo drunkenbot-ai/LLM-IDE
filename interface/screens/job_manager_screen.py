@@ -15,6 +15,16 @@ from cluster.cluster_worker import get_all_running_worker_pids
 from interface.tabs.job_manager_tab import set_table_rows
 
 
+def _format_duration(seconds: float) -> str:
+    """Format seconds into HH:MM:SS or MM:SS string."""
+    s = int(round(max(seconds, 0.0)))
+    m, s = divmod(s, 60)
+    h, m = divmod(m, 60)
+    if h > 0:
+        return f"{h:02d}:{m:02d}:{s:02d}"
+    return f"{m:02d}:{s:02d}"
+
+
 class JobMonitorBridge(QObject):
     """Qt signal bridge for thread-safe, non-blocking cluster job monitor telemetry."""
 
@@ -432,6 +442,40 @@ class JobManagerScreenMixin:
                     self.training_epoch_metric.setText(f"Round: {c_round}/{m_rounds}")
                 if hasattr(self, "training_progress"):
                     self.training_progress.setValue(int((c_round / max(m_rounds, 1)) * 100))
+
+                # Calculate ETA and Total Elapsed Time for Training Tab
+                created_at = float(active_job.get("created_at") or 0.0)
+                now = time.time()
+                if created_at > 0 and hasattr(self, "training_elapsed_metric"):
+                    elapsed_sec = max(0.0, now - created_at)
+                    self.training_elapsed_metric.setText(f"Total time: {_format_duration(elapsed_sec)}")
+
+                remaining_rounds = max(0, m_rounds - c_round)
+                if remaining_rounds == 0:
+                    eta_str = "00:00"
+                else:
+                    round_times = [float(r.get("averaged_at", 0)) for r in rounds if r.get("averaged_at")]
+                    if len(round_times) >= 2:
+                        avg_round_sec = (round_times[-1] - round_times[0]) / (len(round_times) - 1)
+                        eta_seconds = remaining_rounds * avg_round_sec
+                        eta_str = _format_duration(eta_seconds)
+                    elif round_times and created_at > 0:
+                        first_round_sec = max(1.0, round_times[0] - created_at)
+                        eta_seconds = remaining_rounds * first_round_sec
+                        eta_str = _format_duration(eta_seconds)
+                    elif c_round > 0 and created_at > 0:
+                        avg_round_sec = (now - created_at) / max(c_round, 1)
+                        eta_seconds = remaining_rounds * avg_round_sec
+                        eta_str = _format_duration(eta_seconds)
+                    elif spd > 0:
+                        toks_per_round = sync_k * 2 * 1024
+                        eta_seconds = (remaining_rounds * toks_per_round) / max(spd, 1.0)
+                        eta_str = _format_duration(eta_seconds)
+                    else:
+                        eta_str = "-"
+
+                if hasattr(self, "training_eta_metric"):
+                    self.training_eta_metric.setText(f"ETA: {eta_str}")
 
                 if hasattr(self, "loss_chart") and self.loss_chart:
                     self.loss_chart.set_points(train_pts, val_pts)

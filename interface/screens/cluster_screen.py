@@ -340,6 +340,23 @@ class ClusterScreenMixin:
                     vram_vals = [float(w.get("vram_used_gb") or 0.0) for w in workers if float(w.get("vram_used_gb") or 0.0) > 0]
                     if vram_vals:
                         self.training_vram_metric.setText(f"VRAM: {max(vram_vals):.1f} GB")
+
+                # Calculate ETA and Total Elapsed Time for Training Tab
+                created_at = float(active_job.get("created_at") or 0.0)
+                now = time.time()
+                if created_at > 0 and hasattr(self, "training_elapsed_metric"):
+                    self.training_elapsed_metric.setText(f"Total time: {_format_cluster_duration(max(0.0, now - created_at))}")
+
+                rem_rounds = max(0, max_rounds - cur_round)
+                if rem_rounds == 0:
+                    eta_str = "00:00"
+                elif cur_round > 0 and created_at > 0:
+                    avg_round_sec = (now - created_at) / max(cur_round, 1)
+                    eta_str = _format_cluster_duration(rem_rounds * avg_round_sec)
+                else:
+                    eta_str = "-"
+                if hasattr(self, "training_eta_metric"):
+                    self.training_eta_metric.setText(f"ETA: {eta_str}")
         else:
             if hasattr(self, "cluster_status_label"):
                 self.cluster_status_label.setText("Status: Fleet Idle")
