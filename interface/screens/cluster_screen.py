@@ -1845,13 +1845,15 @@ class ClusterScreenMixin:
                 context_length = 1024
 
             # Standard derived sync interval (K steps per round)
+            # In cluster training, validation evaluation occurs at round boundaries,
+            # so eval_interval directly defines the sync interval K.
             sync_steps = 250
             if hasattr(self, "eval_interval") and int(self.eval_interval.value()) > 0:
-                sync_steps = min(int(self.eval_interval.value()), 250)
-            elif hasattr(self, "cluster_sync_steps"):
-                sync_steps = int(self.cluster_sync_steps.value())
-            elif hasattr(self, "train_cluster_sync_steps"):
-                sync_steps = int(self.train_cluster_sync_steps.value())
+                sync_steps = max(10, int(self.eval_interval.value()))
+            elif hasattr(self, "train_cluster_sync_steps") and int(self.train_cluster_sync_steps.value()) > 0:
+                sync_steps = max(10, int(self.train_cluster_sync_steps.value()))
+            elif hasattr(self, "cluster_sync_steps") and int(self.cluster_sync_steps.value()) > 0:
+                sync_steps = max(10, int(self.cluster_sync_steps.value()))
 
             # 3. Query cluster fleet bus for active workers (use pre-polled cache to avoid main-thread SQLite queries)
             if workers is None:
@@ -1881,6 +1883,10 @@ class ClusterScreenMixin:
                 self.cluster_sync_steps.blockSignals(True)
                 self.cluster_sync_steps.setValue(sync_steps)
                 self.cluster_sync_steps.blockSignals(False)
+            if hasattr(self, "eval_interval") and int(self.eval_interval.value()) != sync_steps and sync_steps > 0:
+                self.eval_interval.blockSignals(True)
+                self.eval_interval.setValue(sync_steps)
+                self.eval_interval.blockSignals(False)
 
             if hasattr(self, "train_cluster_max_rounds"):
                 self.train_cluster_max_rounds.blockSignals(True)
@@ -1971,6 +1977,10 @@ class ClusterScreenMixin:
                     self.cluster_sync_steps.blockSignals(True)
                     self.cluster_sync_steps.setValue(val)
                     self.cluster_sync_steps.blockSignals(False)
+                if hasattr(self, "eval_interval") and self.eval_interval.value() != val and val > 0:
+                    self.eval_interval.blockSignals(True)
+                    self.eval_interval.setValue(val)
+                    self.eval_interval.blockSignals(False)
                 self.auto_sync_cluster_rounds_from_epochs()
 
             def _sync_k_from_cluster(val: int) -> None:
@@ -1978,6 +1988,10 @@ class ClusterScreenMixin:
                     self.train_cluster_sync_steps.blockSignals(True)
                     self.train_cluster_sync_steps.setValue(val)
                     self.train_cluster_sync_steps.blockSignals(False)
+                if hasattr(self, "eval_interval") and self.eval_interval.value() != val and val > 0:
+                    self.eval_interval.blockSignals(True)
+                    self.eval_interval.setValue(val)
+                    self.eval_interval.blockSignals(False)
                 self.auto_sync_cluster_rounds_from_epochs()
 
             self.train_cluster_sync_steps.valueChanged.connect(_sync_k_from_train)
@@ -1986,6 +2000,22 @@ class ClusterScreenMixin:
             self.cluster_sync_steps.valueChanged.connect(lambda _: self.auto_sync_cluster_rounds_from_epochs())
         elif hasattr(self, "train_cluster_sync_steps"):
             self.train_cluster_sync_steps.valueChanged.connect(lambda _: self.auto_sync_cluster_rounds_from_epochs())
+
+        if hasattr(self, "eval_interval"):
+            def _sync_k_from_eval(val: int) -> None:
+                if val <= 0:
+                    return
+                if hasattr(self, "train_cluster_sync_steps") and self.train_cluster_sync_steps.value() != val:
+                    self.train_cluster_sync_steps.blockSignals(True)
+                    self.train_cluster_sync_steps.setValue(val)
+                    self.train_cluster_sync_steps.blockSignals(False)
+                if hasattr(self, "cluster_sync_steps") and self.cluster_sync_steps.value() != val:
+                    self.cluster_sync_steps.blockSignals(True)
+                    self.cluster_sync_steps.setValue(val)
+                    self.cluster_sync_steps.blockSignals(False)
+                self.auto_sync_cluster_rounds_from_epochs()
+
+            self.eval_interval.valueChanged.connect(_sync_k_from_eval)
 
         # 2. Max Rounds bidirectional binding
         if hasattr(self, "train_cluster_max_rounds") and hasattr(self, "cluster_max_rounds") and self.train_cluster_max_rounds is not self.cluster_max_rounds:

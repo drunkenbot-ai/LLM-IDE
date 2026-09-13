@@ -232,8 +232,16 @@ class JobManagerScreenMixin:
                         r_spd = r_metrics.get("aggregate_tokens_per_sec", 0.0)
                         r_val = r_metrics.get("val_loss")
                         val_str = f" | Validation Loss {float(r_val):.4f}" if r_val is not None else ""
+                        r_compute = r_metrics.get("avg_compute_sec")
+                        r_agg = r_metrics.get("coordinator_agg_sec")
+                        timing_parts = []
+                        if r_compute is not None:
+                            timing_parts.append(f"Compute {float(r_compute):.1f}s")
+                        if r_agg is not None:
+                            timing_parts.append(f"Sync {float(r_agg):.1f}s")
+                        timing_str = f" | ⏱️ {', '.join(timing_parts)}" if timing_parts else ""
                         manifest_lines.append(
-                            f"• Round {r_num}: Global Loss {r_loss:.4f}{val_str} | Speed: {r_spd:,.0f} tok/s | Workers: [{r_workers}]"
+                            f"• Round {r_num}: Global Loss {r_loss:.4f}{val_str} | Speed: {r_spd:,.0f} tok/s{timing_str} | Workers: [{r_workers}]"
                         )
 
                     # Check for coordinator log tail
