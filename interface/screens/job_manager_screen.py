@@ -239,7 +239,7 @@ class JobManagerScreenMixin:
                             timing_parts.append(f"Compute {float(r_compute):.1f}s")
                         if r_agg is not None:
                             timing_parts.append(f"Sync {float(r_agg):.1f}s")
-                        timing_str = f" | ⏱️ {', '.join(timing_parts)}" if timing_parts else ""
+                        timing_str = f" | [Timing: {', '.join(timing_parts)}]" if timing_parts else ""
                         manifest_lines.append(
                             f"• Round {r_num}: Global Loss {r_loss:.4f}{val_str} | Speed: {r_spd:,.0f} tok/s{timing_str} | Workers: [{r_workers}]"
                         )
