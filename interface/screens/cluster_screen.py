@@ -1447,8 +1447,9 @@ class ClusterScreenMixin:
         else:
             toggle_act = menu.addAction(f"Enable Worker '{worker_id}' (Allow job pickup)")
         menu.addSeparator()
-        stop_act = menu.addAction(f"Stop Worker '{worker_id}'")
+        stop_act = menu.addAction(f"Stop Worker '{worker_id}' (Abort Job & Return to IDLE)")
         restart_act = menu.addAction(f"Restart Worker '{worker_id}'")
+        shutdown_act = menu.addAction(f"Shutdown / Kill Worker Process '{worker_id}'")
         menu.addSeparator()
         delete_act = menu.addAction(f"Remove '{worker_id}' from Fleet")
 
@@ -1464,6 +1465,8 @@ class ClusterScreenMixin:
             self.stop_cluster_worker(worker_id)
         elif selected_act == restart_act:
             self.restart_cluster_worker(worker_id)
+        elif selected_act == shutdown_act:
+            self.shutdown_cluster_worker(worker_id)
         elif selected_act == delete_act:
             self.delete_cluster_worker(worker_id)
 
@@ -1571,7 +1574,18 @@ class ClusterScreenMixin:
         threading.Thread(target=_bg_logs, daemon=True).start()
 
     def stop_cluster_worker(self, worker_id: str) -> None:
-        """Send STOP command to a specific worker and immediately mark it OFFLINE."""
+        """Send STOP command to worker to abort its active training run and return to IDLE."""
+        bus = self._get_cluster_bus()
+        if bus:
+            bus.set_worker_command(worker_id, "STOP")
+            bus.heartbeat(worker_id, status="IDLE", current_job_id=None)
+            self._log_cluster_event(f"Sent STOP command to worker '{worker_id}' (worker returning to IDLE).")
+            self.refresh_cluster_status()
+            if hasattr(self, "refresh_job_manager_tab"):
+                self.refresh_job_manager_tab()
+
+    def shutdown_cluster_worker(self, worker_id: str) -> None:
+        """Send SHUTDOWN command to completely terminate the worker process."""
         import socket
         hostname = socket.gethostname().lower()
         is_local = hostname in worker_id.lower()
@@ -1605,9 +1619,9 @@ class ClusterScreenMixin:
 
         bus = self._get_cluster_bus()
         if bus:
-            bus.set_worker_command(worker_id, "STOP")
+            bus.set_worker_command(worker_id, "SHUTDOWN")
             bus.heartbeat(worker_id, status="OFFLINE", current_job_id=None)
-            self._log_cluster_event(f"Sent STOP command to worker '{worker_id}' (marked OFFLINE).")
+            self._log_cluster_event(f"Sent SHUTDOWN command to worker '{worker_id}' (process terminated).")
             self.refresh_cluster_status()
             if hasattr(self, "refresh_job_manager_tab"):
                 self.refresh_job_manager_tab()
