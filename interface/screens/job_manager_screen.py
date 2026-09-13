@@ -115,12 +115,16 @@ class JobManagerScreenMixin:
                     latest_speed = "-"
                     if r_info:
                         l_val = r_info.get("avg_loss")
+                        m_dict = r_info.get("metrics", {})
                         if l_val is not None:
                             try:
-                                latest_loss = f"{float(l_val):.4f}"
+                                v_val = m_dict.get("val_loss")
+                                if v_val is not None:
+                                    latest_loss = f"{float(l_val):.4f} (Val: {float(v_val):.4f})"
+                                else:
+                                    latest_loss = f"{float(l_val):.4f}"
                             except Exception:
                                 latest_loss = str(l_val)
-                        m_dict = r_info.get("metrics", {})
                         s_val = m_dict.get("aggregate_tokens_per_sec")
                         if s_val is not None:
                             try:
@@ -169,7 +173,14 @@ class JobManagerScreenMixin:
 
                         telem = t.get("telemetry", {})
                         loss_val = telem.get("avg_loss")
-                        loss_str = f"{float(loss_val):.4f}" if loss_val is not None else "-"
+                        val_loss_val = telem.get("val_loss")
+                        if loss_val is not None:
+                            if val_loss_val is not None:
+                                loss_str = f"{float(loss_val):.4f} (Val: {float(val_loss_val):.4f})"
+                            else:
+                                loss_str = f"{float(loss_val):.4f}"
+                        else:
+                            loss_str = "-"
                         speed_val = telem.get("tokens_per_sec")
                         speed_str = f"{float(speed_val):,.0f} tok/s" if speed_val is not None else "-"
 
@@ -200,8 +211,10 @@ class JobManagerScreenMixin:
                         r_workers = ", ".join(r.get("participating_workers", []))
                         r_metrics = r.get("metrics", {})
                         r_spd = r_metrics.get("aggregate_tokens_per_sec", 0.0)
+                        r_val = r_metrics.get("val_loss")
+                        val_str = f" | Val Loss: {float(r_val):.4f}" if r_val is not None else ""
                         manifest_lines.append(
-                            f"• Round {r_num}: Global Loss {r_loss:.4f} | Speed: {r_spd:,.0f} tok/s | Workers: [{r_workers}]"
+                            f"• Round {r_num}: Global Loss {r_loss:.4f}{val_str} | Speed: {r_spd:,.0f} tok/s | Workers: [{r_workers}]"
                         )
 
                     # Check for coordinator log tail
@@ -369,23 +382,61 @@ class JobManagerScreenMixin:
                     if hasattr(self, "stop_training_button") and self.stop_training_button.isEnabled():
                         self.stop_training_button.setEnabled(False)
 
-            # Populate Training Tab Charts from loaded rounds
+            # Populate Training Tab Charts and Telemetry Chips from loaded rounds
             rounds = data.get("rounds", [])
+            sync_k = int(active_job.get("sync_interval_steps") or 250)
             if rounds:
+                train_pts = []
+                val_pts = []
+                spd_pts = []
+                for r in rounds:
+                    eff_s = int(r.get("metrics", {}).get("effective_step", (r.get("round_number", 0) + 1) * sync_k))
+                    l_v = r.get("avg_loss")
+                    if l_v is not None:
+                        train_pts.append((eff_s, float(l_v)))
+                    vl_v = r.get("metrics", {}).get("val_loss")
+                    if vl_v is not None:
+                        val_pts.append((eff_s, float(vl_v)))
+                    s_v = r.get("metrics", {}).get("aggregate_tokens_per_sec")
+                    if s_v is not None:
+                        spd_pts.append((eff_s, float(s_v)))
+
                 last_r = rounds[-1]
-                eff_step = int(last_r.get("metrics", {}).get("effective_step", c_round * 250))
+                eff_step = int(last_r.get("metrics", {}).get("effective_step", c_round * sync_k))
                 g_loss = float(last_r.get("avg_loss", 0.0))
                 spd = float(last_r.get("metrics", {}).get("aggregate_tokens_per_sec", 0.0))
+                v_loss = last_r.get("metrics", {}).get("val_loss")
+
+                if hasattr(self, "cluster_loss_label"):
+                    self.cluster_loss_label.setText(f"Loss: {g_loss:.4f}")
+                if hasattr(self, "cluster_val_loss_label"):
+                    self.cluster_val_loss_label.setText(f"Val Loss: {float(v_loss):.4f}" if v_loss is not None else "Val Loss: -")
+
                 if hasattr(self, "training_loss_metric"):
                     self.training_loss_metric.setText(f"Train loss: {g_loss:.4f}")
+                if hasattr(self, "training_val_metric"):
+                    if v_loss is not None:
+                        self.training_val_metric.setText(f"Val loss: {float(v_loss):.4f}")
+                    else:
+                        self.training_val_metric.setText("Val loss: -")
+                if hasattr(self, "training_health_metric"):
+                    if v_loss is not None and float(v_loss) > g_loss * 2.0:
+                        self.training_health_metric.setText("Health: high val loss")
+                    else:
+                        self.training_health_metric.setText("Health: OPTIMAL" if g_loss < 7.0 else "Health: STABLE")
                 if hasattr(self, "training_speed_metric"):
                     self.training_speed_metric.setText(f"Speed: {spd:,.0f} tok/s")
                 if hasattr(self, "training_step_metric"):
                     self.training_step_metric.setText(f"Step: {eff_step} (Round {c_round}/{m_rounds})")
+                if hasattr(self, "training_epoch_metric"):
+                    self.training_epoch_metric.setText(f"Round: {c_round}/{m_rounds}")
+                if hasattr(self, "training_progress"):
+                    self.training_progress.setValue(int((c_round / max(m_rounds, 1)) * 100))
+
                 if hasattr(self, "loss_chart") and self.loss_chart:
-                    self.loss_chart.add_metrics(eff_step, g_loss, None)
+                    self.loss_chart.set_points(train_pts, val_pts)
                 if hasattr(self, "throughput_chart") and self.throughput_chart:
-                    self.throughput_chart.add_values(eff_step, spd)
+                    self.throughput_chart.set_points(spd_pts)
 
             # Append coordinator log tail to training log if not yet present
             coord_tail = data.get("coord_log_tail", "")

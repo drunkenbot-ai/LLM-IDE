@@ -103,10 +103,16 @@ def build_job_manager_tab(window) -> QWidget:
     window.cluster_workers_label.setObjectName("Metric")
     window.cluster_round_label = QLabel("Round: -")
     window.cluster_round_label.setObjectName("Metric")
+    window.cluster_loss_label = QLabel("Loss: -")
+    window.cluster_loss_label.setObjectName("Metric")
+    window.cluster_val_loss_label = QLabel("Val Loss: -")
+    window.cluster_val_loss_label.setObjectName("Metric")
 
     title_row.addWidget(window.cluster_status_label)
     title_row.addWidget(window.cluster_workers_label)
     title_row.addWidget(window.cluster_round_label)
+    title_row.addWidget(window.cluster_loss_label)
+    title_row.addWidget(window.cluster_val_loss_label)
     title_row.addStretch(1)
 
     window.job_refresh_button = QPushButton("Refresh Fleet")

@@ -184,6 +184,13 @@ class ClusterScreenMixin:
                 bus = self._cached_cluster_bus
                 workers = bus.list_workers(active_within_seconds=60.0)
                 active_job = bus.get_active_job()
+                if active_job:
+                    try:
+                        rounds = bus.get_all_round_history(active_job["job_id"])
+                        if rounds:
+                            active_job["_latest_round"] = rounds[-1]
+                    except Exception:
+                        pass
                 bridge.telemetry_ready.emit(workers, active_job, None)
             except Exception as exc:
                 bridge.telemetry_ready.emit(None, None, str(exc))
@@ -267,6 +274,19 @@ class ClusterScreenMixin:
                 self.cluster_status_label.setText(f"Status: Job {jid} ({st})")
             if hasattr(self, "cluster_round_label"):
                 self.cluster_round_label.setText(f"Round: {cur_round} / {max_rounds}")
+
+            latest_r = active_job.get("_latest_round")
+            if latest_r:
+                g_loss = latest_r.get("avg_loss")
+                v_loss = latest_r.get("metrics", {}).get("val_loss")
+                if hasattr(self, "cluster_loss_label") and g_loss is not None:
+                    self.cluster_loss_label.setText(f"Loss: {g_loss:.4f}")
+                if hasattr(self, "cluster_val_loss_label"):
+                    self.cluster_val_loss_label.setText(f"Val Loss: {float(v_loss):.4f}" if v_loss is not None else "Val Loss: -")
+                if hasattr(self, "training_loss_metric") and g_loss is not None:
+                    self.training_loss_metric.setText(f"Train loss: {g_loss:.4f}")
+                if hasattr(self, "training_val_metric"):
+                    self.training_val_metric.setText(f"Val loss: {float(v_loss):.4f}" if v_loss is not None else "Val loss: -")
 
             if st == "RUNNING":
                 if hasattr(self, "train_status"):
