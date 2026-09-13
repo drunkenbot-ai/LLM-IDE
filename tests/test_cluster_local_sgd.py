@@ -1037,6 +1037,109 @@ def test_cluster_validation_loss_evaluation(tmp_path: Path) -> None:
         worker_thread.join(timeout=2.0)
 
 
+def test_worker_disabled_state_management(tmp_path: Path) -> None:
+    """Verify workers can be disabled to pause job pickup while keeping telemetry active."""
+    bus = ClusterStorageBus(tmp_path)
+    wid = "test_worker_mumws9999"
+
+    # Register worker
+    bus.register_worker(wid, "mumws9999", "RTX 5060 Ti", 16.0)
+    bus.heartbeat(wid, status="IDLE", metrics={"cpu_percent": 12.0, "ram_used_gb": 4.5, "vram_used_gb": 2.0})
+
+    # By default, worker is enabled
+    assert bus.is_worker_enabled(wid) is True
+    workers = bus.list_workers()
+    assert len(workers) == 1
+    assert workers[0]["enabled"] is True
+    assert workers[0]["status"] == "IDLE"
+
+    # Disable worker
+    bus.set_worker_enabled(wid, False)
+    assert bus.is_worker_enabled(wid) is False
+
+    # Status in list_workers becomes DISABLED while still online
+    workers = bus.list_workers()
+    assert workers[0]["enabled"] is False
+    assert workers[0]["status"] == "DISABLED"
+    assert workers[0]["is_online"] is True
+
+    # Submitting a job and attempting to claim slot raises RuntimeError
+    job_id = "job_test_disabled_123"
+    bus.create_job(
+        job_id=job_id,
+        model_config={"vocab_size": 256, "embedding_size": 64},
+        training_config={"batch_size": 2},
+        dataset_path=str(tmp_path / "train.npy"),
+        max_rounds=1,
+    )
+    import pytest
+    with pytest.raises(RuntimeError, match="DISABLED"):
+        bus.claim_job_slot(job_id, wid)
+
+    # Worker compatibility check rejects disabled worker
+    worker = ClusterWorker(bus, wid, device="cpu")
+    job = bus.get_job(job_id)
+    is_compat, reason = worker.is_job_compatible(job)
+    assert is_compat is False
+    assert "disabled" in reason.lower()
+
+    # Re-enable worker
+    bus.set_worker_enabled(wid, True)
+    assert bus.is_worker_enabled(wid) is True
+    workers = bus.list_workers()
+    assert workers[0]["enabled"] is True
+    assert workers[0]["status"] == "IDLE"
+
+    # Now can claim job slot successfully
+    shard_idx, total_shards = bus.claim_job_slot(job_id, wid)
+    assert shard_idx == 0
+    assert total_shards == 1
+
+
+def test_job_manifest_log_formatting_with_validation_loss(tmp_path: Path) -> None:
+    """Verify Job Events Log formatting matches: • Round 7: Global Loss 5.9043 | Validation Loss 6.9520 | Speed: 64,488 tok/s | Workers: [...]"""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "cluster_job_log_format_test"
+    bus.create_job(
+        job_id=job_id,
+        model_config={"vocab_size": 256, "embedding_size": 64},
+        training_config={"batch_size": 2},
+        dataset_path=str(tmp_path / "train.npy"),
+        max_rounds=10,
+    )
+
+    workers = ["mumws4351", "mumws4857_cuda_0", "mumws4886", "mumws4886_slot2"]
+    bus.record_round_summary(
+        job_id=job_id,
+        round_num=6,  # 0-indexed round 6 -> Round 7
+        participating_workers=workers,
+        avg_loss=5.9043,
+        metrics={
+            "round": 6,
+            "val_loss": 6.9520,
+            "aggregate_tokens_per_sec": 64488.0,
+            "effective_step": 1750,
+        },
+    )
+
+    rounds = bus.get_all_round_history(job_id)
+    assert len(rounds) == 1
+    r = rounds[0]
+    r_num = r.get("round_number", 0) + 1
+    r_loss = r.get("avg_loss", 0.0)
+    r_workers = ", ".join(r.get("participating_workers", []))
+    r_metrics = r.get("metrics", {})
+    r_spd = r_metrics.get("aggregate_tokens_per_sec", 0.0)
+    r_val = r_metrics.get("val_loss")
+    val_str = f" | Validation Loss {float(r_val):.4f}" if r_val is not None else ""
+    log_line = f"• Round {r_num}: Global Loss {r_loss:.4f}{val_str} | Speed: {r_spd:,.0f} tok/s | Workers: [{r_workers}]"
+
+    expected = "• Round 7: Global Loss 5.9043 | Validation Loss 6.9520 | Speed: 64,488 tok/s | Workers: [mumws4351, mumws4857_cuda_0, mumws4886, mumws4886_slot2]"
+    assert log_line == expected
+
+
+
+
 
 
 

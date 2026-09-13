@@ -253,16 +253,36 @@ class ClusterScreenMixin:
                     cpu_pct = float(w.get("cpu_percent") or 0.0)
                     cpu_str = f"{cpu_pct:.0f}%" if cpu_pct > 0 else "-"
 
-                    rows.append([
-                        str(w.get("worker_id", "-")),
-                        str(w.get("hostname", "-")),
-                        str(w.get("gpu_name", "-")),
-                        vram_str,
-                        ram_str,
-                        cpu_str,
-                        str(w.get("status", "OFFLINE")),
-                        last_hb_str,
-                    ])
+                    w_enabled = bool(w.get("enabled", 1)) if w.get("enabled") is not None else True
+                    w_status = str(w.get("status", "OFFLINE"))
+                    if not w_enabled and w.get("is_online"):
+                        w_status = "DISABLED"
+
+                    col_count = self.cluster_worker_table.columnCount() if hasattr(self, "cluster_worker_table") else 8
+                    if col_count == 9:
+                        cur_job = str(w.get("current_job_id") or "-")
+                        rows.append([
+                            str(w.get("worker_id", "-")),
+                            str(w.get("hostname", "-")),
+                            str(w.get("gpu_name", "-")),
+                            vram_str,
+                            ram_str,
+                            cpu_str,
+                            w_status,
+                            cur_job,
+                            last_hb_str,
+                        ])
+                    else:
+                        rows.append([
+                            str(w.get("worker_id", "-")),
+                            str(w.get("hostname", "-")),
+                            str(w.get("gpu_name", "-")),
+                            vram_str,
+                            ram_str,
+                            cpu_str,
+                            w_status,
+                            last_hb_str,
+                        ])
                 set_cluster_table_rows(self.cluster_worker_table, rows)
 
         if active_job:
@@ -716,7 +736,7 @@ class ClusterScreenMixin:
             self.cluster_val_loss_label.setText(f"Val Loss: {val_loss:.4f}" if val_loss is not None else "Val Loss: -")
 
         worker_breakdown = ", ".join(f"{w}: {loss_val:.4f}" for w, loss_val in worker_losses.items())
-        val_log_str = f" | Val Loss: {val_loss:.4f}" if val_loss is not None else ""
+        val_log_str = f" | Validation Loss {val_loss:.4f}" if val_loss is not None else ""
         epoch_log_str = f" | Epoch: {epoch_val:.2f}/{target_epochs}" if epoch_val is not None else ""
         msg = f"Round {cur_round}/{max_rounds} complete{epoch_log_str} | Loss: {global_loss:.4f}{val_log_str} | Aggregate Speed: {speed:,.0f} tok/s | Workers: {workers_count}"
         if worker_breakdown:
@@ -1142,6 +1162,13 @@ class ClusterScreenMixin:
         menu = QMenu(self)
         view_logs_act = menu.addAction(f"View Logs for '{worker_id}'")
         menu.addSeparator()
+        bus = self._get_cluster_bus()
+        is_enabled = bus.is_worker_enabled(worker_id) if bus else True
+        if is_enabled:
+            toggle_act = menu.addAction(f"Disable Worker '{worker_id}' (Keep active, pause job pickup)")
+        else:
+            toggle_act = menu.addAction(f"Enable Worker '{worker_id}' (Allow job pickup)")
+        menu.addSeparator()
         stop_act = menu.addAction(f"Stop Worker '{worker_id}'")
         restart_act = menu.addAction(f"Restart Worker '{worker_id}'")
         menu.addSeparator()
@@ -1153,12 +1180,41 @@ class ClusterScreenMixin:
 
         if selected_act == view_logs_act:
             self._load_worker_logs_for(worker_id)
+        elif selected_act == toggle_act:
+            self.toggle_cluster_worker_enabled(worker_id)
         elif selected_act == stop_act:
             self.stop_cluster_worker(worker_id)
         elif selected_act == restart_act:
             self.restart_cluster_worker(worker_id)
         elif selected_act == delete_act:
             self.delete_cluster_worker(worker_id)
+
+    def toggle_cluster_worker_enabled(self, worker_id: str) -> None:
+        """Toggle whether a worker node is permitted to claim cluster jobs."""
+        bus = self._get_cluster_bus()
+        if not bus:
+            return
+        current = bus.is_worker_enabled(worker_id)
+        new_val = not current
+        bus.set_worker_enabled(worker_id, new_val)
+        st_str = "ENABLED (Job pickup: Active)" if new_val else "DISABLED (Job pickup: Paused)"
+        self._log_cluster_event(f"Worker '{worker_id}' is now {st_str}.")
+        self.refresh_cluster_status()
+        if hasattr(self, "refresh_job_manager_tab"):
+            self.refresh_job_manager_tab()
+
+    def toggle_selected_worker_enabled(self) -> None:
+        """Toggle enable/disable for the worker selected in the worker table."""
+        if not hasattr(self, "cluster_worker_table"):
+            return
+        selected_items = self.cluster_worker_table.selectedItems()
+        if not selected_items:
+            QMessageBox.information(self, "Select Worker", "Please select a worker in the table first.")
+            return
+        row = selected_items[0].row()
+        worker_id_item = self.cluster_worker_table.item(row, 0)
+        if worker_id_item:
+            self.toggle_cluster_worker_enabled(worker_id_item.text().strip())
 
     def on_cluster_worker_selected(self) -> None:
         """Handle worker table selection to load and display diagnostic logs."""

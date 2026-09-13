@@ -325,6 +325,12 @@ def build_job_manager_tab(window) -> QWidget:
     window.fleet_utilization_label = QLabel("Nodes: 0 | VRAM: -")
     window.fleet_utilization_label.setObjectName("Metric")
     fleet_header.addWidget(window.fleet_utilization_label)
+    fleet_header.addSpacing(8)
+
+    window.toggle_worker_enable_btn = QPushButton("Toggle Enable/Disable")
+    window.toggle_worker_enable_btn.clicked.connect(window.toggle_selected_worker_enabled)
+    window._tip(window.toggle_worker_enable_btn, "Enable or disable the selected worker node from picking up cluster jobs while keeping its telemetry active.")
+    fleet_header.addWidget(window.toggle_worker_enable_btn)
     fleet_layout.addLayout(fleet_header)
 
     window.cluster_worker_table = _styled_table(

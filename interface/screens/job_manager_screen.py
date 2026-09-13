@@ -212,7 +212,7 @@ class JobManagerScreenMixin:
                         r_metrics = r.get("metrics", {})
                         r_spd = r_metrics.get("aggregate_tokens_per_sec", 0.0)
                         r_val = r_metrics.get("val_loss")
-                        val_str = f" | Val Loss: {float(r_val):.4f}" if r_val is not None else ""
+                        val_str = f" | Validation Loss {float(r_val):.4f}" if r_val is not None else ""
                         manifest_lines.append(
                             f"• Round {r_num}: Global Loss {r_loss:.4f}{val_str} | Speed: {r_spd:,.0f} tok/s | Workers: [{r_workers}]"
                         )
