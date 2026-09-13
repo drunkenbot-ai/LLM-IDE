@@ -1945,7 +1945,7 @@ class ClusterScreenMixin:
 
     def _schedule_debounced_auto_sync(self) -> None:
         """Debounce auto-sync calculations by 500ms to prevent thrashing when workers join."""
-        from PySide6.QtCore import QCoreApplication
+        from PySide6.QtCore import QCoreApplication, QObject, QTimer
         if QCoreApplication.instance() is None or not isinstance(self, QObject):
             if hasattr(self, "auto_sync_cluster_rounds_from_epochs"):
                 self.auto_sync_cluster_rounds_from_epochs()
