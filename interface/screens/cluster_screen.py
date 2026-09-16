@@ -483,9 +483,14 @@ class ClusterScreenMixin:
                         self.fine_tune_process_status.setText("Job Completed: All rounds finished.")
                     if hasattr(self, "fine_tune_progress"):
                         self.fine_tune_progress.setValue(100)
-                    if not getattr(self, f"_cluster_job_synced_{jid}", False):
-                        setattr(self, f"_cluster_job_synced_{jid}", True)
-                        self._sync_completed_cluster_artifacts_to_project(active_job)
+                else:
+                    if hasattr(self, "train_status"):
+                        self.train_status.setText("Training: Completed")
+                    if hasattr(self, "training_progress"):
+                        self.training_progress.setValue(100)
+                if not getattr(self, f"_cluster_job_synced_{jid}", False):
+                    setattr(self, f"_cluster_job_synced_{jid}", True)
+                    self._sync_completed_cluster_artifacts_to_project(active_job)
 
             elif st in ("STOPPED", "FAILED"):
                 if hasattr(self, "train_button"):
@@ -505,6 +510,9 @@ class ClusterScreenMixin:
                 if is_fine_tune:
                     if hasattr(self, "fine_tune_process_status"):
                         self.fine_tune_process_status.setText(f"Job {st.capitalize()} by operator.")
+                if not getattr(self, f"_cluster_job_synced_{jid}", False):
+                    setattr(self, f"_cluster_job_synced_{jid}", True)
+                    self._sync_completed_cluster_artifacts_to_project(active_job)
         else:
             if hasattr(self, "cluster_status_label"):
                 self.cluster_status_label.setText("Status: Fleet Idle")
@@ -534,14 +542,30 @@ class ClusterScreenMixin:
         try:
             target_dir = Path(target_dir)
             target_dir.mkdir(parents=True, exist_ok=True)
-            for fname in ("final_model.pt", "adapter_model.pt", "final_model_merged.pt", "latest_checkpoint.pt", "training_summary.json", "model_lineage.json"):
+            for fname in (
+                "final_model.pt",
+                "model.pt",
+                "adapter_model.pt",
+                "final_adapter.pt",
+                "final_model_merged.pt",
+                "latest_checkpoint.pt",
+                "checkpoint_best_val.pt",
+                "best_checkpoint.pt",
+                "training_summary.json",
+                "model_lineage.json",
+                "tokenizer.json",
+            ):
                 src = ckpt_dir / fname
+                if not src.exists():
+                    src = ckpt_dir.parent / fname
                 if src.exists():
                     dst = target_dir / fname
                     import shutil
                     shutil.copyfile(src, dst)
-            if job_type == "fine_tune" and hasattr(self, "fine_tune_log"):
-                self.fine_tune_log.append(f"[Cluster] Synced final fine-tune artifacts to: {target_dir}")
+            if hasattr(self, "fine_tune_log") and job_type == "fine_tune":
+                self.fine_tune_log.append(f"[Cluster] Synced cluster fine-tune artifacts to: {target_dir}")
+            elif hasattr(self, "train_log"):
+                self.train_log.append(f"[Cluster] Synced cluster training artifacts to: {target_dir}")
         except Exception as exc:
             if hasattr(self, "fine_tune_log"):
                 self.fine_tune_log.append(f"[Cluster Warning] Could not sync artifacts to {target_dir}: {exc}")
