@@ -232,3 +232,36 @@ def test_worker_restart_command_and_lock_handling(tmp_path: Path) -> None:
     # Release lock on restart
     release_singleton_lock(tag)
     assert not lock_file.exists()
+
+
+def test_worker_restart_and_preflight_grace_period(tmp_path: Path) -> None:
+    """Verify restarting and preflight workers remain online with extended grace period."""
+    bus = ClusterStorageBus(tmp_path)
+    wid_norm = "node_norm"
+    wid_restarting = "node_restarting"
+    wid_preflight = "node_preflight"
+
+    bus.register_worker(wid_norm, "host1", "RTX 4090", 24.0)
+    bus.register_worker(wid_restarting, "host2", "RTX 4090", 24.0)
+    bus.register_worker(wid_preflight, "host3", "RTX 4090", 24.0)
+
+    # Set heartbeats 100 seconds in the past (beyond standard 60s active_within_seconds)
+    t_past = time.time() - 100.0
+    with bus._connect() as conn:
+        conn.execute("UPDATE workers SET last_heartbeat = ?, status = 'IDLE' WHERE worker_id = ?;", (t_past, wid_norm))
+        conn.execute("UPDATE workers SET last_heartbeat = ?, status = 'RESTARTING' WHERE worker_id = ?;", (t_past, wid_restarting))
+        conn.execute("UPDATE workers SET last_heartbeat = ?, status = 'PREFLIGHT' WHERE worker_id = ?;", (t_past, wid_preflight))
+
+    workers = {w["worker_id"]: w for w in bus.list_workers(active_within_seconds=60.0)}
+
+    # Normal worker is OFFLINE because 100s > 60s
+    assert workers[wid_norm]["is_online"] is False
+    assert workers[wid_norm]["status"] == "OFFLINE"
+
+    # Restarting and Preflight workers remain ONLINE with extended 180s grace period
+    assert workers[wid_restarting]["is_online"] is True
+    assert workers[wid_restarting]["status"] == "RESTARTING"
+
+    assert workers[wid_preflight]["is_online"] is True
+    assert workers[wid_preflight]["status"] == "PREFLIGHT"
+

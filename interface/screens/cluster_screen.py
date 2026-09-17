@@ -1703,7 +1703,7 @@ class ClusterScreenMixin:
                 get_lock_file(tag).unlink(missing_ok=True)
 
             if bus:
-                bus.heartbeat(worker_id, status="OFFLINE", current_job_id=None)
+                bus.heartbeat(worker_id, status="RESTARTING", current_job_id=None)
                 bus.set_worker_command(worker_id, None)
 
             # 3. Launch fresh worker for this device
@@ -1747,6 +1747,7 @@ class ClusterScreenMixin:
         else:
             if bus:
                 bus.set_worker_command(worker_id, "RESTART")
+                bus.heartbeat(worker_id, status="RESTARTING", current_job_id=None)
                 self._log_cluster_event(f"Sent RESTART command to remote worker '{worker_id}'.")
 
         self.refresh_cluster_status()
