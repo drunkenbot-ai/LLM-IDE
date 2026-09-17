@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import importlib
+import os
 import sys
 import traceback
+
+os.environ.setdefault("LLM_SKIP_BOOTSTRAP", "1")
 
 from PySide6.QtWidgets import QApplication, QMessageBox
 
