@@ -758,6 +758,8 @@ class ClusterScreenMixin:
 
             model_cfg = _sanitize_for_json(model_cfg)
             training_cfg = _sanitize_for_json(training_cfg)
+            if int(model_cfg.get("context_length", 0) or 0) >= 1024:
+                training_cfg["activation_checkpointing"] = True
 
             if hasattr(self, "auto_sync_cluster_rounds_from_epochs"):
                 self.auto_sync_cluster_rounds_from_epochs()

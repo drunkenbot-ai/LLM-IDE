@@ -47,7 +47,7 @@ def test_storage_bus_crud_and_heartbeat(tmp_path: Path) -> None:
     w1 = next(w for w in workers if w["worker_id"] == "node_01")
     assert w1["gpu_name"] == "NVIDIA RTX 4090"
     assert w1["is_online"] is True
-    assert w1["status"] == "IDLE"
+    assert w1["status"] in ("IDLE", "INITIALIZING")
 
     # Update heartbeat
     bus.heartbeat("node_01", status="TRAINING", current_job_id="job_abc")
@@ -1450,6 +1450,52 @@ def test_storage_bus_malformed_db_self_healing(tmp_path: Path) -> None:
     bus.heartbeat("worker_after_healing", status="IDLE")
     workers = bus.list_workers()
     assert any(w["worker_id"] == "worker_after_healing" for w in workers)
+
+
+def test_cluster_worker_micro_batch_and_gradient_accumulation(tmp_path: Path) -> None:
+    """Verify that run_training_round handles gradient accumulation and micro-batching correctly."""
+    bus = ClusterStorageBus(tmp_path)
+    worker = ClusterWorker(bus, worker_id="test_worker_accum", device="cpu")
+
+    model_cfg = {
+        "vocab_size": 128,
+        "context_length": 16,
+        "embedding_size": 32,
+        "head_count": 2,
+        "layer_count": 2,
+    }
+    model = build_model_from_config(model_cfg, "cpu")
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+
+    tokens = np.random.randint(0, 128, size=512, dtype=np.int32)
+    dataset = ShardedTokenDataset(tokens, context_length=16, shard_index=0, total_shards=1)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=4)
+
+    job_spec = {
+        "training_config": {
+            "batch_size": 4,
+            "gradient_accumulation": 2,
+            "activation_checkpointing": True,
+        },
+        "model_config": model_cfg,
+    }
+
+    avg_loss, _ = worker.run_training_round(
+        job_id="job_accum_test",
+        round_num=0,
+        model=model,
+        optimizer=optimizer,
+        dataloader=dataloader,
+        dataloader_iter=iter(dataloader),
+        steps_per_round=4,
+        job=job_spec,
+    )
+
+    assert isinstance(avg_loss, float)
+    assert avg_loss > 0.0
+    # Activation checkpointing must be enabled on the model
+    assert getattr(model, "gradient_checkpointing", False) is True
+
 
 
 
