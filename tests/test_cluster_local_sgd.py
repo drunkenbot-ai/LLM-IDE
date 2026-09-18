@@ -311,6 +311,77 @@ def test_coordinator_straggler_timeout(tmp_path: Path) -> None:
     assert elapsed >= 0.3  # Waited for straggler timeout before proceeding
 
 
+def test_coordinator_single_worker_with_min_workers_two(tmp_path: Path) -> None:
+    """Verify coordinator aggregates with a single active worker even if job was configured
+    with min_workers=2, preventing infinite hang when only 1 worker is available.
+    """
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "job_single_worker"
+
+    bus.create_job(
+        job_id=job_id,
+        model_config={},
+        training_config={},
+        dataset_path="dummy.npy",
+        max_rounds=3,
+        min_workers=2,  # Configured for 2 workers, but only 1 runs!
+        sync_timeout_seconds=0.2,
+    )
+    # Only single worker claims and registers
+    bus.claim_job_slot(job_id, "worker_solo")
+    bus.save_worker_weights(job_id, 0, "worker_solo", {"param": torch.tensor([42.0])})
+
+    coordinator = ClusterCoordinator(bus=bus, job_id=job_id)
+    start_t = time.time()
+    global_model = coordinator.wait_and_average_round(round_num=0, poll_interval_seconds=0.05)
+    elapsed = time.time() - start_t
+
+    assert global_model is not None
+    assert torch.equal(global_model["param"], torch.tensor([42.0]))
+    # Since total_participants == 1, all_ready is immediately reached without straggler timeout deadlock
+    assert elapsed < 10.0
+    assert bus.is_global_weights_ready(job_id, 0) is True
+
+
+def test_coordinator_prunes_offline_participant_and_aggregates(tmp_path: Path) -> None:
+    """Verify coordinator detects offline participant in job_participants, drops it,
+    and aggregates single live worker's weights without deadlocking.
+    """
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "job_prune_offline"
+
+    bus.create_job(
+        job_id=job_id,
+        model_config={},
+        training_config={},
+        dataset_path="dummy.npy",
+        max_rounds=3,
+        min_workers=2,
+        sync_timeout_seconds=0.2,
+    )
+    bus.register_worker("live_worker", hostname="host1", gpu_name="RTX", vram_gb=8.0)
+    bus.register_worker("dead_worker", hostname="host2", gpu_name="RTX", vram_gb=8.0)
+    bus.heartbeat("live_worker", status="READY")
+    bus.heartbeat("dead_worker", status="READY")
+
+    # Both workers claim slot while online
+    bus.claim_job_slot(job_id, "live_worker")
+    bus.claim_job_slot(job_id, "dead_worker")
+
+    # dead_worker subsequently crashes / goes offline
+    bus.set_worker_status("dead_worker", "OFFLINE")
+
+    # Only live_worker deposits weights
+    bus.save_worker_weights(job_id, 0, "live_worker", {"param": torch.tensor([15.0])})
+
+    coordinator = ClusterCoordinator(bus=bus, job_id=job_id)
+    global_model = coordinator.wait_and_average_round(round_num=0, poll_interval_seconds=0.05)
+
+    assert global_model is not None
+    assert torch.equal(global_model["param"], torch.tensor([15.0]))
+    assert bus.is_global_weights_ready(job_id, 0) is True
+
+
 def test_end_to_end_cluster_local_sgd_round(tmp_path: Path) -> None:
     """Simulate 2 workers executing 1 complete Local SGD round on disjoint shards."""
     bus = ClusterStorageBus(tmp_path)

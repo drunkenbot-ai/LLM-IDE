@@ -12,6 +12,8 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QLabel,
     QLineEdit,
+    QProgressBar,
+    QPushButton,
     QSpinBox,
     QWidget,
 )
@@ -76,10 +78,37 @@ class FakeClusterHost(ClusterScreenMixin, QWidget):
         self.cluster_min_workers.setRange(1, 64)
         self.cluster_min_workers.setValue(2)
 
+        # Control buttons for Neural Forge and Fine Tuning
+        self.train_button = QPushButton("Start Training")
+        self.stop_training_button = QPushButton("Stop")
+        self.stop_training_button.setEnabled(False)
+        self.fine_tune_button = QPushButton("Start Fine-Tune")
+        self.stop_fine_tune_button = QPushButton("Stop")
+        self.stop_fine_tune_button.setEnabled(False)
+
+        self.project_state = QLabel("Idle")
+        self.train_status = QLabel("Training: idle")
+        self.cluster_status_label = QLabel("Status: Idle")
+        self.cluster_round_label = QLabel("Round: 0/0")
+        self.training_step_metric = QLabel("Step: -")
+        self.training_epoch_metric = QLabel("Epoch: -")
+        self.training_progress = QProgressBar()
+        self.training_health_metric = QLabel("Health: -")
+        self.training_lr_metric = QLabel("LR: -")
+
     def _get_cluster_bus(self) -> ClusterStorageBus:
         return self.bus
 
     def _log_cluster_event(self, msg: str) -> None:
+        pass
+
+    def refresh_cluster_status(self) -> None:
+        pass
+
+    def refresh_job_manager_tab(self) -> None:
+        pass
+
+    def _start_cluster_coordinator(self, bus, job_id) -> None:
         pass
 
 
@@ -218,3 +247,73 @@ def test_reactive_two_way_synchronization(qt_app, tmp_path: Path) -> None:
     # Epochs=1, 2,000,000 tokens / 1,024,000 = 2 rounds
     assert host.train_cluster_max_rounds.value() == 2
     assert host.cluster_max_rounds.value() == 2
+
+
+def test_cluster_start_and_resume_button_disabling_and_min_workers_clamping(qt_app, tmp_path: Path) -> None:
+    """Verify that starting or resuming a cluster job disables start buttons on both Neural Forge
+    and Fine-Tuning tabs, enables stop buttons, and auto-clamps min_workers when only 1 worker is online.
+    """
+    host = FakeClusterHost(tmp_path)
+
+    # 1. Register only 1 active online worker
+    host.bus.register_worker("worker_solo", hostname="mumws01", gpu_name="RTX 4090", vram_gb=24.0)
+    host.bus.heartbeat("worker_solo", status="IDLE")
+
+    # Verify initial button states
+    assert host.train_button.isEnabled()
+    assert host.fine_tune_button.isEnabled()
+    assert not host.stop_training_button.isEnabled()
+    assert not host.stop_fine_tune_button.isEnabled()
+
+    # Settings specifies Min Workers = 2, but only 1 worker is online!
+    host.cluster_min_workers.setValue(2)
+
+    # Create a job with min_workers = 2
+    job_id = "test_cluster_job_buttons"
+    host.bus.create_job(
+        job_id=job_id,
+        model_config={"vocab_size": 256, "n_embd": 64, "n_layer": 2, "n_head": 2, "block_size": 128},
+        training_config={"batch_size": 2, "learning_rate": 1e-3},
+        dataset_path=str(tmp_path / "dataset"),
+        max_rounds=5,
+        sync_interval_steps=100,
+        min_workers=2,
+    )
+
+    # 2. Resume the cluster job from the Cluster page
+    host.resume_cluster_job(job_id=job_id)
+
+    # Both Start buttons MUST be disabled, and both Stop buttons MUST be enabled!
+    assert not host.train_button.isEnabled()
+    assert host.train_button.text() == "Training..."
+    assert not host.fine_tune_button.isEnabled()
+    assert host.fine_tune_button.text() == "Fine-Tuning..."
+    assert host.stop_training_button.isEnabled()
+    assert host.stop_fine_tune_button.isEnabled()
+
+    # Min workers must be automatically clamped from 2 to 1 in both UI and SQLite!
+    assert host.cluster_min_workers.value() == 1
+    job_record = host.bus.get_job(job_id)
+    assert job_record["min_workers"] == 1
+
+    # 3. Simulate background telemetry polling with st == "RUNNING"
+    host._apply_cluster_telemetry(
+        workers=host.bus.list_workers(),
+        active_job=job_record,
+    )
+    # Buttons must stay disabled while running
+    assert not host.train_button.isEnabled()
+    assert not host.fine_tune_button.isEnabled()
+    assert host.stop_training_button.isEnabled()
+    assert host.stop_fine_tune_button.isEnabled()
+
+    # 4. Stop the cluster job
+    host.stop_cluster_job()
+
+    # Buttons must revert: Start buttons enabled, Stop buttons disabled
+    assert host.train_button.isEnabled()
+    assert host.train_button.text() == "Start Training"
+    assert host.fine_tune_button.isEnabled()
+    assert host.fine_tune_button.text() == "Start Fine-Tune"
+    assert not host.stop_training_button.isEnabled()
+    assert not host.stop_fine_tune_button.isEnabled()

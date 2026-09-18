@@ -403,6 +403,8 @@ class JobManagerScreenMixin:
                     self.project_state.setText("Training")
                 if hasattr(self, "stop_training_button"):
                     self.stop_training_button.setEnabled(True)
+                if hasattr(self, "stop_fine_tune_button"):
+                    self.stop_fine_tune_button.setEnabled(True)
                 if hasattr(self, "train_button") and self.train_button.isEnabled():
                     self.train_button.setEnabled(False)
                     self.train_button.setText("Training...")
@@ -419,6 +421,8 @@ class JobManagerScreenMixin:
                         self.fine_tune_button.setText("Start Fine-Tune")
                     if hasattr(self, "stop_training_button") and self.stop_training_button.isEnabled():
                         self.stop_training_button.setEnabled(False)
+                    if hasattr(self, "stop_fine_tune_button") and self.stop_fine_tune_button.isEnabled():
+                        self.stop_fine_tune_button.setEnabled(False)
 
             # Populate Training Tab Charts and Telemetry Chips from loaded rounds
             rounds = data.get("rounds", [])
