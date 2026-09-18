@@ -1191,6 +1191,7 @@ def test_worker_disabled_state_management(tmp_path: Path) -> None:
     # Re-enable worker
     bus.set_worker_enabled(wid, True)
     assert bus.is_worker_enabled(wid) is True
+    bus.heartbeat(wid, status="IDLE")
     workers = bus.list_workers()
     assert workers[0]["enabled"] is True
     assert workers[0]["status"] == "IDLE"
