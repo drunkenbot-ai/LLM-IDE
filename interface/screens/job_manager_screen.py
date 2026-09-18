@@ -585,6 +585,9 @@ class JobManagerScreenMixin:
                 self._log_cluster_event(f"Error re-queuing job '{job_id}': {exc}")
             success = False
         if success:
+            bus.set_job_status(job_id, "RUNNING")
+            if hasattr(self, "_start_cluster_coordinator"):
+                self._start_cluster_coordinator(bus, job_id)
             msg = f"Job '{job_id}' re-queued ({'Round 0' if reset_rounds else 'Resuming'})."
             if hasattr(self, "_log_cluster_event"):
                 self._log_cluster_event(msg)

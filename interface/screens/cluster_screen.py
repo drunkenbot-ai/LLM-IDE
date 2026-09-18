@@ -378,13 +378,15 @@ class ClusterScreenMixin:
             cur_round = active_job.get("current_round", 0)
             max_rounds = active_job.get("max_rounds", 10)
 
-            # Watchdog: ensure coordinator is active when job is RUNNING
-            if st == "RUNNING":
+            # Watchdog: ensure coordinator is active when job is RUNNING or QUEUED
+            if st in {"RUNNING", "QUEUED"}:
                 bus = self._get_cluster_bus()
                 if bus:
                     coord_thread = getattr(self, "_coordinator_thread", None)
                     is_coord_active = (coord_thread and coord_thread.isRunning()) or self._is_coordinator_running(bus, jid)
                     if not is_coord_active:
+                        if st == "QUEUED":
+                            bus.set_job_status(jid, "RUNNING")
                         self._start_cluster_coordinator(bus, jid)
 
             if hasattr(self, "cluster_status_label"):
