@@ -298,13 +298,19 @@ def build_job_manager_tab(window) -> QWidget:
     window.job_events_log.setPlaceholderText("Logs and progress events for the selected training job will appear here...")
     window.cluster_details_tabs.addTab(window.job_events_log, "Job Event Log")
 
-    # Tab 3: Selected Worker Diagnostics (stdout/stderr from SQLite)
+    # Tab 3: Coordinator Log
+    window.cluster_coord_log = QTextEdit()
+    window.cluster_coord_log.setReadOnly(True)
+    window.cluster_coord_log.setPlaceholderText("Synchronization coordinator events, round progress, and aggregation diagnostics will appear here...")
+    window.cluster_details_tabs.addTab(window.cluster_coord_log, "Coordinator Log")
+
+    # Tab 4: Selected Worker Diagnostics (stdout/stderr from SQLite)
     window.cluster_worker_log = QTextEdit()
     window.cluster_worker_log.setReadOnly(True)
     window.cluster_worker_log.setPlaceholderText("Select a worker row in the fleet table below to inspect its real-time console and error logs...")
     window.cluster_details_tabs.addTab(window.cluster_worker_log, "Worker Diagnostics")
 
-    # Tab 4: Overall Cluster Event Stream
+    # Tab 5: Overall Cluster Event Stream
     window.cluster_log = QTextEdit()
     window.cluster_log.setReadOnly(True)
     window.cluster_details_tabs.addTab(window.cluster_log, "Cluster Event Stream")

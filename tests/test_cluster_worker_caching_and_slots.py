@@ -185,9 +185,37 @@ def test_check_and_spawn_auxiliary_slots_guards(tmp_path):
         
         worker._check_and_spawn_auxiliary_slots(
             job_id="test_job_1",
-            job={"model_config": {}, "training_config": {}},
+            job={"model_config": {}, "training_config": {"allow_worker_slots": True}},
         )
         assert len(worker._child_worker_procs) == 0
         mock_popen.assert_not_called()
+
+    # 4. Default configuration (allow_worker_slots omitted) must suppress slot spawning (dedicated GPU mode)
+    worker.ephemeral_job_id = None
+    with patch("torch.cuda.is_available", return_value=True), \
+         patch("torch.cuda.synchronize"), \
+         patch("torch.cuda.max_memory_reserved", return_value=int(4.0 * (1024 ** 3))), \
+         patch("torch.cuda.mem_get_info", return_value=(int(12.0 * (1024 ** 3)), int(16.0 * (1024 ** 3)))), \
+         patch("subprocess.Popen") as mock_popen:
+        
+        worker._check_and_spawn_auxiliary_slots(
+            job_id="test_job_1",
+            job={"model_config": {}, "training_config": {}},  # allow_worker_slots omitted
+        )
+        assert len(worker._child_worker_procs) == 0
+        mock_popen.assert_not_called()
+
+    # 5. Explicit allow_worker_slots: True allows spawning when headroom permits
+    with patch("torch.cuda.is_available", return_value=True), \
+         patch("torch.cuda.synchronize"), \
+         patch("torch.cuda.max_memory_reserved", return_value=int(4.0 * (1024 ** 3))), \
+         patch("torch.cuda.mem_get_info", return_value=(int(12.0 * (1024 ** 3)), int(16.0 * (1024 ** 3)))), \
+         patch("subprocess.Popen") as mock_popen:
+        
+        worker._check_and_spawn_auxiliary_slots(
+            job_id="test_job_1",
+            job={"model_config": {}, "training_config": {"allow_worker_slots": True}},
+        )
+        mock_popen.assert_called()
 
 

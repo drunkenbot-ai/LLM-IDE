@@ -135,8 +135,42 @@ def test_storage_bus_atomic_tensor_checkpoints(tmp_path: Path) -> None:
     assert bus.is_global_weights_ready(job_id, 0) is False
     bus.save_global_weights(job_id, 0, global_weights)
     assert bus.is_global_weights_ready(job_id, 0) is True
+
+    # Confirm ready workers list strictly excludes global_model
+    ready_list_after_global = bus.get_ready_workers_for_round(job_id, 0)
+    assert "global_model" not in ready_list_after_global
+    assert set(ready_list_after_global) == {"node_01", "node_02"}
+
     loaded_global = bus.load_global_weights(job_id, 0)
     assert torch.equal(loaded_global["weight"], global_weights["weight"])
+
+
+def test_hybrid_is_stopped_and_paused_without_signal_files(tmp_path: Path) -> None:
+    """Verify is_stopped and is_paused return True when database status is STOPPED/PAUSED even if .sig file is missing."""
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "job_db_only"
+    bus.create_job(
+        job_id=job_id,
+        model_config={},
+        training_config={},
+        dataset_path="dummy.npy",
+    )
+
+    # Delete signal file to simulate SMB metadata caching or DB-only status updates
+    stop_sig = bus.jobs_dir / job_id / "signals" / "stop.sig"
+    pause_sig = bus.jobs_dir / job_id / "signals" / "pause.sig"
+
+    bus.set_job_status(job_id, "STOPPED")
+    if stop_sig.exists():
+        stop_sig.unlink()
+    assert not stop_sig.exists()
+    assert bus.is_stopped(job_id) is True  # Successfully detected via SQLite fallback!
+
+    bus.set_job_status(job_id, "PAUSED")
+    if pause_sig.exists():
+        pause_sig.unlink()
+    assert not pause_sig.exists()
+    assert bus.is_paused(job_id) is True  # Successfully detected via SQLite fallback!
 
 
 def test_shard_boundary_calculations() -> None:

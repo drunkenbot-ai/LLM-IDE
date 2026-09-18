@@ -358,6 +358,16 @@ class JobManagerScreenMixin:
                 if at_bottom:
                     sb.setValue(sb.maximum())
 
+        # Update Coordinator Log
+        if hasattr(self, "cluster_coord_log") and data.get("coord_log_tail"):
+            c_tail = data["coord_log_tail"]
+            if self.cluster_coord_log.toPlainText() != c_tail:
+                sb = self.cluster_coord_log.verticalScrollBar()
+                at_bottom = sb.value() >= (sb.maximum() - 8)
+                self.cluster_coord_log.setPlainText(c_tail)
+                if at_bottom:
+                    sb.setValue(sb.maximum())
+
         # Update Worker Diagnostics Log
         if hasattr(self, "cluster_worker_log") and data.get("worker_log_tail"):
             w_tail = data["worker_log_tail"]
@@ -721,6 +731,8 @@ class JobManagerScreenMixin:
             self.job_events_log.clear()
         elif cur_widget == getattr(self, "cluster_worker_log", None):
             self.cluster_worker_log.clear()
+        elif cur_widget == getattr(self, "cluster_coord_log", None):
+            self.cluster_coord_log.clear()
         elif cur_widget == getattr(self, "cluster_log", None):
             self.cluster_log.clear()
 

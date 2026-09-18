@@ -93,6 +93,8 @@ class ClusterCoordinatorThread(QThread):
     def run(self) -> None:
         from cluster.coordinator import ClusterCoordinator
         coordinator = ClusterCoordinator(self.bus, self.job_id)
+        coord_log_path = self.bus.jobs_dir / self.job_id / "coordinator.log"
+        coord_log_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Signal coordinator liveness immediately on start
         if hasattr(self.bus, "touch_job"):
@@ -102,12 +104,43 @@ class ClusterCoordinatorThread(QThread):
             if hasattr(self.bus, "touch_job"):
                 self.bus.touch_job(self.job_id)
             self.round_telemetry_ready.emit(metrics)
+            try:
+                m_type = metrics.get("type")
+                r_num = int(metrics.get("round", 0)) + 1
+                if m_type == "round_completed":
+                    loss = float(metrics.get("global_loss", 0.0))
+                    spd = float(metrics.get("aggregate_tokens_per_sec", 0.0))
+                    line = f"[{time.strftime('%H:%M:%S')}] [COORDINATOR] Round {r_num} averaged. Global Loss: {loss:.4f}, Speed: {spd:,.0f} tok/s\n"
+                    with open(coord_log_path, "a", encoding="utf-8") as f:
+                        f.write(line)
+                elif m_type == "round_waiting":
+                    ready = int(metrics.get("ready_workers", 0))
+                    total = int(metrics.get("total_participants", 1))
+                    elapsed = float(metrics.get("elapsed_seconds", 0.0))
+                    if int(elapsed) % 15 == 0:
+                        line = f"[{time.strftime('%H:%M:%S')}] [COORDINATOR] Waiting for round {r_num} weights ({ready}/{total} ready, {elapsed:.0f}s)...\n"
+                        with open(coord_log_path, "a", encoding="utf-8") as f:
+                            f.write(line)
+            except Exception:
+                pass
 
-        success = coordinator.run_job(
-            poll_interval_seconds=self.poll_interval,
-            telemetry_callback=_on_round_progress,
-            stop_event=self._stop_event,
-        )
+        try:
+            with open(coord_log_path, "a", encoding="utf-8") as f:
+                f.write(f"[{time.strftime('%H:%M:%S')}] [COORDINATOR] Starting coordinator thread for job '{self.job_id}'...\n")
+            success = coordinator.run_job(
+                poll_interval_seconds=self.poll_interval,
+                telemetry_callback=_on_round_progress,
+                stop_event=self._stop_event,
+            )
+        except Exception as exc:
+            import traceback
+            tb = traceback.format_exc()
+            try:
+                with open(coord_log_path, "a", encoding="utf-8") as f:
+                    f.write(f"[{time.strftime('%H:%M:%S')}] [COORDINATOR ERROR] {exc}\n{tb}\n")
+            except Exception:
+                pass
+            success = False
         self.job_finished.emit(self.job_id, success)
 
     def stop(self) -> None:
@@ -344,6 +377,14 @@ class ClusterScreenMixin:
             st = str(active_job.get("status", "")).upper()
             cur_round = active_job.get("current_round", 0)
             max_rounds = active_job.get("max_rounds", 10)
+
+            # Watchdog: ensure coordinator is active when job is RUNNING
+            if st == "RUNNING":
+                coord_thread = getattr(self, "_coordinator_thread", None)
+                is_coord_active = (coord_thread and coord_thread.isRunning()) or self._is_coordinator_running(bus, jid)
+                if not is_coord_active:
+                    self._start_cluster_coordinator(bus, jid)
+
             if hasattr(self, "cluster_status_label"):
                 self.cluster_status_label.setText(f"Status: Job {jid} ({st})")
             if hasattr(self, "cluster_round_label"):
@@ -841,48 +882,16 @@ class ClusterScreenMixin:
             self._log_cluster_event(f"Launch failed: {exc}")
 
     def _start_cluster_coordinator(self, bus: ClusterStorageBus, job_id: str) -> None:
-        """Launch detached background coordinator daemon to handle round synchronization and telemetry."""
-        from cluster.cluster_worker import get_worker_executable
+        """Launch in-process coordinator thread with live Qt telemetry to handle round synchronization."""
+        if hasattr(self, "_coordinator_thread") and self._coordinator_thread and self._coordinator_thread.isRunning():
+            self._coordinator_thread.stop()
+            self._coordinator_thread.wait(2000)
 
-        worker_exe = get_worker_executable()
-        shared_path_str = str(bus.shared_dir)
-        coord_log_path = bus.jobs_dir / job_id / "coordinator.log"
-        coord_log_path.parent.mkdir(parents=True, exist_ok=True)
-
-        flags = 0
-        if sys.platform == "win32":
-            DETACHED_PROCESS = 0x00000008
-            CREATE_NEW_PROCESS_GROUP = 0x00000200
-            CREATE_NO_WINDOW = 0x08000000
-            flags = DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW
-
-        try:
-            log_file = open(coord_log_path, "a", encoding="utf-8")
-            root_dir = Path(__file__).resolve().parent.parent.parent
-            coord_script = root_dir / "cluster_coordinator.py"
-            if coord_script.exists():
-                cmd = [worker_exe, str(coord_script), "--shared-dir", shared_path_str, "--job-id", job_id]
-            else:
-                cmd = [worker_exe, "-m", "cluster.coordinator", "--shared-dir", shared_path_str, "--job-id", job_id]
-            proc = subprocess.Popen(
-                cmd,
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
-                creationflags=flags,
-                close_fds=True,
-            )
-            self._coordinator_proc = proc
-            self._log_cluster_event(f"Spawned detached coordinator daemon for job {job_id} (PID: {proc.pid}).")
-        except Exception as exc:
-            self._log_cluster_event(f"Failed to spawn detached coordinator daemon: {exc}. Falling back to in-process thread.")
-            if hasattr(self, "_coordinator_thread") and self._coordinator_thread and self._coordinator_thread.isRunning():
-                self._coordinator_thread.stop()
-                self._coordinator_thread.wait(2000)
-
-            self._coordinator_thread = ClusterCoordinatorThread(bus, job_id, poll_interval=1.0)
-            self._coordinator_thread.round_telemetry_ready.connect(self._on_cluster_round_telemetry)
-            self._coordinator_thread.job_finished.connect(self._on_cluster_job_finished)
-            self._coordinator_thread.start()
+        self._coordinator_thread = ClusterCoordinatorThread(bus, job_id, poll_interval=1.0)
+        self._coordinator_thread.round_telemetry_ready.connect(self._on_cluster_round_telemetry)
+        self._coordinator_thread.job_finished.connect(self._on_cluster_job_finished)
+        self._coordinator_thread.start()
+        self._log_cluster_event(f"Started cluster coordinator thread for job {job_id}.")
 
     def _on_cluster_round_telemetry(self, telemetry: dict[str, Any]) -> None:
         """Receive round telemetry from the coordinator thread and update charts and UI chips."""
@@ -1215,6 +1224,13 @@ class ClusterScreenMixin:
             target_job_id = active["job_id"]
         elif getattr(self, "_selected_cluster_job_id", None):
             target_job_id = self._selected_cluster_job_id
+        else:
+            try:
+                all_j = bus.list_all_jobs(limit=5)
+                if all_j:
+                    target_job_id = all_j[0]["job_id"]
+            except Exception:
+                pass
 
         if target_job_id:
             bus.set_job_status(target_job_id, "STOPPED")
@@ -1229,9 +1245,19 @@ class ClusterScreenMixin:
                     pid_file.unlink(missing_ok=True)
                 except Exception:
                     pass
-            self.refresh_cluster_status()
-            if hasattr(self, "refresh_job_manager_tab"):
-                self.refresh_job_manager_tab()
+
+        # Broadcast STOP command to all workers in fleet currently in RUNNING, TRAINING, or SYNC_WAIT
+        try:
+            for w in bus.list_workers(only_active=False):
+                w_status = str(w.get("status", "")).upper()
+                if w_status in {"RUNNING", "TRAINING", "SYNC_WAIT"}:
+                    bus.set_worker_command(w["worker_id"], "STOP")
+        except Exception:
+            pass
+
+        self.refresh_cluster_status()
+        if hasattr(self, "refresh_job_manager_tab"):
+            self.refresh_job_manager_tab()
         if hasattr(self, "stop_training_button"):
             self.stop_training_button.setEnabled(False)
         if hasattr(self, "train_button"):
