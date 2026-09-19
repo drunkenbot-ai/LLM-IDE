@@ -295,6 +295,7 @@ def build_dataset_plan_tab(window) -> QWidget:
         "conversation",
         "tool_call",
         "code",
+        "thinking",
         *workflow_names,
     ]))
     window.dataset_stage.addItems(workflow_names)

@@ -193,12 +193,14 @@ class DatasetControlsMixin:
             "Conversation fine-tune": "conversation",
             "Tool-call fine-tune": "tool_call",
             "Code fine-tune": "code",
+            "Thinking fine-tune": "thinking",
         }.get(stage_label, "instruction")
         starter_datasets = {
             "instruction": ["alpaca_52k"],
             "conversation": ["dailydialog"],
             "tool_call": [],
             "code": ["codealpaca_20k"],
+            "thinking": [],
         }
         self._set_dataset_stage(stage)
         self.include_conversation_datasets.setChecked(bool(starter_datasets.get(stage)))

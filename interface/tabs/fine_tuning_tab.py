@@ -59,6 +59,7 @@ def build_fine_tuning_tab(window) -> QWidget:
         "Conversation fine-tune",
         "Tool-call fine-tune",
         "Code fine-tune",
+        "Thinking fine-tune",
         "Fine-tune checkpoint",
     ])
     window.training_mode.setMaximumWidth(300)
@@ -189,6 +190,7 @@ def build_fine_tuning_tab(window) -> QWidget:
         "Conversation fine-tune",
         "Tool-call fine-tune",
         "Code fine-tune",
+        "Thinking fine-tune",
     ])
     window.fine_tune_dataset_builder_stage.setMaximumWidth(300)
     window.fine_tune_dataset_builder_stage.currentTextChanged.connect(window._refresh_fine_tune_default_output)

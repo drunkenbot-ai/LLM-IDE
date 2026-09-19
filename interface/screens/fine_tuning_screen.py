@@ -22,6 +22,7 @@ class FineTuningScreenMixin:
             "Conversation fine-tune": "fine_tune",
             "Tool-call fine-tune": "fine_tune",
             "Code fine-tune": "fine_tune",
+            "Thinking fine-tune": "fine_tune",
         }.get(self.training_mode.currentText(), "pretrain")
 
     def _training_stage_value(self) -> str:
@@ -38,6 +39,7 @@ class FineTuningScreenMixin:
             "Conversation fine-tune": "conversation",
             "Tool-call fine-tune": "tool_call",
             "Code fine-tune": "code",
+            "Thinking fine-tune": "thinking",
         }.get(self.training_mode.currentText(), "base")
 
     def _peft_method_value(self) -> str:
@@ -117,7 +119,7 @@ class FineTuningScreenMixin:
         dataset_stage = str(summary.get("dataset_stage") or self._dataset_stage_value())
         tokens = int(summary.get("token_count", 0) or 0)
         vocab = int(summary.get("tokenizer_vocab_size", 0) or 0)
-        stage_name = dataset_stage_label(dataset_stage) if dataset_stage in {"base", "instruction", "conversation", "tool_call", "code"} else dataset_stage
+        stage_name = dataset_stage_label(dataset_stage) if dataset_stage in {"base", "instruction", "conversation", "tool_call", "code", "thinking"} else dataset_stage
         details = f"{stage_name}, {tokens:,} tokens, vocab {vocab:,}"
         if expected_stage == "instruction" and dataset_stage != "instruction":
             return False, f"Dataset mismatch: selected Instruction fine-tune, but prepared dataset is {details}."
@@ -127,6 +129,8 @@ class FineTuningScreenMixin:
             return False, f"Dataset mismatch: selected Tool-call fine-tune, but prepared dataset is {details}."
         if expected_stage == "code" and dataset_stage != "code":
             return False, f"Dataset mismatch: selected Code fine-tune, but prepared dataset is {details}."
+        if expected_stage == "thinking" and dataset_stage != "thinking":
+            return False, f"Dataset mismatch: selected Thinking fine-tune, but prepared dataset is {details}."
         if expected_stage == "domain" and dataset_stage == "base":
             return True, f"Dataset warning: {details}. Base datasets usually belong to pretraining; continue only for domain adaptation."
         return True, f"Dataset ready: {details}."
@@ -206,6 +210,13 @@ class FineTuningScreenMixin:
             self.lora_dropout.setValue(0.05)
             self.learning_rate.setValue(0.00005)
             self.max_grad_norm.setValue(0.5)
+            self.epochs.setValue(max(1, min(self.epochs.value(), 3)))
+        elif stage == "thinking":
+            self._set_combo_text(self.lora_targets, "Attention + MLP")
+            self.lora_rank.setValue(16)
+            self.lora_alpha.setValue(32.0)
+            self.lora_dropout.setValue(0.05)
+            self.learning_rate.setValue(0.00003)
             self.epochs.setValue(max(1, min(self.epochs.value(), 3)))
         elif stage == "instruction":
             self._set_combo_text(self.lora_targets, "Attention + MLP")

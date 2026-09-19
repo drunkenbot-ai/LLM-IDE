@@ -56,6 +56,7 @@ class FineTuningRunMixin:
             "conversation": "conversation_latest",
             "tool_call": "tool_call_latest",
             "code": "code_latest",
+            "thinking": "thinking_latest",
             "domain": "domain_latest",
         }.get(stage, "fine_tune_latest")
         desired = fine_tunes_dir / stage_folder
@@ -77,11 +78,13 @@ class FineTuningRunMixin:
             "conversation",
             "tool_call",
             "code",
+            "thinking",
             "domain",
             "instruction_latest",
             "conversation_latest",
             "tool_call_latest",
             "code_latest",
+            "thinking_latest",
             "domain_latest",
             "fine_tune_latest",
         }
