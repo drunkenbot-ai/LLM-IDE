@@ -1,14 +1,20 @@
-"""Audit Dataset Quality Tool.
-
-Enforces 6 strict quality gates on fine-tuning datasets:
-1. File Sizing Gate: Every file must strictly be <= 30 MB (30,000,000 bytes).
+r"""Audit Dataset Quality Tool.
+ 
+Enforces 6 strict quality gates on pretraining and fine-tuning datasets:
+1. File Sizing Gate: Every file must strictly be <= 30 MB (30,000,000 bytes; 28 MB target).
 2. JSON Integrity Gate: 100% of non-empty lines must parse as valid UTF-8 JSON.
 3. Schema Conformance Gate: Messages or instruction/response format with valid roles.
 4. Diversity / Anti-Mode-Collapse Gate: No single canned phrase dominates (>5%).
 5. Target Span Gate: Assistant completion spans detected for loss computation.
 6. Domain-Specific Gate:
-   - Thinking: <think>...</think> tags present and closed.
-   - Code: Markdown code fences or valid code implementations.
+   - Thinking: <think>...</think> tags present and closed, with self-correction/backtracking markers.
+   - Safety: Objective, non-preachy boundary enforcement and safe educational dual-use pivots.
+   - OpenWebMath / Math: LaTeX notation ($, $$, \frac, \sum) and formal mathematical terms.
+   - Deep Analysis: Structured markdown hierarchy (headings, comparative tables, executive summaries).
+   - Unit Test / TDD: Test function definitions (def test_), assertions, and test fixtures.
+   - Competition Math: Multi-step arithmetic reasoning and boxed answers (\boxed{...}).
+   - Finance: Financial keywords, calculations, and table structures.
+   - Code: Markdown code fences and valid code implementations.
    - Tool-Call: OpenAI tools and tool_calls definitions or negative direct answers.
 """
 
@@ -93,6 +99,51 @@ def audit_file(file_path: Path, kind: str) -> Dict[str, Any]:
                     stats["domain_errors"] += 1
                     if len(stats["error_samples"]) < 5:
                         stats["error_samples"].append(f"Line {line_num}: Missing <think> tags")
+                else:
+                    think_content = asst_text.split("<think>", 1)[1].split("</think>", 1)[0].lower()
+                    correction_markers = ["wait", "check", "verify", "however", "re-evaluat", "re-check", "step", "alternativ"]
+                    if not any(cm in think_content for cm in correction_markers):
+                        stats["domain_errors"] += 1
+                        if len(stats["error_samples"]) < 5:
+                            stats["error_samples"].append(f"Line {line_num}: Thinking trace lacks self-correction/verification markers")
+            elif kind == "safety":
+                refusal_markers = ["cannot", "unable", "not able", "i can explain", "i can, however", "defensive", "educational", "security mechanism"]
+                preachy_markers = ["as an ai language model", "it is important to remember", "as a responsible ai"]
+                text_lower = asst_text.lower()
+                if not any(rm in text_lower for rm in refusal_markers):
+                    stats["domain_errors"] += 1
+                    if len(stats["error_samples"]) < 5:
+                        stats["error_samples"].append(f"Line {line_num}: Missing polite boundary/refusal markers")
+                if any(pm in text_lower for pm in preachy_markers):
+                    stats["domain_errors"] += 1
+                    if len(stats["error_samples"]) < 5:
+                        stats["error_samples"].append(f"Line {line_num}: Preachy robotic template detected")
+            elif kind in {"openwebmath", "math"}:
+                math_markers = ["$", "\\frac", "\\sum", "\\int", "\\begin", "theorem", "proof", "lemma", "derivative", "matrix"]
+                text_lower = asst_text.lower()
+                if not any(mm in text_lower for mm in math_markers):
+                    stats["domain_errors"] += 1
+                    if len(stats["error_samples"]) < 5:
+                        stats["error_samples"].append(f"Line {line_num}: Missing LaTeX math syntax or theorem terms")
+            elif kind == "analysis":
+                has_headers = ("##" in asst_text or "###" in asst_text)
+                has_tables = ("|" in asst_text and "---" in asst_text)
+                if not (has_headers or has_tables):
+                    stats["domain_errors"] += 1
+                    if len(stats["error_samples"]) < 5:
+                        stats["error_samples"].append(f"Line {line_num}: Lacks structured analysis formatting (headers or markdown tables)")
+            elif kind in {"tdd", "unit_test"}:
+                test_markers = ["def test_", "assert ", "@pytest", "testcase", "expect(", "assert_eq!"]
+                if not any(tm in asst_text for tm in test_markers):
+                    stats["domain_errors"] += 1
+                    if len(stats["error_samples"]) < 5:
+                        stats["error_samples"].append(f"Line {line_num}: Missing test assertions or test function definitions")
+            elif kind == "competition_math":
+                has_boxed = ("\\boxed" in asst_text or "final answer" in asst_text.lower() or "####" in asst_text)
+                if not has_boxed:
+                    stats["domain_errors"] += 1
+                    if len(stats["error_samples"]) < 5:
+                        stats["error_samples"].append(f"Line {line_num}: Missing formal boxed answer termination (\\boxed{{...}} or **Final Answer:**)")
             elif kind == "code":
                 if not asst_text.strip():
                     stats["domain_errors"] += 1
@@ -135,8 +186,18 @@ def audit_directory(dir_path: Path, kind: Optional[str] = None) -> bool:
 
     if kind is None:
         name = dir_path.name.lower()
-        if "think" in name:
+        if "safe" in name:
+            kind = "safety"
+        elif "think" in name:
             kind = "thinking"
+        elif "compet" in name:
+            kind = "competition_math"
+        elif "openweb" in name or "stem" in name or "math" in name:
+            kind = "openwebmath"
+        elif "analy" in name:
+            kind = "analysis"
+        elif "tdd" in name or "unit_test" in name or "test" in name:
+            kind = "tdd"
         elif "conv" in name:
             kind = "conversation"
         elif "tool" in name:
@@ -175,10 +236,19 @@ def audit_directory(dir_path: Path, kind: Optional[str] = None) -> bool:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Audit fine-tuning datasets against 6 quality gates.")
     parser.add_argument("paths", nargs="*", help="File or directory paths to audit.")
-    parser.add_argument("--kind", choices=["thinking", "conversation", "tool_call", "code", "instruction", "finance", "generic"])
+    parser.add_argument("--dir", "--output-dir", dest="extra_dir", help="Directory path to audit (convenience alias)")
+    parser.add_argument(
+        "--kind",
+        choices=[
+            "thinking", "conversation", "tool_call", "code", "instruction",
+            "finance", "safety", "openwebmath", "math", "analysis", "tdd", "competition_math", "generic"
+        ]
+    )
     args = parser.parse_args()
 
-    paths = args.paths
+    paths = list(args.paths)
+    if args.extra_dir:
+        paths.append(args.extra_dir)
     if not paths:
         # Default to all dataset directories in E:\AI_Projects\dataset
         base = Path(r"E:\AI_Projects\dataset")

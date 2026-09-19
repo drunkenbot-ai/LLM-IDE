@@ -318,6 +318,132 @@ def generate_corporate_accounting_concept(rng: random.Random) -> Dict[str, Any]:
     }
 
 
+def generate_stock_market_ohlc_case(rng: random.Random) -> Dict[str, Any]:
+    """Generate synthetic stock market OHLCV price action, technical indicators, and quantitative trade analysis."""
+    comp = rng.choice(COMPANIES)
+    base_price = rng.uniform(45.0, 480.0)
+    num_days = 6
+
+    candles = []
+    prev_close = base_price
+    for d in range(1, num_days + 1):
+        daily_drift = rng.gauss(0.003, 0.022)
+        open_p = round(prev_close * (1 + rng.gauss(0, 0.005)), 2)
+        close_p = round(open_p * (1 + daily_drift), 2)
+        high_p = round(max(open_p, close_p) + abs(rng.gauss(0, open_p * 0.012)), 2)
+        low_p = round(min(open_p, close_p) - abs(rng.gauss(0, open_p * 0.012)), 2)
+        volume = int(rng.uniform(12_000_000, 75_000_000))
+
+        # True Range calculation: max(H-L, |H-Cp|, |L-Cp|)
+        tr = max(high_p - low_p, abs(high_p - prev_close), abs(low_p - prev_close))
+        candles.append({
+            "day": f"Day {d}",
+            "open": open_p,
+            "high": high_p,
+            "low": low_p,
+            "close": close_p,
+            "volume": volume,
+            "tr": round(tr, 2),
+        })
+        prev_close = close_p
+
+    # Technical computations
+    avg_close = sum(c["close"] for c in candles[-5:]) / 5.0
+    avg_tr = sum(c["tr"] for c in candles[-5:]) / 5.0
+    last = candles[-1]
+    penultimate = candles[-2]
+
+    # Candlestick pattern detection
+    is_bullish = last["close"] > last["open"]
+    body_size = abs(last["close"] - last["open"])
+    candle_range = last["high"] - last["low"]
+    lower_wick = min(last["open"], last["close"]) - last["low"]
+
+    if is_bullish and penultimate["close"] < penultimate["open"] and last["close"] > penultimate["open"]:
+        pattern = "Bullish Engulfing"
+        bias = "Long / Bullish Continuation"
+    elif lower_wick > 2 * body_size and (last["high"] - max(last["open"], last["close"])) < body_size:
+        pattern = "Bullish Hammer / Rejection Pinbar"
+        bias = "Long / Demand Defense"
+    elif body_size / max(candle_range, 0.01) < 0.15:
+        pattern = "Neutral Doji / Indecision"
+        bias = "Consolidation / Volatility Compression"
+    elif is_bullish:
+        pattern = "Bullish Marubozu / Momentum Expansion"
+        bias = "Long / Breakout"
+    else:
+        pattern = "Bearish Pullback / Mean Reversion"
+        bias = "Short / Mean Reversion"
+
+    # Trade setup: Entry, Stop-Loss, Take-Profit
+    entry_price = last["close"]
+    stop_loss = round(min(c["low"] for c in candles[-3:]) - (0.5 * avg_tr), 2)
+    risk_per_share = max(entry_price - stop_loss, 1.0)
+    target_price = round(entry_price + (2.5 * risk_per_share), 2)
+    rr_ratio = round((target_price - entry_price) / risk_per_share, 2)
+
+    instruction = (
+        f"Analyze the following synthetic 6-day daily OHLCV candlestick price action for {comp['name']} ({comp['ticker']}).\n\n"
+        f"| Date | Open ($) | High ($) | Low ($) | Close ($) | Volume | True Range ($) |\n"
+        f"| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n"
+    )
+    for c in candles:
+        instruction += f"| {c['day']} | ${c['open']:.2f} | ${c['high']:.2f} | ${c['low']:.2f} | ${c['close']:.2f} | {c['volume']:,} | ${c['tr']:.2f} |\n"
+
+    instruction += (
+        f"\nPerform the following quantitative tasks:\n"
+        f"1. Compute the 5-Day Simple Moving Average (SMA-5) and 5-Day Average True Range (ATR-5) from Days 2 through 6.\n"
+        f"2. Diagnose the candlestick pattern and price action bias on {last['day']}.\n"
+        f"3. Formulate an asymmetric swing trade execution plan specifying Entry, Invalidation Stop-Loss, Take-Profit target, and the Risk-to-Reward Ratio (R:R).\n"
+        f"4. Provide a vectorized Python Pandas snippet to compute ATR and verify the levels."
+    )
+
+    response = (
+        f"### Quantitative Price Action & Technical Analysis: {comp['name']} ({comp['ticker']})\n\n"
+        f"#### 1. Indicator Derivations (Days 2 to 6)\n"
+        f"- **5-Day Simple Moving Average (SMA-5)**:\n"
+        f"  $$\\text{{SMA}}_5 = \\frac{{\\sum_{{i=2}}^6 C_i}}{{5}} = \\frac{{{candles[1]['close']:.2f} + {candles[2]['close']:.2f} + {candles[3]['close']:.2f} + {candles[4]['close']:.2f} + {candles[5]['close']:.2f}}}{{5}} = \\mathbf{{${avg_close:.2f}}}$$\n"
+        f"- **5-Day Average True Range (ATR-5)**:\n"
+        f"  $$\\text{{ATR}}_5 = \\frac{{\\sum_{{i=2}}^6 \\text{{TR}}_i}}{{5}} = \\frac{{{candles[1]['tr']:.2f} + {candles[2]['tr']:.2f} + {candles[3]['tr']:.2f} + {candles[4]['tr']:.2f} + {candles[5]['tr']:.2f}}}{{5}} = \\mathbf{{${avg_tr:.2f}}}$$\n"
+        f"  *Interpretation*: The stock exhibits an average daily volatility band of ${avg_tr:.2f} per share ({(avg_tr/last['close'])*100:.2f}% of current price).\n\n"
+        f"#### 2. Candlestick Structure & Market Dynamics\n"
+        f"- **Identified Pattern**: **{pattern}** ({bias})\n"
+        f"- **Day 6 Close Relative to SMA-5**: ${last['close']:.2f} vs. SMA-5 ${avg_close:.2f} ({(last['close']/avg_close - 1)*100:+.2f}% deviation).\n"
+        f"- **Volume Confirmation**: Day 6 volume was {last['volume']:,} shares, reflecting active institutional participation across the daily high-low spread.\n\n"
+        f"#### 3. Asymmetric Swing Trade Setup\n"
+        f"| Trade Parameter | Level ($) | Structural Rationale |\n"
+        f"| :--- | :--- | :--- |\n"
+        f"| **Entry Price** | **${entry_price:.2f}** | Market close / confirmed session settlement |\n"
+        f"| **Invalidation Stop-Loss** | **${stop_loss:.2f}** | Positioned 0.5x ATR below 3-day swing low (${min(c['low'] for c in candles[-3:]):.2f}) |\n"
+        f"| **Take-Profit Target** | **${target_price:.2f}** | 2.5R structural expansion level |\n"
+        f"| **Risk per Share** | ${risk_per_share:.2f} | Max capital at risk per share |\n"
+        f"| **Reward per Share** | ${target_price - entry_price:.2f} | Expected upside to target |\n"
+        f"| **Risk-to-Reward (R:R)** | **1 : {rr_ratio:.2f}** | Favorable asymmetric expectancy |\n\n"
+        f"#### 4. Python Implementation\n"
+        f"```python\n"
+        f"import numpy as np\n"
+        f"import pandas as pd\n\n"
+        f"# Vectorized True Range and ATR calculation\n"
+        f"def compute_atr(df: pd.DataFrame, period: int = 5) -> pd.DataFrame:\n"
+        f"    prev_close = df['close'].shift(1)\n"
+        f"    tr1 = df['high'] - df['low']\n"
+        f"    tr2 = (df['high'] - prev_close).abs()\n"
+        f"    tr3 = (df['low'] - prev_close).abs()\n"
+        f"    df['TR'] = np.maximum(tr1, np.maximum(tr2, tr3))\n"
+        f"    df['ATR_5'] = df['TR'].rolling(window=period).mean()\n"
+        f"    df['SMA_5'] = df['close'].rolling(window=period).mean()\n"
+        f"    return df\n"
+        f"```"
+    )
+
+    return {
+        "messages": [
+            {"role": "user", "content": instruction},
+            {"role": "assistant", "content": response},
+        ]
+    }
+
+
 def generate_batch(count: int, seed: int = 42) -> Generator[Dict[str, Any], None, None]:
     rng = random.Random(seed)
     generators = [
@@ -325,6 +451,7 @@ def generate_batch(count: int, seed: int = 42) -> Generator[Dict[str, Any], None
         generate_financial_statement_analysis,
         generate_finqa_table_reasoning,
         generate_corporate_accounting_concept,
+        generate_stock_market_ohlc_case,
     ]
     for i in range(count):
         gen = rng.choice(generators)
