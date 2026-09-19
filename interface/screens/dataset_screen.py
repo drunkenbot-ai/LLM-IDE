@@ -35,7 +35,8 @@ class DatasetScreenMixin:
             code_paths = structured_paths
         elif dataset_stage == "thinking":
             thinking_paths = structured_paths
-        return DatasetConfig(
+        import inspect
+        config_kwargs = dict(
             input_dir=Path(self.input_dir.text()),
             output_dir=Path(self.dataset_dir.text()),
             vocab_size=None if self.auto_vocab.isChecked() else self.manual_vocab_size.value(),
@@ -44,12 +45,10 @@ class DatasetScreenMixin:
             conversation_dataset_path=conversation_paths[0] if conversation_paths else None,
             instruction_dataset_path=instruction_paths[0] if instruction_paths else None,
             code_dataset_path=code_paths[0] if code_paths else None,
-            thinking_dataset_path=thinking_paths[0] if thinking_paths else None,
             conversation_dataset_paths=conversation_paths,
             instruction_dataset_paths=instruction_paths,
             tool_call_dataset_paths=tool_call_paths,
             code_dataset_paths=code_paths,
-            thinking_dataset_paths=thinking_paths,
             default_data_paths=selected_local_paths,
             mixture_weights=self._mixture_weights_from_ui(),
             min_frequency=self.min_frequency.value(),
@@ -70,6 +69,17 @@ class DatasetScreenMixin:
             dataset_stage=dataset_stage,
             tokenizer_training_max_gb=self.tokenizer_training_max_gb.value(),
         )
+        supported_params = set(inspect.signature(DatasetConfig).parameters.keys())
+        if "thinking_dataset_path" in supported_params:
+            config_kwargs["thinking_dataset_path"] = thinking_paths[0] if thinking_paths else None
+            config_kwargs["thinking_dataset_paths"] = thinking_paths
+        elif dataset_stage == "thinking":
+            if "conversation_dataset_paths" in supported_params:
+                config_kwargs["conversation_dataset_path"] = thinking_paths[0] if thinking_paths else None
+                config_kwargs["conversation_dataset_paths"] = thinking_paths
+
+        filtered_kwargs = {k: v for k, v in config_kwargs.items() if k in supported_params}
+        return DatasetConfig(**filtered_kwargs)
 
     def _selected_default_data_paths_for_stage(self, stage: str) -> list[Path]:
         """Return selected bundled files that match the dataset purpose.
