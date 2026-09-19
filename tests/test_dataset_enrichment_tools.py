@@ -147,3 +147,23 @@ def test_generate_frontier_code_batch():
         assert audit_directory(tmp_path, kind="code") is True
 
 
+def test_generate_frontier_tool_calls_batch():
+    """Verify frontier tool call generator produces valid tool definitions and multi-turn loops."""
+    from tools.generate_frontier_tool_calls import generate_tool_batch, write_partitioned_tool_dataset
+
+    records = list(generate_tool_batch(count=15, seed=42))
+    assert len(records) == 15
+    for r in records:
+        assert "tools" in r
+        assert len(r["tools"]) >= 1
+        assert "messages" in r
+        assert len(r["messages"]) >= 2
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = Path(tmpdir)
+        written = write_partitioned_tool_dataset(tmp_path, target_count=25, max_file_mb=0.05, seed=11)
+        assert len(written) >= 2
+        assert audit_directory(tmp_path, kind="tool_call") is True
+
+
+
