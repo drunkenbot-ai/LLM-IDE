@@ -99,6 +99,13 @@ def audit_file(file_path: Path, kind: str) -> Dict[str, Any]:
             elif kind == "tool_call":
                 if "tools" not in rec and "tool_calls" not in asst_text and not asst_text.strip():
                     stats["domain_errors"] += 1
+            elif kind == "finance":
+                finance_keywords = {"$", "margin", "ebit", "revenue", "cash", "debt", "equity", "growth", "interest", "asset", "valuation", "tax"}
+                text_lower = asst_text.lower()
+                if not any(kw in text_lower for kw in finance_keywords):
+                    stats["domain_errors"] += 1
+                    if len(stats["error_samples"]) < 5:
+                        stats["error_samples"].append(f"Line {line_num}: Missing financial keywords or calculations")
 
     # Check mode collapse (>5% identical responses on datasets > 100 items)
     if stats["total_records"] > 100 and stats["top_responses"]:
@@ -136,6 +143,8 @@ def audit_directory(dir_path: Path, kind: Optional[str] = None) -> bool:
             kind = "tool_call"
         elif "code" in name:
             kind = "code"
+        elif "finan" in name:
+            kind = "finance"
         elif "instr" in name:
             kind = "instruction"
         else:
@@ -166,7 +175,7 @@ def audit_directory(dir_path: Path, kind: Optional[str] = None) -> bool:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Audit fine-tuning datasets against 6 quality gates.")
     parser.add_argument("paths", nargs="*", help="File or directory paths to audit.")
-    parser.add_argument("--kind", choices=["thinking", "conversation", "tool_call", "code", "instruction", "generic"])
+    parser.add_argument("--kind", choices=["thinking", "conversation", "tool_call", "code", "instruction", "finance", "generic"])
     args = parser.parse_args()
 
     paths = args.paths
