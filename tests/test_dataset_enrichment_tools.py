@@ -166,4 +166,33 @@ def test_generate_frontier_tool_calls_batch():
         assert audit_directory(tmp_path, kind="tool_call") is True
 
 
+def test_curate_pretraining_mixture_multi_domain_balance_and_cycling():
+    """Verify multi-domain curation maintains target ratios across partitions with cycling."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = Path(tmpdir)
+        d1 = tmp_path / "d1"
+        d2 = tmp_path / "d2"
+        d1.mkdir()
+        d2.mkdir()
+        (d1 / "p1.jsonl").write_text("\n".join(json.dumps({"text": f"Document A {i} " * 10}) for i in range(10)) + "\n", encoding="utf-8")
+        (d2 / "p2.jsonl").write_text("\n".join(json.dumps({"text": f"Document B {i} " * 10}) for i in range(5)) + "\n", encoding="utf-8")
+
+        out = tmp_path / "curated"
+        manifest = curate_mixture(
+            source_dirs={"domain_a": d1, "domain_b": d2},
+            output_dir=out,
+            target_tokens=500,
+            ratios={"domain_a": 0.5, "domain_b": 0.5},
+            max_partition_mb=1.0,
+            cycle=True,
+        )
+
+        assert manifest["tokens_written"] >= 450
+        pct_a = manifest["domain_percentages"]["domain_a"]
+        pct_b = manifest["domain_percentages"]["domain_b"]
+        assert 35 <= pct_a <= 65
+        assert 35 <= pct_b <= 65
+        assert (out / "curation_manifest.json").exists()
+
+
 

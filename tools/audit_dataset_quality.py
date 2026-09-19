@@ -84,6 +84,8 @@ def audit_file(file_path: Path, kind: str) -> Dict[str, Any]:
                             asst_text += " " + json.dumps(m["tool_calls"])
             elif "instruction" in rec or "response" in rec or "output" in rec:
                 asst_text = str(rec.get("response", rec.get("output", rec.get("answer", ""))))
+            elif "text" in rec:
+                asst_text = str(rec.get("text", ""))
             else:
                 stats["schema_errors"] += 1
                 continue
@@ -157,6 +159,13 @@ def audit_file(file_path: Path, kind: str) -> Dict[str, Any]:
                     stats["domain_errors"] += 1
                     if len(stats["error_samples"]) < 5:
                         stats["error_samples"].append(f"Line {line_num}: Missing financial keywords or calculations")
+            elif kind == "medicine":
+                med_keywords = {"diagnosis", "patient", "clinical", "syndrome", "therapy", "receptor", "pathology", "mg", "dose", "arterial", "cellular", "protein", "mutation", "enzyme", "pharmacology", "serum"}
+                text_lower = asst_text.lower()
+                if not any(kw in text_lower for kw in med_keywords):
+                    stats["domain_errors"] += 1
+                    if len(stats["error_samples"]) < 5:
+                        stats["error_samples"].append(f"Line {line_num}: Missing clinical medicine, pharmacological or biomedical terms")
 
     # Check mode collapse (>5% identical responses on datasets > 100 items)
     if stats["total_records"] > 100 and stats["top_responses"]:
@@ -241,7 +250,7 @@ def main() -> None:
         "--kind",
         choices=[
             "thinking", "conversation", "tool_call", "code", "instruction",
-            "finance", "safety", "openwebmath", "math", "analysis", "tdd", "competition_math", "generic"
+            "finance", "medicine", "safety", "openwebmath", "math", "analysis", "tdd", "competition_math", "generic"
         ]
     )
     args = parser.parse_args()
