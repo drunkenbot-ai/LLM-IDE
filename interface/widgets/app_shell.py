@@ -16,8 +16,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from interface.screens.screen_builders import SCREEN_BUILDERS
-
 
 def create_nav_button(icon_name: str, tooltip: str) -> QPushButton:
     """Create a checkable side-rail navigation button."""
@@ -40,7 +38,7 @@ def update_navigation_icons(window) -> None:
     color = QColor("#dddddd" if window.theme_name == "dark" else "#202020")
     for button in window.side_rail.findChildren(QPushButton, "NavButton"):
         icon_path = Path(str(button.property("_nav_icon_path") or ""))
-        if not icon_path.is_file():
+        if not icon_path.is_file() or "hero_" in icon_path.name:
             continue
         source = QPixmap(str(icon_path))
         image = source.toImage().convertToFormat(QImage.Format_ARGB32)
@@ -142,50 +140,115 @@ def build_top_bar(window, app_name: str) -> QWidget:
 
 
 def build_side_rail(window) -> QWidget:
-    """Build the shared navigation rail and connect page selection."""
+    """Build the shared navigation rail and connect page selection strictly matching Reference Images."""
+    from interface.widgets.neon_nav_card import CompactNavButton, NeonNavCard
+
     rail = QWidget()
     rail.setObjectName("SideRail")
     window.side_rail = rail
     window.sidebar_expanded = False
-    rail.setFixedWidth(62)
+    rail.setFixedWidth(102)
     layout = QVBoxLayout(rail)
-    layout.setContentsMargins(6, 12, 6, 12)
-    layout.setSpacing(8)
+    layout.setContentsMargins(8, 10, 8, 10)
+    layout.setSpacing(6)
 
     toggle_row = QHBoxLayout()
     toggle_row.setContentsMargins(0, 0, 0, 0)
-    window.side_rail_toggle = QPushButton("▶")
-    window.side_rail_toggle.setFixedSize(26, 22)
+    window.side_rail_toggle = QPushButton("☰")
+    window.side_rail_toggle.setFixedSize(28, 22)
     window.side_rail_toggle.setStyleSheet(
-        "QPushButton { background-color: #1e1e2d; color: #a5b4fc; border: 1px solid #33334d; border-radius: 4px; font-size: 11px; font-weight: bold; }"
-        "QPushButton:hover { background-color: #312e81; color: white; }"
+        "QPushButton { background-color: #151821; color: #a5b4fc; border: 1px solid #282e42; border-radius: 4px; font-size: 13px; font-weight: bold; }"
+        "QPushButton:hover { background-color: #23283a; color: white; border-color: #8b5cf6; }"
     )
-    window.side_rail_toggle.setToolTip("Expand / collapse navigation sidebar")
+    window.side_rail_toggle.setToolTip("Navigation menu")
     window.side_rail_toggle.clicked.connect(window.toggle_side_rail)
     toggle_row.addStretch(1)
     toggle_row.addWidget(window.side_rail_toggle)
     layout.addLayout(toggle_row)
 
-    entries = (
-        ("dataset_plan_nav", "Dataset Blueprint", "plan_tab_icon.png"),
-        ("dataset_recipe_nav", "Recipe Matrix", "recipe_tab_icon.png"),
-        ("dataset_nav", "Ingestion", "ingestion_tab_icon.png"),
-        ("training_nav", "Training", "AI_tab_icon.png"),
-        ("fine_tune_nav", "Fine-tuning", "fine_tune_tab.png"),
-        ("live_nav", "Live training", "live_tab_icon.png"),
-        ("jobs_nav", "Job manager", "job_tab_icon.png"),
-        ("benchmark_nav", "Benchmarks", "benchmark_tab_icon.png"),
-        ("export_nav", "Export", "export_tab_icon.png"),
-        ("chat_nav", "Chat", "chat_tab_icon.png"),
+    icons_dir = Path(__file__).resolve().parent.parent / "icons"
+
+    # Top items matching Reference Image 1
+    window.dataset_nav = CompactNavButton("Datasets", "ingestion_tab_icon.png")
+    window._tip(window.dataset_nav, "Open Ingestion & Datasets.")
+    window.dataset_nav.clicked.connect(lambda: window._switch_page(2))
+    layout.addWidget(window.dataset_nav)
+
+    window.dataset_plan_nav = CompactNavButton("Today", "plan_tab_icon.png")
+    window._tip(window.dataset_plan_nav, "Open Dataset Blueprint.")
+    window.dataset_plan_nav.clicked.connect(lambda: window._switch_page(0))
+    layout.addWidget(window.dataset_plan_nav)
+
+    window.benchmark_nav = CompactNavButton("UI", "benchmark_tab_icon.png")
+    window._tip(window.benchmark_nav, "Open Benchmarks & UI.")
+    window.benchmark_nav.clicked.connect(lambda: window._switch_page(7))
+    layout.addWidget(window.benchmark_nav)
+
+    layout.addSpacing(6)
+
+    # 3 Glowing Hero Cards matching Reference Images 1 & 2
+    # 1. Dataset Recipe (Amber cloche)
+    window.dataset_recipe_nav = NeonNavCard(
+        title="Dataset Recipe",
+        icon_path=str(icons_dir / "hero_dataset_recipe.png"),
+        glow_color="#f59e0b",
     )
-    for index, (name, text, icon) in enumerate(entries):
-        button = create_nav_button(icon, text)
-        window._tip(button, f"Open {text}.")
-        button.clicked.connect(lambda _checked=False, index=index: window._switch_page(index))
-        setattr(window, name, button)
-        layout.addWidget(button)
+    window._tip(window.dataset_recipe_nav, "Open Dataset Recipe Matrix.")
+    window.dataset_recipe_nav.clicked.connect(lambda: window._switch_page(1))
+    layout.addWidget(window.dataset_recipe_nav)
+
+    # 2. Architecture Studio (Purple brain)
+    window.training_nav = NeonNavCard(
+        title="Architecture",
+        icon_path=str(icons_dir / "hero_architecture.png"),
+        glow_color="#8b5cf6",
+    )
+    window._tip(window.training_nav, "Open Model Architecture Studio.")
+    window.training_nav.clicked.connect(lambda: window._switch_page(3))
+    layout.addWidget(window.training_nav)
+
+    # 3. Compute Engine (Cyan chip)
+    window.fine_tune_nav = NeonNavCard(
+        title="Compute Engine",
+        icon_path=str(icons_dir / "hero_compute_engine.png"),
+        glow_color="#06b6d4",
+    )
+    window._tip(window.fine_tune_nav, "Open Compute & Runtime Engine.")
+    window.fine_tune_nav.clicked.connect(lambda: window._switch_page(4))
+    layout.addWidget(window.fine_tune_nav)
+
+    layout.addSpacing(6)
+
+    # Bottom items matching Reference Images 1 & 2
+    window.live_nav = CompactNavButton("Training", "live_tab_icon.png")
+    window._tip(window.live_nav, "Open Live Training.")
+    window.live_nav.clicked.connect(lambda: window._switch_page(5))
+    layout.addWidget(window.live_nav)
+
+    window.jobs_nav = CompactNavButton("Deploy", "job_tab_icon.png")
+    window._tip(window.jobs_nav, "Open Job Manager & Deploy.")
+    window.jobs_nav.clicked.connect(lambda: window._switch_page(6))
+    layout.addWidget(window.jobs_nav)
+
+    window.export_nav = CompactNavButton("Docs", "export_tab_icon.png")
+    window._tip(window.export_nav, "Open Model Export & Docs.")
+    window.export_nav.clicked.connect(lambda: window._switch_page(8))
+    layout.addWidget(window.export_nav)
+
+    window.chat_nav = CompactNavButton("Settings", "chat_tab_icon.png")
+    window._tip(window.chat_nav, "Open Settings & Chat.")
+    window.chat_nav.clicked.connect(lambda: window._switch_page(9))
+    layout.addWidget(window.chat_nav)
+
+    # Aliases for direct semantic access
+    window.architecture_nav = window.training_nav
+    window.compute_nav = window.fine_tune_nav
+    window.compute_engine_nav = window.fine_tune_nav
+    window.recipe_nav = window.dataset_recipe_nav
+
     window.dataset_plan_nav.setChecked(True)
     layout.addStretch(1)
+
     if hasattr(window, "_refresh_plugin_navigation"):
         window._refresh_plugin_navigation()
     return rail
@@ -204,6 +267,8 @@ def build_main_shell(window, app_name: str) -> QWidget:
     body.setContentsMargins(0, 0, 0, 0)
     body.setSpacing(0)
     body.addWidget(build_side_rail(window))
+    from interface.screens.screen_builders import SCREEN_BUILDERS
+
     window.pages = QStackedWidget()
     for builder in SCREEN_BUILDERS:
         page = builder(window)

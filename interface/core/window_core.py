@@ -268,6 +268,7 @@ class WindowCoreMixin:
         active_buttons = [b for b in buttons if b is not None]
         for button_index, button in enumerate(active_buttons):
             button.setChecked(button_index == index)
+            button.update()
         self._refresh_training_layout()
         if index == getattr(self, "live_page_index", 5):
             self._render_current_live_snapshot()
@@ -277,7 +278,7 @@ class WindowCoreMixin:
     def toggle_side_rail(self) -> None:
         """Toggle the navigation side-rail between collapsed and expanded modes."""
         self.sidebar_expanded = not getattr(self, "sidebar_expanded", False)
-        new_width = 185 if self.sidebar_expanded else 62
+        new_width = 185 if self.sidebar_expanded else 102
         if hasattr(self, "side_rail"):
             self.side_rail.setFixedWidth(new_width)
         if hasattr(self, "side_rail_toggle"):
