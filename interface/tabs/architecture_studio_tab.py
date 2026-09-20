@@ -591,4 +591,103 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.fine_tune_eta_metric = QLabel("ETA: -")
     window.fine_tune_progress = window._thin_progress() if hasattr(window, "_thin_progress") else QProgressBar()
 
+    # Model dimension aliases for direct compatibility with project serializer
+    window.n_embd = window.hidden_size
+    window.n_head = window.num_heads
+    window.n_layer = window.num_layers
+    window.context_len = window.context_length
+    window.train_context_length = window.context_length
+
+    # Additional project state attributes
+    window.resume_checkpoint = QLineEdit("")
+    window.fine_tune_checkpoint = QLineEdit("")
+    window.training_launch_target = QComboBox()
+    window.training_launch_target.addItems(["Local machine", "Cluster (Local SGD)"])
+    window.fine_tune_launch_target = QComboBox()
+    window.fine_tune_launch_target.addItems(["Local machine", "Cluster (Local SGD)"])
+    window.attention_type = QComboBox()
+    window.attention_type.addItems(["Multi-head", "Grouped-query", "Multi-query"])
+    window.kv_head_count = window._spin(1, 128, 4)
+    window.attention_backend = QComboBox()
+    window.attention_backend.addItems(["SDPA / Flash when available", "Manual"])
+    window.attention_window = window._spin(0, 32768, 0)
+    window.training_mode = QComboBox()
+    window.training_mode.addItems(["Pretrain from scratch", "Fine-tune checkpoint", "Instruction fine-tune", "Conversation fine-tune", "Code fine-tune"])
+    window.peft_method = QComboBox()
+    window.peft_method.addItems(["Full fine-tune", "LoRA adapters"])
+    window.lora_targets = QComboBox()
+    window.lora_targets.addItems(["Attention projections", "MLP projections", "Attention + MLP"])
+    window.lora_rank = window._spin(1, 256, 8)
+    window.lora_alpha = window._double_spin(1.0, 512.0, 16.0, 1.0, 1)
+    window.lora_dropout = window._double_spin(0.0, 0.9, 0.05, 0.01, 3)
+    window.fine_tune_check_button = QPushButton("Check Fine-tune")
+    window.fine_tune_dataset_status = QLabel("Dataset: not checked")
+    window.fine_tune_refresh_button = QPushButton("Refresh Dataset Fit")
+    window.apply_lora_preset_button = QPushButton("Apply Recommended LoRA")
+    window.fine_tune_epoch_metric = QLabel("Epoch: -")
+    window.fine_tune_runtime_hint = QLabel("Uses AI tab device, precision, resume, and checkpoint settings.")
+    window.fine_tune_dataset_builder_stage = QComboBox()
+    window.fine_tune_dataset_builder_stage.addItems([
+        "Instruction fine-tune",
+        "Conversation fine-tune",
+        "Tool-call fine-tune",
+        "Code fine-tune",
+        "Thinking fine-tune",
+    ])
+    window.fine_tune_button = QPushButton("Start Fine-Tune")
+    window.stop_fine_tune_button = QPushButton("Stop Fine-Tune")
+    window.fine_tune_process_status = QLabel("Worker: detached | Run: - | PID: -")
+
+    if hasattr(window, "preview_fine_tune_compatibility"):
+        window.fine_tune_check_button.clicked.connect(window.preview_fine_tune_compatibility)
+    if hasattr(window, "refresh_fine_tune_workflow"):
+        window.fine_tune_refresh_button.clicked.connect(window.refresh_fine_tune_workflow)
+    if hasattr(window, "apply_recommended_fine_tune_settings"):
+        window.apply_lora_preset_button.clicked.connect(window.apply_recommended_fine_tune_settings)
+    if hasattr(window, "_update_training_mode_controls"):
+        window.training_mode.currentTextChanged.connect(window._update_training_mode_controls)
+        window.peft_method.currentTextChanged.connect(window._update_training_mode_controls)
+    if hasattr(window, "refresh_fine_tune_workflow"):
+        window.training_mode.currentTextChanged.connect(window.refresh_fine_tune_workflow)
+    if hasattr(window, "_refresh_fine_tune_default_output"):
+        window.training_mode.currentTextChanged.connect(window._refresh_fine_tune_default_output)
+        window.fine_tune_dataset_builder_stage.currentTextChanged.connect(window._refresh_fine_tune_default_output)
+
+    window.dropout = window._double_spin(0.0, 1.0, 0.0, 0.01, 2)
+    window.training_profile = QComboBox()
+    window.training_profile.addItems(["Stable LLM", "Aggressive", "Conservative"])
+    window.optimizer_name = QComboBox()
+    window.optimizer_name.addItems(["AdamW", "AdamW (8-bit)", "Adam", "Lion", "Adafactor"])
+    window.scheduler_name = QComboBox()
+    window.scheduler_name.addItems(["Warmup linear", "Cosine decay", "Polynomial decay", "One-cycle", "Constant"])
+    window.min_lr_ratio = window._double_spin(0.0, 1.0, 0.1, 0.01, 2)
+    window.polynomial_power = window._double_spin(0.1, 5.0, 1.0, 0.1, 2)
+    window.gradient_accumulation = window._spin(1, 128, 1)
+    window.sample_stride = window._spin(1, 128, 1)
+    window.eval_interval = window._spin(1, 10000, 100)
+    window.max_eval_batches = window._spin(1, 1000, 10)
+    window.save_interval = window._spin(1, 10000, 500)
+    window.data_loader_workers = window._spin(0, 32, 2)
+    window.seed = window._spin(0, 999999, 42)
+    window.device = QComboBox()
+    window.device.addItems(["cuda:0", "cpu"])
+    window.use_amp = QCheckBox()
+    window.use_amp.setChecked(True)
+    window.use_amp_default = True
+    window.device_info = QLabel("CUDA Enabled")
+    window.precision = QComboBox()
+    window.precision.addItems(["FP16", "BF16", "FP32"])
+    window.resume_training = QCheckBox()
+    window.resume_training.setChecked(True)
+    window.resume_safety = QCheckBox()
+    window.resume_safety.setChecked(True)
+    window.early_stopping = QCheckBox()
+    window.early_stopping.setChecked(True)
+    window.early_stopping_patience = window._spin(1, 50, 5)
+    window.benchmark_prompts = QTextEdit()
+    window.benchmark_tokens = window._spin(1, 1000, 100)
+    window.benchmark_temperature = window._double_spin(0.0, 2.0, 0.7, 0.05, 2)
+    window.benchmark_kv_cache = QCheckBox()
+    window.benchmark_kv_cache.setChecked(True)
+
     return page

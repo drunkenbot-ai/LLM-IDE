@@ -294,8 +294,182 @@ class StartupValidationSplash(QDialog):
         QApplication.processEvents()
 
 
+CHOICE_DIALOG_STYLESHEET = """
+QDialog {
+    background-color: #0b0d14;
+    color: #e2e8f0;
+}
+QWidget#ChoiceCard {
+    background-color: #121520;
+    border: 1px solid #1f2538;
+    border-radius: 12px;
+}
+QWidget#ChoiceCard:hover {
+    border: 1px solid #333d59;
+    background-color: #151a28;
+}
+QWidget#RecentCard {
+    background-color: #0f121b;
+    border: 1px solid #1c2233;
+    border-radius: 10px;
+}
+QLabel#DialogTitle {
+    color: #f8fafc;
+    font-size: 17px;
+    font-weight: 800;
+}
+QLabel#VersionBadge {
+    background-color: #1e2538;
+    color: #94a3b8;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 10px;
+    font-weight: 600;
+}
+QLabel#DialogSubtitle {
+    color: #64748b;
+    font-size: 11px;
+}
+QLabel#CardTitle {
+    color: #f8fafc;
+    font-size: 14px;
+    font-weight: 700;
+}
+QLabel#CardBody {
+    color: #8391a8;
+    font-size: 11px;
+    line-height: 14px;
+}
+QLabel#BadgeAmber {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+}
+QLabel#BadgeCyan {
+    background-color: rgba(6, 182, 212, 0.15);
+    color: #06b6d4;
+    border: 1px solid rgba(6, 182, 212, 0.35);
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+}
+QLabel#BadgePurple {
+    background-color: rgba(139, 92, 246, 0.15);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+}
+QLabel#RecentHeader {
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+QPushButton#PrimaryAmberBtn {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #d97706, stop:1 #f59e0b);
+    color: #0b0d14;
+    font-weight: 700;
+    font-size: 11px;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 12px;
+}
+QPushButton#PrimaryAmberBtn:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #f59e0b, stop:1 #fbbf24);
+}
+QPushButton#SecondaryCyanBtn {
+    background-color: #0e1c2a;
+    color: #38bdf8;
+    border: 1px solid #0284c7;
+    font-weight: 700;
+    font-size: 11px;
+    border-radius: 7px;
+    padding: 8px 12px;
+}
+QPushButton#SecondaryCyanBtn:hover {
+    background-color: #132a3e;
+    border-color: #38bdf8;
+    color: #e0f2fe;
+}
+QPushButton#SecondaryPurpleBtn {
+    background-color: #1a142e;
+    color: #c084fc;
+    border: 1px solid #7c3aed;
+    font-weight: 700;
+    font-size: 11px;
+    border-radius: 7px;
+    padding: 8px 12px;
+}
+QPushButton#SecondaryPurpleBtn:hover {
+    background-color: #251b42;
+    border-color: #a855f7;
+    color: #f3e8ff;
+}
+QPushButton#ExitBtn {
+    background-color: #141722;
+    color: #94a3b8;
+    border: 1px solid #232838;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 5px 14px;
+}
+QPushButton#ExitBtn:hover {
+    background-color: #24161a;
+    border-color: #ef4444;
+    color: #f87171;
+}
+QListWidget#RecentList {
+    background-color: #090b10;
+    border: 1px solid #1c2233;
+    border-radius: 6px;
+    color: #94a3b8;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 11px;
+    padding: 2px;
+}
+QListWidget#RecentList::item {
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #cbd5e1;
+}
+QListWidget#RecentList::item:hover {
+    background-color: #161b28;
+    color: #f8fafc;
+}
+QListWidget#RecentList::item:selected {
+    background-color: #1e2840;
+    color: #38bdf8;
+    font-weight: 600;
+}
+QPushButton#OpenRecentBtn {
+    background-color: #141824;
+    color: #cbd5e1;
+    border: 1px solid #252e45;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 5px 12px;
+}
+QPushButton#OpenRecentBtn:hover {
+    background-color: #1e263a;
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+"""
+
+
 class ProjectChoiceDialog(QDialog):
-    """Prompt shown after startup checks to choose project creation/open flow."""
+    """Sleek, compact launcher dialog matching the IDE dark neon design."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -304,119 +478,201 @@ class ProjectChoiceDialog(QDialog):
         self.setWindowTitle(APP_NAME)
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
         self.setModal(True)
-        self.setMinimumSize(760, 520)
-        self.setFont(QFont("Arial", 10))
-        self._build_ui()
+        self.setStyleSheet(CHOICE_DIALOG_STYLESHEET)
+        recent_paths = _load_recent_projects()
+        target_height = 430 if recent_paths else 320
+        self.resize(760, target_height)
+        self.setMinimumSize(720, 300)
+        self._build_ui(recent_paths)
 
-    def _build_ui(self) -> None:
+    def _build_ui(self, recent_paths: list[Path]) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(28, 24, 28, 24)
-        root.setSpacing(16)
+        root.setContentsMargins(20, 16, 20, 16)
+        root.setSpacing(14)
+
+        # =====================================================================
+        # Header: Logo + App Name + Version Badge + Subtitle + Exit Button
+        # =====================================================================
+        header = QHBoxLayout()
+        header.setContentsMargins(0, 0, 0, 0)
+        header.setSpacing(12)
 
         logo = QLabel()
-        logo_pixmap = _main_window()._app_logo_pixmap(144)
+        logo.setFixedSize(38, 38)
+        logo_pixmap = _main_window()._app_logo_pixmap(38)
         if logo_pixmap.isNull():
             logo.setText("DB")
-            logo.setObjectName("Logo")
             logo.setAlignment(Qt.AlignCenter)
         else:
             logo.setPixmap(logo_pixmap)
             logo.setAlignment(Qt.AlignCenter)
-        root.addWidget(logo, 0, Qt.AlignHCenter)
+        header.addWidget(logo)
 
-        title = QLabel("Get started")
-        title.setObjectName("Title")
+        title_box = QVBoxLayout()
+        title_box.setContentsMargins(0, 0, 0, 0)
+        title_box.setSpacing(2)
+
+        title_row = QHBoxLayout()
+        title_row.setContentsMargins(0, 0, 0, 0)
+        title_row.setSpacing(8)
+
+        title = QLabel(APP_NAME)
+        title.setObjectName("DialogTitle")
         logo_family = _logo_font_family()
         if logo_family:
-            title.setFont(QFont(logo_family, 26))
-        title.setAlignment(Qt.AlignLeft)
-        root.addWidget(title)
+            title.setFont(QFont(logo_family, 17))
+        title_row.addWidget(title)
 
-        body = QLabel("Choose how you want to begin with DrunkenBot-IDE.")
-        body.setObjectName("Body")
-        body.setAlignment(Qt.AlignLeft)
-        root.addWidget(body)
+        badge = QLabel("v1.4")
+        badge.setObjectName("VersionBadge")
+        title_row.addWidget(badge)
+        title_row.addStretch(1)
+        title_box.addLayout(title_row)
 
+        subtitle = QLabel("Local LLM Pre-Training, Fine-Tuning & Inference Studio")
+        subtitle.setObjectName("DialogSubtitle")
+        title_box.addWidget(subtitle)
+
+        header.addLayout(title_box, 1)
+
+        exit_button = QPushButton("Exit")
+        exit_button.setObjectName("ExitBtn")
+        exit_button.clicked.connect(self.reject)
+        header.addWidget(exit_button, 0, Qt.AlignVCenter)
+
+        root.addLayout(header)
+
+        # =====================================================================
+        # 3-Column Action Cards (Side-by-Side Horizontal Layout)
+        # =====================================================================
+        cards_layout = QHBoxLayout()
+        cards_layout.setSpacing(12)
+
+        # Card 1: Create New Project
         new_card = QWidget()
         new_card.setObjectName("ChoiceCard")
         new_layout = QVBoxLayout(new_card)
-        new_layout.setContentsMargins(16, 14, 16, 14)
+        new_layout.setContentsMargins(14, 14, 14, 14)
         new_layout.setSpacing(8)
-        new_title = QLabel("Create a new project")
+
+        badge_row1 = QHBoxLayout()
+        b1 = QLabel("★ NEW PROJECT")
+        b1.setObjectName("BadgeAmber")
+        badge_row1.addWidget(b1)
+        badge_row1.addStretch(1)
+        new_layout.addLayout(badge_row1)
+
+        new_title = QLabel("Create Project")
         new_title.setObjectName("CardTitle")
-        new_body = QLabel("Start with a clean workspace, default folders, and bundled starter data.")
+        new_layout.addWidget(new_title)
+
+        new_body = QLabel("Start fresh with default folder structures, bundled datasets, and preset architectures.")
         new_body.setObjectName("CardBody")
         new_body.setWordWrap(True)
-        new_button = QPushButton("Create New Project")
-        new_layout.addWidget(new_title)
-        new_layout.addWidget(new_body)
-        new_layout.addWidget(new_button, 0, Qt.AlignLeft)
-        root.addWidget(new_card)
+        new_layout.addWidget(new_body, 1)
 
+        new_button = QPushButton("+ Create New Project")
+        new_button.setObjectName("PrimaryAmberBtn")
+        new_button.clicked.connect(lambda: self._choose("new"))
+        new_layout.addWidget(new_button)
+        cards_layout.addWidget(new_card, 1)
+
+        # Card 2: Open Existing Project
         open_card = QWidget()
         open_card.setObjectName("ChoiceCard")
         open_layout = QVBoxLayout(open_card)
-        open_layout.setContentsMargins(16, 14, 16, 14)
+        open_layout.setContentsMargins(14, 14, 14, 14)
         open_layout.setSpacing(8)
-        open_title = QLabel("Open an existing project")
+
+        badge_row2 = QHBoxLayout()
+        b2 = QLabel("📂 OPEN PROJECT")
+        b2.setObjectName("BadgeCyan")
+        badge_row2.addWidget(b2)
+        badge_row2.addStretch(1)
+        open_layout.addLayout(badge_row2)
+
+        open_title = QLabel("Open Project")
         open_title.setObjectName("CardTitle")
-        open_body = QLabel("Open a saved project.json and continue where you left off.")
+        open_layout.addWidget(open_title)
+
+        open_body = QLabel("Open an existing project.json to continue model training, evaluation, or export.")
         open_body.setObjectName("CardBody")
         open_body.setWordWrap(True)
-        open_button = QPushButton("Open Existing Project")
-        open_layout.addWidget(open_title)
-        open_layout.addWidget(open_body)
-        open_layout.addWidget(open_button, 0, Qt.AlignLeft)
-        root.addWidget(open_card)
+        open_layout.addWidget(open_body, 1)
 
+        open_button = QPushButton("Browse Project...")
+        open_button.setObjectName("SecondaryCyanBtn")
+        open_button.clicked.connect(lambda: self._choose("open"))
+        open_layout.addWidget(open_button)
+        cards_layout.addWidget(open_card, 1)
+
+        # Card 3: Test Local LLM
         test_chat_card = QWidget()
         test_chat_card.setObjectName("ChoiceCard")
         test_chat_layout = QVBoxLayout(test_chat_card)
-        test_chat_layout.setContentsMargins(16, 14, 16, 14)
+        test_chat_layout.setContentsMargins(14, 14, 14, 14)
         test_chat_layout.setSpacing(8)
-        test_chat_title = QLabel("Test local LLM")
+
+        badge_row3 = QHBoxLayout()
+        b3 = QLabel("💬 CHAT LAB")
+        b3.setObjectName("BadgePurple")
+        badge_row3.addWidget(b3)
+        badge_row3.addStretch(1)
+        test_chat_layout.addLayout(badge_row3)
+
+        test_chat_title = QLabel("Test Local LLM")
         test_chat_title.setObjectName("CardTitle")
-        test_chat_body = QLabel("Jump directly to the Chat tab to load a local model and start chatting.")
+        test_chat_layout.addWidget(test_chat_title)
+
+        test_chat_body = QLabel("Jump straight into the inference playground to test local GGUF or PyTorch models.")
         test_chat_body.setObjectName("CardBody")
         test_chat_body.setWordWrap(True)
-        test_chat_button = QPushButton("Test Local LLM")
-        test_chat_layout.addWidget(test_chat_title)
-        test_chat_layout.addWidget(test_chat_body)
-        test_chat_layout.addWidget(test_chat_button, 0, Qt.AlignLeft)
-        root.addWidget(test_chat_card)
+        test_chat_layout.addWidget(test_chat_body, 1)
 
-        recent_paths = _load_recent_projects()
+        test_chat_button = QPushButton("Test Local LLM")
+        test_chat_button.setObjectName("SecondaryPurpleBtn")
+        test_chat_button.clicked.connect(lambda: self._choose("test_local_llm"))
+        test_chat_layout.addWidget(test_chat_button)
+        cards_layout.addWidget(test_chat_card, 1)
+
+        root.addLayout(cards_layout, 1)
+
+        # =====================================================================
+        # Bottom Section: Recent Projects
+        # =====================================================================
         self.recent_list: Optional[QListWidget] = None
         if recent_paths:
             recent_card = QWidget()
-            recent_card.setObjectName("ChoiceCard")
+            recent_card.setObjectName("RecentCard")
             recent_layout = QVBoxLayout(recent_card)
-            recent_layout.setContentsMargins(16, 14, 16, 14)
-            recent_layout.setSpacing(8)
-            recent_title = QLabel("Recent projects")
-            recent_title.setObjectName("CardTitle")
-            recent_layout.addWidget(recent_title)
+            recent_layout.setContentsMargins(12, 10, 12, 10)
+            recent_layout.setSpacing(6)
+
+            top_row = QHBoxLayout()
+            top_row.setContentsMargins(0, 0, 0, 0)
+            recent_title = QLabel("RECENT PROJECTS")
+            recent_title.setObjectName("RecentHeader")
+            top_row.addWidget(recent_title)
+            top_row.addStretch(1)
+
+            recent_button = QPushButton("Open Selected")
+            recent_button.setObjectName("OpenRecentBtn")
+            recent_button.clicked.connect(self._open_selected_recent)
+            top_row.addWidget(recent_button)
+            recent_layout.addLayout(top_row)
+
             self.recent_list = QListWidget()
+            self.recent_list.setObjectName("RecentList")
+            self.recent_list.setFixedHeight(64)
             for path in recent_paths:
                 item = QListWidgetItem(str(path))
                 item.setData(Qt.UserRole, str(path))
                 self.recent_list.addItem(item)
             self.recent_list.setCurrentRow(0)
+            self.recent_list.itemDoubleClicked.connect(lambda _item: self._open_selected_recent())
             recent_layout.addWidget(self.recent_list)
-            recent_button = QPushButton("Open Selected Recent Project")
-            recent_button.clicked.connect(self._open_selected_recent)
-            recent_layout.addWidget(recent_button, 0, Qt.AlignLeft)
-            root.addWidget(recent_card)
 
-        row = QHBoxLayout()
-        row.addStretch(1)
-        exit_button = QPushButton("Exit")
-        new_button.clicked.connect(lambda: self._choose("new"))
-        open_button.clicked.connect(lambda: self._choose("open"))
-        test_chat_button.clicked.connect(lambda: self._choose("test_local_llm"))
-        exit_button.clicked.connect(self.reject)
-        row.addWidget(exit_button)
-        root.addLayout(row)
+            root.addWidget(recent_card)
 
     def _choose(self, choice: str) -> None:
         self.choice = choice
