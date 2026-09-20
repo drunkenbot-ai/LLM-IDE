@@ -570,6 +570,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
 
     # Telemetry metrics & progress tracking expected by training controllers
     window.training_step_metric = QLabel("Step: 0/0")
+    window.training_epoch_metric = QLabel("Epoch: -")
     window.training_loss_metric = QLabel("Train loss: -")
     window.training_val_metric = QLabel("Val loss: -")
     window.training_lr_metric = QLabel("LR: -")
@@ -580,6 +581,28 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.training_elapsed_metric = QLabel("Total time: -")
     window.training_health_metric = QLabel("Health: -")
     window.fine_tune_health_metric = QLabel("Health: -")
+    window.model_size_metric = QLabel("Model: -")
+    window.vram_estimate_metric = QLabel("VRAM est: -")
+    window.parameter_breakdown_metric = QLabel("Params: -")
+    window.memory_breakdown_metric = QLabel("Memory: -")
+    window.architecture_advisor_metric = QLabel("Advisor: -")
+    window.history_metric = QLabel("Runs: -")
+    window.refresh_estimate_button = QPushButton("Refresh Estimate")
+    if hasattr(window, "refresh_model_estimate"):
+        window.refresh_estimate_button.clicked.connect(window.refresh_model_estimate)
+    window.resume_check_button = QPushButton("Check Resume")
+    if hasattr(window, "preview_resume_compatibility"):
+        window.resume_check_button.clicked.connect(window.preview_resume_compatibility)
+    window.resume_training_preview = QTextEdit()
+    window.resume_training_preview.setReadOnly(True)
+    window.resume_training_preview.setText("No compatibility check has been run.")
+    window.resume_preview = window.resume_training_preview
+    window.train_button = QPushButton("Start Training")
+    window.stop_training_button = QPushButton("Stop")
+    if hasattr(window, "start_training"):
+        window.train_button.clicked.connect(window.start_training)
+    if hasattr(window, "stop_training_process"):
+        window.stop_training_button.clicked.connect(window.stop_training_process)
     window.training_progress = window._thin_progress() if hasattr(window, "_thin_progress") else QProgressBar()
 
     window.fine_tune_step_metric = QLabel("Step: 0/0")
