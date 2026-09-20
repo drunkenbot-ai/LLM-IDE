@@ -645,6 +645,66 @@ class ClusterScreenMixin:
                 QMessageBox.warning(self, "Base Model Missing", "A valid base model checkpoint is required for cluster fine-tuning.")
                 return
             base_checkpoint = base_txt
+        else:
+            # Pretraining mode: check if user requested resume
+            should_resume = False
+            if hasattr(self, "resume_training") and self.resume_training.isChecked():
+                should_resume = True
+            elif hasattr(self, "resume_checkpoint") and self.resume_checkpoint.text().strip():
+                should_resume = True
+
+            if should_resume:
+                # 1. Check explicit resume_checkpoint text box
+                if hasattr(self, "resume_checkpoint") and self.resume_checkpoint.text().strip():
+                    cand = Path(self.resume_checkpoint.text().strip())
+                    if cand.exists():
+                        base_checkpoint = str(cand)
+
+                # 2. Check local model / output directories for latest checkpoint
+                if not base_checkpoint:
+                    for d_attr in ("model_dir", "output_dir_edit"):
+                        if hasattr(self, d_attr):
+                            d_val = getattr(self, d_attr).text().strip()
+                            if d_val:
+                                p_val = Path(d_val)
+                                from interface.app import latest_checkpoint as _lc
+                                ckpt_cand = _lc(p_val / "checkpoints")
+                                if ckpt_cand and ckpt_cand.exists():
+                                    base_checkpoint = str(ckpt_cand)
+                                    break
+                                for fname in ("latest_checkpoint.pt", "best_checkpoint.pt", "final_model.pt"):
+                                    f_cand = p_val / fname
+                                    if f_cand.exists():
+                                        base_checkpoint = str(f_cand)
+                                        break
+                                if base_checkpoint:
+                                    break
+
+                # 3. Check central shared storage jobs for latest completed checkpoint
+                if not base_checkpoint:
+                    for past_j in bus.list_all_jobs(limit=10):
+                        past_jid = past_j.get("job_id")
+                        if past_jid:
+                            p_dir = bus.get_checkpoints_dir(past_jid)
+                            for fname in ("latest_checkpoint.pt", "best_checkpoint.pt", "final_model.pt"):
+                                f_cand = p_dir / fname
+                                if f_cand.exists():
+                                    base_checkpoint = str(f_cand)
+                                    break
+                            if not base_checkpoint:
+                                from interface.app import latest_checkpoint as _lc
+                                cand_step = _lc(p_dir)
+                                if cand_step and cand_step.exists():
+                                    base_checkpoint = str(cand_step)
+                            if base_checkpoint:
+                                break
+
+                if base_checkpoint:
+                    self._log_cluster_event(f"Resuming pretraining from checkpoint: {base_checkpoint}")
+                    if hasattr(self, "resume_checkpoint") and not self.resume_checkpoint.text().strip():
+                        self.resume_checkpoint.setText(base_checkpoint)
+                else:
+                    self._log_cluster_event("Resume requested, but no existing checkpoint was found. Initializing from scratch.")
 
         # Find dataset path (train_tokens.npy or configured dataset)
         dataset_path = None
@@ -780,14 +840,18 @@ class ClusterScreenMixin:
                 }
             model_cfg["vocab_size"] = max(int(model_cfg.get("vocab_size", 0) or 0), vocab_size)
 
+            resume_path_arg = Path(base_checkpoint) if base_checkpoint else None
             if hasattr(self, "_current_training_config"):
-                training_cfg = dataclasses.asdict(self._current_training_config(training_mode=training_mode))
+                training_cfg = dataclasses.asdict(self._current_training_config(resume_path=resume_path_arg, training_mode=training_mode))
             else:
                 training_cfg = {
                     "learning_rate": 3e-4,
                     "batch_size": 4,
                     "training_mode": training_mode,
                 }
+            if base_checkpoint:
+                training_cfg["resume"] = True
+                training_cfg["resume_from_checkpoint"] = base_checkpoint
 
             peft_method = training_cfg.get("peft_method", "none")
             if is_fine_tune and hasattr(self, "_peft_method_value"):
@@ -1188,12 +1252,26 @@ class ClusterScreenMixin:
         cur_round = int(target_job.get("current_round", 0))
         max_rounds = int(target_job.get("max_rounds", 10))
 
-        if cur_round >= max_rounds or target_job.get("status") == "COMPLETED":
+        ui_max_rounds = max_rounds
+        if hasattr(self, "train_cluster_max_rounds"):
+            ui_max_rounds = self.train_cluster_max_rounds.value()
+        elif hasattr(self, "cluster_max_rounds"):
+            ui_max_rounds = self.cluster_max_rounds.value()
+
+        if (cur_round >= max_rounds or target_job.get("status") == "COMPLETED") and ui_max_rounds > cur_round:
+            # User increased rounds in UI: extend the job to the new max_rounds and proceed!
+            max_rounds = ui_max_rounds
+            def _update_mr(conn):
+                conn.execute("UPDATE jobs SET max_rounds = ?, status = 'RUNNING' WHERE job_id = ?;", (ui_max_rounds, jid))
+            bus._run_with_retry(_update_mr)
+            target_job["max_rounds"] = ui_max_rounds
+            self._log_cluster_event(f"Extended job '{jid}' to {ui_max_rounds} rounds.")
+        elif cur_round >= max_rounds or target_job.get("status") == "COMPLETED":
             QMessageBox.information(
                 self,
                 "Job Completed",
                 f"Job '{jid}' has already completed all {max_rounds} rounds.\n\n"
-                "To run again, click 'Re-queue' to reset it or 'Launch New Job'.",
+                "To run more rounds, increase Epochs / Max Rounds or click 'Launch New Job'.",
             )
             return
 

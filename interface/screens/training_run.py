@@ -350,6 +350,37 @@ class TrainingRunMixin:
                             existing_job = j
                             break
 
+                # If no incomplete job was found, check if a completed job can be extended because epochs/rounds were increased
+                if not existing_job and hasattr(self, "resume_training") and self.resume_training.isChecked():
+                    if hasattr(self, "train_cluster_max_rounds"):
+                        new_max_r = self.train_cluster_max_rounds.value()
+                    elif hasattr(self, "cluster_max_rounds"):
+                        new_max_r = self.cluster_max_rounds.value()
+                    else:
+                        new_max_r = 0
+
+                    if new_max_r > 0:
+                        candidate_completed_jobs = []
+                        if sel_id:
+                            sj = bus.get_job(sel_id)
+                            if sj:
+                                candidate_completed_jobs.append(sj)
+                        candidate_completed_jobs.extend(bus.list_all_jobs(limit=10))
+
+                        for cj in candidate_completed_jobs:
+                            c_round = int(cj.get("current_round", 0))
+                            c_max = int(cj.get("max_rounds", 0))
+                            if c_round > 0 and new_max_r > c_max:
+                                def _extend_job(conn):
+                                    conn.execute("UPDATE jobs SET max_rounds = ?, status = 'RUNNING' WHERE job_id = ?;", (new_max_r, cj["job_id"]))
+                                bus._run_with_retry(_extend_job)
+                                cj["max_rounds"] = new_max_r
+                                cj["status"] = "RUNNING"
+                                existing_job = cj
+                                if hasattr(self, "_log_cluster_event"):
+                                    self._log_cluster_event(f"Extended job '{cj['job_id']}' from {c_max} to {new_max_r} rounds and resuming.")
+                                break
+
             if hasattr(self, "training_log"):
                 self.training_log.clear()
                 self.training_log.append("Starting Cluster Training (Local SGD)...")
