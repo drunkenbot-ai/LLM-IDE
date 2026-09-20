@@ -90,6 +90,7 @@ class WindowCoreMixin:
         self._install_wheel_guard(shell)
         self._refresh_notification_manager()
         self._initialize_training_controller()
+        self._refresh_plugin_navigation()
         self.job_manager_timer.start()
 
     def eventFilter(self, watched: QObject, event: QEvent) -> bool:
@@ -272,6 +273,64 @@ class WindowCoreMixin:
             self._render_current_live_snapshot()
         if index == getattr(self, "job_manager_page_index", 6):
             QTimer.singleShot(20, self.refresh_job_manager_tab)
+
+    def toggle_side_rail(self) -> None:
+        """Toggle the navigation side-rail between collapsed and expanded modes."""
+        self.sidebar_expanded = not getattr(self, "sidebar_expanded", False)
+        new_width = 185 if self.sidebar_expanded else 62
+        if hasattr(self, "side_rail"):
+            self.side_rail.setFixedWidth(new_width)
+        if hasattr(self, "side_rail_toggle"):
+            self.side_rail_toggle.setText("◀" if self.sidebar_expanded else "▶")
+        self._update_nav_button_labels()
+
+    def _update_nav_button_labels(self) -> None:
+        """Update side rail navigation buttons for expanded or collapsed layout."""
+        if not hasattr(self, "side_rail"):
+            return
+        is_expanded = getattr(self, "sidebar_expanded", False)
+        for button in self.side_rail.findChildren(QPushButton, "NavButton"):
+            if is_expanded:
+                name = button.accessibleName() or button.toolTip()
+                button.setText(f"  {name}")
+                button.setIconSize(QSize(22, 22))
+                button.setStyleSheet(
+                    "QPushButton#NavButton { text-align: left; padding-left: 10px; font-size: 12px; }"
+                )
+            else:
+                button.setText("")
+                button.setIconSize(QSize(32, 32))
+                button.setStyleSheet("")
+
+    def open_plugins_dialog(self) -> None:
+        """Open the modal dialog to configure and toggle plugins."""
+        from interface.plugins.plugin_dialog import PluginSettingsDialog
+        from interface.plugins.plugin_manager import get_plugin_manager
+
+        dialog = PluginSettingsDialog(parent=self, manager=get_plugin_manager())
+        if dialog.exec():
+            self._refresh_plugin_navigation()
+
+    def _refresh_plugin_navigation(self) -> None:
+        """Refresh visibility of navigation buttons according to plugin state."""
+        from interface.plugins.plugin_manager import get_plugin_manager
+
+        manager = get_plugin_manager()
+        cluster_enabled = manager.is_plugin_enabled("cluster_job_monitor")
+        inference_enabled = manager.is_plugin_enabled("inference")
+
+        if hasattr(self, "jobs_nav"):
+            self.jobs_nav.setVisible(cluster_enabled)
+        if hasattr(self, "chat_nav"):
+            self.chat_nav.setVisible(inference_enabled)
+        if hasattr(self, "benchmark_nav"):
+            inference_plugin = manager.get_plugin("inference")
+            benchmarks_enabled = inference_enabled and bool(
+                inference_plugin.spec.settings.get("enable_benchmarks", True)
+                if inference_plugin
+                else True
+            )
+            self.benchmark_nav.setVisible(benchmarks_enabled)
 
     def show_chat_only_mode(self) -> None:
         """Collapse the UI to chat-only view for quick local LLM testing."""

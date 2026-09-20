@@ -26,8 +26,8 @@ def create_nav_button(icon_name: str, tooltip: str) -> QPushButton:
     if icon_path.is_file():
         button.setIcon(QIcon(str(icon_path)))
         button.setProperty("_nav_icon_path", str(icon_path))
-    button.setIconSize(QSize(40, 40))
-    button.setMinimumHeight(52)
+    button.setIconSize(QSize(32, 32))
+    button.setMinimumHeight(44)
     button.setToolTip(tooltip)
     button.setAccessibleName(tooltip)
     button.setObjectName("NavButton")
@@ -108,6 +108,9 @@ def build_top_bar(window, app_name: str) -> QWidget:
     window.dark_theme_action.triggered.connect(lambda: window.set_theme("dark"))
     window.update_theme_actions()
 
+    window.edit_menu.addSeparator()
+    window.plugins_action = window.edit_menu.addAction("Plugins & Extensions...", window.open_plugins_dialog)
+
     window.about_menu = window.menu_bar.addMenu("About")
     window.about_menu.addAction(f"About {app_name}", window.show_about_dialog)
 
@@ -143,10 +146,26 @@ def build_side_rail(window) -> QWidget:
     rail = QWidget()
     rail.setObjectName("SideRail")
     window.side_rail = rail
-    rail.setFixedWidth(82)
+    window.sidebar_expanded = False
+    rail.setFixedWidth(62)
     layout = QVBoxLayout(rail)
-    layout.setContentsMargins(12, 18, 12, 18)
-    layout.setSpacing(12)
+    layout.setContentsMargins(6, 12, 6, 12)
+    layout.setSpacing(8)
+
+    toggle_row = QHBoxLayout()
+    toggle_row.setContentsMargins(0, 0, 0, 0)
+    window.side_rail_toggle = QPushButton("▶")
+    window.side_rail_toggle.setFixedSize(26, 22)
+    window.side_rail_toggle.setStyleSheet(
+        "QPushButton { background-color: #1e1e2d; color: #a5b4fc; border: 1px solid #33334d; border-radius: 4px; font-size: 11px; font-weight: bold; }"
+        "QPushButton:hover { background-color: #312e81; color: white; }"
+    )
+    window.side_rail_toggle.setToolTip("Expand / collapse navigation sidebar")
+    window.side_rail_toggle.clicked.connect(window.toggle_side_rail)
+    toggle_row.addStretch(1)
+    toggle_row.addWidget(window.side_rail_toggle)
+    layout.addLayout(toggle_row)
+
     entries = (
         ("dataset_plan_nav", "Dataset Blueprint", "plan_tab_icon.png"),
         ("dataset_recipe_nav", "Recipe Matrix", "recipe_tab_icon.png"),
@@ -167,6 +186,8 @@ def build_side_rail(window) -> QWidget:
         layout.addWidget(button)
     window.dataset_plan_nav.setChecked(True)
     layout.addStretch(1)
+    if hasattr(window, "_refresh_plugin_navigation"):
+        window._refresh_plugin_navigation()
     return rail
 
 

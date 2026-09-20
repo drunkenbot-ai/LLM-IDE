@@ -30,3 +30,17 @@ def test_system_theme_replaces_dark_control_surfaces() -> None:
     assert "QPushButton#NavButton {\n    background: #f2f2f2;" in stylesheet
     assert "QHeaderView::section {\n    background: #f2f2f2;" in stylesheet
     assert "QPushButton:disabled {\n    background: #e8e8e8;" in stylesheet
+
+
+def test_available_themes_discovers_qss_files() -> None:
+    """Themes are discovered from external .qss files in interface/styles/."""
+    from interface.theme import available_themes
+
+    themes = available_themes()
+    assert "dark" in themes
+    assert "system" in themes
+
+    dark_css = _stylesheet_for_theme("dark")
+    assert len(dark_css) > 0
+    assert "QPushButton#NavButton" in dark_css
+

@@ -92,9 +92,31 @@ def current_theme() -> str:
     return normalize_theme(app.property(_THEME_PROPERTY) if app is not None else DEFAULT_THEME)
 
 
+def available_themes() -> list[str]:
+    """Return a list of available theme names discovered from styles directory."""
+    styles_dir = Path(__file__).parent / "styles"
+    if not styles_dir.is_dir():
+        return [DARK_THEME, SYSTEM_THEME]
+    themes = [p.stem for p in styles_dir.glob("*.qss")]
+    return sorted(list(set(themes or [DARK_THEME, SYSTEM_THEME])))
+
+
 def _stylesheet_for_theme(theme: str) -> str:
-    """Return the shared widget stylesheet with the requested color palette."""
+    """Return the shared widget stylesheet with the requested color palette.
+
+    Args:
+        theme: Name of the theme to load (e.g. 'dark', 'system').
+
+    Returns:
+        CSS / QSS stylesheet content.
+    """
+    theme_file = Path(__file__).parent / "styles" / f"{theme}.qss"
+    if theme_file.is_file():
+        return theme_file.read_text(encoding="utf-8")
+
     stylesheet_path = Path(__file__).with_name("styles.qss")
+    if not stylesheet_path.is_file():
+        return ""
     dark_stylesheet = stylesheet_path.read_text(encoding="utf-8")
     if theme == DARK_THEME:
         return dark_stylesheet

@@ -131,6 +131,10 @@ def build_dataset_tab(window) -> QWidget:
             window.dataset_tab_recipe_label.setText(
                 f"ACTIVE RECIPE: {rec.name}  •  {enabled_count} Active Categories  •  {t_str} Target Token Budget"
             )
+            if hasattr(window, "recipe_path_summary_label"):
+                window.recipe_path_summary_label.setText(
+                    f"Auto-bound to '{rec.name}' • {enabled_count} category sources mapped"
+                )
             if rec.is_balanced():
                 window.dataset_tab_recipe_status.setText(f"Balanced ({rec.total_percentage():.1f}%)")
                 window.dataset_tab_recipe_status.setStyleSheet("background-color: #064e3b; color: #34d399; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;")
@@ -222,8 +226,16 @@ def build_dataset_tab(window) -> QWidget:
     window.tokenizer_path.setEnabled(False)
     window._tip(window.tokenizer_path, "Existing tokenizer.json to import. Use this when continuing a compatible tokenizer family.")
     window.tokenizer_strategy.currentTextChanged.connect(window._update_tokenizer_strategy_controls)
-    source_form.addRow("Source vault", window._path_row(window.input_dir, directory=True))
-    source_form.addRow("Dataset core", window._path_row(window.dataset_dir, directory=True))
+    recipe_binding_box = QWidget()
+    recipe_binding_layout = QVBoxLayout(recipe_binding_box)
+    recipe_binding_layout.setContentsMargins(0, 0, 0, 0)
+    recipe_binding_layout.setSpacing(2)
+    window.recipe_path_summary_label = QLabel(
+        "Auto-bound to Active Recipe Matrix • Multi-category pipelines resolved automatically"
+    )
+    window.recipe_path_summary_label.setStyleSheet("color: #a5b4fc; font-weight: 500; font-size: 11px;")
+    recipe_binding_layout.addWidget(window.recipe_path_summary_label)
+    source_form.addRow("Dataset Matrix", recipe_binding_box)
     source_pipeline_row = QWidget()
     source_pipeline_layout = QHBoxLayout(source_pipeline_row)
     source_pipeline_layout.setContentsMargins(0, 0, 0, 0)
