@@ -21,6 +21,30 @@ from PySide6.QtWidgets import (
 )
 
 
+def _paired_row(
+    w1: QWidget,
+    lbl2_text: str = "",
+    w2: QWidget | None = None,
+    stretch1: int = 1,
+    stretch2: int = 1,
+) -> QWidget:
+    """Pack two form controls into a single row to save vertical space."""
+    row = QWidget()
+    row.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    h = QHBoxLayout(row)
+    h.setContentsMargins(0, 0, 0, 0)
+    h.setSpacing(6)
+    h.addWidget(w1, stretch1)
+    if lbl2_text and w2 is not None:
+        lbl2 = QLabel(lbl2_text)
+        lbl2.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        lbl2.setStyleSheet("color: #a1a1aa; font-size: 11px;")
+        h.addWidget(lbl2)
+    if w2 is not None:
+        h.addWidget(w2, stretch2)
+    return row
+
+
 def build_training_tab(window) -> QWidget:
     """Build the training configuration page.
 
@@ -39,21 +63,13 @@ def build_training_tab(window) -> QWidget:
     content = QWidget()
     content.setObjectName("Panel")
     layout = QVBoxLayout(content)
-    layout.setContentsMargins(18, 18, 18, 10)
-    layout.setSpacing(10)
+    layout.setContentsMargins(14, 10, 14, 10)
+    layout.setSpacing(8)
     scroll.setWidget(content)
     outer.addWidget(scroll, 1)
     layout.addWidget(window._page_title("Neural Forge"))
-    training_body = QHBoxLayout()
-    training_body.setSpacing(12)
-    left_zone = QVBoxLayout()
-    left_zone.setSpacing(10)
-    right_zone = QVBoxLayout()
-    right_zone.setSpacing(10)
-    training_body.addLayout(left_zone, 2)
-    training_body.addLayout(right_zone, 1)
-    layout.addLayout(training_body, 1)
 
+    # Left: MODEL ARCHITECTURE
     left = QFormLayout()
     window._configure_form(left)
     window.train_data_dir = QLineEdit(str(Path.cwd() / "runs" / "dataset"))
@@ -62,12 +78,10 @@ def build_training_tab(window) -> QWidget:
     window._tip(window.model_dir, "Folder where checkpoints, final model, tokenizer copy, and training summary are saved.")
     window.preset = QComboBox()
     window.preset.addItems(["Tiny", "Small", "Custom"])
-    window.preset.setMaximumWidth(260)
     window._tip(window.preset, "Architecture preset. Tiny is faster; Small has more capacity but needs more memory and training data.")
     window.preset.currentTextChanged.connect(window._apply_preset)
     window.architecture_style = QComboBox()
     window.architecture_style.addItems(["Classic GPT", "Llama-like"])
-    window.architecture_style.setMaximumWidth(260)
     window._tip(
         window.architecture_style,
         "Classic uses learned positions, LayerNorm, and GELU. Llama-like uses RoPE, RMSNorm, and SwiGLU.",
@@ -106,7 +120,6 @@ def build_training_tab(window) -> QWidget:
     )
     window.attention_type = QComboBox()
     window.attention_type.addItems(["Multi-head", "Grouped-query", "Multi-query"])
-    window.attention_type.setMaximumWidth(260)
     window._tip(
         window.attention_type,
         "Attention layout. Grouped-query and multi-query share key/value heads to reduce memory and speed up generation.",
@@ -115,7 +128,6 @@ def build_training_tab(window) -> QWidget:
     window._tip(window.kv_head_count, "Key/value heads for grouped-query attention. Must divide n_head. Ignored by multi-head and multi-query.")
     window.attention_backend = QComboBox()
     window.attention_backend.addItems(["SDPA / Flash when available", "Manual"])
-    window.attention_backend.setMaximumWidth(260)
     window._tip(
         window.attention_backend,
         "Attention kernel. SDPA lets PyTorch use Flash Attention on supported GPUs and falls back safely otherwise.",
@@ -129,22 +141,18 @@ def build_training_tab(window) -> QWidget:
     window._tip(window.train_context_length, "Training context length in tokens. Must fit your GPU/CPU memory.")
     window.dropout = window._double_spin(0.0, 0.9, 0.1, 0.01, 3)
     window._tip(window.dropout, "Dropout regularization. Higher values reduce overfitting but can slow learning.")
+
     left.addRow("Dataset", window._path_row(window.train_data_dir, directory=True))
     left.addRow("Model", window._path_row(window.model_dir, directory=True))
-    left.addRow("Preset", window.preset)
-    left.addRow("Block style", window.architecture_style)
-    left.addRow("RoPE theta", window.rope_theta)
-    left.addRow("", window.use_bias)
-    left.addRow("n_embd", window.n_embd)
-    left.addRow("n_head", window.n_head)
-    left.addRow("Attention", window.attention_type)
-    left.addRow("KV heads", window.kv_head_count)
-    left.addRow("Backend", window.attention_backend)
-    left.addRow("Window", window.attention_window)
-    left.addRow("n_layer", window.n_layer)
-    left.addRow("Context length", window.train_context_length)
-    left.addRow("Dropout", window.dropout)
+    left.addRow("Preset", _paired_row(window.preset, "Style", window.architecture_style))
+    left.addRow("n_embd", _paired_row(window.n_embd, "n_head", window.n_head))
+    left.addRow("Attention", _paired_row(window.attention_type, "KV heads", window.kv_head_count))
+    left.addRow("n_layer", _paired_row(window.n_layer, "Context", window.train_context_length))
+    left.addRow("Backend", _paired_row(window.attention_backend, "Window", window.attention_window))
+    left.addRow("RoPE θ", _paired_row(window.rope_theta, "Dropout", window.dropout))
+    left.addRow("Bias", window.use_bias)
 
+    # Middle: OPTIMIZATION ENGINE
     right = QFormLayout()
     window._configure_form(right)
     window.epochs = window._spin(1, 10000, 5)
@@ -157,22 +165,19 @@ def build_training_tab(window) -> QWidget:
     window._tip(window.weight_decay, "Weight decay regularization. Helps control overfitting by discouraging large weights.")
     window.training_profile = QComboBox()
     window.training_profile.addItems(["Stable LLM", "Low-memory", "Code fine-tune", "Experimental Lion"])
-    window.training_profile.setMaximumWidth(260)
     window._tip(window.training_profile, "Applies a practical optimizer, scheduler, precision, and regularization profile.")
     window.apply_training_profile_button = QPushButton("Apply Profile")
-    window.apply_training_profile_button.setMaximumWidth(160)
+    window.apply_training_profile_button.setMaximumWidth(120)
     window.apply_training_profile_button.clicked.connect(window.apply_training_profile)
     window._tip(window.apply_training_profile_button, "Apply the selected training profile to the controls below.")
     window.optimizer_name = QComboBox()
     window.optimizer_name.addItems(["AdamW", "AdamW (8-bit)", "Adam", "Lion", "Adafactor"])
-    window.optimizer_name.setMaximumWidth(260)
     window._tip(
         window.optimizer_name,
         "Optimizer algorithm. AdamW is the safest default; AdamW (8-bit) compresses optimizer state memory by 75% for 6GB-12GB consumer GPUs; Lion is fast; Adafactor reduces memory.",
     )
     window.scheduler_name = QComboBox()
     window.scheduler_name.addItems(["Warmup linear", "Cosine decay", "Polynomial decay", "One-cycle", "Constant"])
-    window.scheduler_name.setMaximumWidth(260)
     window._tip(
         window.scheduler_name,
         "Learning-rate schedule. Cosine and one-cycle are common for stable LLM training; constant is mostly for experiments.",
@@ -186,7 +191,7 @@ def build_training_tab(window) -> QWidget:
     window.warmup_steps = window._spin(0, 1_000_000, 100)
     window._tip(window.warmup_steps, "Steps used to ramp up learning rate. Warmup helps avoid unstable early training.")
     window.sample_stride = window._spin(1, 4096, 128)
-    window._tip(window.sample_stride, "Token stride between sliding windows when preparing training samples. Larger stride reduces overlapping windows and lowers sample count.",)
+    window._tip(window.sample_stride, "Token stride between sliding windows when preparing training samples. Larger stride reduces overlapping windows and lowers sample count.")
     window.eval_interval = window._spin(0, 1_000_000, 100)
     window._tip(window.eval_interval, "Training steps between validation checks. Set 0 to skip interval validation.")
     window.max_eval_batches = window._spin(0, 1_000_000, 50)
@@ -200,7 +205,7 @@ def build_training_tab(window) -> QWidget:
     )
     window.max_grad_norm = window._double_spin(0.1, 100.0, 1.0, 0.1, 3)
     window._tip(window.max_grad_norm, "Gradient clipping limit. Helps prevent exploding gradients during training.")
-    window.activation_checkpointing = QCheckBox("Activation checkpointing")
+    window.activation_checkpointing = QCheckBox("Activation ckpt")
     window._tip(
         window.activation_checkpointing,
         "Recompute transformer activations during backpropagation to lower VRAM use. Training becomes slower, but this is useful when memory is the constraint.",
@@ -213,78 +218,23 @@ def build_training_tab(window) -> QWidget:
     )
     window.seed = window._spin(1, 2_147_483_647, 1337)
     window._tip(window.seed, "Random seed for reproducible initialization and sampling order.")
-    window.device = QComboBox()
-    window.device.setMaximumWidth(260)
-    window._tip(window.device, "Hardware target. CUDA uses NVIDIA GPU when available; CPU is slower but broadly compatible.")
-    window.device_info = QLabel()
-    window.device_info.setObjectName("Metric")
-    window.device_info.setWordWrap(True)
-    window.device_info.setMaximumWidth(260)
-    window._configure_device_options()
-    window.use_amp = QCheckBox("Mixed precision")
-    window.use_amp.setChecked(window.use_amp_default)
-    window._tip(window.use_amp, "Use mixed precision on CUDA. Usually faster and lighter on GPU memory.")
-    window.precision = QComboBox()
-    window.precision.addItems(["FP16", "BF16", "FP32"])
-    window.precision.setMaximumWidth(260)
-    window._tip(
-        window.precision,
-        "Numeric precision. FP16 is fast on many NVIDIA GPUs; BF16 is more stable on supported GPUs; FP32 is safest but uses more memory.",
-    )
-    window.resume_training = QCheckBox("Resume latest")
-    window.resume_training.setChecked(True)
-    window._tip(window.resume_training, "Continue from the latest checkpoint if training was interrupted.")
-    window.resume_safety = QCheckBox("Safe resume")
-    window.resume_safety.setChecked(True)
-    window._tip(
-        window.resume_safety,
-        "Before resuming, verify that the dataset tokenizer and model architecture match the checkpoint.",
-    )
-    window.early_stopping = QCheckBox("Early stopping")
-    window.early_stopping.setChecked(True)
-    window._tip(
-        window.early_stopping,
-        "Automatically stop training when validation loss stops improving. Uncheck to train for all remaining epochs.",
-    )
-    window.early_stopping_patience = window._spin(1, 100, 3)
-    window._tip(
-        window.early_stopping_patience,
-        "Consecutive validation checks without improvement before early stopping triggers. Lower values stop "
-        "sooner (saves compute, risks stopping on noisy validation loss); higher values are more tolerant of "
-        "temporary plateaus. Has no effect if early stopping is unchecked.",
-    )
-    window.early_stopping.toggled.connect(window.early_stopping_patience.setEnabled)
-    window.resume_checkpoint = QLineEdit()
-    window._tip(window.resume_checkpoint, "Optional specific checkpoint file to resume from instead of the latest checkpoint.")
-    window.resume_check_button = QPushButton("Check Resume")
-    window.resume_check_button.setMaximumWidth(180)
-    window.resume_check_button.clicked.connect(window.preview_resume_compatibility)
-    window._tip(window.resume_check_button, "Inspect checkpoint compatibility before starting training.")
-    right.addRow("Epochs", window.epochs)
-    right.addRow("Batch", window.batch_size)
-    right.addRow("Profile", window.training_profile)
-    right.addRow("", window.apply_training_profile_button)
-    right.addRow("LR", window.learning_rate)
-    right.addRow("Decay", window.weight_decay)
-    right.addRow("Optimizer", window.optimizer_name)
-    right.addRow("Schedule", window.scheduler_name)
-    right.addRow("Min LR", window.min_lr_ratio)
-    right.addRow("Poly power", window.polynomial_power)
-    right.addRow("Grad accum", window.gradient_accumulation)
-    right.addRow("Stride samples", window.sample_stride)
-    right.addRow("Warmup", window.warmup_steps)
-    right.addRow("Eval every", window.eval_interval)
-    right.addRow("Eval batches", window.max_eval_batches)
-    right.addRow("Save every", window.save_interval)
-    right.addRow("CPU workers", window.data_loader_workers)
-    right.addRow("Max grad", window.max_grad_norm)
-    right.addRow("Kernel fusion", window.compile_model)
-    right.addRow("Seed", window.seed)
+
+    right.addRow("Epochs", _paired_row(window.epochs, "Batch", window.batch_size))
+    right.addRow("Profile", _paired_row(window.training_profile, "", window.apply_training_profile_button, stretch1=3, stretch2=2))
+    right.addRow("LR", _paired_row(window.learning_rate, "Decay", window.weight_decay))
+    right.addRow("Optimizer", _paired_row(window.optimizer_name, "Sched", window.scheduler_name))
+    right.addRow("Min LR", _paired_row(window.min_lr_ratio, "Power", window.polynomial_power))
+    right.addRow("Grad accum", _paired_row(window.gradient_accumulation, "Max grad", window.max_grad_norm))
+    right.addRow("Warmup", _paired_row(window.warmup_steps, "Stride", window.sample_stride))
+    right.addRow("Eval every", _paired_row(window.eval_interval, "Batches", window.max_eval_batches))
+    right.addRow("Save every", _paired_row(window.save_interval, "Workers", window.data_loader_workers))
+    right.addRow("Fusion", _paired_row(window.compile_model, "Seed", window.seed))
+
+    # Right: RUNTIME CONTROL
     runtime = QFormLayout()
     window._configure_form(runtime)
     window.training_launch_target = QComboBox()
     window.training_launch_target.addItems(["Local machine", "Cluster (Local SGD)"])
-    window.training_launch_target.setMaximumWidth(260)
     window._tip(
         window.training_launch_target,
         "Local machine runs training directly on this computer. Cluster (Local SGD) distributes training across networked GPU nodes via shared storage.",
@@ -301,7 +251,6 @@ def build_training_tab(window) -> QWidget:
     window.train_cluster_plan_label.setObjectName("Metric")
     window.train_cluster_plan_label.setWordWrap(True)
     window.train_cluster_plan_label.setStyleSheet("color: #4ade80; font-size: 11px; padding: 2px 4px;")
-
     runtime.addRow("Cluster Plan", window.train_cluster_plan_label)
 
     def _toggle_cluster_settings(target_text: str) -> None:
@@ -313,77 +262,89 @@ def build_training_tab(window) -> QWidget:
 
     window.training_launch_target.currentTextChanged.connect(_toggle_cluster_settings)
     _toggle_cluster_settings(window.training_launch_target.currentText())
+
     window.training_process_status = QLabel("Worker: detached | Run: - | PID: -")
     window.training_process_status.setObjectName("Metric")
     window.training_process_status.setWordWrap(True)
     runtime.addRow("Process", window.training_process_status)
-    runtime.addRow("Device", window.device)
+
+    window.device = QComboBox()
+    window._tip(window.device, "Hardware target. CUDA uses NVIDIA GPU when available; CPU is slower but broadly compatible.")
+    window.device_info = QLabel()
+    window.device_info.setObjectName("Metric")
+    window.device_info.setWordWrap(True)
+    window._configure_device_options()
+    window.precision = QComboBox()
+    window.precision.addItems(["FP16", "BF16", "FP32"])
+    window._tip(
+        window.precision,
+        "Numeric precision. FP16 is fast on many NVIDIA GPUs; BF16 is more stable on supported GPUs; FP32 is safest but uses more memory.",
+    )
+    runtime.addRow("Device", _paired_row(window.device, "Precision", window.precision))
     runtime.addRow("Hardware", window.device_info)
-    runtime.addRow("", window.use_amp)
-    runtime.addRow("Precision", window.precision)
-    runtime.addRow("VRAM saver", window.activation_checkpointing)
-    runtime.addRow("", window.resume_training)
-    runtime.addRow("", window.resume_safety)
-    runtime.addRow("", window.early_stopping)
-    runtime.addRow("Patience", window.early_stopping_patience)
+
+    window.use_amp = QCheckBox("Mixed precision")
+    window.use_amp.setChecked(window.use_amp_default)
+    window._tip(window.use_amp, "Use mixed precision on CUDA. Usually faster and lighter on GPU memory.")
+    runtime.addRow("VRAM saver", _paired_row(window.use_amp, "", window.activation_checkpointing))
+
+    window.resume_training = QCheckBox("Resume latest")
+    window.resume_training.setChecked(True)
+    window._tip(window.resume_training, "Continue from the latest checkpoint if training was interrupted.")
+    window.resume_safety = QCheckBox("Safe resume")
+    window.resume_safety.setChecked(True)
+    window._tip(
+        window.resume_safety,
+        "Before resuming, verify that the dataset tokenizer and model architecture match the checkpoint.",
+    )
+    runtime.addRow("Resume", _paired_row(window.resume_training, "", window.resume_safety))
+
+    window.early_stopping = QCheckBox("Early stopping")
+    window.early_stopping.setChecked(True)
+    window._tip(
+        window.early_stopping,
+        "Automatically stop training when validation loss stops improving. Uncheck to train for all remaining epochs.",
+    )
+    window.early_stopping_patience = window._spin(1, 100, 3)
+    window._tip(
+        window.early_stopping_patience,
+        "Consecutive validation checks without improvement before early stopping triggers. Lower values stop "
+        "sooner (saves compute, risks stopping on noisy validation loss); higher values are more tolerant of "
+        "temporary plateaus. Has no effect if early stopping is unchecked.",
+    )
+    window.early_stopping.toggled.connect(window.early_stopping_patience.setEnabled)
+    runtime.addRow("Early stop", _paired_row(window.early_stopping, "Patience", window.early_stopping_patience))
+
+    window.resume_checkpoint = QLineEdit()
+    window._tip(window.resume_checkpoint, "Optional specific checkpoint file to resume from instead of the latest checkpoint.")
+    window.resume_check_button = QPushButton("Check Resume")
+    window.resume_check_button.setMaximumWidth(160)
+    window.resume_check_button.clicked.connect(window.preview_resume_compatibility)
+    window._tip(window.resume_check_button, "Inspect checkpoint compatibility before starting training.")
     runtime.addRow("Checkpoint", window._path_row(window.resume_checkpoint, directory=False))
     runtime.addRow("", window.resume_check_button)
 
+    # Action Buttons: Start / Stop
     window.train_button = QPushButton("Start Training")
     window._tip(window.train_button, "Start or resume training using the selected model and optimizer settings.")
     window.train_button.clicked.connect(window.start_training)
-    window.train_button.setMaximumWidth(320)
+    window.train_button.setFixedHeight(30)
+    window.train_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
     window.stop_training_button = QPushButton("Stop")
     window.stop_training_button.setEnabled(False)
-    window.stop_training_button.setMaximumWidth(120)
+    window.stop_training_button.setFixedHeight(30)
+    window.stop_training_button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
     window.stop_training_button.clicked.connect(window.stop_training_process)
     window._tip(window.stop_training_button, "Request a graceful stop and save a resumable checkpoint.")
 
     action_row = QHBoxLayout()
-    action_row.addWidget(window.train_button)
-    action_row.addWidget(window.stop_training_button)
-    action_row.addStretch(1)
+    action_row.setContentsMargins(0, 0, 0, 0)
+    action_row.setSpacing(8)
+    action_row.addWidget(window.train_button, 3)
+    action_row.addWidget(window.stop_training_button, 1)
 
-    architecture_stack = QVBoxLayout()
-    architecture_stack.setSpacing(10)
-    architecture_card = window._card("MODEL ARCHITECTURE", left)
-    architecture_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-    architecture_stack.addWidget(architecture_card, 0)
-    architecture_stack.addLayout(action_row)
-    window.training_status_stack = QVBoxLayout()
-    window.training_status_stack.setSpacing(10)
-    architecture_stack.addLayout(window.training_status_stack)
-    architecture_stack.addStretch(1)
-
-    architecture_column = QWidget()
-    architecture_column.setLayout(architecture_stack)
-    architecture_column.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-    optimization_card = window._card("OPTIMIZATION ENGINE", right)
-    optimization_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-    controls_row = QHBoxLayout()
-    controls_row.setSpacing(12)
-    controls_row.addWidget(architecture_column, 1)
-    controls_row.addWidget(optimization_card, 1)
-    left_zone.addLayout(controls_row, 1)
-    window.training_cards = []
-    window.training_controls_grid = None
-    window.training_controls_columns = 0
-    right_zone.addWidget(window._card("RUNTIME CONTROL", runtime), 0)
-
-    window.resume_training_preview = QTextEdit()
-    window.resume_training_preview.setReadOnly(True)
-    window.resume_training_preview.setMinimumHeight(110)
-    window.resume_training_preview.setMaximumHeight(180)
-    window.resume_training_preview.setText("No compatibility check has been run.")
-    window.resume_preview = window.resume_training_preview
-    window._tip(window.resume_training_preview, "Compatibility report for the selected or latest checkpoint.")
-    resume_preview_layout = QVBoxLayout()
-    resume_preview_layout.addWidget(window.resume_training_preview)
-    right_zone.addWidget(window._card("RESUME COMPATIBILITY", resume_preview_layout), 0)
-
-    metrics_grid = QGridLayout()
-    metrics_grid.setHorizontalSpacing(8)
-    metrics_grid.setVerticalSpacing(8)
+    # Metric Chips
     window.training_epoch_metric = window._metric_chip("Epoch: -", "Current epoch and total epochs.")
     window.training_step_metric = window._metric_chip("Step: -", "Current optimizer step and total planned steps.")
     window.training_loss_metric = window._metric_chip("Train loss: -", "Latest training loss. Lower is usually better.")
@@ -410,6 +371,42 @@ def build_training_tab(window) -> QWidget:
         "Architecture advisor based on model size, dataset tokens, context length, and memory estimate.",
     )
     window.history_metric = window._metric_chip("Runs: -", "Training run history count in the current model folder.")
+
+    # Model Estimate Card
+    estimate_grid = QGridLayout()
+    estimate_grid.setHorizontalSpacing(8)
+    estimate_grid.setVerticalSpacing(4)
+    estimate_grid.addWidget(window.model_size_metric, 0, 0)
+    estimate_grid.addWidget(window.vram_estimate_metric, 0, 1)
+    estimate_grid.addWidget(window.parameter_breakdown_metric, 1, 0)
+    estimate_grid.addWidget(window.memory_breakdown_metric, 1, 1)
+    estimate_grid.addWidget(window.architecture_advisor_metric, 2, 0, 1, 2)
+    estimate_grid.addWidget(window.history_metric, 3, 0)
+    window.refresh_estimate_button = QPushButton("Refresh Estimate")
+    window.refresh_estimate_button.setFixedHeight(28)
+    window.refresh_estimate_button.clicked.connect(window.refresh_model_estimate)
+    window._tip(window.refresh_estimate_button, "Refresh model size, rough VRAM, and training history estimates without starting training.")
+    estimate_grid.addWidget(window.refresh_estimate_button, 3, 1)
+    estimate_grid.setColumnStretch(0, 1)
+    estimate_grid.setColumnStretch(1, 1)
+    estimate_layout = QVBoxLayout()
+    estimate_layout.setContentsMargins(0, 0, 0, 0)
+    estimate_layout.setSpacing(6)
+    estimate_layout.addLayout(estimate_grid)
+
+    architecture_card = window._card("MODEL ARCHITECTURE", left)
+    architecture_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+    estimate_card = window._card("MODEL ESTIMATE", estimate_layout)
+    estimate_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+
+    # Optimization Card
+    optimization_card = window._card("OPTIMIZATION ENGINE", right)
+    optimization_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+
+    # Training Metrics Card
+    metrics_grid = QGridLayout()
+    metrics_grid.setHorizontalSpacing(8)
+    metrics_grid.setVerticalSpacing(4)
     for index, metric in enumerate((
         window.training_eta_metric,
         window.training_epoch_metric,
@@ -426,48 +423,74 @@ def build_training_tab(window) -> QWidget:
     metrics_grid.setColumnStretch(0, 1)
     metrics_grid.setColumnStretch(1, 1)
     metrics_layout = QVBoxLayout()
-    metrics_layout.setSpacing(8)
+    metrics_layout.setContentsMargins(0, 0, 0, 0)
+    metrics_layout.setSpacing(6)
     metrics_layout.addLayout(metrics_grid)
-    estimate_grid = QGridLayout()
-    estimate_grid.setHorizontalSpacing(8)
-    estimate_grid.setVerticalSpacing(8)
-    estimate_grid.addWidget(window.model_size_metric, 0, 0)
-    estimate_grid.addWidget(window.vram_estimate_metric, 0, 1)
-    estimate_grid.addWidget(window.parameter_breakdown_metric, 1, 0)
-    estimate_grid.addWidget(window.memory_breakdown_metric, 1, 1)
-    estimate_grid.addWidget(window.architecture_advisor_metric, 2, 0, 1, 2)
-    estimate_grid.addWidget(window.history_metric, 3, 0)
-    window.refresh_estimate_button = QPushButton("Refresh Estimate")
-    window.refresh_estimate_button.clicked.connect(window.refresh_model_estimate)
-    window.refresh_estimate_button.setMaximumWidth(180)
-    window._tip(window.refresh_estimate_button, "Refresh model size, rough VRAM, and training history estimates without starting training.")
-    estimate_grid.addWidget(window.refresh_estimate_button, 3, 1)
-    estimate_grid.setColumnStretch(0, 1)
-    estimate_grid.setColumnStretch(1, 1)
-    estimate_layout = QVBoxLayout()
-    estimate_layout.setSpacing(8)
-    estimate_layout.addLayout(estimate_grid)
-    estimate_layout.addStretch(1)
-    estimate_card = window._card("MODEL ESTIMATE", estimate_layout)
     metrics_card = window._card("TRAINING METRICS", metrics_layout)
-    estimate_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
     metrics_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-    status_row = QHBoxLayout()
-    status_row.setSpacing(10)
-    status_row.addWidget(estimate_card, 1)
-    status_row.addWidget(metrics_card, 2)
-    window.training_status_stack.addLayout(status_row)
 
+    # Runtime Card
+    runtime_card = window._card("RUNTIME CONTROL", runtime)
+    runtime_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+
+    # Resume Compatibility Card
+    window.resume_training_preview = QTextEdit()
+    window.resume_training_preview.setReadOnly(True)
+    window.resume_training_preview.setMinimumHeight(44)
+    window.resume_training_preview.setMaximumHeight(65)
+    window.resume_training_preview.setText("No compatibility check has been run.")
+    window.resume_preview = window.resume_training_preview
+    window._tip(window.resume_training_preview, "Compatibility report for the selected or latest checkpoint.")
+    resume_preview_layout = QVBoxLayout()
+    resume_preview_layout.setContentsMargins(0, 0, 0, 0)
+    resume_preview_layout.addWidget(window.resume_training_preview)
+    resume_card = window._card("RESUME COMPATIBILITY", resume_preview_layout)
+    resume_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+
+    # Training Telemetry Card
     window.training_log = QTextEdit()
     window.training_log.setReadOnly(True)
     window.training_log.document().setMaximumBlockCount(1500)
-    window.training_log.setMinimumHeight(306)
+    window.training_log.setMinimumHeight(130)
     window.training_log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
     telemetry_layout = QVBoxLayout()
+    telemetry_layout.setContentsMargins(0, 0, 0, 0)
     telemetry_layout.addWidget(window.training_log, 1)
     telemetry_card = window._card("TRAINING TELEMETRY", telemetry_layout)
     telemetry_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-    right_zone.addWidget(telemetry_card, 1)
+
+    # 3-Column balanced layout
+    col1 = QVBoxLayout()
+    col1.setSpacing(8)
+    col1.addWidget(architecture_card, 0)
+    col1.addLayout(action_row)
+    col1.addWidget(estimate_card, 0)
+    col1.addStretch(1)
+
+    col2 = QVBoxLayout()
+    col2.setSpacing(8)
+    col2.addWidget(optimization_card, 0)
+    col2.addWidget(metrics_card, 0)
+    col2.addStretch(1)
+
+    col3 = QVBoxLayout()
+    col3.setSpacing(8)
+    col3.addWidget(runtime_card, 0)
+    col3.addWidget(resume_card, 0)
+    col3.addWidget(telemetry_card, 1)
+
+    training_body = QHBoxLayout()
+    training_body.setContentsMargins(0, 0, 0, 0)
+    training_body.setSpacing(10)
+    training_body.addLayout(col1, 1)
+    training_body.addLayout(col2, 1)
+    training_body.addLayout(col3, 1)
+    layout.addLayout(training_body, 1)
+
+    window.training_status_stack = QVBoxLayout()
+    window.training_cards = []
+    window.training_controls_grid = None
+    window.training_controls_columns = 0
 
     window.training_progress = window._thin_progress()
     outer.addWidget(window.training_progress)

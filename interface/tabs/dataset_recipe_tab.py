@@ -269,7 +269,7 @@ class RecipeDistributionBar(QWidget):
     def __init__(self, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
         self.recipe: Optional[DatasetRecipe] = None
-        self.setFixedHeight(32)
+        self.setFixedHeight(22)
         self.setMinimumWidth(320)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setMouseTracking(True)
@@ -407,12 +407,13 @@ class CategoryRowWidget(QFrame):
         self._updating = False
 
         self.setObjectName("CategoryRow")
+        self.setFixedHeight(30)
         self.setStyleSheet(
             "#CategoryRow {"
             "  background-color: #1a1a20;"
             "  border: 1px solid #2b2b36;"
-            "  border-radius: 6px;"
-            "  margin-bottom: 4px;"
+            "  border-radius: 5px;"
+            "  margin-bottom: 2px;"
             "}"
             "#CategoryRow:hover {"
             "  border: 1px solid #3d3d4e;"
@@ -422,8 +423,8 @@ class CategoryRowWidget(QFrame):
 
     def _setup_ui(self) -> None:
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(12, 8, 12, 8)
-        layout.setSpacing(12)
+        layout.setContentsMargins(10, 2, 10, 2)
+        layout.setSpacing(8)
 
         # 1. Enable Checkbox
         self.enabled_check = QCheckBox()
@@ -434,37 +435,28 @@ class CategoryRowWidget(QFrame):
 
         # 2. Color Swatch
         self.swatch = QFrame()
-        self.swatch.setFixedSize(14, 14)
+        self.swatch.setFixedSize(12, 12)
         self.swatch.setStyleSheet(f"background-color: {self.color_hex}; border-radius: 3px;")
         self.swatch.setToolTip(f"Mixture color indicator for {self.category.name}")
         layout.addWidget(self.swatch)
 
-        # 3. Category Name & Slug
-        info_layout = QVBoxLayout()
-        info_layout.setSpacing(2)
-        self.name_label = QLabel(self.category.name)
-        self.name_label.setStyleSheet("font-weight: bold; font-size: 13px; color: #ececf1;")
-        self.name_label.setToolTip(f"Category: {self.category.name}")
-        self.slug_label = QLabel(f"slug: {self.category.slug}")
-        self.slug_label.setStyleSheet("font-size: 11px; color: #8e8ea0;")
-        self.slug_label.setToolTip(f"Ingestion slug key: {self.category.slug}")
-        info_layout.addWidget(self.name_label)
-        info_layout.addWidget(self.slug_label)
-
-        info_container = QWidget()
-        info_container.setLayout(info_layout)
-        info_container.setMinimumWidth(210)
-        layout.addWidget(info_container)
+        # 3. Category Name & Slug in single compact row
+        self.name_label = QLabel(f"<b>{self.category.name}</b> <span style='color: #8e8ea0; font-size: 10px;'>({self.category.slug})</span>")
+        self.name_label.setStyleSheet("font-size: 12px; color: #ececf1;")
+        self.name_label.setToolTip(f"Category: {self.category.name} (slug: {self.category.slug})")
+        self.name_label.setMinimumWidth(210)
+        layout.addWidget(self.name_label)
 
         # 4. Folder / Source paths badge (Double-click opens file listing window)
         paths_str = ", ".join(self.category.source_paths) if self.category.source_paths else self.category.slug
         self.paths_badge = QLabel(f"📁 {paths_str}")
         self.paths_badge.setCursor(Qt.PointingHandCursor)
         self.paths_badge.setStyleSheet(
-            "background-color: #262630; color: #9a9ab0; padding: 4px 8px; border-radius: 4px; font-size: 11px; border: 1px solid #333342;"
+            "background-color: #262630; color: #9a9ab0; padding: 2px 6px; border-radius: 4px; font-size: 10px; border: 1px solid #333342;"
         )
+        self.paths_badge.setFixedHeight(22)
         self.paths_badge.setToolTip("Double-click to inspect all files, byte sizes, and token counts in this category folder.")
-        self.paths_badge.setMaximumWidth(190)
+        self.paths_badge.setMaximumWidth(170)
         self.paths_badge.mouseDoubleClickEvent = lambda _event: self._open_files_dialog()
         layout.addWidget(self.paths_badge)
 
@@ -472,7 +464,8 @@ class CategoryRowWidget(QFrame):
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setRange(0, 1000)
         self.slider.setValue(int(round(self.category.target_percentage * 10)))
-        self.slider.setMinimumWidth(150)
+        self.slider.setMinimumWidth(130)
+        self.slider.setFixedHeight(18)
         self.slider.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.slider.setToolTip(f"Drag to adjust {self.category.name} percentage (0.0% - 100.0%)")
         self.slider.valueChanged.connect(self._handle_slider_changed)
@@ -485,7 +478,8 @@ class CategoryRowWidget(QFrame):
         self.spin.setSingleStep(0.5)
         self.spin.setSuffix(" %")
         self.spin.setValue(self.category.target_percentage)
-        self.spin.setFixedWidth(88)
+        self.spin.setFixedWidth(80)
+        self.spin.setFixedHeight(22)
         self.spin.setToolTip("Type or click to set exact percentage")
         self.spin.valueChanged.connect(self._handle_spin_changed)
         layout.addWidget(self.spin)
@@ -493,9 +487,10 @@ class CategoryRowWidget(QFrame):
         # 7. Target Tokens Badge
         self.token_badge = QLabel(f"Quota: {format_token_count(self.category.tokens_estimated)}")
         self.token_badge.setAlignment(Qt.AlignCenter)
-        self.token_badge.setFixedWidth(100)
+        self.token_badge.setFixedWidth(88)
+        self.token_badge.setFixedHeight(22)
         self.token_badge.setStyleSheet(
-            "background-color: #23232c; color: #e5a93c; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 11px;"
+            "background-color: #23232c; color: #e5a93c; font-weight: bold; padding: 2px 4px; border-radius: 4px; font-size: 10px;"
         )
         self.token_badge.setToolTip(f"Projected Target Quota: {self.category.tokens_estimated:,} tokens")
         layout.addWidget(self.token_badge)
@@ -503,9 +498,10 @@ class CategoryRowWidget(QFrame):
         # 8. Disk Tokens Badge
         self.disk_badge = QLabel("Disk: -")
         self.disk_badge.setAlignment(Qt.AlignCenter)
-        self.disk_badge.setFixedWidth(110)
+        self.disk_badge.setFixedWidth(92)
+        self.disk_badge.setFixedHeight(22)
         self.disk_badge.setStyleSheet(
-            "background-color: #202028; color: #9ca3af; padding: 4px 6px; border-radius: 4px; font-size: 11px; border: 1px solid #333342;"
+            "background-color: #202028; color: #9ca3af; padding: 2px 4px; border-radius: 4px; font-size: 10px; border: 1px solid #333342;"
         )
         self.disk_badge.setToolTip("Tokens available on disk across category files")
         layout.addWidget(self.disk_badge)
@@ -514,16 +510,17 @@ class CategoryRowWidget(QFrame):
         self.lock_btn = QPushButton("🔒 Locked" if self.category.locked else "🔓 Unlocked")
         self.lock_btn.setCheckable(True)
         self.lock_btn.setChecked(self.category.locked)
-        self.lock_btn.setFixedWidth(92)
+        self.lock_btn.setFixedWidth(78)
+        self.lock_btn.setFixedHeight(22)
         self._update_lock_btn_style()
         self.lock_btn.toggled.connect(self._handle_lock_toggled)
         layout.addWidget(self.lock_btn)
 
         # 10. Delete Button
         self.delete_btn = QPushButton("✕")
-        self.delete_btn.setFixedSize(28, 28)
+        self.delete_btn.setFixedSize(22, 22)
         self.delete_btn.setStyleSheet(
-            "QPushButton { background-color: transparent; color: #71717a; border: 1px solid #3f3f46; border-radius: 4px; font-weight: bold; }"
+            "QPushButton { background-color: transparent; color: #71717a; border: 1px solid #3f3f46; border-radius: 4px; font-weight: bold; font-size: 11px; }"
             "QPushButton:hover { background-color: #dc2626; color: white; border: 1px solid #dc2626; }"
         )
         self.delete_btn.setToolTip("Remove category from recipe")
@@ -537,13 +534,13 @@ class CategoryRowWidget(QFrame):
         if self.category.locked:
             self.lock_btn.setText("🔒 Locked")
             self.lock_btn.setStyleSheet(
-                "background-color: #312e81; color: #a5b4fc; border: 1px solid #4338ca; border-radius: 4px; font-size: 11px; padding: 4px 6px;"
+                "background-color: #312e81; color: #a5b4fc; border: 1px solid #4338ca; border-radius: 4px; font-size: 10px; padding: 2px 4px;"
             )
             self.lock_btn.setToolTip("Ratio is LOCKED. Auto-normalize and live sliding will NOT alter this percentage.")
         else:
             self.lock_btn.setText("🔓 Unlocked")
             self.lock_btn.setStyleSheet(
-                "background-color: #202028; color: #9ca3af; border: 1px solid #374151; border-radius: 4px; font-size: 11px; padding: 4px 6px;"
+                "background-color: #202028; color: #9ca3af; border: 1px solid #374151; border-radius: 4px; font-size: 10px; padding: 2px 4px;"
             )
             self.lock_btn.setToolTip("Ratio is UNLOCKED. Can be rebalanced to maintain 100%.")
 
@@ -553,7 +550,7 @@ class CategoryRowWidget(QFrame):
         self.spin.setEnabled(is_on)
         self.lock_btn.setEnabled(is_on)
         opacity = "1.0" if is_on else "0.4"
-        self.name_label.setStyleSheet(f"font-weight: bold; font-size: 13px; color: #ececf1; opacity: {opacity};")
+        self.name_label.setStyleSheet(f"font-size: 12px; color: #ececf1; opacity: {opacity};")
         self.token_badge.setEnabled(is_on)
         self.disk_badge.setEnabled(is_on)
 
@@ -747,8 +744,8 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     page = QWidget()
     page.setObjectName("DatasetRecipePage")
     root_layout = QVBoxLayout(page)
-    root_layout.setContentsMargins(18, 14, 18, 14)
-    root_layout.setSpacing(12)
+    root_layout.setContentsMargins(14, 8, 14, 8)
+    root_layout.setSpacing(6)
 
     # Initialize current recipe on window if not present
     if not hasattr(window, "active_dataset_recipe") or window.active_dataset_recipe is None:
@@ -812,8 +809,8 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     toolbar_card = QFrame()
     toolbar_card.setStyleSheet("background-color: #18181f; border: 1px solid #2a2a36; border-radius: 6px;")
     tb_layout = QHBoxLayout(toolbar_card)
-    tb_layout.setContentsMargins(12, 10, 12, 10)
-    tb_layout.setSpacing(10)
+    tb_layout.setContentsMargins(10, 4, 10, 4)
+    tb_layout.setSpacing(8)
 
     # Preset ComboBox
     tb_layout.addWidget(QLabel("Recipe Preset:"))
@@ -914,7 +911,7 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     list_container = QWidget()
     list_layout = QVBoxLayout(list_container)
     list_layout.setContentsMargins(0, 0, 0, 0)
-    list_layout.setSpacing(6)
+    list_layout.setSpacing(2)
     list_scroll.setWidget(list_container)
     root_layout.addWidget(list_scroll, 1)
 
