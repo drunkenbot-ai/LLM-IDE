@@ -1,3 +1,5 @@
+"""Dataset Recipe Matrix tab for configuring multi-discipline category mixture."""
+
 from __future__ import annotations
 
 import json
@@ -125,7 +127,7 @@ class CategoryFilesDialog(QDialog):
         self,
         category: RecipeCategory,
         candidate_roots: list[Path],
-        parent: Optional[QWidget] = None,
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self.category = category
@@ -266,9 +268,9 @@ class CategoryFilesDialog(QDialog):
 class RecipeDistributionBar(QWidget):
     """Custom stacked multi-color horizontal bar visualizing category proportions."""
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.recipe: Optional[DatasetRecipe] = None
+        self.recipe: DatasetRecipe | None = None
         self.setFixedHeight(22)
         self.setMinimumWidth(320)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -395,7 +397,7 @@ class CategoryRowWidget(QFrame):
         on_change_callback: Any,
         on_slider_moved_callback: Any,
         on_delete_callback: Any,
-        parent: Optional[QWidget] = None,
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self.category = category
@@ -407,44 +409,51 @@ class CategoryRowWidget(QFrame):
         self._updating = False
 
         self.setObjectName("CategoryRow")
-        self.setFixedHeight(30)
+        self.setFixedHeight(34)
         self.setStyleSheet(
             "#CategoryRow {"
-            "  background-color: #1a1a20;"
-            "  border: 1px solid #2b2b36;"
-            "  border-radius: 5px;"
-            "  margin-bottom: 2px;"
+            "  background-color: transparent;"
+            "  border: none;"
+            "  border-bottom: 1px solid #1c1f2e;"
+            "  border-radius: 6px;"
+            "  margin-bottom: 1px;"
             "}"
             "#CategoryRow:hover {"
-            "  border: 1px solid #3d3d4e;"
+            "  background-color: rgba(255, 255, 255, 0.03);"
             "}"
         )
         self._setup_ui()
 
     def _setup_ui(self) -> None:
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(10, 2, 10, 2)
-        layout.setSpacing(8)
+        layout.setContentsMargins(8, 2, 8, 2)
+        layout.setSpacing(10)
 
-        # 1. Enable Checkbox
+        # 1. Enable Toggle Switch
         self.enabled_check = QCheckBox()
+        self.enabled_check.setObjectName("CategoryToggle")
         self.enabled_check.setChecked(self.category.enabled)
+        self.enabled_check.setStyleSheet(
+            "QCheckBox#CategoryToggle { spacing: 0px; }"
+            "QCheckBox#CategoryToggle::indicator { width: 30px; height: 16px; border-radius: 8px; background-color: #242938; }"
+            "QCheckBox#CategoryToggle::indicator:checked { background-color: #f59e0b; }"
+        )
         self.enabled_check.setToolTip("Toggle category ON or OFF in the active mixture")
         self.enabled_check.toggled.connect(self._handle_enabled_toggled)
         layout.addWidget(self.enabled_check)
 
         # 2. Color Swatch
         self.swatch = QFrame()
-        self.swatch.setFixedSize(12, 12)
+        self.swatch.setFixedSize(10, 10)
         self.swatch.setStyleSheet(f"background-color: {self.color_hex}; border-radius: 3px;")
         self.swatch.setToolTip(f"Mixture color indicator for {self.category.name}")
         layout.addWidget(self.swatch)
 
-        # 3. Category Name & Slug in single compact row
-        self.name_label = QLabel(f"<b>{self.category.name}</b> <span style='color: #8e8ea0; font-size: 10px;'>({self.category.slug})</span>")
-        self.name_label.setStyleSheet("font-size: 12px; color: #ececf1;")
+        # 3. Category Name
+        self.name_label = QLabel(self.category.name)
+        self.name_label.setStyleSheet("font-size: 13px; font-weight: 600; color: #f8fafc;")
         self.name_label.setToolTip(f"Category: {self.category.name} (slug: {self.category.slug})")
-        self.name_label.setMinimumWidth(210)
+        self.name_label.setMinimumWidth(180)
         layout.addWidget(self.name_label)
 
         # 4. Folder / Source paths badge (Double-click opens file listing window)
@@ -452,21 +461,28 @@ class CategoryRowWidget(QFrame):
         self.paths_badge = QLabel(f"📁 {paths_str}")
         self.paths_badge.setCursor(Qt.PointingHandCursor)
         self.paths_badge.setStyleSheet(
-            "background-color: #262630; color: #9a9ab0; padding: 2px 6px; border-radius: 4px; font-size: 10px; border: 1px solid #333342;"
+            "background-color: #171b26; color: #94a3b8; padding: 2px 6px; border-radius: 4px; font-size: 10px; border: 1px solid #282e42;"
         )
         self.paths_badge.setFixedHeight(22)
         self.paths_badge.setToolTip("Double-click to inspect all files, byte sizes, and token counts in this category folder.")
-        self.paths_badge.setMaximumWidth(170)
+        self.paths_badge.setMaximumWidth(150)
         self.paths_badge.mouseDoubleClickEvent = lambda _event: self._open_files_dialog()
         layout.addWidget(self.paths_badge)
 
         # 5. Continuous Slider (0 - 1000 = 0.0% to 100.0%)
         self.slider = QSlider(Qt.Horizontal)
+        self.slider.setObjectName("CategorySlider")
         self.slider.setRange(0, 1000)
         self.slider.setValue(int(round(self.category.target_percentage * 10)))
         self.slider.setMinimumWidth(130)
         self.slider.setFixedHeight(18)
         self.slider.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.slider.setStyleSheet(
+            "QSlider#CategorySlider::groove:horizontal { height: 6px; background: #1e2230; border-radius: 3px; }"
+            "QSlider#CategorySlider::sub-page:horizontal { height: 6px; background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #f59e0b, stop:1 #fbbf24); border-radius: 3px; }"
+            "QSlider#CategorySlider::handle:horizontal { width: 14px; height: 14px; margin: -4px 0; background: #fbbf24; border: 2px solid #ffffff; border-radius: 7px; }"
+            "QSlider#CategorySlider::handle:horizontal:hover { background: #ffffff; border: 2px solid #f59e0b; }"
+        )
         self.slider.setToolTip(f"Drag to adjust {self.category.name} percentage (0.0% - 100.0%)")
         self.slider.valueChanged.connect(self._handle_slider_changed)
         layout.addWidget(self.slider, 1)
@@ -479,7 +495,10 @@ class CategoryRowWidget(QFrame):
         self.spin.setSuffix(" %")
         self.spin.setValue(self.category.target_percentage)
         self.spin.setFixedWidth(80)
-        self.spin.setFixedHeight(22)
+        self.spin.setFixedHeight(24)
+        self.spin.setStyleSheet(
+            "background-color: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; font-weight: bold; font-size: 11px; padding: 2px 4px;"
+        )
         self.spin.setToolTip("Type or click to set exact percentage")
         self.spin.valueChanged.connect(self._handle_spin_changed)
         layout.addWidget(self.spin)
@@ -488,9 +507,9 @@ class CategoryRowWidget(QFrame):
         self.token_badge = QLabel(f"Quota: {format_token_count(self.category.tokens_estimated)}")
         self.token_badge.setAlignment(Qt.AlignCenter)
         self.token_badge.setFixedWidth(88)
-        self.token_badge.setFixedHeight(22)
+        self.token_badge.setFixedHeight(24)
         self.token_badge.setStyleSheet(
-            "background-color: #23232c; color: #e5a93c; font-weight: bold; padding: 2px 4px; border-radius: 4px; font-size: 10px;"
+            "background-color: #1c1813; color: #fbbf24; font-weight: bold; padding: 2px 6px; border-radius: 6px; font-size: 11px; border: 1px solid #78350f;"
         )
         self.token_badge.setToolTip(f"Projected Target Quota: {self.category.tokens_estimated:,} tokens")
         layout.addWidget(self.token_badge)
@@ -499,9 +518,9 @@ class CategoryRowWidget(QFrame):
         self.disk_badge = QLabel("Disk: -")
         self.disk_badge.setAlignment(Qt.AlignCenter)
         self.disk_badge.setFixedWidth(92)
-        self.disk_badge.setFixedHeight(22)
+        self.disk_badge.setFixedHeight(24)
         self.disk_badge.setStyleSheet(
-            "background-color: #202028; color: #9ca3af; padding: 2px 4px; border-radius: 4px; font-size: 10px; border: 1px solid #333342;"
+            "background-color: #141722; color: #94a3b8; padding: 2px 6px; border-radius: 6px; font-size: 11px; border: 1px solid #282e42;"
         )
         self.disk_badge.setToolTip("Tokens available on disk across category files")
         layout.addWidget(self.disk_badge)
@@ -511,7 +530,7 @@ class CategoryRowWidget(QFrame):
         self.lock_btn.setCheckable(True)
         self.lock_btn.setChecked(self.category.locked)
         self.lock_btn.setFixedWidth(78)
-        self.lock_btn.setFixedHeight(22)
+        self.lock_btn.setFixedHeight(24)
         self._update_lock_btn_style()
         self.lock_btn.toggled.connect(self._handle_lock_toggled)
         layout.addWidget(self.lock_btn)
@@ -520,9 +539,12 @@ class CategoryRowWidget(QFrame):
         self.delete_btn = QPushButton("✕")
         self.delete_btn.setFixedSize(22, 22)
         self.delete_btn.setStyleSheet(
-            "QPushButton { background-color: transparent; color: #71717a; border: 1px solid #3f3f46; border-radius: 4px; font-weight: bold; font-size: 11px; }"
+            "QPushButton { background-color: transparent; color: #71717a; border: 1px solid #282e42; border-radius: 4px; font-weight: bold; font-size: 11px; }"
             "QPushButton:hover { background-color: #dc2626; color: white; border: 1px solid #dc2626; }"
         )
+        self.delete_btn.setToolTip("Remove category from recipe")
+        self.delete_btn.clicked.connect(self._handle_delete_clicked)
+        layout.addWidget(self.delete_btn)
         self.delete_btn.setToolTip("Remove category from recipe")
         self.delete_btn.clicked.connect(self._handle_delete_clicked)
         layout.addWidget(self.delete_btn)
@@ -630,7 +652,7 @@ class CategoryRowWidget(QFrame):
 class AddCategoryDialog(QDialog):
     """Clean modal dialog to add a new category to the recipe."""
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setWindowTitle("Add Recipe Category")
         self.setFixedWidth(460)
@@ -758,23 +780,45 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     # Header & Metric Chips
     # =========================================================================
     header_box = QHBoxLayout()
+    header_box.setContentsMargins(0, 0, 0, 4)
     title_box = QVBoxLayout()
     title_box.setSpacing(2)
 
     title_label = QLabel("DATASET RECIPE MATRIX")
-    title_label.setStyleSheet("font-size: 17px; font-weight: 800; letter-spacing: 0.5px; color: #f3f4f6;")
+    title_label.setStyleSheet("font-size: 20px; font-weight: 900; letter-spacing: 0.5px; color: #f8fafc;")
     subtitle_label = QLabel("Dynamic Multi-Discipline Category Proportions, File Inspection & Token Allocation")
-    subtitle_label.setStyleSheet("font-size: 11px; color: #9ca3af;")
+    subtitle_label.setStyleSheet("font-size: 11px; color: #94a3b8;")
     title_box.addWidget(title_label)
     title_box.addWidget(subtitle_label)
     header_box.addLayout(title_box)
     header_box.addStretch(1)
 
-    # Stat metric chips
-    window.recipe_total_categories_chip = window._metric_chip("Categories: 11 Active", "Total active categories in the recipe.")
-    window.recipe_total_percentage_chip = window._metric_chip("Total: 100.0%", "Sum of active category percentages.")
-    window.recipe_projected_tokens_chip = window._metric_chip("Projected: 250.0M Tokens", "Estimated total tokens to be sampled.")
+    # Stat metric chips styled as modern glass pills
+    chip_css = (
+        "QLabel#MetricChip {"
+        "  background: #161924;"
+        "  border: 1px solid #282e42;"
+        "  border-radius: 8px;"
+        "  color: #cbd5e1;"
+        "  padding: 6px 14px;"
+        "  font-weight: 600;"
+        "  font-size: 11px;"
+        "}"
+    )
+    window.recipe_total_categories_chip = window._metric_chip("Total Categories: 11", "Total active categories in the recipe.")
+    window.recipe_total_categories_chip.setStyleSheet(chip_css)
+    window.recipe_total_percentage_chip = window._metric_chip("Target Mixture: 100%", "Sum of active category percentages.")
+    window.recipe_total_percentage_chip.setStyleSheet(
+        chip_css.replace("color: #cbd5e1;", "color: #f59e0b; font-weight: 700;")
+    )
+    window.recipe_projected_tokens_chip = window._metric_chip("Tokens Projected: 250M", "Estimated total tokens to be sampled.")
+    window.recipe_projected_tokens_chip.setStyleSheet(
+        chip_css.replace("color: #cbd5e1;", "color: #f59e0b; font-weight: 700;")
+    )
     window.recipe_balance_chip = window._metric_chip("Status: Balanced", "Validation status of active recipe mixture.")
+    window.recipe_balance_chip.setStyleSheet(
+        "background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius: 8px; color: #34d399; padding: 6px 14px; font-weight: 700; font-size: 11px;"
+    )
 
     header_box.addWidget(window.recipe_total_categories_chip)
     header_box.addWidget(window.recipe_total_percentage_chip)
@@ -783,37 +827,30 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     root_layout.addLayout(header_box)
 
     # =========================================================================
-    # Stacked Distribution Visualizer Bar
+    # Two-Column Body: Presets Left Panel + Matrix Distribution Right Panel
     # =========================================================================
-    dist_container = QWidget()
-    dist_layout = QVBoxLayout(dist_container)
-    dist_layout.setContentsMargins(0, 0, 0, 0)
-    dist_layout.setSpacing(4)
+    body_layout = QHBoxLayout()
+    body_layout.setSpacing(14)
+    body_layout.setContentsMargins(0, 0, 0, 0)
 
-    bar_label_box = QHBoxLayout()
-    bar_heading = QLabel("MIXTURE DISTRIBUTION")
-    bar_heading.setStyleSheet("font-size: 10px; font-weight: bold; color: #71717a; letter-spacing: 0.5px;")
-    bar_heading.setToolTip("Visual distribution of dataset categories. Hover over any colored slice for detailed allocation & disk tokens.")
-    bar_label_box.addWidget(bar_heading)
-    bar_label_box.addStretch(1)
-    dist_layout.addLayout(bar_label_box)
+    # 1. Left Card: RECIPE PRESETS
+    left_card = QFrame()
+    left_card.setFixedWidth(250)
+    left_card.setStyleSheet(
+        "QFrame {"
+        "  background-color: #151821;"
+        "  border: 1px solid #232738;"
+        "  border-radius: 12px;"
+        "}"
+    )
+    left_layout = QVBoxLayout(left_card)
+    left_layout.setContentsMargins(14, 14, 14, 14)
+    left_layout.setSpacing(10)
 
-    window.recipe_dist_bar = RecipeDistributionBar()
-    window.recipe_dist_bar.set_recipe(recipe)
-    dist_layout.addWidget(window.recipe_dist_bar)
-    root_layout.addWidget(dist_container)
+    presets_heading = QLabel("RECIPE PRESETS")
+    presets_heading.setStyleSheet("font-size: 11px; font-weight: 800; color: #94a3b8; letter-spacing: 0.8px;")
+    left_layout.addWidget(presets_heading)
 
-    # =========================================================================
-    # Action & Preset Toolbar
-    # =========================================================================
-    toolbar_card = QFrame()
-    toolbar_card.setStyleSheet("background-color: #18181f; border: 1px solid #2a2a36; border-radius: 6px;")
-    tb_layout = QHBoxLayout(toolbar_card)
-    tb_layout.setContentsMargins(10, 4, 10, 4)
-    tb_layout.setSpacing(8)
-
-    # Preset ComboBox
-    tb_layout.addWidget(QLabel("Recipe Preset:"))
     window.recipe_preset_combo = QComboBox()
     window.recipe_preset_combo.addItems([
         "Default 11-Pillar Frontier Base",
@@ -822,98 +859,160 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
         "Balanced Tiny LLM",
         "Custom Mixture",
     ])
-    window.recipe_preset_combo.setFixedWidth(230)
-    window.recipe_preset_combo.setToolTip("Select a standard balanced recipe preset, or customize your own mixture.")
-    tb_layout.addWidget(window.recipe_preset_combo)
+    window.recipe_preset_combo.setStyleSheet(
+        "background-color: #141722; color: #ffffff; border: 1px solid #f59e0b; border-radius: 8px; padding: 6px 10px; font-weight: 600;"
+    )
+    left_layout.addWidget(window.recipe_preset_combo)
 
-    # Target Token Budget Spinbox (in Millions)
-    tb_layout.addWidget(QLabel("Target Tokens:"))
+    # Preset quick list widget
+    preset_list = QTreeWidget()
+    preset_list.setHeaderHidden(True)
+    preset_list.setRootIsDecorated(False)
+    preset_list.setMinimumHeight(140)
+    preset_list.setStyleSheet(
+        "QTreeWidget { background: #11131c; border: 1px solid #232738; border-radius: 8px; padding: 4px; outline: none; }"
+        "QTreeWidget::item { padding: 6px 8px; color: #cbd5e1; border-radius: 5px; font-weight: 500; font-size: 11px; }"
+        "QTreeWidget::item:selected { background: #272216; color: #fbbf24; font-weight: bold; border: 1px solid #78350f; }"
+        "QTreeWidget::item:hover { background: #181b26; }"
+    )
+    preset_names = [
+        "Default 11-Pillar Frontier Base",
+        "Code Heavy",
+        "Math & Reasoning",
+        "Balanced Tiny LLM",
+        "Custom Mixture",
+    ]
+    for p_name in preset_names:
+        preset_list.addTopLevelItem(QTreeWidgetItem([p_name]))
+    if preset_list.topLevelItemCount() > 0:
+        preset_list.setCurrentItem(preset_list.topLevelItem(0))
+
+    def on_tree_preset_clicked(item: QTreeWidgetItem, _col: int) -> None:
+        idx = preset_list.indexOfTopLevelItem(item)
+        if 0 <= idx < window.recipe_preset_combo.count():
+            window.recipe_preset_combo.setCurrentIndex(idx)
+
+    preset_list.itemClicked.connect(on_tree_preset_clicked)
+    left_layout.addWidget(preset_list)
+
+    tb_label = QLabel("Target Token Budget:")
+    tb_label.setStyleSheet("color: #94a3b8; font-size: 11px; font-weight: 600;")
+    left_layout.addWidget(tb_label)
+
     window.recipe_target_tokens_spin = QSpinBox()
     window.recipe_target_tokens_spin.setRange(1, 100_000)
     window.recipe_target_tokens_spin.setSingleStep(10)
     window.recipe_target_tokens_spin.setSuffix(" M")
     window.recipe_target_tokens_spin.setValue(int(recipe.total_target_tokens // 1_000_000))
-    window.recipe_target_tokens_spin.setFixedWidth(110)
-    window.recipe_target_tokens_spin.setToolTip("Total token budget in millions (e.g. 250 M = 250,000,000 tokens)")
-    tb_layout.addWidget(window.recipe_target_tokens_spin)
-
-    # Live Auto-Balance Checkbox
-    window.recipe_live_autobalance_check = QCheckBox("Live Auto-Balance (Keep 100%)")
-    window.recipe_live_autobalance_check.setChecked(True)
-    window.recipe_live_autobalance_check.setToolTip(
-        "When ON, moving any unlocked slider dynamically rebalances other unlocked categories so the total always stays at 100%."
+    window.recipe_target_tokens_spin.setStyleSheet(
+        "background-color: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 7px; padding: 5px 8px; font-weight: bold;"
     )
-    tb_layout.addWidget(window.recipe_live_autobalance_check)
+    left_layout.addWidget(window.recipe_target_tokens_spin)
 
-    tb_layout.addStretch(1)
+    window.recipe_live_autobalance_check = QCheckBox("Live Auto-Balance (100%)")
+    window.recipe_live_autobalance_check.setChecked(True)
+    window.recipe_live_autobalance_check.setStyleSheet("color: #cbd5e1; font-size: 11px;")
+    left_layout.addWidget(window.recipe_live_autobalance_check)
 
-    # Refresh Disk Data Button
+    # Action Buttons inside left panel
+    window.recipe_save_btn = QPushButton("Save Recipe to Project")
+    window.recipe_save_btn.setStyleSheet(
+        "QPushButton { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #f59e0b, stop:1 #d97706); color: #000000; font-weight: 800; border-radius: 8px; height: 38px; border: none; font-size: 12px; }"
+        "QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #fbbf24, stop:1 #f59e0b); }"
+    )
+    left_layout.addWidget(window.recipe_save_btn)
+
+    window.recipe_export_btn = QPushButton("Export Recipe")
+    window.recipe_export_btn.setStyleSheet(
+        "QPushButton { background: #1e2230; color: #cbd5e1; border: 1px solid #333a4d; border-radius: 8px; height: 34px; font-size: 12px; font-weight: 600; }"
+        "QPushButton:hover { background: #282f44; color: #ffffff; }"
+    )
+    left_layout.addWidget(window.recipe_export_btn)
+
+    window.recipe_import_btn = QPushButton("Import Recipe...")
+    window.recipe_import_btn.setStyleSheet(
+        "QPushButton { background: #1e2230; color: #cbd5e1; border: 1px solid #333a4d; border-radius: 8px; height: 34px; font-size: 12px; }"
+        "QPushButton:hover { background: #282f44; color: #ffffff; }"
+    )
+    left_layout.addWidget(window.recipe_import_btn)
+
     window.recipe_scan_disk_btn = QPushButton("↻ Refresh Disk Data")
     window.recipe_scan_disk_btn.setStyleSheet(
-        "QPushButton { background-color: #27273a; color: #38bdf8; border: 1px solid #38bdf8; border-radius: 4px; padding: 6px 12px; font-weight: bold; }"
-        "QPushButton:hover { background-color: #0369a1; color: white; }"
+        "QPushButton { background: #14233a; color: #38bdf8; border: 1px solid #0284c7; border-radius: 8px; height: 34px; font-size: 12px; font-weight: 600; }"
+        "QPushButton:hover { background: #0369a1; color: #ffffff; }"
     )
-    window.recipe_scan_disk_btn.setToolTip("Scan local category folders on disk to detect newly added or updated files and token counts.")
-    tb_layout.addWidget(window.recipe_scan_disk_btn)
+    left_layout.addWidget(window.recipe_scan_disk_btn)
 
-    # Normalize to 100% Button
-    window.recipe_normalize_btn = QPushButton("Auto-Normalize (100%)")
-    window.recipe_normalize_btn.setStyleSheet(
-        "QPushButton { background-color: #2563eb; color: white; font-weight: bold; border-radius: 4px; padding: 6px 12px; }"
-        "QPushButton:hover { background-color: #1d4ed8; }"
-    )
-    window.recipe_normalize_btn.setToolTip("Proportionally rebalance unlocked categories so the total sum is exactly 100.0% while keeping locked categories untouched.")
-    tb_layout.addWidget(window.recipe_normalize_btn)
+    left_layout.addStretch(1)
 
-    # Add Category Button
-    window.recipe_add_cat_btn = QPushButton("+ Add Category")
+    window.recipe_add_cat_btn = QPushButton("+ Add Custom Category")
     window.recipe_add_cat_btn.setStyleSheet(
-        "QPushButton { background-color: #10b981; color: white; font-weight: bold; border-radius: 4px; padding: 6px 12px; }"
-        "QPushButton:hover { background-color: #059669; }"
+        "QPushButton { background: #181a24; color: #cbd5e1; border: 1px solid #2d3348; border-radius: 8px; height: 36px; font-size: 12px; font-weight: 600; }"
+        "QPushButton:hover { background: #242938; color: #ffffff; border-color: #f59e0b; }"
     )
-    window.recipe_add_cat_btn.setToolTip("Add a custom dataset category with custom folder path")
-    tb_layout.addWidget(window.recipe_add_cat_btn)
+    left_layout.addWidget(window.recipe_add_cat_btn)
 
-    # Save Recipe to Project Button
-    window.recipe_save_btn = QPushButton("Save to Project")
-    window.recipe_save_btn.setStyleSheet(
-        "QPushButton { background-color: #3b3b48; color: #f3f4f6; border: 1px solid #4b4b5c; border-radius: 4px; padding: 6px 12px; font-weight: 600; }"
-        "QPushButton:hover { background-color: #4b4b5c; }"
+    body_layout.addWidget(left_card)
+
+    # 2. Right Card: DISTRIBUTION & CATEGORY SLIDERS
+    right_card = QFrame()
+    right_card.setStyleSheet(
+        "QFrame {"
+        "  background-color: #151821;"
+        "  border: 1px solid #232738;"
+        "  border-radius: 12px;"
+        "}"
     )
-    window.recipe_save_btn.setToolTip("Save this recipe to the active project folder (recipe.json)")
-    tb_layout.addWidget(window.recipe_save_btn)
+    right_layout = QVBoxLayout(right_card)
+    right_layout.setContentsMargins(16, 14, 16, 14)
+    right_layout.setSpacing(10)
 
-    # Export / Import Buttons
-    window.recipe_export_btn = QPushButton("Export...")
-    window.recipe_export_btn.setStyleSheet(
-        "QPushButton { background-color: transparent; color: #9ca3af; border: 1px solid #3b3b48; border-radius: 4px; padding: 6px 10px; }"
-        "QPushButton:hover { color: white; border: 1px solid #6b7280; }"
-    )
-    window.recipe_export_btn.setToolTip("Export current recipe configuration to an external JSON file")
-    window.recipe_import_btn = QPushButton("Import...")
-    window.recipe_import_btn.setStyleSheet(
-        "QPushButton { background-color: transparent; color: #9ca3af; border: 1px solid #3b3b48; border-radius: 4px; padding: 6px 10px; }"
-        "QPushButton:hover { color: white; border: 1px solid #6b7280; }"
-    )
-    window.recipe_import_btn.setToolTip("Import a saved recipe configuration from a JSON file")
-    tb_layout.addWidget(window.recipe_export_btn)
-    tb_layout.addWidget(window.recipe_import_btn)
+    # Continuous Distribution Bar row
+    dist_row = QHBoxLayout()
+    dist_row.setSpacing(12)
+    window.recipe_dist_bar = RecipeDistributionBar()
+    window.recipe_dist_bar.set_recipe(recipe)
+    dist_row.addWidget(window.recipe_dist_bar, 1)
 
-    root_layout.addWidget(toolbar_card)
+    dist_pct_label = QLabel("100%")
+    dist_pct_label.setStyleSheet("color: #cbd5e1; font-weight: 700; font-size: 12px;")
+    dist_row.addWidget(dist_pct_label)
+    right_layout.addLayout(dist_row)
 
-    # =========================================================================
-    # Scrollable Category Row List
-    # =========================================================================
+    # Scrollable rows list
     list_scroll = QScrollArea()
     list_scroll.setWidgetResizable(True)
     list_scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
-
     list_container = QWidget()
     list_layout = QVBoxLayout(list_container)
-    list_layout.setContentsMargins(0, 0, 0, 0)
+    list_layout.setContentsMargins(0, 4, 0, 4)
     list_layout.setSpacing(2)
     list_scroll.setWidget(list_container)
-    root_layout.addWidget(list_scroll, 1)
+    right_layout.addWidget(list_scroll, 1)
+
+    # Bottom Actions inside right card
+    card_bottom_row = QHBoxLayout()
+    card_bottom_row.setContentsMargins(0, 6, 0, 0)
+    card_bottom_row.setSpacing(12)
+    card_bottom_row.addStretch(1)
+
+    window.recipe_normalize_btn = QPushButton("Auto-Normalize to 100%")
+    window.recipe_normalize_btn.setStyleSheet(
+        "QPushButton { background-color: #1e2230; color: #e2e8f0; border: 1px solid #333a4d; border-radius: 8px; padding: 8px 18px; font-weight: bold; font-size: 12px; }"
+        "QPushButton:hover { background-color: #282f44; border-color: #4b5563; }"
+    )
+    card_bottom_row.addWidget(window.recipe_normalize_btn)
+
+    apply_ingestion_btn = QPushButton("Apply Recipe to Ingestion Matrix ➔")
+    apply_ingestion_btn.setStyleSheet(
+        "QPushButton { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #f59e0b, stop:1 #d97706); color: #000000; font-weight: 800; border-radius: 8px; padding: 8px 24px; font-size: 13px; border: none; }"
+        "QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #fbbf24, stop:1 #f59e0b); }"
+    )
+    card_bottom_row.addWidget(apply_ingestion_btn)
+    right_layout.addLayout(card_bottom_row)
+
+    body_layout.addWidget(right_card, 1)
+    root_layout.addLayout(body_layout, 1)
 
     window._recipe_row_widgets = []
 
@@ -1117,17 +1216,6 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     window.rebuild_recipe_tab = rebuild_category_rows
     window.get_active_recipe = lambda: window.active_dataset_recipe
 
-    # Bottom Actions Bar
-    bottom_bar = QHBoxLayout()
-    bottom_bar.setContentsMargins(4, 8, 4, 4)
-
-    apply_ingestion_btn = QPushButton("Apply Recipe to Ingestion Matrix ➔")
-    apply_ingestion_btn.setStyleSheet(
-        "QPushButton { background-color: #e5a93c; color: #141414; font-weight: 800; border-radius: 6px; padding: 10px 20px; font-size: 13px; }"
-        "QPushButton:hover { background-color: #f59e0b; }"
-    )
-    apply_ingestion_btn.setToolTip("Sync this recipe's category proportions with the Data Ingestion Matrix and proceed to preparation.")
-
     def on_apply_to_ingestion() -> None:
         rec: DatasetRecipe = window.active_dataset_recipe
         if not rec.is_balanced(1.0):
@@ -1155,8 +1243,5 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
             window._switch_page(2)
 
     apply_ingestion_btn.clicked.connect(on_apply_to_ingestion)
-    bottom_bar.addStretch(1)
-    bottom_bar.addWidget(apply_ingestion_btn)
-    root_layout.addLayout(bottom_bar)
 
     return page
