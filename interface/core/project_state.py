@@ -314,13 +314,13 @@ class ProjectStateMixin:
                 "max_workers": self.max_workers.value(),
                 "prepare_mode": self._prepare_mode_value(),
                 "tokenizer_strategy": self._tokenizer_strategy_value(),
-                "code_training_mode": self.code_training_mode.isChecked(),
-                "include_prose": self.include_prose.isChecked(),
-                "include_source_code": self.include_source_code.isChecked(),
-                "extract_code_blocks": self.extract_code_blocks.isChecked(),
-                "preserve_indentation": self.preserve_indentation.isChecked(),
-                "instruction_samples": self.instruction_samples.isChecked(),
-                "reasoning_sample_mode": self._reasoning_sample_mode_value(),
+                "code_training_mode": self.code_training_mode.isChecked() if hasattr(self, "code_training_mode") else False,
+                "include_prose": self.include_prose.isChecked() if hasattr(self, "include_prose") else True,
+                "include_source_code": self.include_source_code.isChecked() if hasattr(self, "include_source_code") else True,
+                "extract_code_blocks": self.extract_code_blocks.isChecked() if hasattr(self, "extract_code_blocks") else False,
+                "preserve_indentation": self.preserve_indentation.isChecked() if hasattr(self, "preserve_indentation") else True,
+                "instruction_samples": self.instruction_samples.isChecked() if hasattr(self, "instruction_samples") else False,
+                "reasoning_sample_mode": self._reasoning_sample_mode_value() if hasattr(self, "reasoning_sample_mode") else "none",
                 "recipe": (
                     self.active_dataset_recipe.to_dict()
                     if hasattr(self, "active_dataset_recipe") and self.active_dataset_recipe

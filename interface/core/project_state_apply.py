@@ -75,17 +75,24 @@ class ProjectStateApplyMixin:
             "reuse_dataset": "Reuse dataset tokenizer",
             "import_tokenizer": "Import tokenizer.json",
         })
-        self.code_training_mode.setChecked(bool(dataset.get("code_training_mode", True)))
-        self.include_prose.setChecked(bool(dataset.get("include_prose", True)))
-        self.include_source_code.setChecked(bool(dataset.get("include_source_code", True)))
-        self.extract_code_blocks.setChecked(bool(dataset.get("extract_code_blocks", True)))
-        self.preserve_indentation.setChecked(bool(dataset.get("preserve_indentation", True)))
-        self.instruction_samples.setChecked(bool(dataset.get("instruction_samples", True)))
-        self._set_combo_by_data(self.reasoning_sample_mode, str(dataset.get("reasoning_sample_mode", "scaffold")), {
-            "scaffold": "Reasoning scaffold",
-            "detailed": "Detailed code reasoning",
-            "none": "No reasoning wrapper",
-        })
+        if hasattr(self, "code_training_mode"):
+            self.code_training_mode.setChecked(bool(dataset.get("code_training_mode", False)))
+        if hasattr(self, "include_prose"):
+            self.include_prose.setChecked(bool(dataset.get("include_prose", True)))
+        if hasattr(self, "include_source_code"):
+            self.include_source_code.setChecked(bool(dataset.get("include_source_code", True)))
+        if hasattr(self, "extract_code_blocks"):
+            self.extract_code_blocks.setChecked(bool(dataset.get("extract_code_blocks", False)))
+        if hasattr(self, "preserve_indentation"):
+            self.preserve_indentation.setChecked(bool(dataset.get("preserve_indentation", True)))
+        if hasattr(self, "instruction_samples"):
+            self.instruction_samples.setChecked(bool(dataset.get("instruction_samples", False)))
+        if hasattr(self, "reasoning_sample_mode"):
+            self._set_combo_by_data(self.reasoning_sample_mode, str(dataset.get("reasoning_sample_mode", "none")), {
+                "scaffold": "Reasoning scaffold",
+                "detailed": "Detailed code reasoning",
+                "none": "No reasoning wrapper",
+            })
         saved_recipe = dataset.get("recipe")
         if saved_recipe and isinstance(saved_recipe, dict):
             try:

@@ -24,7 +24,6 @@ from PySide6.QtWidgets import (
 )
 
 from engine.conversation_datasets import CONVERSATION_DATASET_PRESETS
-from interface.charts import DatasetBarChartWidget
 
 try:
     import psutil
@@ -223,39 +222,6 @@ def build_dataset_tab(window) -> QWidget:
     window.tokenizer_path.setEnabled(False)
     window._tip(window.tokenizer_path, "Existing tokenizer.json to import. Use this when continuing a compatible tokenizer family.")
     window.tokenizer_strategy.currentTextChanged.connect(window._update_tokenizer_strategy_controls)
-    window.code_training_mode = QCheckBox("Code-aware processing")
-    window.code_training_mode.setChecked(True)
-    window._tip(
-        window.code_training_mode,
-        "Use code-aware cleaning, category tags, and code/prose balancing. Keep this on for programming books, source folders, and technical datasets.",
-    )
-    window.include_prose = QCheckBox("Include explanations")
-    window.include_prose.setChecked(True)
-    window._tip(window.include_prose, "Keep prose from PDFs/books. This helps the model learn programming concepts and explanations.")
-    window.include_source_code = QCheckBox("Include source files")
-    window.include_source_code.setChecked(True)
-    window._tip(window.include_source_code, "Include real code files such as .py, .js, .java, .cpp, .cs, .go, .rs, and similar.")
-    window.extract_code_blocks = QCheckBox("Extract code blocks")
-    window.extract_code_blocks.setChecked(True)
-    window._tip(
-        window.extract_code_blocks,
-        "Detect code snippets inside PDFs and plain text. If you train only from real source files, this can be turned off.",
-    )
-    window.preserve_indentation = QCheckBox("Preserve indentation")
-    window.preserve_indentation.setChecked(True)
-    window._tip(window.preserve_indentation, "Keep line breaks and indentation for code. This is important for Python and readable generated code.")
-    window.instruction_samples = QCheckBox("Instruction-style samples")
-    window.instruction_samples.setChecked(True)
-    window._tip(window.instruction_samples, "Wrap code samples with simple instruction tags so the model sees code as task-oriented examples.")
-    window.reasoning_sample_mode = QComboBox()
-    window.reasoning_sample_mode.addItems(["Reasoning scaffold", "Detailed code reasoning", "No reasoning wrapper"])
-    window.reasoning_sample_mode.setMaximumWidth(260)
-    window._tip(
-        window.reasoning_sample_mode,
-        "Shapes code samples as task/reasoning/answer examples. This teaches response structure, not guaranteed deep reasoning by itwindow.",
-    )
-    window.instruction_samples.toggled.connect(window.reasoning_sample_mode.setEnabled)
-
     source_form.addRow("Source vault", window._path_row(window.input_dir, directory=True))
     source_form.addRow("Dataset core", window._path_row(window.dataset_dir, directory=True))
     source_pipeline_row = QWidget()
@@ -273,15 +239,6 @@ def build_dataset_tab(window) -> QWidget:
     source_form.addRow("Pipeline", source_pipeline_row)
     source_form.addRow("Tokenizer training cap (GiB)", window.tokenizer_training_max_gb)
 
-    source_options_row = QWidget()
-    source_options_layout = QHBoxLayout(source_options_row)
-    source_options_layout.setContentsMargins(0, 0, 0, 0)
-    source_options_layout.setSpacing(14)
-    source_options_layout.addWidget(window.code_training_mode)
-    source_options_layout.addWidget(window.include_source_code)
-    source_options_layout.addStretch(1)
-    source_form.addRow("Options", source_options_row)
-
     tokenizer_form.addRow("Auto vocabulary", window.auto_vocab)
     tokenizer_form.addRow("Manual vocabulary", window.manual_vocab_size)
     tokenizer_form.addRow("Selected vocab", window.auto_vocab_label)
@@ -292,11 +249,7 @@ def build_dataset_tab(window) -> QWidget:
     tokenizer_form.addRow("Min frequency", window.min_frequency)
     tokenizer_form.addRow("Context window", window.context_length)
     tokenizer_form.addRow("Validation split", window.validation_split)
-    tokenizer_form.addRow("", window.include_prose)
-    tokenizer_form.addRow("", window.extract_code_blocks)
-    tokenizer_form.addRow("", window.preserve_indentation)
-    tokenizer_form.addRow("", window.instruction_samples)
-    tokenizer_form.addRow("Reasoning samples", window.reasoning_sample_mode)
+
     source_card = window._card("SOURCE ARRAY", source_form)
     source_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
     tokenizer_card = window._card("TOKENIZER CORE", tokenizer_form)
@@ -304,22 +257,9 @@ def build_dataset_tab(window) -> QWidget:
     left_column.addWidget(source_card, 0)
     right_column.addWidget(tokenizer_card, 0)
 
-    window.dataset_mix_chart = DatasetBarChartWidget("Dataset Composition", "Percent")
-    window.dataset_sequence_chart = DatasetBarChartWidget("Token Distribution", "Tokens")
-    stats_grid = QGridLayout()
-    stats_grid.setHorizontalSpacing(8)
-    stats_grid.setVerticalSpacing(8)
-    stats_grid.addWidget(window.dataset_mix_chart, 0, 0)
-    stats_grid.addWidget(window.dataset_sequence_chart, 0, 1)
-    stats_grid.setColumnStretch(0, 1)
-    stats_grid.setColumnStretch(1, 1)
-    stats_card = window._card("DATASET STATISTICS", stats_grid)
-    stats_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-    right_column.addWidget(stats_card, 0)
-
     window.dataset_advisor = QTextEdit()
     window.dataset_advisor.setReadOnly(True)
-    window.dataset_advisor.setMinimumHeight(210)
+    window.dataset_advisor.setMinimumHeight(160)
     window.dataset_advisor.setPlainText("Run Preview Dataset to get cleanup suggestions.")
     window._tip(window.dataset_advisor, "Actionable dataset cleanup advice from preview quality checks.")
     advisor_layout = QVBoxLayout()
@@ -349,7 +289,7 @@ def build_dataset_tab(window) -> QWidget:
     window.dataset_log = QTextEdit()
     window.dataset_log.setReadOnly(True)
     window.dataset_log.document().setMaximumBlockCount(1200)
-    window.dataset_log.setMinimumHeight(260)
+    window.dataset_log.setMinimumHeight(200)
     window.dataset_log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
     log_layout = QVBoxLayout()
     log_layout.addWidget(window.dataset_log, 1)
@@ -360,9 +300,7 @@ def build_dataset_tab(window) -> QWidget:
     action_row.addWidget(window.preview_dataset_button)
     action_row.addWidget(window.prepare_button, 1)
     action_row.addWidget(window.stop_dataset_button)
-    action_row.addStretch(1)
     right_column.addLayout(action_row)
-    right_column.addStretch(1)
     layout.addLayout(ingestion_body, 1)
 
     window.dataset_progress = window._thin_progress()

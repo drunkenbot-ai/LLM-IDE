@@ -45,6 +45,8 @@ class DatasetControlsMixin:
             Internal reasoning sample mode.
         """
 
+        if not hasattr(self, "reasoning_sample_mode"):
+            return "none"
         label = self.reasoning_sample_mode.currentText()
         if label == "Detailed code reasoning":
             return "detailed"
@@ -206,10 +208,14 @@ class DatasetControlsMixin:
         self.include_conversation_datasets.setChecked(bool(starter_datasets.get(stage)))
         self._set_selected_conversation_datasets(starter_datasets.get(stage, []))
         if stage == "code":
-            self.code_training_mode.setChecked(True)
-            self.include_source_code.setChecked(True)
-            self.extract_code_blocks.setChecked(True)
-            self.preserve_indentation.setChecked(True)
+            if hasattr(self, "code_training_mode"):
+                self.code_training_mode.setChecked(True)
+            if hasattr(self, "include_source_code"):
+                self.include_source_code.setChecked(True)
+            if hasattr(self, "extract_code_blocks"):
+                self.extract_code_blocks.setChecked(True)
+            if hasattr(self, "preserve_indentation"):
+                self.preserve_indentation.setChecked(True)
         self._set_mixture_weights({})
         self._switch_page(0)
         self.dataset_log.append(f"Configured Ingest for {dataset_stage_label(stage)}. Import the base tokenizer before preparing.")

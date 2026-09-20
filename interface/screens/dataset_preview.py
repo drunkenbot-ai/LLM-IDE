@@ -138,7 +138,7 @@ class DatasetPreviewMixin:
         if result.bad_extraction_files:
             suggestions.append(
                 "Replace flagged PDFs with text/source versions, or remove files with bad extraction.")
-        if result.balance_label == "Prose heavy" and self.code_training_mode.isChecked():
+        if result.balance_label == "Prose heavy" and getattr(self, "code_training_mode", None) and self.code_training_mode.isChecked():
             suggestions.append(
                 "Add real source-code folders or enable source-file inclusion for a stronger coding model.")
         if result.balance_label == "Code heavy":
