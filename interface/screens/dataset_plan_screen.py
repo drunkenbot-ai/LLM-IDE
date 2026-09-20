@@ -320,6 +320,7 @@ class DatasetPlanScreenMixin:
                 self.default_data_tree_updating = False
             if hasattr(self, "_mixture_weights_state"):
                 delattr(self, "_mixture_weights_state")
+            self._sync_category_with_recipe(data.get("category"))
             return
         state = item.checkState(0)
         if state == Qt.PartiallyChecked:
@@ -332,6 +333,26 @@ class DatasetPlanScreenMixin:
             self.default_data_tree_updating = False
         if hasattr(self, "_mixture_weights_state"):
             delattr(self, "_mixture_weights_state")
+        self._sync_category_with_recipe(data.get("category"), is_checked=(state == Qt.Checked))
+
+    def _sync_category_with_recipe(self, category_slug: Optional[str], is_checked: Optional[bool] = None) -> None:
+        """Keep Recipe Matrix category enabled states synchronized with Blueprint sources selection."""
+        if not category_slug or not hasattr(self, "active_dataset_recipe") or not self.active_dataset_recipe:
+            return
+        cat = self.active_dataset_recipe.get_category(category_slug)
+        if not cat:
+            return
+        if is_checked is not None:
+            cat.enabled = is_checked
+        elif hasattr(self, "default_data_category_items") and category_slug in self.default_data_category_items:
+            c_item = self.default_data_category_items[category_slug]
+            cat.enabled = (c_item.checkState(0) != Qt.Unchecked)
+
+        self.active_dataset_recipe.recalculate_token_projections()
+        if hasattr(self, "rebuild_recipe_tab"):
+            self.rebuild_recipe_tab()
+        if hasattr(self, "update_dataset_tab_recipe_banner"):
+            self.update_dataset_tab_recipe_banner()
 
     def _refresh_default_data_category_states(self) -> None:
         """Refresh category checkbox states from child file selections."""

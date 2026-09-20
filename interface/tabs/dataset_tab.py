@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QFormLayout,
+    QFrame,
     QGridLayout,
     QHBoxLayout,
     QLabel,
@@ -83,6 +84,66 @@ def build_dataset_tab(window) -> QWidget:
         item.setMaximumWidth(210)
         title_row.addWidget(item, 1)
     layout.addLayout(title_row)
+
+    # Active Dataset Recipe Status Banner
+    recipe_banner = QFrame()
+    recipe_banner.setObjectName("RecipeBanner")
+    recipe_banner.setStyleSheet(
+        "#RecipeBanner {"
+        "  background-color: #171724;"
+        "  border: 1px solid #312e81;"
+        "  border-left: 4px solid #6366f1;"
+        "  border-radius: 6px;"
+        "  margin-top: 4px;"
+        "}"
+    )
+    banner_layout = QHBoxLayout(recipe_banner)
+    banner_layout.setContentsMargins(12, 7, 12, 7)
+    banner_layout.setSpacing(12)
+
+    window.dataset_tab_recipe_icon = QLabel("🥣")
+    window.dataset_tab_recipe_icon.setStyleSheet("font-size: 16px;")
+    banner_layout.addWidget(window.dataset_tab_recipe_icon)
+
+    window.dataset_tab_recipe_label = QLabel("ACTIVE RECIPE: Default 11-Pillar Frontier Base • 11 Categories • 250M Target Tokens")
+    window.dataset_tab_recipe_label.setStyleSheet("font-weight: bold; color: #e0e7ff; font-size: 12px;")
+    banner_layout.addWidget(window.dataset_tab_recipe_label, 1)
+
+    window.dataset_tab_recipe_status = QLabel("Balanced (100.0%)")
+    window.dataset_tab_recipe_status.setStyleSheet("background-color: #064e3b; color: #34d399; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;")
+    banner_layout.addWidget(window.dataset_tab_recipe_status)
+
+    recipe_config_btn = QPushButton("Configure Recipe Matrix ➔")
+    recipe_config_btn.setStyleSheet(
+        "QPushButton { background-color: #4f46e5; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 11px; }"
+        "QPushButton:hover { background-color: #4338ca; }"
+    )
+    recipe_config_btn.setToolTip("Open the Dataset Recipe Matrix page to configure category percentages, ratios, and token allocations.")
+    recipe_config_btn.clicked.connect(lambda: window._switch_page(1) if hasattr(window, "_switch_page") else None)
+    banner_layout.addWidget(recipe_config_btn)
+
+    layout.addWidget(recipe_banner)
+
+    def update_recipe_banner() -> None:
+        rec = getattr(window, "active_dataset_recipe", None)
+        if rec:
+            enabled_count = len([c for c in rec.categories if c.enabled])
+            t_str = f"{rec.total_target_tokens / 1_000_000:.0f}M" if rec.total_target_tokens >= 1_000_000 else f"{rec.total_target_tokens:,}"
+            window.dataset_tab_recipe_label.setText(
+                f"ACTIVE RECIPE: {rec.name}  •  {enabled_count} Active Categories  •  {t_str} Target Token Budget"
+            )
+            if rec.is_balanced():
+                window.dataset_tab_recipe_status.setText(f"Balanced ({rec.total_percentage():.1f}%)")
+                window.dataset_tab_recipe_status.setStyleSheet("background-color: #064e3b; color: #34d399; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;")
+            else:
+                window.dataset_tab_recipe_status.setText(f"Unbalanced ({rec.total_percentage():.1f}%)")
+                window.dataset_tab_recipe_status.setStyleSheet("background-color: #451a03; color: #fbbf24; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;")
+        else:
+            window.dataset_tab_recipe_label.setText("ACTIVE RECIPE: Default 11-Pillar Frontier Base")
+            window.dataset_tab_recipe_status.setText("Ready")
+
+    window.update_dataset_tab_recipe_banner = update_recipe_banner
+    update_recipe_banner()
 
     ingestion_body = QHBoxLayout()
     ingestion_body.setSpacing(14)
