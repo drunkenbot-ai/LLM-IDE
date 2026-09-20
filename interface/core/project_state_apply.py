@@ -86,6 +86,27 @@ class ProjectStateApplyMixin:
             "detailed": "Detailed code reasoning",
             "none": "No reasoning wrapper",
         })
+        saved_recipe = dataset.get("recipe")
+        if saved_recipe and isinstance(saved_recipe, dict):
+            try:
+                from engine.dataset_recipe import DatasetRecipe
+                self.active_dataset_recipe = DatasetRecipe.from_dict(saved_recipe)
+                if hasattr(self, "rebuild_recipe_tab"):
+                    self.rebuild_recipe_tab()
+            except Exception as exc:
+                LOGGER.warning("Could not restore dataset recipe: %s", exc)
+        elif self.current_project_file is not None:
+            recipe_file = self.current_project_file.parent / "recipe.json"
+            if recipe_file.is_file():
+                try:
+                    from engine.dataset_recipe import DatasetRecipe
+                    loaded = DatasetRecipe.load_from_file(recipe_file)
+                    if loaded:
+                        self.active_dataset_recipe = loaded
+                        if hasattr(self, "rebuild_recipe_tab"):
+                            self.rebuild_recipe_tab()
+                except Exception as exc:
+                    LOGGER.warning("Could not load project recipe.json: %s", exc)
 
         self._set_combo_text(self.preset, str(training.get("preset", self.preset.currentText())))
         self._set_combo_text(self.architecture_style, str(training.get("architecture_style", self.architecture_style.currentText())))

@@ -27,6 +27,12 @@ class ProjectManagerMixin:
         if self.current_project_file is None:
             self._apply_project_workspace_paths(project_dir)
         project_file.write_text(json.dumps(self._project_state_dict(project_name, project_dir), indent=2), encoding="utf-8")
+        if hasattr(self, "active_dataset_recipe") and self.active_dataset_recipe:
+            try:
+                recipe_path = project_dir / "recipe.json"
+                self.active_dataset_recipe.save_to_file(recipe_path)
+            except Exception as exc:
+                LOGGER.warning("Could not auto-save recipe.json: %s", exc)
         self.current_project_file = project_file
         _register_recent_project(project_file)
         self._apply_project_runtime_environment(project_dir)

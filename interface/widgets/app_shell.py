@@ -149,6 +149,7 @@ def build_side_rail(window) -> QWidget:
     layout.setSpacing(12)
     entries = (
         ("dataset_plan_nav", "Dataset Blueprint", "plan_tab_icon.png"),
+        ("dataset_recipe_nav", "Recipe Matrix", "recipe_tab_icon.png"),
         ("dataset_nav", "Ingestion", "ingestion_tab_icon.png"),
         ("training_nav", "Training", "AI_tab_icon.png"),
         ("fine_tune_nav", "Fine-tuning", "fine_tune_tab.png"),
@@ -187,10 +188,16 @@ def build_main_shell(window, app_name: str) -> QWidget:
         page = builder(window)
         page.setObjectName("Page")
         window.pages.addWidget(page)
-    window.training_page_index = 2
-    window.fine_tuning_page_index = 3
-    window.live_page_index = 4
-    window.job_manager_page_index = 5
+    window.blueprint_page_index = 0
+    window.recipe_page_index = 1
+    window.ingestion_page_index = 2
+    window.training_page_index = 3
+    window.fine_tuning_page_index = 4
+    window.live_page_index = 5
+    window.job_manager_page_index = 6
+    window.benchmark_page_index = 7
+    window.export_page_index = 8
+    window.chat_page_index = 9
     body.addWidget(window.pages, 1)
     root.addLayout(body, 1)
 

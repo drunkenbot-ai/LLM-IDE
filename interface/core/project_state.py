@@ -71,6 +71,7 @@ class ProjectStateMixin:
                 "preserve_indentation": True,
                 "instruction_samples": True,
                 "reasoning_sample_mode": "scaffold",
+                "recipe": None,
             },
             "training": {
                 "preset": "Tiny",
@@ -320,6 +321,11 @@ class ProjectStateMixin:
                 "preserve_indentation": self.preserve_indentation.isChecked(),
                 "instruction_samples": self.instruction_samples.isChecked(),
                 "reasoning_sample_mode": self._reasoning_sample_mode_value(),
+                "recipe": (
+                    self.active_dataset_recipe.to_dict()
+                    if hasattr(self, "active_dataset_recipe") and self.active_dataset_recipe
+                    else None
+                ),
             },
             "training": {
                 "preset": self.preset.currentText(),

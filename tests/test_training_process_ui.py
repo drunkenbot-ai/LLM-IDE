@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import inspect
 import json
+import os
 from pathlib import Path
 from queue import Queue
 from types import SimpleNamespace
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 import pytest
 from PySide6.QtGui import QCloseEvent

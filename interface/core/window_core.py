@@ -254,6 +254,7 @@ class WindowCoreMixin:
         self.pages.setCurrentIndex(index)
         buttons = [
             self.dataset_plan_nav,
+            getattr(self, "dataset_recipe_nav", None),
             self.dataset_nav,
             self.training_nav,
             self.fine_tune_nav,
@@ -263,12 +264,13 @@ class WindowCoreMixin:
             self.export_nav,
             self.chat_nav,
         ]
-        for button_index, button in enumerate(buttons):
+        active_buttons = [b for b in buttons if b is not None]
+        for button_index, button in enumerate(active_buttons):
             button.setChecked(button_index == index)
         self._refresh_training_layout()
-        if index == self.live_page_index:
+        if index == getattr(self, "live_page_index", 5):
             self._render_current_live_snapshot()
-        if index == 5:
+        if index == getattr(self, "job_manager_page_index", 6):
             QTimer.singleShot(20, self.refresh_job_manager_tab)
 
     def show_chat_only_mode(self) -> None:
@@ -278,7 +280,7 @@ class WindowCoreMixin:
             self.top_bar.hide()
         if hasattr(self, "side_rail"):
             self.side_rail.hide()
-        self._switch_page(8)
+        self._switch_page(getattr(self, "chat_page_index", 9))
         licensed = bool(QApplication.instance().property("license_valid"))
         self.setWindowTitle(
             f"{APP_NAME} {APP_VERSION} "

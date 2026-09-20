@@ -425,15 +425,21 @@ class DatasetPlanScreenMixin:
         LOGGER.info("Dataset blueprint applied with category percentages disabled")
 
     def _mixture_weights_from_ui(self) -> dict[str, float]:
-        """Return dataset mixture weights from the Ingest tab.
+        """Return dataset mixture weights from the active Recipe Matrix.
 
         Returns:
-            Empty mapping because category percentages are disabled.
+            Mapping of category slugs to target mixture percentages.
         """
 
+        if hasattr(self, "active_dataset_recipe") and self.active_dataset_recipe:
+            return {
+                c.slug: c.target_percentage
+                for c in self.active_dataset_recipe.categories
+                if c.enabled and c.target_percentage > 0
+            }
         if not hasattr(self, "_mixture_weights_state"):
             self._mixture_weights_state = {}
-        return {}
+        return dict(self._mixture_weights_state)
 
     def _set_mixture_weights(self, weights: dict[str, Any]) -> None:
         """Restore dataset mixture weights.
@@ -442,7 +448,13 @@ class DatasetPlanScreenMixin:
             weights: Saved mixture weights by source family.
         """
 
-        self._mixture_weights_state = {}
+        self._mixture_weights_state = {str(k): float(v) for k, v in weights.items()}
+        if hasattr(self, "active_dataset_recipe") and self.active_dataset_recipe:
+            for c in self.active_dataset_recipe.categories:
+                if c.slug in self._mixture_weights_state:
+                    c.target_percentage = self._mixture_weights_state[c.slug]
+            if hasattr(self, "rebuild_recipe_tab"):
+                self.rebuild_recipe_tab()
 
     def _update_mixture_total(self) -> None:
         """No-op retained for compatibility after mixture percentage removal."""

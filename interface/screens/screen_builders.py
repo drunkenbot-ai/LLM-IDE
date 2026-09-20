@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QWidget
 from inference.ui.benchmark_tab import build_benchmark_tab
 from inference.ui.chat_tab import build_chat_tab
 from interface.tabs.dataset_plan_tab import build_dataset_plan_tab
+from interface.tabs.dataset_recipe_tab import build_dataset_recipe_tab
 from interface.tabs.dataset_tab import build_dataset_tab
 from interface.tabs.export_tab import build_export_tab
 from interface.tabs.fine_tuning_tab import build_fine_tuning_tab
@@ -18,6 +19,7 @@ ScreenBuilder = Callable[[object], QWidget]
 
 SCREEN_BUILDERS: tuple[ScreenBuilder, ...] = (
     build_dataset_plan_tab,
+    build_dataset_recipe_tab,
     build_dataset_tab,
     build_training_tab,
     build_fine_tuning_tab,
