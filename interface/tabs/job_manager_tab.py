@@ -315,6 +315,85 @@ def build_job_manager_tab(window) -> QWidget:
     window.cluster_log.setReadOnly(True)
     window.cluster_details_tabs.addTab(window.cluster_log, "Cluster Event Stream")
 
+    # Tab 6: Hardware Gauges & Device Telemetry
+    from interface.widgets.circular_gauge import CircularGaugeWidget
+    hw_tab = QWidget()
+    hw_layout = QVBoxLayout(hw_tab)
+    hw_layout.setContentsMargins(8, 8, 8, 8)
+    hw_layout.setSpacing(8)
+
+    gauges_top = QHBoxLayout()
+    window.gauge_vram = CircularGaugeWidget(title="VRAM", value_text="6.2 / 12", unit_text="NVIDIA", percent=52.0, accent_color="#10b981")
+    window.gauge_cuda = CircularGaugeWidget(title="CUDA", value_text="32", unit_text="°C", percent=32.0, accent_color="#06b6d4")
+    gauges_top.addWidget(window.gauge_vram)
+    gauges_top.addWidget(window.gauge_cuda)
+    hw_layout.addLayout(gauges_top)
+
+    gauges_bottom = QHBoxLayout()
+    window.gauge_temp = CircularGaugeWidget(title="CUDA temp", value_text="70%", percent=70.0, accent_color="#06b6d4")
+    window.gauge_throughput = CircularGaugeWidget(title="Throughput", value_text="70%", percent=70.0, accent_color="#06b6d4")
+    gauges_bottom.addWidget(window.gauge_temp)
+    gauges_bottom.addWidget(window.gauge_throughput)
+    hw_layout.addLayout(gauges_bottom)
+
+    dev_row = QHBoxLayout()
+    window.device_cuda_btn = QPushButton("CUDA:0")
+    window.device_cuda_btn.setCheckable(True)
+    window.device_cuda_btn.setChecked(True)
+    window.device_cuda_btn.setStyleSheet(
+        "QPushButton { background: #064e3b; color: #34d399; border: 1px solid #059669; border-radius: 6px; padding: 6px; font-weight: 800; font-size: 12px; }"
+        "QPushButton:!checked { background: #141722; color: #64748b; border-color: #1e2433; }"
+    )
+    window.device_cpu_btn = QPushButton("CPU")
+    window.device_cpu_btn.setCheckable(True)
+    window.device_cpu_btn.setChecked(False)
+    window.device_cpu_btn.setStyleSheet(
+        "QPushButton { background: #064e3b; color: #34d399; border: 1px solid #059669; border-radius: 6px; padding: 6px; font-weight: 800; font-size: 12px; }"
+        "QPushButton:!checked { background: #141722; color: #64748b; border-color: #1e2433; }"
+    )
+    def on_device_select(dev: str) -> None:
+        window.device_cuda_btn.setChecked(dev == "cuda")
+        window.device_cpu_btn.setChecked(dev == "cpu")
+    window.device_cuda_btn.clicked.connect(lambda: on_device_select("cuda"))
+    window.device_cpu_btn.clicked.connect(lambda: on_device_select("cpu"))
+    dev_row.addWidget(window.device_cuda_btn, 1)
+    dev_row.addWidget(window.device_cpu_btn, 1)
+    hw_layout.addLayout(dev_row)
+    window.cluster_details_tabs.addTab(hw_tab, "Hardware Gauges")
+
+    # Tab 7: Compute & Memory Optimization
+    from interface.tabs.compute_engine_tab import _create_toggle_item
+    opt_tab = QWidget()
+    opt_layout = QVBoxLayout(opt_tab)
+    opt_layout.setContentsMargins(8, 8, 8, 8)
+    opt_layout.setSpacing(6)
+
+    row1, toggle_act_ckp = _create_toggle_item("Activation Checkpointing", "Recomputes transformer activations during backward pass", True)
+    row2, toggle_adam8 = _create_toggle_item("8-Bit AdamW", "Compresses optimizer state memory by 75% for consumer GPUs", True)
+    row3, toggle_mp = _create_toggle_item("Mixed Precision (FP16/BF16)", "Optimal mixed precision memory for modern GPUs", True)
+    row4, toggle_inductor = _create_toggle_item("Torch Inductor Compiler", "JIT compiles graph with PyTorch Inductor for kernel fusion", False)
+    row5, toggle_offload = _create_toggle_item("CPU Offload Workers", "Offload non-critical weight tensors to system RAM", True)
+
+    opt_layout.addWidget(row1)
+    opt_layout.addWidget(row2)
+    opt_layout.addWidget(row3)
+    opt_layout.addWidget(row4)
+    opt_layout.addWidget(row5)
+    opt_layout.addStretch(1)
+
+    if hasattr(window, "activation_checkpointing"):
+        toggle_act_ckp.toggled.connect(window.activation_checkpointing.setChecked)
+    if hasattr(window, "optimizer_8bit"):
+        toggle_adam8.toggled.connect(window.optimizer_8bit.setChecked)
+    if hasattr(window, "mixed_precision"):
+        toggle_mp.toggled.connect(window.mixed_precision.setChecked)
+    if hasattr(window, "compile_model"):
+        toggle_inductor.toggled.connect(window.compile_model.setChecked)
+    if hasattr(window, "cpu_offload"):
+        toggle_offload.toggled.connect(window.cpu_offload.setChecked)
+
+    window.cluster_details_tabs.addTab(opt_tab, "Memory & Runtime")
+
     details_layout.addWidget(window.cluster_details_tabs, 1)
     right_splitter.addWidget(details_card)
 

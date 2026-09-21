@@ -16,6 +16,15 @@ class WindowCoreMixin:
         super().__init__()
         self.log_file_path = setup_logging()
         LOGGER.info("Creating %s main window", APP_NAME)
+        if sys.platform == "win32":
+            from PySide6.QtGui import QFontDatabase
+            for font_name in ("arial.ttf", "segoeui.ttf", "consolas.ttf"):
+                f_path = Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts" / font_name
+                if f_path.exists():
+                    try:
+                        QFontDatabase.addApplicationFont(str(f_path))
+                    except Exception:
+                        pass
         if QApplication.instance():
             QApplication.instance().setFont(QFont("Arial", 10))
         licensed = bool(QApplication.instance().property("license_valid"))
@@ -254,16 +263,15 @@ class WindowCoreMixin:
 
         self.pages.setCurrentIndex(index)
         buttons = [
-            self.dataset_plan_nav,
+            getattr(self, "dataset_plan_nav", None),
             getattr(self, "dataset_recipe_nav", None),
             self.dataset_nav,
             self.training_nav,
-            self.fine_tune_nav,
-            self.live_nav,
-            self.jobs_nav,
-            self.benchmark_nav,
-            self.export_nav,
-            self.chat_nav,
+            getattr(self, "jobs_nav", None),
+            getattr(self, "live_nav", None),
+            getattr(self, "benchmark_nav", None),
+            getattr(self, "export_nav", None),
+            getattr(self, "chat_nav", None),
         ]
         active_buttons = [b for b in buttons if b is not None]
         for button_index, button in enumerate(active_buttons):
@@ -272,17 +280,17 @@ class WindowCoreMixin:
         self._refresh_training_layout()
         if index == getattr(self, "live_page_index", 5):
             self._render_current_live_snapshot()
-        if index == getattr(self, "job_manager_page_index", 6):
+        if index == getattr(self, "job_manager_page_index", 4):
             QTimer.singleShot(20, self.refresh_job_manager_tab)
 
     def toggle_side_rail(self) -> None:
         """Toggle the navigation side-rail between collapsed and expanded modes."""
         self.sidebar_expanded = not getattr(self, "sidebar_expanded", False)
-        new_width = 185 if self.sidebar_expanded else 102
+        new_width = 185 if self.sidebar_expanded else 84
         if hasattr(self, "side_rail"):
             self.side_rail.setFixedWidth(new_width)
         if hasattr(self, "side_rail_toggle"):
-            self.side_rail_toggle.setText("◀" if self.sidebar_expanded else "▶")
+            self.side_rail_toggle.setText("◀" if self.sidebar_expanded else "☰")
         self._update_nav_button_labels()
 
     def _update_nav_button_labels(self) -> None:
@@ -291,17 +299,8 @@ class WindowCoreMixin:
             return
         is_expanded = getattr(self, "sidebar_expanded", False)
         for button in self.side_rail.findChildren(QPushButton, "NavButton"):
-            if is_expanded:
-                name = button.accessibleName() or button.toolTip()
-                button.setText(f"  {name}")
-                button.setIconSize(QSize(22, 22))
-                button.setStyleSheet(
-                    "QPushButton#NavButton { text-align: left; padding-left: 10px; font-size: 12px; }"
-                )
-            else:
-                button.setText("")
-                button.setIconSize(QSize(32, 32))
-                button.setStyleSheet("")
+            button.setFixedWidth(168 if is_expanded else 68)
+            button.update()
 
     def open_plugins_dialog(self) -> None:
         """Open the modal dialog to configure and toggle plugins."""

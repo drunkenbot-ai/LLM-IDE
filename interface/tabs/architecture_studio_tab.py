@@ -337,6 +337,68 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.context_length.valueChanged.connect(window.context_length_slider.setValue)
     form_layout.addRow("Context Len", _create_slider_spin_row(window.context_length_slider, window.context_length))
 
+    # 7. Intermediate Size (MLP Dim)
+    window.intermediate_size_slider = QSlider(Qt.Horizontal)
+    window.intermediate_size_slider.setRange(256, 65536)
+    window.intermediate_size_slider.setValue(11008)
+    window.intermediate_size = window._spin(256, 131072, 11008)
+    window.intermediate_size_slider.valueChanged.connect(window.intermediate_size.setValue)
+    window.intermediate_size.valueChanged.connect(window.intermediate_size_slider.setValue)
+    form_layout.addRow("Intermediate Size ⓘ", _create_slider_spin_row(window.intermediate_size_slider, window.intermediate_size))
+
+    # 8. Attention Type
+    window.attention_type = QComboBox()
+    window.attention_type.addItems(["Multi-Head (MHA)", "Grouped-Query (GQA)", "Multi-Query (MQA)"])
+    window.attention_type.setStyleSheet(
+        "QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 4px 10px; font-size: 11px; }"
+    )
+    form_layout.addRow("Attention Type ⓘ", window.attention_type)
+
+    # 9. KV Heads (for GQA)
+    window.kv_head_count_slider = QSlider(Qt.Horizontal)
+    window.kv_head_count_slider.setRange(1, 128)
+    window.kv_head_count_slider.setValue(8)
+    window.kv_head_count = window._spin(1, 128, 8)
+    window.kv_head_count_slider.valueChanged.connect(window.kv_head_count.setValue)
+    window.kv_head_count.valueChanged.connect(window.kv_head_count_slider.setValue)
+    form_layout.addRow("KV Heads (n_kv_head) ⓘ", _create_slider_spin_row(window.kv_head_count_slider, window.kv_head_count))
+
+    # 10. Activation Fn & Normalization
+    arch_row = QHBoxLayout()
+    arch_row.setSpacing(6)
+    window.activation_fn = QComboBox()
+    window.activation_fn.addItems(["SwiGLU", "GELU", "SiLU"])
+    window.activation_fn.setStyleSheet(
+        "QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 4px 8px; font-size: 11px; }"
+    )
+    window.norm_type = QComboBox()
+    window.norm_type.addItems(["RMSNorm", "LayerNorm"])
+    window.norm_type.setStyleSheet(
+        "QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 4px 8px; font-size: 11px; }"
+    )
+    arch_row.addWidget(window.activation_fn, 1)
+    arch_row.addWidget(window.norm_type, 1)
+    form_layout.addRow("Activation & Norm ⓘ", arch_row)
+
+    # 11. Sliding Window & Toggles
+    toggles_row = QHBoxLayout()
+    toggles_row.setSpacing(10)
+    window.use_bias = QCheckBox("Use Bias")
+    window.use_bias.setChecked(False)
+    window.use_bias.setStyleSheet("color: #cbd5e1; font-size: 11px;")
+    window.tie_embeddings = QCheckBox("Tie Embeddings")
+    window.tie_embeddings.setChecked(True)
+    window.tie_embeddings.setStyleSheet("color: #cbd5e1; font-size: 11px;")
+    window.attention_window = window._spin(0, 65536, 0)
+    window.attention_window.setToolTip("Sliding window size (0 = Full Context)")
+    window.attention_window.setFixedWidth(70)
+    toggles_row.addWidget(window.use_bias)
+    toggles_row.addWidget(window.tie_embeddings)
+    toggles_row.addStretch(1)
+    toggles_row.addWidget(QLabel("Window:"))
+    toggles_row.addWidget(window.attention_window)
+    form_layout.addRow("Features & Window ⓘ", toggles_row)
+
     params_layout.addLayout(form_layout)
 
     # Donut Chart for Parameter Weight Breakdown
@@ -362,7 +424,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     cards_row.addWidget(params_card, 1)
 
     # -------------------------------------------------------------------------
-    # Card 3: LoRA & Adapter Injection Target Selector
+    # Card 3: LoRA & Training Optimization Engine
     # -------------------------------------------------------------------------
     lora_card = QFrame()
     lora_card.setObjectName("Card")
@@ -371,14 +433,14 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     )
     lora_layout = QVBoxLayout(lora_card)
     lora_layout.setContentsMargins(16, 12, 16, 12)
-    lora_layout.setSpacing(12)
+    lora_layout.setSpacing(10)
 
     lora_title = QLabel("LoRA")
     lora_title.setStyleSheet("color: #f8fafc; font-size: 13px; font-weight: 700;")
     lora_layout.addWidget(lora_title)
 
     lora_form = QFormLayout()
-    lora_form.setSpacing(8)
+    lora_form.setSpacing(6)
     lora_form.setLabelAlignment(Qt.AlignLeft)
 
     # 1. Rank
@@ -412,7 +474,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
 
     # Adapter Injection Target Selector
     target_sec_label = QLabel("Adapter Injection Target Selector")
-    target_sec_label.setStyleSheet("color: #f8fafc; font-size: 13px; font-weight: 700; margin-top: 10px;")
+    target_sec_label.setStyleSheet("color: #f8fafc; font-size: 13px; font-weight: 700; margin-top: 6px;")
     lora_layout.addWidget(target_sec_label)
 
     target_pills_row = QHBoxLayout()
@@ -422,7 +484,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.target_self_attn.setCheckable(True)
     window.target_self_attn.setChecked(True)
     window.target_self_attn.setStyleSheet(
-        "QPushButton { background: #2b1b44; color: #c084fc; border: 1px solid #9333ea; border-radius: 12px; padding: 6px 12px; font-size: 11px; font-weight: 700; }"
+        "QPushButton { background: #2b1b44; color: #c084fc; border: 1px solid #9333ea; border-radius: 12px; padding: 5px 10px; font-size: 11px; font-weight: 700; }"
         "QPushButton:!checked { background: #141722; color: #64748b; border-color: #282e42; }"
     )
 
@@ -430,7 +492,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.target_mlp.setCheckable(True)
     window.target_mlp.setChecked(True)
     window.target_mlp.setStyleSheet(
-        "QPushButton { background: #2b1b44; color: #c084fc; border: 1px solid #9333ea; border-radius: 12px; padding: 6px 12px; font-size: 11px; font-weight: 700; }"
+        "QPushButton { background: #2b1b44; color: #c084fc; border: 1px solid #9333ea; border-radius: 12px; padding: 5px 10px; font-size: 11px; font-weight: 700; }"
         "QPushButton:!checked { background: #141722; color: #64748b; border-color: #282e42; }"
     )
 
@@ -438,7 +500,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.target_layernorm.setCheckable(True)
     window.target_layernorm.setChecked(False)
     window.target_layernorm.setStyleSheet(
-        "QPushButton { background: #2b1b44; color: #c084fc; border: 1px solid #9333ea; border-radius: 12px; padding: 6px 12px; font-size: 11px; font-weight: 700; }"
+        "QPushButton { background: #2b1b44; color: #c084fc; border: 1px solid #9333ea; border-radius: 12px; padding: 5px 10px; font-size: 11px; font-weight: 700; }"
         "QPushButton:!checked { background: #141722; color: #64748b; border-color: #282e42; }"
     )
 
@@ -446,6 +508,73 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     target_pills_row.addWidget(window.target_mlp)
     target_pills_row.addWidget(window.target_layernorm)
     lora_layout.addLayout(target_pills_row)
+
+    # Optimization Engine Parameters
+    opt_sec_label = QLabel("Optimization & Hyperparameters")
+    opt_sec_label.setStyleSheet("color: #f8fafc; font-size: 13px; font-weight: 700; margin-top: 8px;")
+    lora_layout.addWidget(opt_sec_label)
+
+    opt_form = QFormLayout()
+    opt_form.setSpacing(6)
+    opt_form.setLabelAlignment(Qt.AlignLeft)
+
+    window.learning_rate = window._double_spin(0.00001, 0.1, 0.0003, 0.00005, 5)
+    window.batch_size = window._spin(1, 1024, 16)
+    window.epochs = window._spin(1, 1000, 5)
+    window.optimizer_name = QComboBox()
+    window.optimizer_name.addItems(["AdamW", "AdamW (8-bit)", "Lion", "Adafactor", "Adam"])
+    window.optimizer_name.setStyleSheet("QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 3px 6px; font-size: 11px; }")
+    window.precision = QComboBox()
+    window.precision.addItems(["BF16 (Mixed)", "FP16 (Mixed)", "FP32"])
+    window.precision.setStyleSheet("QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 3px 6px; font-size: 11px; }")
+    window.scheduler_name = QComboBox()
+    window.scheduler_name.addItems(["Cosine decay", "Warmup linear", "Polynomial decay", "One-cycle", "Constant"])
+    window.scheduler_name.setStyleSheet("QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 3px 6px; font-size: 11px; }")
+    window.warmup_steps = window._spin(0, 100000, 100)
+    window.gradient_accumulation = window._spin(1, 256, 1)
+    window.weight_decay = window._double_spin(0.0, 1.0, 0.1, 0.01, 3)
+    window.max_grad_norm = window._double_spin(0.1, 100.0, 1.0, 0.1, 2)
+    window.save_interval = window._spin(1, 100000, 500)
+    window.eval_interval = window._spin(0, 100000, 100)
+
+    opt_form.addRow("Learning Rate", window.learning_rate)
+    opt_form.addRow("Batch Size", window.batch_size)
+    opt_form.addRow("Epochs", window.epochs)
+    opt_form.addRow("Optimizer", window.optimizer_name)
+    opt_form.addRow("Scheduler", window.scheduler_name)
+    opt_form.addRow("Warmup / Accum", _create_slider_spin_row(window.gradient_accumulation, window.warmup_steps) if hasattr(window, "_create_paired_row") else window._paired_row(window.warmup_steps, "Accum", window.gradient_accumulation) if hasattr(window, "_paired_row") else window.warmup_steps)
+    opt_form.addRow("Decay / Grad Norm", window._paired_row(window.weight_decay, "Max grad", window.max_grad_norm) if hasattr(window, "_paired_row") else window.weight_decay)
+    opt_form.addRow("Save / Eval Step", window._paired_row(window.save_interval, "Eval", window.eval_interval) if hasattr(window, "_paired_row") else window.save_interval)
+    opt_form.addRow("Precision", window.precision)
+
+    opt_toggles = QHBoxLayout()
+    window.activation_checkpointing = QCheckBox("Act Ckpt")
+    window.activation_checkpointing.setChecked(True)
+    window.activation_checkpointing.setStyleSheet("color: #cbd5e1; font-size: 11px;")
+    window.compile_model = QCheckBox("Torch Compile")
+    window.compile_model.setChecked(False)
+    window.compile_model.setStyleSheet("color: #cbd5e1; font-size: 11px;")
+    opt_toggles.addWidget(window.activation_checkpointing)
+    opt_toggles.addWidget(window.compile_model)
+    opt_form.addRow("Acceleration", opt_toggles)
+    lora_layout.addLayout(opt_form)
+
+    # Action buttons matching modern IDE workflow
+    actions_row = QHBoxLayout()
+    actions_row.setSpacing(8)
+    window.train_button = QPushButton("Start Training")
+    window.train_button.setStyleSheet(
+        "QPushButton { background: #10b981; color: white; border: none; border-radius: 6px; padding: 8px 14px; font-size: 12px; font-weight: 800; }"
+        "QPushButton:hover { background: #059669; }"
+    )
+    window.dry_run_button = QPushButton("Dry Run")
+    window.dry_run_button.setStyleSheet(
+        "QPushButton { background: #151821; color: #cbd5e1; border: 1px solid #282e42; border-radius: 6px; padding: 8px 10px; font-size: 11px; font-weight: 700; }"
+        "QPushButton:hover { border-color: #f59e0b; color: white; }"
+    )
+    actions_row.addWidget(window.train_button, 2)
+    actions_row.addWidget(window.dry_run_button, 1)
+    lora_layout.addLayout(actions_row)
 
     lora_layout.addStretch(1)
 
@@ -471,38 +600,53 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
 
     root.addLayout(status_bar_row)
 
-    # Dynamic calculation of parameter breakdown
-    def recalculate_parameters() -> None:
-        h = window.hidden_size.value()
-        l = window.num_layers.value()
-        v = window.vocab_size.value()
+    # Dynamic parameter recalculation routine
+    def recalculate_parameters(*args: Any) -> None:
+        try:
+            h = float(window.hidden_size.value())
+            l = float(window.num_layers.value())
+            v = float(window.vocab_size.value())
+            inter = float(window.intermediate_size.value()) if hasattr(window, "intermediate_size") else (4.0 * h)
+            is_swiglu = "swiglu" in window.activation_fn.currentText().lower() if hasattr(window, "activation_fn") else True
 
-        # Transformer calculations:
-        # Attn: 4 * h * h per layer (Q, K, V, O)
-        attn_params = l * (4 * h * h)
-        # MLP: 2 * (h * 4h) = 8 * h * h per layer
-        mlp_params = l * (8 * h * h)
-        # Embedding: v * h
-        embed_params = v * h
+            # Embedding params (tied: v * h, untied: 2 * v * h)
+            embed_params = v * h
 
-        total = attn_params + mlp_params + embed_params
-        if total > 0:
-            attn_pct = round((attn_params / total) * 100.0, 1)
-            mlp_pct = round((mlp_params / total) * 100.0, 1)
-            embed_pct = max(0.0, 100.0 - attn_pct - mlp_pct)
+            # Attention params per layer: Q, K, V, O projections (4 * h^2)
+            attn_layer_params = 4.0 * h * h
 
-            if total >= 1_000_000_000:
-                t_str = f"{total / 1_000_000_000:.1f}B"
-            elif total >= 1_000_000:
-                t_str = f"{total / 1_000_000:.1f}M"
+            # MLP params per layer:
+            # SwiGLU: gate + up + down projections (3 * h * inter)
+            # GELU: up + down projections (2 * h * inter)
+            mlp_layer_params = (3.0 if is_swiglu else 2.0) * h * inter
+
+            total_attn = l * attn_layer_params
+            total_mlp = l * mlp_layer_params
+            total_params = embed_params + total_attn + total_mlp
+
+            if total_params > 0:
+                attn_pct = (total_attn / total_params) * 100.0
+                mlp_pct = (total_mlp / total_params) * 100.0
+                embed_pct = (embed_params / total_params) * 100.0
             else:
-                t_str = f"{total / 1_000:.0f}K"
+                attn_pct, mlp_pct, embed_pct = 38.0, 41.0, 21.0
+
+            if total_params >= 1e9:
+                t_str = f"{total_params / 1e9:.1f}B"
+            elif total_params >= 1e6:
+                t_str = f"{total_params / 1e6:.1f}M"
+            else:
+                t_str = f"{total_params / 1e3:.1f}K"
 
             window.donut_chart.set_breakdown(attn_pct, mlp_pct, embed_pct, t_str)
+        except Exception:
+            pass
 
     window.hidden_size.valueChanged.connect(recalculate_parameters)
     window.num_layers.valueChanged.connect(recalculate_parameters)
     window.vocab_size.valueChanged.connect(recalculate_parameters)
+    window.intermediate_size.valueChanged.connect(recalculate_parameters)
+    window.activation_fn.currentTextChanged.connect(recalculate_parameters)
     recalculate_parameters()
 
     # Preset selection synchronization
@@ -513,48 +657,75 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
             window.num_heads.setValue(32)
             window.num_layers.setValue(44)
             window.vocab_size.setValue(50257)
+            window.intermediate_size.setValue(16384)
+            window.activation_fn.setCurrentText("GELU")
+            window.norm_type.setCurrentText("LayerNorm")
         elif "Llama-3" in text:
             window.hidden_size.setValue(4096)
             window.num_heads.setValue(32)
             window.num_layers.setValue(32)
             window.vocab_size.setValue(128256)
+            window.intermediate_size.setValue(14336)
+            window.kv_head_count.setValue(8)
+            window.activation_fn.setCurrentText("SwiGLU")
+            window.norm_type.setCurrentText("RMSNorm")
         elif "Mistral" in text:
             window.hidden_size.setValue(4096)
             window.num_heads.setValue(32)
             window.num_layers.setValue(32)
             window.vocab_size.setValue(32000)
+            window.intermediate_size.setValue(14336)
+            window.kv_head_count.setValue(8)
+            window.activation_fn.setCurrentText("SwiGLU")
+            window.norm_type.setCurrentText("RMSNorm")
         elif "MicroLLM" in text:
             window.hidden_size.setValue(768)
             window.num_heads.setValue(12)
             window.num_layers.setValue(12)
             window.vocab_size.setValue(8000)
+            window.intermediate_size.setValue(2816)
+            window.activation_fn.setCurrentText("SwiGLU")
+            window.norm_type.setCurrentText("RMSNorm")
 
     window.preset.currentTextChanged.connect(on_preset_changed)
 
     # Legacy attributes maintained for compatibility with training mixins and runners
-    window.train_data_dir = QLineEdit(str(Path.cwd() / "runs" / "dataset"))
-    window.model_dir = QLineEdit(str(Path.cwd() / "runs" / "model"))
-    window.architecture_style = QComboBox()
-    window.architecture_style.addItems(["Classic GPT", "Llama-like"])
-    window.use_bias = QCheckBox()
-    window.use_bias.setChecked(True)
-    window.batch_size = window._spin(1, 1024, 8)
-    window.learning_rate = window._double_spin(0.00001, 0.1, 0.0003, 0.00005, 5)
-    window.epochs = window._spin(1, 100, 3)
-    window.warmup_steps = window._spin(0, 10000, 100)
-    window.weight_decay = window._double_spin(0.0, 1.0, 0.1, 0.01, 3)
-    window.max_grad_norm = window._double_spin(0.0, 10.0, 1.0, 0.1, 2)
+    if not hasattr(window, "train_data_dir"):
+        window.train_data_dir = QLineEdit(str(Path.cwd() / "runs" / "dataset"))
+    if not hasattr(window, "model_dir"):
+        window.model_dir = QLineEdit(str(Path.cwd() / "runs" / "model"))
+    window.architecture_style = getattr(window, "norm_type", None) or QComboBox()
+    if not hasattr(window, "use_bias"):
+        window.use_bias = QCheckBox()
+        window.use_bias.setChecked(True)
+    if not hasattr(window, "batch_size"):
+        window.batch_size = window._spin(1, 1024, 16)
+    if not hasattr(window, "learning_rate"):
+        window.learning_rate = window._double_spin(0.00001, 0.1, 0.0003, 0.00005, 5)
+    if not hasattr(window, "epochs"):
+        window.epochs = window._spin(1, 100, 5)
+    if not hasattr(window, "warmup_steps"):
+        window.warmup_steps = window._spin(0, 10000, 100)
+    if not hasattr(window, "weight_decay"):
+        window.weight_decay = window._double_spin(0.0, 1.0, 0.1, 0.01, 3)
+    if not hasattr(window, "max_grad_norm"):
+        window.max_grad_norm = window._double_spin(0.0, 10.0, 1.0, 0.1, 2)
     window.checkpoint_interval = window._spin(10, 100000, 500)
-    window.mixed_precision = QCheckBox()
-    window.mixed_precision.setChecked(True)
-    window.compile_model = QCheckBox()
-    window.activation_checkpointing = QCheckBox()
-    window.activation_checkpointing.setChecked(True)
-    window.optimizer_8bit = QCheckBox()
-    window.optimizer_8bit.setChecked(True)
-    window.cpu_offload = QCheckBox()
-    window.train_button = QPushButton("Start Training")
-    window.stop_training_button = QPushButton("Stop")
+    if not hasattr(window, "mixed_precision"):
+        window.mixed_precision = QCheckBox()
+        window.mixed_precision.setChecked(True)
+    if not hasattr(window, "compile_model"):
+        window.compile_model = QCheckBox()
+    if not hasattr(window, "activation_checkpointing"):
+        window.activation_checkpointing = QCheckBox()
+        window.activation_checkpointing.setChecked(True)
+    if not hasattr(window, "optimizer_8bit"):
+        window.optimizer_8bit = QCheckBox()
+        window.optimizer_8bit.setChecked(True)
+    if not hasattr(window, "cpu_offload"):
+        window.cpu_offload = QCheckBox()
+    if not hasattr(window, "stop_training_button"):
+        window.stop_training_button = QPushButton("Stop")
     window.stop_train_button = window.stop_training_button
     window.fine_tune_button = QPushButton("Start Fine-Tune")
     window.stop_fine_tune_button = QPushButton("Stop")
@@ -597,8 +768,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.resume_training_preview.setReadOnly(True)
     window.resume_training_preview.setText("No compatibility check has been run.")
     window.resume_preview = window.resume_training_preview
-    window.train_button = QPushButton("Start Training")
-    window.stop_training_button = QPushButton("Stop")
+    if not hasattr(window, "train_button"):
+        window.train_button = QPushButton("Start Training")
     if hasattr(window, "start_training"):
         window.train_button.clicked.connect(window.start_training)
     if hasattr(window, "stop_training_process"):

@@ -140,14 +140,14 @@ def build_top_bar(window, app_name: str) -> QWidget:
 
 
 def build_side_rail(window) -> QWidget:
-    """Build the shared navigation rail and connect page selection strictly matching Reference Images."""
-    from interface.widgets.neon_nav_card import CompactNavButton, NeonNavCard
+    """Build the shared navigation rail strictly matching Concept References and 9-page order."""
+    from interface.widgets.neon_nav_card import StudioNavButton
 
     rail = QWidget()
     rail.setObjectName("SideRail")
     window.side_rail = rail
     window.sidebar_expanded = False
-    rail.setFixedWidth(102)
+    rail.setFixedWidth(84)
     layout = QVBoxLayout(rail)
     layout.setContentsMargins(8, 10, 8, 10)
     layout.setSpacing(6)
@@ -160,91 +160,73 @@ def build_side_rail(window) -> QWidget:
         "QPushButton { background-color: #151821; color: #a5b4fc; border: 1px solid #282e42; border-radius: 4px; font-size: 13px; font-weight: bold; }"
         "QPushButton:hover { background-color: #23283a; color: white; border-color: #8b5cf6; }"
     )
-    window.side_rail_toggle.setToolTip("Navigation menu")
+    window.side_rail_toggle.setToolTip("Toggle sidebar navigation")
     window.side_rail_toggle.clicked.connect(window.toggle_side_rail)
     toggle_row.addStretch(1)
     toggle_row.addWidget(window.side_rail_toggle)
     layout.addLayout(toggle_row)
 
-    icons_dir = Path(__file__).resolve().parent.parent / "icons"
-
-    # Top items matching Reference Image 1
-    window.dataset_nav = CompactNavButton("Datasets", "ingestion_tab_icon.png")
-    window._tip(window.dataset_nav, "Open Ingestion & Datasets.")
-    window.dataset_nav.clicked.connect(lambda: window._switch_page(2))
-    layout.addWidget(window.dataset_nav)
-
-    window.dataset_plan_nav = CompactNavButton("Today", "plan_tab_icon.png")
-    window._tip(window.dataset_plan_nav, "Open Dataset Blueprint.")
+    # 1. Dataset Sources (Page 0)
+    window.dataset_plan_nav = StudioNavButton("Dataset Sources", "plan_tab_icon.png", "#f59e0b")
+    window._tip(window.dataset_plan_nav, "Open Dataset Sources & Blueprint.")
     window.dataset_plan_nav.clicked.connect(lambda: window._switch_page(0))
     layout.addWidget(window.dataset_plan_nav)
 
-    window.benchmark_nav = CompactNavButton("UI", "benchmark_tab_icon.png")
-    window._tip(window.benchmark_nav, "Open Benchmarks & UI.")
-    window.benchmark_nav.clicked.connect(lambda: window._switch_page(7))
-    layout.addWidget(window.benchmark_nav)
-
-    layout.addSpacing(6)
-
-    # 3 Glowing Hero Cards matching Reference Images 1 & 2
-    # 1. Dataset Recipe (Amber cloche)
-    window.dataset_recipe_nav = NeonNavCard(
-        title="Dataset Recipe",
-        icon_path=str(icons_dir / "hero_dataset_recipe.png"),
-        glow_color="#f59e0b",
-    )
+    # 2. Dataset Recepie Matrix (Page 1)
+    window.dataset_recipe_nav = StudioNavButton("Dataset Recepie Matrix", "ingestion_tab_icon.png", "#f59e0b")
     window._tip(window.dataset_recipe_nav, "Open Dataset Recipe Matrix.")
     window.dataset_recipe_nav.clicked.connect(lambda: window._switch_page(1))
     layout.addWidget(window.dataset_recipe_nav)
 
-    # 2. Architecture Studio (Purple brain)
-    window.training_nav = NeonNavCard(
-        title="Architecture",
-        icon_path=str(icons_dir / "hero_architecture.png"),
-        glow_color="#8b5cf6",
-    )
-    window._tip(window.training_nav, "Open Model Architecture Studio.")
+    # 3. Ingestion Matrix (Page 2)
+    window.dataset_nav = StudioNavButton("Ingestion Matrix", "AI_tab_icon.png", "#06b6d4")
+    window._tip(window.dataset_nav, "Open Ingestion & Datasets.")
+    window.dataset_nav.clicked.connect(lambda: window._switch_page(2))
+    layout.addWidget(window.dataset_nav)
+
+    # 4. Neural Forge / Architecture (plus fine tuning) (Page 3)
+    window.training_nav = StudioNavButton("Neural Forge / Architecture", "fine_tune_tab.png", "#8b5cf6")
+    window._tip(window.training_nav, "Open Neural Forge / Architecture & Fine-Tuning.")
     window.training_nav.clicked.connect(lambda: window._switch_page(3))
     layout.addWidget(window.training_nav)
 
-    # 3. Compute Engine (Cyan chip)
-    window.fine_tune_nav = NeonNavCard(
-        title="Compute Engine",
-        icon_path=str(icons_dir / "hero_compute_engine.png"),
-        glow_color="#06b6d4",
-    )
-    window._tip(window.fine_tune_nav, "Open Compute & Runtime Engine.")
-    window.fine_tune_nav.clicked.connect(lambda: window._switch_page(4))
-    layout.addWidget(window.fine_tune_nav)
+    # 5. Cluster Job Monitor (Page 4)
+    window.jobs_nav = StudioNavButton("Cluster Job Monitor", "job_tab_icon.png", "#06b6d4")
+    window._tip(window.jobs_nav, "Open Cluster Job Monitor & Runtime Fleet.")
+    window.jobs_nav.clicked.connect(lambda: window._switch_page(4))
+    layout.addWidget(window.jobs_nav)
 
-    layout.addSpacing(6)
-
-    # Bottom items matching Reference Images 1 & 2
-    window.live_nav = CompactNavButton("Training", "live_tab_icon.png")
-    window._tip(window.live_nav, "Open Live Training.")
+    # 6. Live (Page 5)
+    window.live_nav = StudioNavButton("Live Training Flight Deck", "live_tab_icon.png", "#10b981")
+    window._tip(window.live_nav, "Open Live Training Observatory.")
     window.live_nav.clicked.connect(lambda: window._switch_page(5))
     layout.addWidget(window.live_nav)
 
-    window.jobs_nav = CompactNavButton("Deploy", "job_tab_icon.png")
-    window._tip(window.jobs_nav, "Open Job Manager & Deploy.")
-    window.jobs_nav.clicked.connect(lambda: window._switch_page(6))
-    layout.addWidget(window.jobs_nav)
+    # 7. Benchmark (Page 6)
+    window.benchmark_nav = StudioNavButton("Benchmark & Evaluation", "benchmark_tab_icon.png", "#38bdf8")
+    window._tip(window.benchmark_nav, "Open Benchmarks & Evaluation.")
+    window.benchmark_nav.clicked.connect(lambda: window._switch_page(6))
+    layout.addWidget(window.benchmark_nav)
 
-    window.export_nav = CompactNavButton("Docs", "export_tab_icon.png")
-    window._tip(window.export_nav, "Open Model Export & Docs.")
-    window.export_nav.clicked.connect(lambda: window._switch_page(8))
+    # 8. Export (Page 7)
+    window.export_nav = StudioNavButton("Model Export & Packaging", "export_tab_icon.png", "#ec4899")
+    window._tip(window.export_nav, "Open Model Export & Quantization.")
+    window.export_nav.clicked.connect(lambda: window._switch_page(7))
     layout.addWidget(window.export_nav)
 
-    window.chat_nav = CompactNavButton("Settings", "chat_tab_icon.png")
-    window._tip(window.chat_nav, "Open Settings & Chat.")
-    window.chat_nav.clicked.connect(lambda: window._switch_page(9))
+    # 9. Chat / Inference (Page 8)
+    window.chat_nav = StudioNavButton("Chat / Inference Lab", "chat_tab_icon.png", "#a855f7")
+    window._tip(window.chat_nav, "Open Chat & Inference Lab.")
+    window.chat_nav.clicked.connect(lambda: window._switch_page(8))
     layout.addWidget(window.chat_nav)
 
-    # Aliases for direct semantic access
+    # Semantic Aliases
     window.architecture_nav = window.training_nav
-    window.compute_nav = window.fine_tune_nav
-    window.compute_engine_nav = window.fine_tune_nav
+    window.fine_tune_nav = window.training_nav
     window.recipe_nav = window.dataset_recipe_nav
+    window.cluster_nav = window.jobs_nav
+    window.compute_nav = window.jobs_nav
+    window.compute_engine_nav = window.jobs_nav
 
     window.dataset_plan_nav.setChecked(True)
     layout.addStretch(1)
@@ -278,12 +260,14 @@ def build_main_shell(window, app_name: str) -> QWidget:
     window.recipe_page_index = 1
     window.ingestion_page_index = 2
     window.training_page_index = 3
-    window.fine_tuning_page_index = 4
+    window.architecture_page_index = 3
+    window.fine_tuning_page_index = 3
+    window.job_manager_page_index = 4
+    window.cluster_page_index = 4
     window.live_page_index = 5
-    window.job_manager_page_index = 6
-    window.benchmark_page_index = 7
-    window.export_page_index = 8
-    window.chat_page_index = 9
+    window.benchmark_page_index = 6
+    window.export_page_index = 7
+    window.chat_page_index = 8
     body.addWidget(window.pages, 1)
     root.addLayout(body, 1)
 

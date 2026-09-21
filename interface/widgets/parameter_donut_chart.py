@@ -119,7 +119,7 @@ class ParameterDonutChartWidget(QWidget):
 
         # 4. Legend on Right
         legend_x = donut_x + donut_size + 24.0
-        legend_y = donut_y + 10.0
+        legend_y = donut_y + 6.0
 
         legend_items = [
             ("Attention", f"{self.attention_pct:.0f}%", self.color_attn),
@@ -127,11 +127,11 @@ class ParameterDonutChartWidget(QWidget):
             ("Embedding", f"{self.embed_pct:.0f}%", self.color_embed),
         ]
 
-        font_label = QFont("Segoe UI", 9, QFont.Medium)
-        font_val = QFont("Segoe UI", 9, QFont.Bold)
+        font_label = QFont("Segoe UI", 8, QFont.Medium)
+        font_val = QFont("Segoe UI", 8, QFont.Bold)
 
         for i, (name, val, col) in enumerate(legend_items):
-            row_y = legend_y + (i * 20.0)
+            row_y = legend_y + (i * 18.0)
 
             # Bullet dot
             painter.setPen(Qt.NoPen)
@@ -147,28 +147,29 @@ class ParameterDonutChartWidget(QWidget):
             painter.setFont(font_val)
             painter.drawText(QPointF(legend_x + 85.0, row_y + 10.0), val)
 
-        # 5. Mini bar visualization underneath
-        bar_y = donut_y + donut_size + 14.0
-        bar_w = min(110.0, donut_size + 20.0)
-        bar_h = 7.0
-        seg_attn_w = (self.attention_pct / total) * bar_w
-        seg_mlp_w = (self.mlp_pct / total) * bar_w
-        seg_emb_w = bar_w - seg_attn_w - seg_mlp_w
-
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(QBrush(self.color_attn))
-        painter.drawRect(QRectF(donut_x, bar_y, seg_attn_w, bar_h))
-
-        painter.setBrush(QBrush(self.color_mlp))
-        painter.drawRect(QRectF(donut_x + seg_attn_w, bar_y, seg_mlp_w, bar_h))
-
-        painter.setBrush(QBrush(self.color_embed))
-        painter.drawRect(QRectF(donut_x + seg_attn_w + seg_mlp_w, bar_y, seg_emb_w, bar_h))
-
-        # 6. Total Params Text
+        # 5. Total Params Readout
+        total_y = legend_y + 62.0
         painter.setPen(QColor("#f8fafc"))
         total_font = QFont("Segoe UI", 10, QFont.Bold)
         painter.setFont(total_font)
-        painter.drawText(QPointF(legend_x, bar_y + 7.0), f"Total Params: {self.total_params_str}")
+        painter.drawText(QPointF(legend_x, total_y), f"Total Params: {self.total_params_str}")
+
+        # 6. Mini 12-Bar Layer Depth Distribution Chart (Matching Concept Image 4)
+        bars_y = total_y + 8.0
+        bar_w = 6.0
+        bar_spacing = 3.0
+        bar_heights = [8.0, 12.0, 14.0, 11.0, 15.0, 16.0, 13.0, 15.0, 12.0, 14.0, 10.0, 6.0]
+        bar_colors = [
+            self.color_attn, self.color_attn, self.color_mlp, self.color_mlp,
+            self.color_mlp, self.color_mlp, self.color_attn, self.color_mlp,
+            self.color_mlp, self.color_attn, self.color_mlp, self.color_embed
+        ]
+
+        painter.setPen(Qt.NoPen)
+        for idx, (bh, col) in enumerate(zip(bar_heights, bar_colors)):
+            bx = legend_x + (idx * (bar_w + bar_spacing))
+            by = bars_y + (16.0 - bh)
+            painter.setBrush(QBrush(col))
+            painter.drawRoundedRect(QRectF(bx, by, bar_w, bh), 1.5, 1.5)
 
         painter.end()
