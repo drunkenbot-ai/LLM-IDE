@@ -851,6 +851,7 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     presets_heading.setStyleSheet("font-size: 11px; font-weight: 800; color: #94a3b8; letter-spacing: 0.8px;")
     left_layout.addWidget(presets_heading)
 
+    # Internal combo maintained for signal routing and project state tracking (not shown in layout)
     window.recipe_preset_combo = QComboBox()
     window.recipe_preset_combo.addItems([
         "Default 11-Pillar Frontier Base",
@@ -859,28 +860,24 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
         "Balanced Tiny LLM",
         "Custom Mixture",
     ])
-    window.recipe_preset_combo.setStyleSheet(
-        "background-color: #141722; color: #ffffff; border: 1px solid #f59e0b; border-radius: 8px; padding: 6px 10px; font-weight: 600;"
-    )
-    left_layout.addWidget(window.recipe_preset_combo)
 
-    # Preset quick list widget
+    # Preset quick list widget (acts as direct recipe selector buttons)
     preset_list = QTreeWidget()
     preset_list.setHeaderHidden(True)
     preset_list.setRootIsDecorated(False)
-    preset_list.setMinimumHeight(140)
+    preset_list.setMinimumHeight(150)
     preset_list.setStyleSheet(
         "QTreeWidget { background: #11131c; border: 1px solid #232738; border-radius: 8px; padding: 4px; outline: none; }"
-        "QTreeWidget::item { padding: 6px 8px; color: #cbd5e1; border-radius: 5px; font-weight: 500; font-size: 11px; }"
+        "QTreeWidget::item { padding: 8px 10px; color: #cbd5e1; border-radius: 6px; font-weight: 600; font-size: 11px; margin-bottom: 2px; }"
         "QTreeWidget::item:selected { background: #272216; color: #fbbf24; font-weight: bold; border: 1px solid #78350f; }"
-        "QTreeWidget::item:hover { background: #181b26; }"
+        "QTreeWidget::item:hover { background: #181b26; color: #ffffff; }"
     )
     preset_names = [
-        "Default 11-Pillar Frontier Base",
-        "Code Heavy",
-        "Math & Reasoning",
-        "Balanced Tiny LLM",
-        "Custom Mixture",
+        "● Default 11-Pillar Frontier Base",
+        "● Code Heavy",
+        "● Math & Reasoning",
+        "● Balanced Tiny LLM",
+        "● Custom Mixture",
     ]
     for p_name in preset_names:
         preset_list.addTopLevelItem(QTreeWidgetItem([p_name]))
@@ -1061,7 +1058,9 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
 
         update_metrics_and_bar()
 
-        # Switch preset combo to Custom if user adjusted percentages
+        # Switch preset selection to Custom if user adjusted percentages
+        if preset_list.topLevelItemCount() > 4:
+            preset_list.setCurrentItem(preset_list.topLevelItem(4))
         if window.recipe_preset_combo.currentIndex() != 4:
             window.recipe_preset_combo.blockSignals(True)
             window.recipe_preset_combo.setCurrentIndex(4)  # Custom Mixture
@@ -1071,6 +1070,8 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
         update_metrics_and_bar()
         for rw in window._recipe_row_widgets:
             rw.refresh_from_category()
+        if preset_list.topLevelItemCount() > 4:
+            preset_list.setCurrentItem(preset_list.topLevelItem(4))
         if window.recipe_preset_combo.currentIndex() != 4:
             window.recipe_preset_combo.blockSignals(True)
             window.recipe_preset_combo.setCurrentIndex(4)  # Custom Mixture
