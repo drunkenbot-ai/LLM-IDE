@@ -290,7 +290,10 @@ class WindowCoreMixin:
         if hasattr(self, "side_rail"):
             self.side_rail.setFixedWidth(new_width)
         if hasattr(self, "side_rail_toggle"):
-            self.side_rail_toggle.setText("◀" if self.sidebar_expanded else "☰")
+            if hasattr(self.side_rail_toggle, "set_expanded"):
+                self.side_rail_toggle.set_expanded(self.sidebar_expanded)
+            else:
+                self.side_rail_toggle.setText("◀" if self.sidebar_expanded else "☰")
         self._update_nav_button_labels()
 
     def _update_nav_button_labels(self) -> None:

@@ -167,6 +167,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
                 "QPushButton:hover { background: #1c1813; border-color: #f59e0b; }"
             )
             window.active_training_mode = "pretrain"
+            if hasattr(window, "training_mode"):
+                window.training_mode.setCurrentText("Pretrain from scratch")
         else:
             window.base_mode_btn.setChecked(False)
             window.finetune_mode_btn.setChecked(True)
@@ -194,6 +196,11 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
                 "QPushButton:hover { background: #1a1d29; border-color: #8b5cf6; }"
             )
             window.active_training_mode = "fine_tune"
+            if hasattr(window, "training_mode"):
+                window.training_mode.setCurrentText("Fine-tune checkpoint")
+
+        if hasattr(window, "update_train_button_state"):
+            window.update_train_button_state()
 
     window.base_mode_btn.clicked.connect(lambda: on_switch_mode("base"))
     window.finetune_mode_btn.clicked.connect(lambda: on_switch_mode("finetune"))
@@ -281,6 +288,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.preset.setStyleSheet(
         "QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 4px 10px; font-size: 11px; }"
     )
+    window._tip(window.preset, "Predefined model configuration presets with battle-tested hyperparameter profiles.")
     form_layout.addRow("Model Name", window.preset)
 
     # 1. Hidden Size
@@ -290,6 +298,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.hidden_size = window._spin(256, 16384, 4096)
     window.hidden_size_slider.valueChanged.connect(window.hidden_size.setValue)
     window.hidden_size.valueChanged.connect(window.hidden_size_slider.setValue)
+    window._tip(window.hidden_size, "Hidden dimension size (n_embd). Model embedding width; higher values increase capacity and expressiveness.")
+    window._tip(window.hidden_size_slider, "Slide to adjust hidden embedding dimension (256 to 16,384).")
     form_layout.addRow("Hidden Size (n_embd)", _create_slider_spin_row(window.hidden_size_slider, window.hidden_size))
 
     # 2. Heads
@@ -299,6 +309,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.num_heads = window._spin(1, 128, 32)
     window.num_heads_slider.valueChanged.connect(window.num_heads.setValue)
     window.num_heads.valueChanged.connect(window.num_heads_slider.setValue)
+    window._tip(window.num_heads, "Number of attention query heads (n_head). Must divide hidden size evenly.")
+    window._tip(window.num_heads_slider, "Slide to adjust attention head count (1 to 128).")
     form_layout.addRow("Heads (n_head)", _create_slider_spin_row(window.num_heads_slider, window.num_heads))
 
     # 3. Layers
@@ -308,6 +320,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.num_layers = window._spin(1, 128, 44)
     window.num_layers_slider.valueChanged.connect(window.num_layers.setValue)
     window.num_layers.valueChanged.connect(window.num_layers_slider.setValue)
+    window._tip(window.num_layers, "Number of stacked transformer layers (n_layer / depth).")
+    window._tip(window.num_layers_slider, "Slide to adjust transformer layer count (1 to 128).")
     form_layout.addRow("Layers (n_layer)", _create_slider_spin_row(window.num_layers_slider, window.num_layers))
 
     # 4. Vocab Size
@@ -317,6 +331,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.vocab_size = window._spin(256, 128000, 50257)
     window.vocab_size_slider.valueChanged.connect(window.vocab_size.setValue)
     window.vocab_size.valueChanged.connect(window.vocab_size_slider.setValue)
+    window._tip(window.vocab_size, "Vocabulary size: Total token count in embedding and unembedding projection tables.")
+    window._tip(window.vocab_size_slider, "Slide to adjust model vocabulary size (256 to 128,000).")
     form_layout.addRow("Vocab Size", _create_slider_spin_row(window.vocab_size_slider, window.vocab_size))
 
     # 5. RoPE Theta
@@ -326,6 +342,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.rope_theta = window._double_spin(1.0, 10_000_000.0, 10000.0, 1000.0, 1)
     window.rope_theta_slider.valueChanged.connect(lambda v: window.rope_theta.setValue(float(v)))
     window.rope_theta.valueChanged.connect(lambda v: window.rope_theta_slider.setValue(int(v)))
+    window._tip(window.rope_theta, "Rotary Position Embedding base frequency theta. Standard is 10000.0; extended context models use 500000.0+.")
+    window._tip(window.rope_theta_slider, "Slide to adjust RoPE theta base frequency.")
     form_layout.addRow("RoPE Theta", _create_slider_spin_row(window.rope_theta_slider, window.rope_theta))
 
     # 6. Context Len
@@ -335,6 +353,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.context_length = window._spin(16, 1_000_000, 2048)
     window.context_length_slider.valueChanged.connect(window.context_length.setValue)
     window.context_length.valueChanged.connect(window.context_length_slider.setValue)
+    window._tip(window.context_length, "Context length / sequence length: Maximum number of consecutive tokens processed in each training sequence.")
+    window._tip(window.context_length_slider, "Slide to adjust sequence context window length.")
     form_layout.addRow("Context Len", _create_slider_spin_row(window.context_length_slider, window.context_length))
 
     # 7. Intermediate Size (MLP Dim)
@@ -344,6 +364,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.intermediate_size = window._spin(256, 131072, 11008)
     window.intermediate_size_slider.valueChanged.connect(window.intermediate_size.setValue)
     window.intermediate_size.valueChanged.connect(window.intermediate_size_slider.setValue)
+    window._tip(window.intermediate_size, "Intermediate dimension of MLP/FFN block. Typically 2.5x to 4x of hidden dimension.")
+    window._tip(window.intermediate_size_slider, "Slide to adjust feedforward intermediate dimension.")
     form_layout.addRow("Intermediate Size ⓘ", _create_slider_spin_row(window.intermediate_size_slider, window.intermediate_size))
 
     # 8. Attention Type
@@ -352,6 +374,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.attention_type.setStyleSheet(
         "QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 4px 10px; font-size: 11px; }"
     )
+    window._tip(window.attention_type, "Attention mechanism: Multi-Head (MHA), Grouped-Query (GQA) for memory savings, or Multi-Query (MQA).")
     form_layout.addRow("Attention Type ⓘ", window.attention_type)
 
     # 9. KV Heads (for GQA)
@@ -361,6 +384,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.kv_head_count = window._spin(1, 128, 8)
     window.kv_head_count_slider.valueChanged.connect(window.kv_head_count.setValue)
     window.kv_head_count.valueChanged.connect(window.kv_head_count_slider.setValue)
+    window._tip(window.kv_head_count, "Key/Value head count for GQA. e.g. 8 KV heads with 32 Query heads reduces KV cache memory 4x.")
+    window._tip(window.kv_head_count_slider, "Slide to adjust KV head count.")
     form_layout.addRow("KV Heads (n_kv_head) ⓘ", _create_slider_spin_row(window.kv_head_count_slider, window.kv_head_count))
 
     # 10. Activation Fn & Normalization
@@ -371,11 +396,13 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.activation_fn.setStyleSheet(
         "QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 4px 8px; font-size: 11px; }"
     )
+    window._tip(window.activation_fn, "Non-linear feedforward activation function (SwiGLU used in Llama/Mistral, GELU in GPT-NeoX).")
     window.norm_type = QComboBox()
     window.norm_type.addItems(["RMSNorm", "LayerNorm"])
     window.norm_type.setStyleSheet(
         "QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 4px 8px; font-size: 11px; }"
     )
+    window._tip(window.norm_type, "Normalization layer: RMSNorm (faster, modern standard) or LayerNorm (classic post/pre-norm).")
     arch_row.addWidget(window.activation_fn, 1)
     arch_row.addWidget(window.norm_type, 1)
     form_layout.addRow("Activation & Norm ⓘ", arch_row)
@@ -386,11 +413,13 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.use_bias = QCheckBox("Use Bias")
     window.use_bias.setChecked(False)
     window.use_bias.setStyleSheet("color: #cbd5e1; font-size: 11px;")
+    window._tip(window.use_bias, "Include learned bias parameters in linear layers. Disabled in modern LLMs for cleaner scaling.")
     window.tie_embeddings = QCheckBox("Tie Embeddings")
     window.tie_embeddings.setChecked(True)
     window.tie_embeddings.setStyleSheet("color: #cbd5e1; font-size: 11px;")
+    window._tip(window.tie_embeddings, "Share input embedding and output projection weight matrices to reduce parameter footprint.")
     window.attention_window = window._spin(0, 65536, 0)
-    window.attention_window.setToolTip("Sliding window size (0 = Full Context)")
+    window.attention_window.setToolTip("Sliding window size (0 = Full Context attention)")
     window.attention_window.setFixedWidth(70)
     toggles_row.addWidget(window.use_bias)
     toggles_row.addWidget(window.tie_embeddings)
@@ -398,6 +427,20 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     toggles_row.addWidget(QLabel("Window:"))
     toggles_row.addWidget(window.attention_window)
     form_layout.addRow("Features & Window ⓘ", toggles_row)
+
+    # 12. Window Stride (sample_stride)
+    window.sample_stride_slider = QSlider(Qt.Horizontal)
+    window.sample_stride_slider.setRange(1, 512)
+    window.sample_stride_slider.setValue(128)
+    window.sample_stride = window._spin(1, 4096, 128)
+    window.sample_stride_slider.valueChanged.connect(window.sample_stride.setValue)
+    window.sample_stride.valueChanged.connect(window.sample_stride_slider.setValue)
+    window._tip(
+        window.sample_stride,
+        "Stride window (sample_stride): Token advance between consecutive sliding training sequences. Stride=1 yields dense overlapping windows; higher values reduce total sample count and speed up training passes.",
+    )
+    window._tip(window.sample_stride_slider, "Slide to adjust training sample window stride.")
+    form_layout.addRow("Stride Window (stride) ⓘ", _create_slider_spin_row(window.sample_stride_slider, window.sample_stride))
 
     params_layout.addLayout(form_layout)
 
@@ -450,6 +493,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.fine_tune_lora_rank = window._spin(1, 128, 8)
     window.fine_tune_lora_rank_slider.valueChanged.connect(window.fine_tune_lora_rank.setValue)
     window.fine_tune_lora_rank.valueChanged.connect(window.fine_tune_lora_rank_slider.setValue)
+    window._tip(window.fine_tune_lora_rank, "LoRA rank (r): Low-rank bottleneck dimension for adapter matrices (typically 8, 16, or 32).")
+    window._tip(window.fine_tune_lora_rank_slider, "Slide to adjust LoRA rank dimension.")
     lora_form.addRow("Rank", _create_slider_spin_row(window.fine_tune_lora_rank_slider, window.fine_tune_lora_rank))
 
     # 2. Alpha
@@ -459,6 +504,8 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.fine_tune_lora_alpha = window._spin(1, 256, 16)
     window.fine_tune_lora_alpha_slider.valueChanged.connect(window.fine_tune_lora_alpha.setValue)
     window.fine_tune_lora_alpha.valueChanged.connect(window.fine_tune_lora_alpha_slider.setValue)
+    window._tip(window.fine_tune_lora_alpha, "LoRA alpha: Scaling factor for LoRA updates (typically 2x of rank).")
+    window._tip(window.fine_tune_lora_alpha_slider, "Slide to adjust LoRA alpha scaling factor.")
     lora_form.addRow("Alpha", _create_slider_spin_row(window.fine_tune_lora_alpha_slider, window.fine_tune_lora_alpha))
 
     # 3. Dropout
@@ -468,7 +515,14 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.fine_tune_lora_dropout = window._double_spin(0.0, 0.5, 0.05, 0.01, 2)
     window.fine_tune_lora_dropout_slider.valueChanged.connect(lambda v: window.fine_tune_lora_dropout.setValue(v / 100.0))
     window.fine_tune_lora_dropout.valueChanged.connect(lambda v: window.fine_tune_lora_dropout_slider.setValue(int(v * 100)))
+    window._tip(window.fine_tune_lora_dropout, "LoRA dropout: Dropout probability applied to LoRA adapter layers during fine-tuning.")
+    window._tip(window.fine_tune_lora_dropout_slider, "Slide to adjust LoRA dropout rate.")
     lora_form.addRow("Dropout ⓘ", _create_slider_spin_row(window.fine_tune_lora_dropout_slider, window.fine_tune_lora_dropout))
+
+    # Aliases for project state and training controller
+    window.lora_rank = window.fine_tune_lora_rank
+    window.lora_alpha = window.fine_tune_lora_alpha
+    window.lora_dropout = window.fine_tune_lora_dropout
 
     lora_layout.addLayout(lora_form)
 
@@ -487,6 +541,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
         "QPushButton { background: #2b1b44; color: #c084fc; border: 1px solid #9333ea; border-radius: 12px; padding: 5px 10px; font-size: 11px; font-weight: 700; }"
         "QPushButton:!checked { background: #141722; color: #64748b; border-color: #282e42; }"
     )
+    window._tip(window.target_self_attn, "Inject LoRA adapters into Self-Attention query, key, value, and output projection matrices.")
 
     window.target_mlp = QPushButton("● MLP")
     window.target_mlp.setCheckable(True)
@@ -495,6 +550,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
         "QPushButton { background: #2b1b44; color: #c084fc; border: 1px solid #9333ea; border-radius: 12px; padding: 5px 10px; font-size: 11px; font-weight: 700; }"
         "QPushButton:!checked { background: #141722; color: #64748b; border-color: #282e42; }"
     )
+    window._tip(window.target_mlp, "Inject LoRA adapters into Feed-Forward Network / MLP intermediate projections.")
 
     window.target_layernorm = QPushButton("○ LayerNorm")
     window.target_layernorm.setCheckable(True)
@@ -503,6 +559,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
         "QPushButton { background: #2b1b44; color: #c084fc; border: 1px solid #9333ea; border-radius: 12px; padding: 5px 10px; font-size: 11px; font-weight: 700; }"
         "QPushButton:!checked { background: #141722; color: #64748b; border-color: #282e42; }"
     )
+    window._tip(window.target_layernorm, "Inject LoRA trainable scale/bias adapters into LayerNorm/RMSNorm blocks.")
 
     target_pills_row.addWidget(window.target_self_attn)
     target_pills_row.addWidget(window.target_mlp)
@@ -519,23 +576,35 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     opt_form.setLabelAlignment(Qt.AlignLeft)
 
     window.learning_rate = window._double_spin(0.00001, 0.1, 0.0003, 0.00005, 5)
+    window._tip(window.learning_rate, "Optimizer learning rate. Recommended: 3e-4 for pre-training from scratch, 1e-4 for LoRA fine-tuning.")
     window.batch_size = window._spin(1, 1024, 16)
+    window._tip(window.batch_size, "Micro-batch size per optimization step.")
     window.epochs = window._spin(1, 1000, 5)
+    window._tip(window.epochs, "Number of complete dataset training epochs.")
     window.optimizer_name = QComboBox()
     window.optimizer_name.addItems(["AdamW", "AdamW (8-bit)", "Lion", "Adafactor", "Adam"])
     window.optimizer_name.setStyleSheet("QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 3px 6px; font-size: 11px; }")
+    window._tip(window.optimizer_name, "Optimizer algorithm. AdamW is the standard; 8-bit AdamW saves significant GPU memory.")
     window.precision = QComboBox()
     window.precision.addItems(["BF16 (Mixed)", "FP16 (Mixed)", "FP32"])
     window.precision.setStyleSheet("QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 3px 6px; font-size: 11px; }")
+    window._tip(window.precision, "Compute precision. BF16 (Mixed) is recommended for modern GPUs; FP16 or FP32 fallback.")
     window.scheduler_name = QComboBox()
     window.scheduler_name.addItems(["Cosine decay", "Warmup linear", "Polynomial decay", "One-cycle", "Constant"])
     window.scheduler_name.setStyleSheet("QComboBox { background: #141722; color: #f8fafc; border: 1px solid #282e42; border-radius: 6px; padding: 3px 6px; font-size: 11px; }")
+    window._tip(window.scheduler_name, "Learning rate schedule. Cosine decay with warmup is recommended for stable convergence.")
     window.warmup_steps = window._spin(0, 100000, 100)
+    window._tip(window.warmup_steps, "Warmup steps: Initial steps with linearly increasing learning rate to prevent early divergence.")
     window.gradient_accumulation = window._spin(1, 256, 1)
+    window._tip(window.gradient_accumulation, "Gradient accumulation steps: Accumulates gradients across N micro-steps to simulate a larger effective batch size.")
     window.weight_decay = window._double_spin(0.0, 1.0, 0.1, 0.01, 3)
+    window._tip(window.weight_decay, "L2 weight decay penalty coefficient to regularize weights and prevent overfitting.")
     window.max_grad_norm = window._double_spin(0.1, 100.0, 1.0, 0.1, 2)
+    window._tip(window.max_grad_norm, "Maximum gradient norm clipping threshold to prevent exploding gradients and loss spikes.")
     window.save_interval = window._spin(1, 100000, 500)
+    window._tip(window.save_interval, "Checkpoint save interval (in optimization steps).")
     window.eval_interval = window._spin(0, 100000, 100)
+    window._tip(window.eval_interval, "Validation loss evaluation interval (in optimization steps).")
 
     opt_form.addRow("Learning Rate", window.learning_rate)
     opt_form.addRow("Batch Size", window.batch_size)
@@ -551,30 +620,98 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.activation_checkpointing = QCheckBox("Act Ckpt")
     window.activation_checkpointing.setChecked(True)
     window.activation_checkpointing.setStyleSheet("color: #cbd5e1; font-size: 11px;")
+    window._tip(window.activation_checkpointing, "Activation checkpointing: Recomputes activations during backward pass to drastically reduce VRAM usage.")
     window.compile_model = QCheckBox("Torch Compile")
     window.compile_model.setChecked(False)
     window.compile_model.setStyleSheet("color: #cbd5e1; font-size: 11px;")
+    window._tip(window.compile_model, "PyTorch 2.x Inductor compiler: Fuses kernel operations to accelerate GPU throughput.")
     opt_toggles.addWidget(window.activation_checkpointing)
     opt_toggles.addWidget(window.compile_model)
     opt_form.addRow("Acceleration", opt_toggles)
     lora_layout.addLayout(opt_form)
 
+    # Launch Target Selector (Local machine vs Cluster)
+    launch_target_row = QHBoxLayout()
+    launch_target_row.setSpacing(6)
+    launch_target_label = QLabel("Launch Target:")
+    launch_target_label.setStyleSheet("color: #94a3b8; font-size: 11px; font-weight: 700;")
+    window.training_launch_target = QComboBox()
+    window.training_launch_target.addItems(["Local machine", "Cluster (Local SGD)"])
+    window.training_launch_target.setStyleSheet(
+        "QComboBox { background: #141722; color: #38bdf8; border: 1px solid #0284c7; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: bold; }"
+    )
+    window._tip(
+        window.training_launch_target,
+        "Select training execution target: 'Local machine' trains on local GPU/CPU. 'Cluster (Local SGD)' dispatches a distributed job across the cluster fleet.",
+    )
+    launch_target_row.addWidget(launch_target_label)
+    launch_target_row.addWidget(window.training_launch_target, 1)
+    lora_layout.addLayout(launch_target_row)
+
     # Action buttons matching modern IDE workflow
     actions_row = QHBoxLayout()
     actions_row.setSpacing(8)
-    window.train_button = QPushButton("Start Training")
+    window.train_button = QPushButton("Start Base Pre-Training")
     window.train_button.setStyleSheet(
         "QPushButton { background: #10b981; color: white; border: none; border-radius: 6px; padding: 8px 14px; font-size: 12px; font-weight: 800; }"
         "QPushButton:hover { background: #059669; }"
     )
+    window._tip(window.train_button, "Start model training using the active mode (Base Pre-training or LoRA Fine-tuning) and launch target.")
+
     window.dry_run_button = QPushButton("Dry Run")
     window.dry_run_button.setStyleSheet(
         "QPushButton { background: #151821; color: #cbd5e1; border: 1px solid #282e42; border-radius: 6px; padding: 8px 10px; font-size: 11px; font-weight: 700; }"
         "QPushButton:hover { border-color: #f59e0b; color: white; }"
     )
+    window._tip(window.dry_run_button, "Execute a test forward/backward pass with dummy data to verify GPU memory, gradient flow, and execution speed.")
     actions_row.addWidget(window.train_button, 2)
     actions_row.addWidget(window.dry_run_button, 1)
     lora_layout.addLayout(actions_row)
+
+    def update_train_button_state() -> None:
+        mode = getattr(window, "active_training_mode", "pretrain")
+        target = window.training_launch_target.currentText()
+        is_cluster = "Cluster" in target
+        if mode == "fine_tune":
+            if is_cluster:
+                window.train_button.setText("Launch Cluster Fine-Tuning")
+                window.train_button.setToolTip("Submit distributed LoRA fine-tuning job (Local SGD) to the cluster worker fleet.")
+            else:
+                window.train_button.setText("Start LoRA Fine-Tuning")
+                window.train_button.setToolTip("Start local LoRA adapter fine-tuning using configured targets and hyperparameters.")
+        else:
+            if is_cluster:
+                window.train_button.setText("Launch Cluster Pre-Training")
+                window.train_button.setToolTip("Submit distributed pre-training job (Local SGD) to the cluster worker fleet.")
+            else:
+                window.train_button.setText("Start Base Pre-Training")
+                window.train_button.setToolTip("Start local model pre-training from scratch using configured architecture and hyperparameters.")
+
+    window.update_train_button_state = update_train_button_state
+    window.training_launch_target.currentTextChanged.connect(lambda _: update_train_button_state())
+    update_train_button_state()
+
+    def on_train_button_clicked() -> None:
+        mode = getattr(window, "active_training_mode", "pretrain")
+        target = window.training_launch_target.currentText()
+        if "Cluster" in target:
+            if hasattr(window, "launch_cluster_training_job"):
+                window.launch_cluster_training_job(training_mode=mode)
+            if hasattr(window, "_switch_page") and hasattr(window, "job_manager_page_index"):
+                window._switch_page(window.job_manager_page_index)
+        else:
+            if mode == "fine_tune":
+                if hasattr(window, "start_fine_tuning"):
+                    window.start_fine_tuning()
+                elif hasattr(window, "start_training"):
+                    window.start_training()
+            else:
+                if hasattr(window, "start_training"):
+                    window.start_training()
+            if hasattr(window, "_switch_page") and hasattr(window, "live_page_index"):
+                window._switch_page(window.live_page_index)
+
+    window.train_button.clicked.connect(on_train_button_clicked)
 
     lora_layout.addStretch(1)
 
@@ -649,6 +786,27 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.activation_fn.currentTextChanged.connect(recalculate_parameters)
     recalculate_parameters()
 
+    # Visualizer synchronization routine
+    def update_visualizer_from_ui() -> None:
+        if not hasattr(window, "transformer_visualizer"):
+            return
+        model_name = window.preset.currentText() if hasattr(window, "preset") else "GPT-NeoX-20B"
+        norm_type = window.norm_type.currentText() if hasattr(window, "norm_type") else "RMSNorm"
+        activation = window.activation_fn.currentText() if hasattr(window, "activation_fn") else "SwiGLU"
+        attention_type = window.attention_type.currentText() if hasattr(window, "attention_type") else "Multi-Head (MHA)"
+        pos_encoding = "RoPE"
+        use_bias = window.use_bias.isChecked() if hasattr(window, "use_bias") else False
+        window.transformer_visualizer.set_architecture(
+            model_name=model_name,
+            norm_type=norm_type,
+            activation=activation,
+            attention_type=attention_type,
+            pos_encoding=pos_encoding,
+            use_bias=use_bias,
+        )
+
+    window.update_visualizer_from_ui = update_visualizer_from_ui
+
     # Preset selection synchronization
     def on_preset_changed(text: str) -> None:
         window.model_config_label.setText(f"Model Config: {text}")
@@ -658,6 +816,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
             window.num_layers.setValue(44)
             window.vocab_size.setValue(50257)
             window.intermediate_size.setValue(16384)
+            window.attention_type.setCurrentText("Multi-Head (MHA)")
             window.activation_fn.setCurrentText("GELU")
             window.norm_type.setCurrentText("LayerNorm")
         elif "Llama-3" in text:
@@ -667,6 +826,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
             window.vocab_size.setValue(128256)
             window.intermediate_size.setValue(14336)
             window.kv_head_count.setValue(8)
+            window.attention_type.setCurrentText("Grouped-Query (GQA)")
             window.activation_fn.setCurrentText("SwiGLU")
             window.norm_type.setCurrentText("RMSNorm")
         elif "Mistral" in text:
@@ -676,6 +836,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
             window.vocab_size.setValue(32000)
             window.intermediate_size.setValue(14336)
             window.kv_head_count.setValue(8)
+            window.attention_type.setCurrentText("Grouped-Query (GQA)")
             window.activation_fn.setCurrentText("SwiGLU")
             window.norm_type.setCurrentText("RMSNorm")
         elif "MicroLLM" in text:
@@ -684,10 +845,17 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
             window.num_layers.setValue(12)
             window.vocab_size.setValue(8000)
             window.intermediate_size.setValue(2816)
+            window.attention_type.setCurrentText("Multi-Head (MHA)")
             window.activation_fn.setCurrentText("SwiGLU")
             window.norm_type.setCurrentText("RMSNorm")
+        update_visualizer_from_ui()
 
     window.preset.currentTextChanged.connect(on_preset_changed)
+    window.norm_type.currentTextChanged.connect(lambda _: update_visualizer_from_ui())
+    window.activation_fn.currentTextChanged.connect(lambda _: update_visualizer_from_ui())
+    window.attention_type.currentTextChanged.connect(lambda _: update_visualizer_from_ui())
+    window.use_bias.toggled.connect(lambda _: update_visualizer_from_ui())
+    update_visualizer_from_ui()
 
     # Legacy attributes maintained for compatibility with training mixins and runners
     if not hasattr(window, "train_data_dir"):
@@ -793,44 +961,68 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.train_context_length = window.context_length
 
     # Additional project state attributes
-    window.resume_checkpoint = QLineEdit("")
-    window.fine_tune_checkpoint = QLineEdit("")
-    window.training_launch_target = QComboBox()
-    window.training_launch_target.addItems(["Local machine", "Cluster (Local SGD)"])
-    window.fine_tune_launch_target = QComboBox()
-    window.fine_tune_launch_target.addItems(["Local machine", "Cluster (Local SGD)"])
-    window.attention_type = QComboBox()
-    window.attention_type.addItems(["Multi-head", "Grouped-query", "Multi-query"])
-    window.kv_head_count = window._spin(1, 128, 4)
-    window.attention_backend = QComboBox()
-    window.attention_backend.addItems(["SDPA / Flash when available", "Manual"])
-    window.attention_window = window._spin(0, 32768, 0)
-    window.training_mode = QComboBox()
-    window.training_mode.addItems(["Pretrain from scratch", "Fine-tune checkpoint", "Instruction fine-tune", "Conversation fine-tune", "Code fine-tune"])
-    window.peft_method = QComboBox()
-    window.peft_method.addItems(["Full fine-tune", "LoRA adapters"])
-    window.lora_targets = QComboBox()
-    window.lora_targets.addItems(["Attention projections", "MLP projections", "Attention + MLP"])
-    window.lora_rank = window._spin(1, 256, 8)
-    window.lora_alpha = window._double_spin(1.0, 512.0, 16.0, 1.0, 1)
-    window.lora_dropout = window._double_spin(0.0, 0.9, 0.05, 0.01, 3)
-    window.fine_tune_check_button = QPushButton("Check Fine-tune")
-    window.fine_tune_dataset_status = QLabel("Dataset: not checked")
-    window.fine_tune_refresh_button = QPushButton("Refresh Dataset Fit")
-    window.apply_lora_preset_button = QPushButton("Apply Recommended LoRA")
-    window.fine_tune_epoch_metric = QLabel("Epoch: -")
-    window.fine_tune_runtime_hint = QLabel("Uses AI tab device, precision, resume, and checkpoint settings.")
-    window.fine_tune_dataset_builder_stage = QComboBox()
-    window.fine_tune_dataset_builder_stage.addItems([
-        "Instruction fine-tune",
-        "Conversation fine-tune",
-        "Tool-call fine-tune",
-        "Code fine-tune",
-        "Thinking fine-tune",
-    ])
-    window.fine_tune_button = QPushButton("Start Fine-Tune")
-    window.stop_fine_tune_button = QPushButton("Stop Fine-Tune")
-    window.fine_tune_process_status = QLabel("Worker: detached | Run: - | PID: -")
+    if not hasattr(window, "resume_checkpoint"):
+        window.resume_checkpoint = QLineEdit("")
+    if not hasattr(window, "fine_tune_checkpoint"):
+        window.fine_tune_checkpoint = QLineEdit("")
+    if not hasattr(window, "training_launch_target"):
+        window.training_launch_target = QComboBox()
+        window.training_launch_target.addItems(["Local machine", "Cluster (Local SGD)"])
+    if not hasattr(window, "fine_tune_launch_target"):
+        window.fine_tune_launch_target = QComboBox()
+        window.fine_tune_launch_target.addItems(["Local machine", "Cluster (Local SGD)"])
+    if not hasattr(window, "attention_type"):
+        window.attention_type = QComboBox()
+        window.attention_type.addItems(["Multi-head", "Grouped-query", "Multi-query"])
+    if not hasattr(window, "kv_head_count"):
+        window.kv_head_count = window._spin(1, 128, 4)
+    if not hasattr(window, "attention_backend"):
+        window.attention_backend = QComboBox()
+        window.attention_backend.addItems(["SDPA / Flash when available", "Manual"])
+    if not hasattr(window, "attention_window"):
+        window.attention_window = window._spin(0, 32768, 0)
+    if not hasattr(window, "training_mode"):
+        window.training_mode = QComboBox()
+        window.training_mode.addItems(["Pretrain from scratch", "Fine-tune checkpoint", "Instruction fine-tune", "Conversation fine-tune", "Code fine-tune"])
+    if not hasattr(window, "peft_method"):
+        window.peft_method = QComboBox()
+        window.peft_method.addItems(["Full fine-tune", "LoRA adapters"])
+    if not hasattr(window, "lora_targets"):
+        window.lora_targets = QComboBox()
+        window.lora_targets.addItems(["Attention projections", "MLP projections", "Attention + MLP"])
+    if not hasattr(window, "lora_rank"):
+        window.lora_rank = getattr(window, "fine_tune_lora_rank", None) or window._spin(1, 256, 8)
+    if not hasattr(window, "lora_alpha"):
+        window.lora_alpha = getattr(window, "fine_tune_lora_alpha", None) or window._double_spin(1.0, 512.0, 16.0, 1.0, 1)
+    if not hasattr(window, "lora_dropout"):
+        window.lora_dropout = getattr(window, "fine_tune_lora_dropout", None) or window._double_spin(0.0, 0.9, 0.05, 0.01, 3)
+    if not hasattr(window, "fine_tune_check_button"):
+        window.fine_tune_check_button = QPushButton("Check Fine-tune")
+    if not hasattr(window, "fine_tune_dataset_status"):
+        window.fine_tune_dataset_status = QLabel("Dataset: not checked")
+    if not hasattr(window, "fine_tune_refresh_button"):
+        window.fine_tune_refresh_button = QPushButton("Refresh Dataset Fit")
+    if not hasattr(window, "apply_lora_preset_button"):
+        window.apply_lora_preset_button = QPushButton("Apply Recommended LoRA")
+    if not hasattr(window, "fine_tune_epoch_metric"):
+        window.fine_tune_epoch_metric = QLabel("Epoch: -")
+    if not hasattr(window, "fine_tune_runtime_hint"):
+        window.fine_tune_runtime_hint = QLabel("Uses AI tab device, precision, resume, and checkpoint settings.")
+    if not hasattr(window, "fine_tune_dataset_builder_stage"):
+        window.fine_tune_dataset_builder_stage = QComboBox()
+        window.fine_tune_dataset_builder_stage.addItems([
+            "Instruction fine-tune",
+            "Conversation fine-tune",
+            "Tool-call fine-tune",
+            "Code fine-tune",
+            "Thinking fine-tune",
+        ])
+    if not hasattr(window, "fine_tune_button"):
+        window.fine_tune_button = QPushButton("Start Fine-Tune")
+    if not hasattr(window, "stop_fine_tune_button"):
+        window.stop_fine_tune_button = QPushButton("Stop Fine-Tune")
+    if not hasattr(window, "fine_tune_process_status"):
+        window.fine_tune_process_status = QLabel("Worker: detached | Run: - | PID: -")
 
     if hasattr(window, "preview_fine_tune_compatibility"):
         window.fine_tune_check_button.clicked.connect(window.preview_fine_tune_compatibility)
@@ -847,34 +1039,53 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
         window.training_mode.currentTextChanged.connect(window._refresh_fine_tune_default_output)
         window.fine_tune_dataset_builder_stage.currentTextChanged.connect(window._refresh_fine_tune_default_output)
 
-    window.dropout = window._double_spin(0.0, 1.0, 0.0, 0.01, 2)
-    window.training_profile = QComboBox()
-    window.training_profile.addItems(["Stable LLM", "Aggressive", "Conservative"])
-    window.optimizer_name = QComboBox()
-    window.optimizer_name.addItems(["AdamW", "AdamW (8-bit)", "Adam", "Lion", "Adafactor"])
-    window.scheduler_name = QComboBox()
-    window.scheduler_name.addItems(["Warmup linear", "Cosine decay", "Polynomial decay", "One-cycle", "Constant"])
-    window.min_lr_ratio = window._double_spin(0.0, 1.0, 0.1, 0.01, 2)
-    window.polynomial_power = window._double_spin(0.1, 5.0, 1.0, 0.1, 2)
-    window.gradient_accumulation = window._spin(1, 128, 1)
-    window.sample_stride = window._spin(1, 128, 1)
-    window.eval_interval = window._spin(1, 10000, 100)
-    window.max_eval_batches = window._spin(1, 1000, 10)
-    window.save_interval = window._spin(1, 10000, 500)
-    window.data_loader_workers = window._spin(0, 32, 2)
-    window.seed = window._spin(0, 999999, 42)
-    window.device = QComboBox()
-    window.device.addItems(["cuda:0", "cpu"])
-    window.use_amp = QCheckBox()
-    window.use_amp.setChecked(True)
-    window.use_amp_default = True
-    window.device_info = QLabel("CUDA Enabled")
-    window.precision = QComboBox()
-    window.precision.addItems(["FP16", "BF16", "FP32"])
-    window.resume_training = QCheckBox()
-    window.resume_training.setChecked(True)
-    window.resume_safety = QCheckBox()
-    window.resume_safety.setChecked(True)
+    if not hasattr(window, "dropout"):
+        window.dropout = window._double_spin(0.0, 1.0, 0.0, 0.01, 2)
+    if not hasattr(window, "training_profile"):
+        window.training_profile = QComboBox()
+        window.training_profile.addItems(["Stable LLM", "Aggressive", "Conservative"])
+    if not hasattr(window, "optimizer_name"):
+        window.optimizer_name = QComboBox()
+        window.optimizer_name.addItems(["AdamW", "AdamW (8-bit)", "Adam", "Lion", "Adafactor"])
+    if not hasattr(window, "scheduler_name"):
+        window.scheduler_name = QComboBox()
+        window.scheduler_name.addItems(["Warmup linear", "Cosine decay", "Polynomial decay", "One-cycle", "Constant"])
+    if not hasattr(window, "min_lr_ratio"):
+        window.min_lr_ratio = window._double_spin(0.0, 1.0, 0.1, 0.01, 2)
+    if not hasattr(window, "polynomial_power"):
+        window.polynomial_power = window._double_spin(0.1, 5.0, 1.0, 0.1, 2)
+    if not hasattr(window, "gradient_accumulation"):
+        window.gradient_accumulation = window._spin(1, 128, 1)
+    if not hasattr(window, "sample_stride"):
+        window.sample_stride = window._spin(1, 128, 1)
+    if not hasattr(window, "eval_interval"):
+        window.eval_interval = window._spin(1, 10000, 100)
+    if not hasattr(window, "max_eval_batches"):
+        window.max_eval_batches = window._spin(1, 1000, 10)
+    if not hasattr(window, "save_interval"):
+        window.save_interval = window._spin(1, 10000, 500)
+    if not hasattr(window, "data_loader_workers"):
+        window.data_loader_workers = window._spin(0, 32, 2)
+    if not hasattr(window, "seed"):
+        window.seed = window._spin(0, 999999, 42)
+    if not hasattr(window, "device"):
+        window.device = QComboBox()
+        window.device.addItems(["cuda:0", "cpu"])
+    if not hasattr(window, "use_amp"):
+        window.use_amp = QCheckBox()
+        window.use_amp.setChecked(True)
+        window.use_amp_default = True
+    if not hasattr(window, "device_info"):
+        window.device_info = QLabel("CUDA Enabled")
+    if not hasattr(window, "precision"):
+        window.precision = QComboBox()
+        window.precision.addItems(["FP16", "BF16", "FP32"])
+    if not hasattr(window, "resume_training"):
+        window.resume_training = QCheckBox()
+        window.resume_training.setChecked(True)
+    if not hasattr(window, "resume_safety"):
+        window.resume_safety = QCheckBox()
+        window.resume_safety.setChecked(True)
     window.early_stopping = QCheckBox()
     window.early_stopping.setChecked(True)
     window.early_stopping_patience = window._spin(1, 50, 5)

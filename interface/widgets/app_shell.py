@@ -141,7 +141,7 @@ def build_top_bar(window, app_name: str) -> QWidget:
 
 def build_side_rail(window) -> QWidget:
     """Build the shared navigation rail strictly matching Concept References and 9-page order."""
-    from interface.widgets.neon_nav_card import StudioNavButton
+    from interface.widgets.neon_nav_card import SideRailToggleButton, StudioNavButton
 
     rail = QWidget()
     rail.setObjectName("SideRail")
@@ -153,17 +153,12 @@ def build_side_rail(window) -> QWidget:
     layout.setSpacing(6)
 
     toggle_row = QHBoxLayout()
-    toggle_row.setContentsMargins(0, 0, 0, 0)
-    window.side_rail_toggle = QPushButton("☰")
-    window.side_rail_toggle.setFixedSize(28, 22)
-    window.side_rail_toggle.setStyleSheet(
-        "QPushButton { background-color: #151821; color: #a5b4fc; border: 1px solid #282e42; border-radius: 4px; font-size: 13px; font-weight: bold; }"
-        "QPushButton:hover { background-color: #23283a; color: white; border-color: #8b5cf6; }"
-    )
-    window.side_rail_toggle.setToolTip("Toggle sidebar navigation")
+    toggle_row.setContentsMargins(0, 0, 0, 4)
+    window.side_rail_toggle = SideRailToggleButton()
     window.side_rail_toggle.clicked.connect(window.toggle_side_rail)
     toggle_row.addStretch(1)
     toggle_row.addWidget(window.side_rail_toggle)
+    toggle_row.addStretch(1)
     layout.addLayout(toggle_row)
 
     # 1. Dataset Sources (Page 0)

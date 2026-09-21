@@ -1,4 +1,4 @@
-"""Dataset Ingestion & Streaming Tokenizer screen for DrunkenBot IDE."""
+"""Data Ingestion Matrix & Tokenizer screen for DrunkenBot IDE."""
 
 from __future__ import annotations
 
@@ -13,17 +13,21 @@ from PySide6.QtWidgets import (
     QDoubleSpinBox,
     QFormLayout,
     QFrame,
+    QGridLayout,
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QProgressBar,
     QPushButton,
+    QScrollArea,
     QSizePolicy,
     QSpinBox,
     QTextEdit,
     QVBoxLayout,
     QWidget,
 )
+
+from engine.conversation_datasets import CONVERSATION_DATASET_PRESETS
+from interface.charts import DatasetBarChartWidget
 
 try:
     import psutil
@@ -34,8 +38,8 @@ except ImportError:
 def build_dataset_tab(window: Any) -> QWidget:
     """Build the dataset ingestion and streaming tokenizer page.
 
-    Matches the luxury Obsidian design system with two balanced cards:
-    Tokenizer Specification & Encoding and Live Ingestion Monitor & Telemetry.
+    Faithfully restores the complete two-column matrix layout, metric chips,
+    Source Array, Tokenizer Core, and Dataset Statistics charts.
 
     Args:
         window: Main application window holding shared state.
@@ -44,520 +48,374 @@ def build_dataset_tab(window: Any) -> QWidget:
         Dataset page widget.
     """
     page = window._panel()
-    root_layout = QVBoxLayout(page)
-    root_layout.setContentsMargins(24, 20, 24, 20)
-    root_layout.setSpacing(16)
+    outer = QVBoxLayout(page)
+    outer.setContentsMargins(0, 0, 0, 0)
+    outer.setSpacing(0)
+
+    scroll = QScrollArea()
+    scroll.setObjectName("PageScroll")
+    scroll.setWidgetResizable(True)
+    scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+    content = QWidget()
+    content.setObjectName("Panel")
+    layout = QVBoxLayout(content)
+    layout.setContentsMargins(18, 16, 18, 10)
+    layout.setSpacing(10)
+    scroll.setWidget(content)
+    outer.addWidget(scroll, 1)
 
     # =========================================================================
-    # Top Header Row: Page Title + Active Recipe Pill Badge
+    # Header: Title + Quality Metric Chips Bar
     # =========================================================================
-    header_row = QHBoxLayout()
-    header_row.setContentsMargins(0, 0, 0, 0)
-    header_row.setSpacing(16)
+    title_row = QHBoxLayout()
+    title_row.setSpacing(8)
+    title = window._page_title("Data Ingestion Matrix")
+    title_row.addWidget(title, 0)
 
-    title_label = QLabel("Dataset Ingestion & Streaming Tokenizer")
-    title_label.setObjectName("PageTitle")
-    title_label.setStyleSheet(
-        "font-size: 22px; font-weight: 800; color: #f8fafc; letter-spacing: 0.2px;"
-    )
-    header_row.addWidget(title_label)
+    window.dataset_quality_samples = window._metric_chip("Documents: -", "Prepared source documents before token sliding windows.")
+    window.dataset_quality_tokens = window._metric_chip("Tokens: -", "Total encoded tokens available for training.")
+    window.dataset_quality_windows = window._metric_chip("Windows: -", "Sliding context windows the trainer can sample.")
+    window.dataset_quality_vocab = window._metric_chip("Vocab: -", "Tokenizer vocabulary size used by the dataset.")
+    window.dataset_quality_rating = window._metric_chip("Rating: -", "Five-star dataset quality score based on tokens, windows, vocabulary, diversity, and extraction health.")
+    window.dataset_quality_code = window._metric_chip("Code/prose: -", "Code and prose sample split.")
+    window.dataset_quality_balance = window._metric_chip("Balance: -", "Code/prose balance detected during preview or preparation.")
+    window.dataset_quality_readiness = window._metric_chip("Readiness: -", "Training readiness score based on size, duplicates, extraction quality, and dataset mix.")
+    window.dataset_quality_cache = window._metric_chip("Cache: -", "Files reused from cache versus processed this run.")
+    window.dataset_quality_duplicates = window._metric_chip("Duplicates: -", "Likely exact or extracted-text duplicate files.")
+    window.dataset_quality_extraction = window._metric_chip("Extraction: -", "Files with suspicious text extraction quality.")
+    window.dataset_quality_warning = window._metric_chip("Warnings: none", "Dataset quality warnings, if any.")
 
-    header_row.addStretch(1)
-
-    window.dataset_tab_recipe_pill = QFrame()
-    window.dataset_tab_recipe_pill.setObjectName("RecipePill")
-    window.dataset_tab_recipe_pill.setStyleSheet(
-        "QFrame#RecipePill {"
-        "  background-color: #1a1712;"
-        "  border: 1px solid #78350f;"
-        "  border-radius: 14px;"
-        "  padding: 2px 8px;"
-        "}"
-    )
-    pill_layout = QHBoxLayout(window.dataset_tab_recipe_pill)
-    pill_layout.setContentsMargins(10, 4, 10, 4)
-    pill_layout.setSpacing(8)
-
-    window.dataset_tab_recipe_label = QLabel(
-        "Active Recipe: 11-Pillar Frontier Base (10.0B tokens)"
-    )
-    window.dataset_tab_recipe_label.setStyleSheet(
-        "color: #fbbf24; font-weight: 700; font-size: 12px;"
-    )
-    pill_layout.addWidget(window.dataset_tab_recipe_label)
-
-    window.dataset_tab_recipe_status = QLabel("Balanced")
-    window.dataset_tab_recipe_status.setStyleSheet(
-        "background-color: #064e3b; color: #34d399; font-size: 11px;"
-        "font-weight: 800; padding: 2px 6px; border-radius: 4px;"
-    )
-    pill_layout.addWidget(window.dataset_tab_recipe_status)
-
-    header_row.addWidget(window.dataset_tab_recipe_pill)
-    root_layout.addLayout(header_row)
-
-    # Legacy attributes maintained for background controllers and mixins
-    window.dataset_tab_recipe_icon = QLabel("🥣")
-    window.recipe_path_summary_label = QLabel("Auto-bound to Active Recipe")
-
-    # Quality metric chips - preserved on window for DatasetQualityMixin
-    hidden_chips_holder = QWidget()
-    hidden_chips_holder.setVisible(False)
-    hidden_chips_layout = QHBoxLayout(hidden_chips_holder)
-
-    window.dataset_quality_samples = window._metric_chip("Documents: -", "Documents")
-    window.dataset_quality_tokens = window._metric_chip("Tokens: -", "Tokens")
-    window.dataset_quality_windows = window._metric_chip("Windows: -", "Windows")
-    window.dataset_quality_vocab = window._metric_chip("Vocab: -", "Vocab")
-    window.dataset_quality_rating = window._metric_chip("Rating: -", "Rating")
-    window.dataset_quality_code = window._metric_chip("Code/prose: -", "Code/prose")
-    window.dataset_quality_balance = window._metric_chip("Balance: -", "Balance")
-    window.dataset_quality_readiness = window._metric_chip("Readiness: -", "Readiness")
-    window.dataset_quality_cache = window._metric_chip("Cache: -", "Cache")
-    window.dataset_quality_duplicates = window._metric_chip("Duplicates: -", "Duplicates")
-    window.dataset_quality_extraction = window._metric_chip("Extraction: -", "Extraction")
-    window.dataset_quality_warning = window._metric_chip("Warnings: none", "Warnings")
-
-    for chip in [
+    header_quality_items = [
         window.dataset_quality_samples,
         window.dataset_quality_tokens,
         window.dataset_quality_windows,
         window.dataset_quality_vocab,
         window.dataset_quality_rating,
         window.dataset_quality_code,
-        window.dataset_quality_balance,
         window.dataset_quality_readiness,
-        window.dataset_quality_cache,
-        window.dataset_quality_duplicates,
-        window.dataset_quality_extraction,
         window.dataset_quality_warning,
-    ]:
-        hidden_chips_layout.addWidget(chip)
-    root_layout.addWidget(hidden_chips_holder)
+    ]
+    for item in header_quality_items:
+        item.setMaximumWidth(210)
+        title_row.addWidget(item, 1)
+    layout.addLayout(title_row)
 
-    # Dynamic recipe banner update function
+    # Active Dataset Recipe Status Banner
+    recipe_banner = QFrame()
+    recipe_banner.setObjectName("RecipeBanner")
+    recipe_banner.setStyleSheet(
+        "#RecipeBanner {"
+        "  background-color: #171724;"
+        "  border: 1px solid #312e81;"
+        "  border-left: 4px solid #6366f1;"
+        "  border-radius: 6px;"
+        "  margin-top: 2px;"
+        "}"
+    )
+    banner_layout = QHBoxLayout(recipe_banner)
+    banner_layout.setContentsMargins(12, 6, 12, 6)
+    banner_layout.setSpacing(10)
+
+    window.dataset_tab_recipe_icon = QLabel("🥣")
+    window.dataset_tab_recipe_icon.setStyleSheet("font-size: 15px;")
+    banner_layout.addWidget(window.dataset_tab_recipe_icon)
+
+    window.dataset_tab_recipe_label = QLabel("ACTIVE RECIPE: Default 11-Pillar Frontier Base • 11 Categories • 250M Target Tokens")
+    window.dataset_tab_recipe_label.setStyleSheet("font-weight: bold; color: #e0e7ff; font-size: 12px;")
+    banner_layout.addWidget(window.dataset_tab_recipe_label, 1)
+
+    window.dataset_tab_recipe_status = QLabel("Balanced (100.0%)")
+    window.dataset_tab_recipe_status.setStyleSheet("background-color: #064e3b; color: #34d399; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;")
+    banner_layout.addWidget(window.dataset_tab_recipe_status)
+
+    recipe_config_btn = QPushButton("Configure Recipe Matrix ➔")
+    recipe_config_btn.setStyleSheet(
+        "QPushButton { background-color: #4f46e5; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; }"
+        "QPushButton:hover { background-color: #4338ca; }"
+    )
+    recipe_config_btn.setToolTip("Open the Dataset Recipe Matrix page to configure category percentages, ratios, and token allocations.")
+    recipe_config_btn.clicked.connect(lambda: window._switch_page(1) if hasattr(window, "_switch_page") else None)
+    banner_layout.addWidget(recipe_config_btn)
+    layout.addWidget(recipe_banner)
+
     def update_recipe_banner() -> None:
         rec = getattr(window, "active_dataset_recipe", None)
         if rec:
-            t_str = (
-                f"{rec.total_target_tokens / 1_000_000_000:.1f}B tokens"
-                if rec.total_target_tokens >= 1_000_000_000
-                else f"{rec.total_target_tokens / 1_000_000:.0f}M tokens"
-            )
+            enabled_count = len([c for c in rec.categories if c.enabled])
+            t_str = f"{rec.total_target_tokens / 1_000_000:.0f}M" if rec.total_target_tokens >= 1_000_000 else f"{rec.total_target_tokens:,}"
             window.dataset_tab_recipe_label.setText(
-                f"Active Recipe: {rec.name} ({t_str})"
+                f"ACTIVE RECIPE: {rec.name}  •  {enabled_count} Active Categories  •  {t_str} Target Token Budget"
             )
             if rec.is_balanced():
-                window.dataset_tab_recipe_status.setText(f"Balanced ({rec.total_percentage():.0f}%)")
-                window.dataset_tab_recipe_status.setStyleSheet(
-                    "background-color: #064e3b; color: #34d399; font-size: 11px;"
-                    "font-weight: 800; padding: 2px 6px; border-radius: 4px;"
-                )
+                window.dataset_tab_recipe_status.setText(f"Balanced ({rec.total_percentage():.1f}%)")
+                window.dataset_tab_recipe_status.setStyleSheet("background-color: #064e3b; color: #34d399; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;")
             else:
-                window.dataset_tab_recipe_status.setText(f"Unbalanced ({rec.total_percentage():.0f}%)")
-                window.dataset_tab_recipe_status.setStyleSheet(
-                    "background-color: #451a03; color: #fbbf24; font-size: 11px;"
-                    "font-weight: 800; padding: 2px 6px; border-radius: 4px;"
-                )
+                window.dataset_tab_recipe_status.setText(f"Unbalanced ({rec.total_percentage():.1f}%)")
+                window.dataset_tab_recipe_status.setStyleSheet("background-color: #451a03; color: #fbbf24; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;")
         else:
-            window.dataset_tab_recipe_label.setText("Active Recipe: 11-Pillar Frontier Base (10.0B tokens)")
-            window.dataset_tab_recipe_status.setText("Balanced")
+            window.dataset_tab_recipe_label.setText("ACTIVE RECIPE: Default 11-Pillar Frontier Base")
+            window.dataset_tab_recipe_status.setText("Ready")
 
     window.update_dataset_tab_recipe_banner = update_recipe_banner
+    update_recipe_banner()
 
     # =========================================================================
-    # Main Body: Two Balanced Cards
+    # Two-Column Body Layout
     # =========================================================================
-    cards_row = QHBoxLayout()
-    cards_row.setSpacing(18)
+    ingestion_body = QHBoxLayout()
+    ingestion_body.setSpacing(14)
+    left_column = QVBoxLayout()
+    left_column.setSpacing(10)
+    right_column = QVBoxLayout()
+    right_column.setSpacing(10)
 
     # -------------------------------------------------------------------------
-    # LEFT CARD: TOKENIZER SPECIFICATION & ENCODING
+    # LEFT COLUMN: SOURCE ARRAY & INGEST TELEMETRY
     # -------------------------------------------------------------------------
-    left_card = QFrame()
-    left_card.setObjectName("Card")
-    left_card.setStyleSheet(
-        "QFrame#Card {"
-        "  background-color: #151821;"
-        "  border: 1px solid #232738;"
-        "  border-radius: 12px;"
-        "}"
-    )
-    left_layout = QVBoxLayout(left_card)
-    left_layout.setContentsMargins(22, 20, 22, 20)
-    left_layout.setSpacing(14)
+    source_form = QFormLayout()
+    window._configure_form(source_form)
 
-    left_header = QLabel("TOKENIZER SPECIFICATION & ENCODING")
-    left_header.setObjectName("SectionLabel")
-    left_header.setStyleSheet(
-        "color: #94a3b8; font-size: 11px; font-weight: 800; letter-spacing: 0.8px;"
-    )
-    left_layout.addWidget(left_header)
+    window.input_dir = QLineEdit()
+    window._tip(window.input_dir, "Source vault: Folder containing raw text, PDFs, Markdown, source code, or JSONL files.")
+    window.dataset_dir = QLineEdit(str(Path.cwd() / "runs" / "dataset"))
+    window._tip(window.dataset_dir, "Dataset core: Output destination folder where prepared shards, tokens, and metadata are saved.")
 
-    form_layout = QFormLayout()
-    form_layout.setSpacing(12)
-    form_layout.setLabelAlignment(Qt.AlignLeft)
-    form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-
-    # 1. Vocab Size
-    window.vocab_size_combo = QComboBox()
-    window.vocab_size_combo.addItems([
-        "50,257 (BPE - GPT-2 / NeoX)",
-        "32,000 (Llama-3 / Mistral)",
-        "8,000 (MicroLLM Compact)",
-        "4,096 (Tiny Model Vocab)",
-        "Auto (Infer from corpus)",
-    ])
-    window.vocab_size_combo.setStyleSheet(
-        "QComboBox { background-color: #141722; color: #f8fafc; border: 1px solid #282e42;"
-        "border-radius: 7px; padding: 6px 12px; font-size: 12px; }"
-        "QComboBox::drop-down { border: none; width: 24px; }"
-    )
-    form_layout.addRow("Vocab Size:", window.vocab_size_combo)
-
-    # 2. Algorithm
-    window.algorithm_combo = QComboBox()
-    window.algorithm_combo.addItems([
-        "Byte-Pair Encoding (BPE)",
-        "SentencePiece Unigram",
-        "WordPiece",
-    ])
-    window.algorithm_combo.setStyleSheet(
-        "QComboBox { background-color: #141722; color: #f8fafc; border: 1px solid #282e42;"
-        "border-radius: 7px; padding: 6px 12px; font-size: 12px; }"
-        "QComboBox::drop-down { border: none; width: 24px; }"
-    )
-    form_layout.addRow("Algorithm:", window.algorithm_combo)
-
-    # 3. Special Tokens
-    window.special_tokens_edit = QLineEdit("<|pad|>, <|endoftext|>, <|im_start|>, <|im_end|>")
-    window.special_tokens_edit.setStyleSheet(
-        "QLineEdit { background-color: #141722; color: #f8fafc; border: 1px solid #282e42;"
-        "border-radius: 7px; padding: 6px 10px; font-size: 12px; font-family: Consolas, monospace; }"
-    )
-    form_layout.addRow("Special Tokens:", window.special_tokens_edit)
-
-    # 4. Context Window Stride & Max Context Tokens
-    stride_row = QHBoxLayout()
-    stride_row.setSpacing(12)
-
-    stride_label = QLabel("Context Window Stride:")
-    stride_label.setStyleSheet("color: #cbd5e1; font-size: 12px;")
-    window.stride_spin = QSpinBox()
-    window.stride_spin.setRange(16, 1_000_000)
-    window.stride_spin.setValue(99)
-    window.stride_spin.setStyleSheet(
-        "QSpinBox { background-color: #141722; color: #f8fafc; border: 1px solid #282e42;"
-        "border-radius: 7px; padding: 5px 8px; font-size: 12px; }"
+    window.max_workers = window._spin(1, 64, 4)
+    window._tip(
+        window.max_workers,
+        "Parallel extraction lanes: Number of CPU worker processes extracting source files simultaneously.",
     )
 
-    max_tokens_label = QLabel("Max Context Tokens:")
-    max_tokens_label.setStyleSheet("color: #cbd5e1; font-size: 12px;")
-    window.max_context_tokens_spin = QSpinBox()
-    window.max_context_tokens_spin.setRange(16, 1_000_000)
-    window.max_context_tokens_spin.setValue(99)
-    window.max_context_tokens_spin.setStyleSheet(
-        "QSpinBox { background-color: #141722; color: #f8fafc; border: 1px solid #282e42;"
-        "border-radius: 7px; padding: 5px 8px; font-size: 12px; }"
+    window.prepare_mode = QComboBox()
+    window.prepare_mode.addItems(["Incremental update", "Full rebuild", "Force reprocess"])
+    window.prepare_mode.setMaximumWidth(260)
+    window._tip(
+        window.prepare_mode,
+        "Prepare mode: 'Full rebuild' regenerates tokenizer and shards from scratch. 'Incremental' updates only new files. 'Force reprocess' ignores cached extraction.",
     )
 
-    stride_row.addWidget(window.stride_spin, 1)
-    stride_row.addWidget(max_tokens_label)
-    stride_row.addWidget(window.max_context_tokens_spin, 1)
-    form_layout.addRow("Context Window Stride:", stride_row)
-
-    left_layout.addLayout(form_layout)
-
-    # 5. Blue Output Callout Box
-    output_callout = QFrame()
-    output_callout.setObjectName("OutputCallout")
-    output_callout.setStyleSheet(
-        "QFrame#OutputCallout {"
-        "  background-color: #0d172c;"
-        "  border: 1px solid #1e3a8a;"
-        "  border-radius: 8px;"
-        "  padding: 10px 14px;"
-        "}"
+    available_gb = 2.0
+    if psutil is not None:
+        try:
+            available_gb = max(0.5, round(psutil.virtual_memory().available * 0.8 / (1024**3), 1))
+        except Exception:
+            available_gb = 8.0
+    window.tokenizer_training_max_gb = window._double_spin(0.0, 256.0, available_gb, 0.5, 1)
+    window._tip(
+        window.tokenizer_training_max_gb,
+        "Tokenizer training cap (GiB): Maximum corpus sample size shown to the tokenizer trainer to build vocabulary without excessive RAM consumption.",
     )
-    callout_layout = QVBoxLayout(output_callout)
-    callout_layout.setContentsMargins(10, 8, 10, 8)
-    callout_layout.setSpacing(4)
 
-    callout_text = QLabel(
-        "⚡ Output destination automatically resolved from project: runs/dataset/frontier_10b/\n"
-        "Zero redundant manual folder paths required."
+    window.code_training_mode = QCheckBox("Code-aware processing")
+    window.code_training_mode.setChecked(True)
+    window._tip(
+        window.code_training_mode,
+        "Code-aware processing: Preserves indentation, detects docstrings, syntax tokens, and applies code-specific tokenizer rules.",
     )
-    callout_text.setStyleSheet(
-        "color: #93c5fd; font-size: 11px; font-weight: 500; line-height: 1.4;"
+
+    window.include_source_code = QCheckBox("Include source files")
+    window.include_source_code.setChecked(True)
+    window._tip(
+        window.include_source_code,
+        "Include source files: Scans and processes raw programming files (.py, .ts, .js, .cpp, .rs, .go, etc.).",
     )
-    callout_layout.addWidget(callout_text)
-    left_layout.addWidget(output_callout)
 
-    left_layout.addStretch(1)
+    source_form.addRow("Source vault", window._path_row(window.input_dir, directory=True))
+    source_form.addRow("Dataset core", window._path_row(window.dataset_dir, directory=True))
 
-    # 6. Action Buttons: Big Gold "Start Ingestion Pipeline" + Dark "Stop"
-    action_row = QHBoxLayout()
-    action_row.setSpacing(12)
+    source_pipeline_row = QWidget()
+    source_pipeline_layout = QHBoxLayout(source_pipeline_row)
+    source_pipeline_layout.setContentsMargins(0, 0, 0, 0)
+    source_pipeline_layout.setSpacing(8)
+    lanes_label = QLabel("Parallel lanes")
+    lanes_label.setMinimumWidth(85)
+    mode_label = QLabel("Prepare mode")
+    mode_label.setMinimumWidth(85)
+    source_pipeline_layout.addWidget(lanes_label)
+    source_pipeline_layout.addWidget(window.max_workers, 1)
+    source_pipeline_layout.addWidget(mode_label)
+    source_pipeline_layout.addWidget(window.prepare_mode, 2)
+    source_form.addRow("Pipeline", source_pipeline_row)
+    source_form.addRow("Tokenizer training cap (GiB)", window.tokenizer_training_max_gb)
 
-    window.prepare_button = QPushButton("Start Ingestion Pipeline")
-    window.prepare_button.setStyleSheet(
-        "QPushButton {"
-        "  background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #f59e0b, stop:1 #d97706);"
-        "  color: #000000;"
-        "  font-weight: 800;"
-        "  font-size: 13px;"
-        "  border-radius: 8px;"
-        "  padding: 12px 24px;"
-        "  border: none;"
-        "}"
-        "QPushButton:hover {"
-        "  background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #fbbf24, stop:1 #f59e0b);"
-        "}"
-    )
-    window.prepare_button.setToolTip(
-        "Read source recipe categories, encode tokens into binary shards, and build vocabulary."
-    )
-    window.prepare_button.clicked.connect(window.prepare_dataset)
-    action_row.addWidget(window.prepare_button, 2)
+    source_options_row = QWidget()
+    source_options_layout = QHBoxLayout(source_options_row)
+    source_options_layout.setContentsMargins(0, 0, 0, 0)
+    source_options_layout.setSpacing(14)
+    source_options_layout.addWidget(window.code_training_mode)
+    source_options_layout.addWidget(window.include_source_code)
+    source_options_layout.addStretch(1)
+    source_form.addRow("Options", source_options_row)
 
-    window.stop_dataset_button = QPushButton("Stop")
-    window.stop_dataset_button.setEnabled(False)
-    window.stop_dataset_button.setStyleSheet(
-        "QPushButton {"
-        "  background-color: #1e2230;"
-        "  color: #cbd5e1;"
-        "  font-weight: 600;"
-        "  font-size: 13px;"
-        "  border-radius: 8px;"
-        "  padding: 12px 24px;"
-        "  border: 1px solid #333a4d;"
-        "}"
-        "QPushButton:hover {"
-        "  background-color: #282f44;"
-        "  border-color: #4b5563;"
-        "}"
-    )
-    window.stop_dataset_button.clicked.connect(window.stop_active_task)
-    action_row.addWidget(window.stop_dataset_button, 1)
+    source_card = window._card("SOURCE ARRAY", source_form)
+    source_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+    left_column.addWidget(source_card, 0)
 
-    # Compact auxiliary buttons (Health & Preview)
-    window.health_check_button = QPushButton("Check Health")
-    window.health_check_button.setMaximumWidth(110)
-    window.health_check_button.setStyleSheet(
-        "QPushButton { background: #181b26; color: #94a3b8; border: 1px solid #282e42; border-radius: 6px; padding: 10px; font-size: 11px; }"
-        "QPushButton:hover { background: #222738; color: #e2e8f0; }"
-    )
-    window.health_check_button.clicked.connect(window.check_project_health)
-    action_row.addWidget(window.health_check_button)
-
-    window.preview_dataset_button = QPushButton("Preview")
-    window.preview_dataset_button.setMaximumWidth(90)
-    window.preview_dataset_button.setStyleSheet(
-        "QPushButton { background: #181b26; color: #94a3b8; border: 1px solid #282e42; border-radius: 6px; padding: 10px; font-size: 11px; }"
-        "QPushButton:hover { background: #222738; color: #e2e8f0; }"
-    )
-    window.preview_dataset_button.clicked.connect(window.preview_dataset)
-    action_row.addWidget(window.preview_dataset_button)
-
-    left_layout.addLayout(action_row)
-
-    cards_row.addWidget(left_card, 1)
-
-    # -------------------------------------------------------------------------
-    # RIGHT CARD: LIVE INGESTION MONITOR & AUDIT TELEMETRY
-    # -------------------------------------------------------------------------
-    right_card = QFrame()
-    right_card.setObjectName("Card")
-    right_card.setStyleSheet(
-        "QFrame#Card {"
-        "  background-color: #151821;"
-        "  border: 1px solid #232738;"
-        "  border-radius: 12px;"
-        "}"
-    )
-    right_layout = QVBoxLayout(right_card)
-    right_layout.setContentsMargins(22, 20, 22, 20)
-    right_layout.setSpacing(12)
-
-    right_header = QLabel("LIVE INGESTION MONITOR & AUDIT TELEMETRY")
-    right_header.setObjectName("SectionLabel")
-    right_header.setStyleSheet(
-        "color: #94a3b8; font-size: 11px; font-weight: 800; letter-spacing: 0.8px;"
-    )
-    right_layout.addWidget(right_header)
-
-    # 1. Overall Progress Bar
-    progress_row = QHBoxLayout()
-    progress_label = QLabel("Overall Progress:")
-    progress_label.setFixedWidth(130)
-    progress_label.setStyleSheet("color: #cbd5e1; font-size: 12px; font-weight: 600;")
-    progress_row.addWidget(progress_label)
-
-    window.dataset_progress = QProgressBar()
-    window.dataset_progress.setRange(0, 100)
-    window.dataset_progress.setValue(48)
-    window.dataset_progress.setFormat("4.82B / 10.00B tokens (48.2%)")
-    window.dataset_progress.setAlignment(Qt.AlignCenter)
-    window.dataset_progress.setStyleSheet(
-        "QProgressBar {"
-        "  background-color: #141722;"
-        "  border: 1px solid #282e42;"
-        "  border-radius: 6px;"
-        "  height: 22px;"
-        "  text-align: center;"
-        "  color: #ffffff;"
-        "  font-weight: 700;"
-        "  font-size: 11px;"
-        "}"
-        "QProgressBar::chunk {"
-        "  background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #10b981, stop:1 #059669);"
-        "  border-radius: 5px;"
-        "}"
-    )
-    progress_row.addWidget(window.dataset_progress, 1)
-    right_layout.addLayout(progress_row)
-
-    # 2. Ingestion Throughput
-    throughput_row = QHBoxLayout()
-    tp_label = QLabel("Ingestion Throughput:")
-    tp_label.setFixedWidth(130)
-    tp_label.setStyleSheet("color: #cbd5e1; font-size: 12px; font-weight: 600;")
-    throughput_row.addWidget(tp_label)
-
-    window.dataset_throughput_badge = QLabel("⚡ 185,420 tokens/sec | ETA: 41m 20s")
-    window.dataset_throughput_badge.setStyleSheet(
-        "color: #10b981; font-weight: 700; font-size: 12px;"
-    )
-    throughput_row.addWidget(window.dataset_throughput_badge)
-    throughput_row.addStretch(1)
-    right_layout.addLayout(throughput_row)
-
-    # 3. Active Category
-    category_row = QHBoxLayout()
-    cat_label = QLabel("Active Category:")
-    cat_label.setFixedWidth(130)
-    cat_label.setStyleSheet("color: #cbd5e1; font-size: 12px; font-weight: 600;")
-    category_row.addWidget(cat_label)
-
-    window.active_category_pill = QLabel("Pillar 2: Formal Mathematics (72%)")
-    window.active_category_pill.setStyleSheet(
-        "background-color: #312e81; color: #c7d2fe; font-weight: 700; font-size: 11px;"
-        "padding: 3px 12px; border-radius: 10px; border: 1px solid #4338ca;"
-    )
-    category_row.addWidget(window.active_category_pill)
-    category_row.addStretch(1)
-    right_layout.addLayout(category_row)
-
-    # 4. Quality Audit Verifications Emerald Box
-    audit_card = QFrame()
-    audit_card.setObjectName("AuditCard")
-    audit_card.setStyleSheet(
-        "QFrame#AuditCard {"
-        "  background-color: #064e3b;"
-        "  border: 1px solid #047857;"
-        "  border-radius: 8px;"
-        "  padding: 8px 12px;"
-        "}"
-    )
-    audit_layout = QVBoxLayout(audit_card)
-    audit_layout.setContentsMargins(10, 8, 10, 8)
-    audit_layout.setSpacing(4)
-
-    audit_title = QLabel("Quality Audit Verifications:")
-    audit_title.setStyleSheet("color: #34d399; font-weight: 800; font-size: 11px;")
-    audit_layout.addWidget(audit_title)
-
-    audit_items = QLabel(
-        "[✓] UTF-8 Unicode Normalization: 100% clean\n"
-        "[✓] Indentation Structure: Preserved natively for code\n"
-        "[✓] Document Deduplication: Active (12,410 duplicates pruned)\n"
-        "[✓] Memory-Mapped Tensor Format: uint16 contiguous stream"
-    )
-    audit_items.setStyleSheet(
-        "color: #a7f3d0; font-family: Consolas, monospace; font-size: 11px; line-height: 1.4;"
-    )
-    audit_layout.addWidget(audit_items)
-    right_layout.addWidget(audit_card)
-
-    # 5. Live Ingest Telemetry Terminal
+    # Ingest Telemetry Monospace Terminal Box
     window.dataset_log = QTextEdit()
     window.dataset_log.setReadOnly(True)
     window.dataset_log.document().setMaximumBlockCount(1200)
-    window.dataset_log.setStyleSheet(
-        "QTextEdit {"
-        "  background-color: #0a0c10;"
-        "  color: #94a3b8;"
-        "  font-family: Consolas, monospace;"
-        "  font-size: 11px;"
-        "  border: 1px solid #1e2230;"
-        "  border-radius: 8px;"
-        "  padding: 8px;"
-        "}"
-    )
-    window.dataset_log.setPlainText(
-        "[21:00:12] Initialized multi-pillar tokenizer worker pool (4 processes)\n"
-        "[21:01:45] Completed Pillar 1 (Systems Code): 2.50B tokens written to train.bin\n"
-        "[21:02:30] Active Stream: Ingesting formal mathematics proofs & LaTeX theorems...\n"
-        "[21:04:02] Validation split checkpoint: 100,000,000 tokens committed to val.bin\n"
-        "[21:04:55] Throughput steady at 185k tok/s. Zero encoding anomalies detected."
-    )
-    right_layout.addWidget(window.dataset_log, 1)
+    window.dataset_log.setMinimumHeight(280)
+    window.dataset_log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+    window._tip(window.dataset_log, "Real-time streaming telemetry and audit logs during dataset preparation.")
+    log_layout = QVBoxLayout()
+    log_layout.addWidget(window.dataset_log, 1)
+    left_column.addWidget(window._card("INGEST TELEMETRY", log_layout), 1)
 
-    cards_row.addWidget(right_card, 1)
+    # -------------------------------------------------------------------------
+    # RIGHT COLUMN: TOKENIZER CORE & DATASET STATISTICS
+    # -------------------------------------------------------------------------
+    tokenizer_form = QFormLayout()
+    window._configure_form(tokenizer_form)
 
-    root_layout.addLayout(cards_row, 1)
+    window.auto_vocab = QCheckBox("Choose automatically")
+    window.auto_vocab.setChecked(True)
+    window._tip(window.auto_vocab, "Auto vocabulary: Automatically derives the optimal vocabulary size based on corpus token density.")
 
-    # =========================================================================
-    # Hidden Required Controls for Compatibility with Mixins and Controllers
-    # =========================================================================
-    window.input_dir = QLineEdit()
-    window.dataset_dir = QLineEdit(str(Path.cwd() / "runs" / "dataset"))
-    window.auto_vocab = QCheckBox()
-    window.auto_vocab.setChecked(False)
-    window.manual_vocab_size = QSpinBox()
-    window.manual_vocab_size.setRange(256, 100000)
-    window.manual_vocab_size.setValue(50257)
-    window.auto_vocab_label = QLabel("50,257")
-    window.min_frequency = QSpinBox()
-    window.min_frequency.setRange(1, 1000)
-    window.min_frequency.setValue(2)
-    window.context_length = window.max_context_tokens_spin
-    window.validation_split = QDoubleSpinBox()
-    window.validation_split.setRange(0.0, 0.5)
-    window.validation_split.setValue(0.1)
-    window.max_workers = QSpinBox()
-    window.max_workers.setRange(1, 64)
-    window.max_workers.setValue(4)
-    window.tokenizer_training_max_gb = QDoubleSpinBox()
-    window.tokenizer_training_max_gb.setRange(0.0, 256.0)
-    window.tokenizer_training_max_gb.setValue(8.0)
-    window.prepare_mode = QComboBox()
-    window.prepare_mode.addItems(["Incremental update", "Full rebuild", "Force reprocess"])
+    window.manual_vocab_size = window._spin(256, 100000, 8000)
+    window.manual_vocab_size.setEnabled(False)
+    window._tip(window.manual_vocab_size, "Manual vocabulary: Fixed target vocabulary size (e.g. 8,000, 32,000, or 50,257).")
+    window.auto_vocab.toggled.connect(lambda checked: window.manual_vocab_size.setEnabled(not checked and not window._tokenizer_strategy_reuses()))
+
+    window.auto_vocab_label = QLabel("32,000")
+    window.auto_vocab_label.setObjectName("Metric")
+    window.auto_vocab_label.setStyleSheet("color: #38bdf8; font-weight: 700; font-size: 12px;")
+    window._tip(window.auto_vocab_label, "Selected vocab: Currently derived or configured tokenizer vocabulary size.")
+
     window.tokenizer_strategy = QComboBox()
     window.tokenizer_strategy.addItems(["Auto", "Train new tokenizer", "Reuse dataset tokenizer", "Import tokenizer.json"])
+    window.tokenizer_strategy.setMaximumWidth(260)
+    window._tip(
+        window.tokenizer_strategy,
+        "Tokenizer policy: Auto, train freshly from corpus, reuse existing tokenizer, or import an external tokenizer.json.",
+    )
+
     window.tokenizer_path = QLineEdit()
-    window.tokenizer_path_row = QWidget()
+    window.tokenizer_path.setEnabled(False)
+    window._tip(window.tokenizer_path, "Import tokenizer: Filepath to an existing tokenizer.json file to reuse.")
+    window.tokenizer_path_row = window._path_row(window.tokenizer_path, directory=False, file_filter="Tokenizer JSON (*.json);;All files (*)")
+    window.tokenizer_path_row.setEnabled(False)
+    window.tokenizer_strategy.currentTextChanged.connect(window._update_tokenizer_strategy_controls)
+
+    window.min_frequency = window._spin(1, 1000, 2)
+    window._tip(window.min_frequency, "Min frequency: Minimum occurrence threshold for subwords to be included in vocabulary.")
+
+    context_max = 1000 if not bool(QApplication.instance().property("license_valid")) else 1_000_000
+    window.context_length = window._spin(16, context_max, 4096)
+    window._tip(window.context_length, "Context window: Token window length used for chunking sequences during ingestion.")
+
+    window.validation_split = window._double_spin(0.0, 0.5, 0.1, 0.01, 3)
+    window._tip(window.validation_split, "Validation split: Fraction of tokens held out into val_tokens.npy for validation loss checks.")
+
+    window.include_prose = QCheckBox("Include explanations")
+    window.include_prose.setChecked(True)
+    window._tip(window.include_prose, "Include explanations: Retains explanatory prose, technical documentation, and Markdown comments.")
+
+    window.extract_code_blocks = QCheckBox("Extract code blocks")
+    window.extract_code_blocks.setChecked(True)
+    window._tip(window.extract_code_blocks, "Extract code blocks: Parses markdown code blocks into dedicated clean code samples.")
+
+    window.preserve_indentation = QCheckBox("Preserve indentation")
+    window.preserve_indentation.setChecked(True)
+    window._tip(window.preserve_indentation, "Preserve indentation: Preserves exact whitespace indentation critical for Python and structured code.")
+
+    window.instruction_samples = QCheckBox("Instruction style samples")
+    window.instruction_samples.setChecked(True)
+    window._tip(window.instruction_samples, "Instruction style samples: Formats samples into user/assistant instruction turns.")
+
+    window.reasoning_sample_mode = QComboBox()
+    window.reasoning_sample_mode.addItems(["Reasoning scaffold", "Detailed code reasoning", "No reasoning wrapper"])
+    window.reasoning_sample_mode.setMaximumWidth(260)
+    window._tip(window.reasoning_sample_mode, "Reasoning samples: Wraps samples with step-by-step reasoning scaffolds.")
+    window.instruction_samples.toggled.connect(window.reasoning_sample_mode.setEnabled)
+
+    tokenizer_form.addRow("Auto vocabulary", window.auto_vocab)
+    tokenizer_form.addRow("Manual vocabulary", window.manual_vocab_size)
+    tokenizer_form.addRow("Selected vocab", window.auto_vocab_label)
+    tokenizer_form.addRow("Tokenizer policy", window.tokenizer_strategy)
+    tokenizer_form.addRow("Import tokenizer", window.tokenizer_path_row)
+    tokenizer_form.addRow("Min frequency", window.min_frequency)
+    tokenizer_form.addRow("Context window", window.context_length)
+    tokenizer_form.addRow("Validation split", window.validation_split)
+    tokenizer_form.addRow("", window.include_prose)
+    tokenizer_form.addRow("", window.extract_code_blocks)
+    tokenizer_form.addRow("", window.preserve_indentation)
+    tokenizer_form.addRow("", window.instruction_samples)
+    tokenizer_form.addRow("Reasoning samples", window.reasoning_sample_mode)
+
+    tokenizer_card = window._card("TOKENIZER CORE", tokenizer_form)
+    tokenizer_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+    right_column.addWidget(tokenizer_card, 0)
+
+    # Dataset Statistics Charts
+    window.dataset_mix_chart = DatasetBarChartWidget("Dataset Composition", "Percent")
+    window.dataset_sequence_chart = DatasetBarChartWidget("Token Distribution", "Tokens")
+    stats_grid = QGridLayout()
+    stats_grid.setHorizontalSpacing(8)
+    stats_grid.setVerticalSpacing(8)
+    stats_grid.addWidget(window.dataset_mix_chart, 0, 0)
+    stats_grid.addWidget(window.dataset_sequence_chart, 0, 1)
+    stats_grid.setColumnStretch(0, 1)
+    stats_grid.setColumnStretch(1, 1)
+    stats_card = window._card("DATASET STATISTICS", stats_grid)
+    stats_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+    right_column.addWidget(stats_card, 0)
+
+    # Dataset Advisor (preserved for DatasetQualityMixin cleanup suggestions)
     window.dataset_advisor = QTextEdit()
+    window.dataset_advisor.setReadOnly(True)
+    window.dataset_advisor.setMinimumHeight(100)
+    window.dataset_advisor.setPlainText("Run Preview Dataset to get cleanup suggestions.")
+    window._tip(window.dataset_advisor, "Actionable dataset cleanup advice from preview quality checks.")
+    advisor_layout = QVBoxLayout()
+    advisor_layout.addWidget(window.dataset_advisor)
+    advisor_card = window._card("DATASET ADVISOR", advisor_layout)
+    advisor_card.setVisible(False)  # Compact or toggled on demand
+    right_column.addWidget(advisor_card)
 
-    # Synchronize Vocab Size combo with manual_vocab_size and auto_vocab
-    def on_vocab_combo_changed(text: str) -> None:
-        if "Auto" in text:
-            window.auto_vocab.setChecked(True)
-        else:
-            window.auto_vocab.setChecked(False)
-            if "50,257" in text:
-                window.manual_vocab_size.setValue(50257)
-            elif "32,000" in text:
-                window.manual_vocab_size.setValue(32000)
-            elif "8,000" in text:
-                window.manual_vocab_size.setValue(8000)
-            elif "4,096" in text:
-                window.manual_vocab_size.setValue(4096)
+    # Bottom Action Row
+    action_row = QHBoxLayout()
+    action_row.setSpacing(10)
 
-    window.vocab_size_combo.currentTextChanged.connect(on_vocab_combo_changed)
+    window.health_check_button = QPushButton("Check Health")
+    window._tip(window.health_check_button, "Validate source, dataset, model, export, GGUF, and hardware readiness before long work.")
+    window.health_check_button.clicked.connect(window.check_project_health)
+    window.health_check_button.setMaximumWidth(140)
 
-    # Initial call to update banner
-    update_recipe_banner()
+    window.preview_dataset_button = QPushButton("Preview Dataset")
+    window._tip(window.preview_dataset_button, "Scan source files and show dataset quality plus sample text/code snippets without preparing tokens.")
+    window.preview_dataset_button.clicked.connect(window.preview_dataset)
+    window.preview_dataset_button.setMaximumWidth(160)
+
+    window.prepare_button = QPushButton("Prepare Dataset")
+    window.prepare_button.setStyleSheet(
+        "QPushButton { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #f59e0b, stop:1 #d97706); color: #000; font-weight: bold; padding: 10px 20px; border-radius: 6px; }"
+        "QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #fbbf24, stop:1 #f59e0b); }"
+    )
+    window._tip(window.prepare_button, "Read source files, clean text, train tokenizer, split tokens, and save the dataset project.")
+    window.prepare_button.clicked.connect(window.prepare_dataset)
+    window.prepare_button.setMaximumWidth(280)
+
+    window.stop_dataset_button = QPushButton("Stop")
+    window.stop_dataset_button.setEnabled(False)
+    window.stop_dataset_button.setMaximumWidth(100)
+    window.stop_dataset_button.clicked.connect(window.stop_active_task)
+    window._tip(window.stop_dataset_button, "Request a graceful stop for dataset preparation.")
+
+    action_row.addWidget(window.health_check_button)
+    action_row.addWidget(window.preview_dataset_button)
+    action_row.addWidget(window.prepare_button, 1)
+    action_row.addWidget(window.stop_dataset_button)
+    action_row.addStretch(1)
+    right_column.addLayout(action_row)
+
+    right_column.addStretch(1)
+    ingestion_body.addLayout(left_column, 1)
+    ingestion_body.addLayout(right_column, 1)
+    layout.addLayout(ingestion_body, 1)
+
+    window.dataset_progress = window._thin_progress()
+    outer.addWidget(window.dataset_progress)
 
     if hasattr(window, "_update_online_dataset_stage_controls"):
         window._update_online_dataset_stage_controls()

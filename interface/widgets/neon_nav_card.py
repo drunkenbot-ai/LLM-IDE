@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from PySide6.QtCore import QRectF, QSize, Qt
+from PySide6.QtCore import QPointF, QRectF, QSize, Qt
 from PySide6.QtGui import (
     QBrush,
     QColor,
@@ -240,5 +240,56 @@ class CompactNavButton(StudioNavButton):
                 icon_name = "chat_tab_icon.png"
                 glow_color = "#a855f7"
         super().__init__(title, icon_name, glow_color, parent)
+
+
+class SideRailToggleButton(QPushButton):
+    """Sleek hamburger toggle button for expanding and collapsing the side navigation rail."""
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setObjectName("SideRailToggle")
+        self.setFixedSize(38, 28)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setToolTip("Toggle sidebar navigation (Collapse / Expand)")
+        self.is_expanded = False
+
+    def set_expanded(self, expanded: bool) -> None:
+        self.is_expanded = expanded
+        self.update()
+
+    def paintEvent(self, event: Any) -> None:
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        is_hover = self.underMouse()
+        bg_color = QColor("#1e2230" if is_hover else "#151821")
+        border_color = QColor("#8b5cf6" if is_hover else "#282e42")
+
+        rect = QRectF(0.5, 0.5, self.width() - 1.0, self.height() - 1.0)
+        painter.setPen(QPen(border_color, 1))
+        painter.setBrush(QBrush(bg_color))
+        painter.drawRoundedRect(rect, 6, 6)
+
+        line_color = QColor("#ffffff" if is_hover else "#cbd5e1")
+        painter.setPen(QPen(line_color, 2, Qt.SolidLine, Qt.RoundCap))
+
+        cx = self.width() / 2.0
+        cy = self.height() / 2.0
+
+        if self.is_expanded:
+            # Draw double left chevron «
+            painter.drawLine(QPointF(cx + 2.0, cy - 6.0), QPointF(cx - 3.0, cy))
+            painter.drawLine(QPointF(cx - 3.0, cy), QPointF(cx + 2.0, cy + 6.0))
+            painter.drawLine(QPointF(cx + 7.0, cy - 6.0), QPointF(cx + 2.0, cy))
+            painter.drawLine(QPointF(cx + 2.0, cy), QPointF(cx + 7.0, cy + 6.0))
+        else:
+            # Draw 3 crisp horizontal hamburger bars
+            bar_w = 7.0
+            painter.drawLine(QPointF(cx - bar_w, cy - 5.0), QPointF(cx + bar_w, cy - 5.0))
+            painter.drawLine(QPointF(cx - bar_w, cy), QPointF(cx + bar_w, cy))
+            painter.drawLine(QPointF(cx - bar_w, cy + 5.0), QPointF(cx + bar_w, cy + 5.0))
+
+        painter.end()
+
 
 
