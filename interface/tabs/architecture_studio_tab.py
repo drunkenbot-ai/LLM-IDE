@@ -167,6 +167,11 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
         window.active_training_mode = "pretrain" if is_base else "fine_tune"
         if hasattr(window, "training_mode"):
             window.training_mode.setCurrentText("Pretrain from scratch" if is_base else "Fine-tune checkpoint")
+        if hasattr(window, "peft_method"):
+            window._set_combo_text(window.peft_method, "Full fine-tune" if is_base else "LoRA adapters")
+        if not is_base and hasattr(window, "fine_tune_checkpoint") and hasattr(window, "resume_checkpoint"):
+            if not window.fine_tune_checkpoint.text().strip() and window.resume_checkpoint.text().strip():
+                window.fine_tune_checkpoint.setText(window.resume_checkpoint.text().strip())
         if hasattr(window, "lora_section_widget"):
             window.lora_section_widget.setVisible(not is_base)
 
@@ -547,6 +552,24 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     target_pills_row.addWidget(window.target_layernorm)
     lora_sec_layout.addWidget(_form_row("Targets", target_pills_widget, label_width=110, window=window))
 
+    def _sync_lora_targets(*_args: Any) -> None:
+        self_attn = window.target_self_attn.isChecked()
+        mlp = window.target_mlp.isChecked()
+        window.target_self_attn.setText("● Self-Attn" if self_attn else "○ Self-Attn")
+        window.target_mlp.setText("● MLP" if mlp else "○ MLP")
+        if self_attn and mlp:
+            target_str = "Attention + MLP"
+        elif mlp:
+            target_str = "MLP projections"
+        else:
+            target_str = "Attention projections"
+        if hasattr(window, "lora_targets"):
+            window._set_combo_text(window.lora_targets, target_str)
+
+    window.target_self_attn.toggled.connect(_sync_lora_targets)
+    window.target_mlp.toggled.connect(_sync_lora_targets)
+    _sync_lora_targets()
+
     window.lora_section_widget.setVisible(False)  # Hidden in Base Model mode
     lora_layout.addWidget(window.lora_section_widget)
 
@@ -691,6 +714,9 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.early_stopping.toggled.connect(window.early_stopping_patience.setEnabled)
 
     window.resume_checkpoint = QLineEdit()
+    window.resume_checkpoint.textChanged.connect(
+        lambda t: window.fine_tune_checkpoint.setText(t.strip()) if hasattr(window, "fine_tune_checkpoint") else None
+    )
     window._tip(window.resume_checkpoint, "Optional specific checkpoint file to resume from.")
 
     window.resume_check_button = QPushButton("Check Resume")
@@ -829,10 +855,24 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
             is_swiglu = "swiglu" in window.activation_fn.currentText().lower() if hasattr(window, "activation_fn") else True
 
             # Embedding params (tied: v * h, untied: 2 * v * h)
-            embed_params = v * h
+            is_tied = window.tie_embeddings.isChecked() if hasattr(window, "tie_embeddings") else True
+            embed_params = v * h if is_tied else (2.0 * v * h)
 
-            # Attention params per layer: Q, K, V, O projections (4 * h^2)
-            attn_layer_params = 4.0 * h * h
+            # Attention params per layer:
+            # Q projection: h * h
+            # Output projection: h * h
+            # K and V projections: 2 * (h * kv_dim) where kv_dim = h * (kv_heads / num_heads)
+            num_heads = float(window.num_heads.value()) if hasattr(window, "num_heads") else 32.0
+            attn_text = window.attention_type.currentText().lower() if hasattr(window, "attention_type") else "mha"
+            if "grouped" in attn_text or "gqa" in attn_text:
+                kv_heads = float(window.kv_head_count.value()) if hasattr(window, "kv_head_count") else max(1.0, num_heads / 4.0)
+            elif "multi-query" in attn_text or "mqa" in attn_text:
+                kv_heads = 1.0
+            else:
+                kv_heads = num_heads
+
+            kv_ratio = min(1.0, max(0.01, kv_heads / max(1.0, num_heads)))
+            attn_layer_params = (2.0 + 2.0 * kv_ratio) * h * h
 
             # MLP params per layer:
             # SwiGLU: gate + up + down projections (3 * h * inter)
@@ -864,9 +904,67 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.hidden_size.valueChanged.connect(recalculate_parameters)
     window.num_layers.valueChanged.connect(recalculate_parameters)
     window.vocab_size.valueChanged.connect(recalculate_parameters)
-    window.intermediate_size.valueChanged.connect(recalculate_parameters)
-    window.activation_fn.currentTextChanged.connect(recalculate_parameters)
+    window.num_heads.valueChanged.connect(recalculate_parameters)
+    if hasattr(window, "intermediate_size"):
+        window.intermediate_size.valueChanged.connect(recalculate_parameters)
+    if hasattr(window, "activation_fn"):
+        window.activation_fn.currentTextChanged.connect(recalculate_parameters)
+    if hasattr(window, "tie_embeddings"):
+        window.tie_embeddings.toggled.connect(recalculate_parameters)
+    if hasattr(window, "attention_type"):
+        window.attention_type.currentTextChanged.connect(recalculate_parameters)
+    if hasattr(window, "kv_head_count"):
+        window.kv_head_count.valueChanged.connect(recalculate_parameters)
     recalculate_parameters()
+
+    def _execute_architecture_dry_run() -> None:
+        try:
+            vocab = int(window.vocab_size.value()) if hasattr(window, "vocab_size") else 32000
+            m_cfg = window._current_model_config(vocab_size=vocab)
+            t_cfg = window._current_training_config(training_mode="pretrain")
+
+            import time
+            import torch
+            from engine.model_gpt import MicroGPT
+
+            device_str = t_cfg.device
+            if not torch.cuda.is_available() and device_str.startswith("cuda"):
+                device_str = "cpu"
+
+            test_model = MicroGPT(m_cfg).to(device_str)
+            test_model.train()
+
+            b = min(2, t_cfg.batch_size)
+            seq = min(64, m_cfg.context_length)
+            dummy_x = torch.randint(0, m_cfg.vocab_size, (b, seq), device=device_str)
+
+            t0 = time.perf_counter()
+            logits = test_model(dummy_x)
+            loss = logits.sum()
+            loss.backward()
+            dt = (time.perf_counter() - t0) * 1000.0
+
+            vram_info = ""
+            if device_str.startswith("cuda") and torch.cuda.is_available():
+                alloc = torch.cuda.memory_allocated() / (1024 ** 2)
+                vram_info = f" | VRAM: {alloc:.1f} MB"
+                torch.cuda.empty_cache()
+
+            del test_model
+            msg = f"✓ Dry Run passed: Forward+Backward in {dt:.1f}ms (batch={b}, seq={seq}){vram_info}. Tensor dimensions and gradients nominal."
+            if hasattr(window, "training_log"):
+                window.training_log.append(f"<span style='color:#10b981; font-weight:bold;'>{msg}</span>")
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.information(window, "Dry Run Verified", msg)
+        except Exception as exc:
+            err_msg = f"✗ Dry Run failed: {exc}"
+            if hasattr(window, "training_log"):
+                window.training_log.append(f"<span style='color:#ef4444; font-weight:bold;'>{err_msg}</span>")
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.warning(window, "Dry Run Failed", err_msg)
+
+    if hasattr(window, "dry_run_button"):
+        window.dry_run_button.clicked.connect(_execute_architecture_dry_run)
 
     # Visualizer synchronization routine
     def update_visualizer_from_ui() -> None:

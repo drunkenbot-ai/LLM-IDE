@@ -60,6 +60,13 @@ class FineTuningScreenMixin:
         Returns:
             Comma-separated target group string.
         """
+        targets = []
+        if getattr(self, "target_self_attn", None) and hasattr(self.target_self_attn, "isChecked") and self.target_self_attn.isChecked():
+            targets.append("attention")
+        if getattr(self, "target_mlp", None) and hasattr(self.target_mlp, "isChecked") and self.target_mlp.isChecked():
+            targets.append("mlp")
+        if targets:
+            return ",".join(targets)
 
         return {
             "Attention projections": "attention",

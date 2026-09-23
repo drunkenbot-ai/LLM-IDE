@@ -87,19 +87,41 @@ class TrainingScreenMixin:
         Returns:
             Architecture style settings.
         """
+        # 1. Determine norm type
+        norm_type = "layernorm"
+        if hasattr(self, "norm_type"):
+            text = self.norm_type.currentText().lower()
+            if "rmsnorm" in text:
+                norm_type = "rmsnorm"
+            elif "layernorm" in text:
+                norm_type = "layernorm"
+        elif hasattr(self, "architecture_style") and self.architecture_style.currentText() == "Llama-like":
+            norm_type = "rmsnorm"
 
-        if self.architecture_style.currentText() == "Llama-like":
-            return {
-                "norm_type": "rmsnorm",
-                "position_encoding": "rope",
-                "mlp_type": "swiglu",
-                "rope_theta": self.rope_theta.value(),
-            }
+        # 2. Determine activation / mlp type
+        mlp_type = "gelu"
+        if hasattr(self, "activation_fn"):
+            act_text = self.activation_fn.currentText().lower()
+            if "swiglu" in act_text or "silu" in act_text:
+                mlp_type = "swiglu"
+            elif "gelu" in act_text:
+                mlp_type = "gelu"
+        elif hasattr(self, "architecture_style") and self.architecture_style.currentText() == "Llama-like":
+            mlp_type = "swiglu"
+
+        # 3. Determine position encoding
+        rope_val = float(self.rope_theta.value()) if hasattr(self, "rope_theta") else 10000.0
+        position_encoding = "rope" if (norm_type == "rmsnorm" or mlp_type == "swiglu" or rope_val > 0) else "learned"
+        if hasattr(self, "architecture_style") and self.architecture_style.currentText() == "Classic GPT":
+            position_encoding = "learned"
+            norm_type = "layernorm"
+            mlp_type = "gelu"
+
         return {
-            "norm_type": "layernorm",
-            "position_encoding": "learned",
-            "mlp_type": "gelu",
-            "rope_theta": self.rope_theta.value(),
+            "norm_type": norm_type,
+            "position_encoding": position_encoding,
+            "mlp_type": mlp_type,
+            "rope_theta": rope_val,
         }
 
     def _optimizer_value(self) -> str:
@@ -163,12 +185,12 @@ class TrainingScreenMixin:
         Returns:
             Stable attention type used by the model.
         """
-
-        return {
-            "Multi-head": "mha",
-            "Grouped-query": "gqa",
-            "Multi-query": "mqa",
-        }.get(self.attention_type.currentText(), "mha")
+        text = self.attention_type.currentText().lower()
+        if "grouped" in text or "gqa" in text:
+            return "gqa"
+        if "multi-query" in text or "mqa" in text:
+            return "mqa"
+        return "mha"
 
     def _attention_backend_value(self) -> str:
         """Return the selected attention backend identifier.

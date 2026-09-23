@@ -95,19 +95,19 @@ def build_dataset_tab(window: Any) -> QWidget:
     title.setMinimumWidth(210)
     title_row.addWidget(title, 0)
 
-    window.dataset_quality_samples = window._metric_chip("Documents: 142K", "Prepared source documents before token sliding windows.")
-    window.dataset_quality_tokens = window._metric_chip("Tokens: 250M", "Total encoded tokens available for training.")
-    window.dataset_quality_windows = window._metric_chip("Windows: 61,035", "Sliding context windows the trainer can sample.")
-    window.dataset_quality_vocab = window._metric_chip("Vocab: 32,000", "Tokenizer vocabulary size used by the dataset.")
-    window.dataset_quality_rating = window._metric_chip('Rating: <span style="color:#fbbf24;">★★★★★</span>', "Five-star dataset quality score based on tokens, windows, vocabulary, diversity, and extraction health.")
+    window.dataset_quality_samples = window._metric_chip("Documents: —", "Prepared source documents before token sliding windows.")
+    window.dataset_quality_tokens = window._metric_chip("Tokens: —", "Total encoded tokens available for training.")
+    window.dataset_quality_windows = window._metric_chip("Windows: —", "Sliding context windows the trainer can sample.")
+    window.dataset_quality_vocab = window._metric_chip("Vocab: —", "Tokenizer vocabulary size used by the dataset.")
+    window.dataset_quality_rating = window._metric_chip('Rating: —', "Five-star dataset quality score based on tokens, windows, vocabulary, diversity, and extraction health.")
     window.dataset_quality_rating.setFont(QFont("Segoe UI Symbol", 9))
-    window.dataset_quality_code = window._metric_chip("Code/Prose: 45/55", "Code and prose sample split.")
-    window.dataset_quality_balance = window._metric_chip("Balance: -", "Code/prose balance detected during preview or preparation.")
-    window.dataset_quality_readiness = window._metric_chip("Readiness: 98%", "Training readiness score based on size, duplicates, extraction quality, and dataset mix.")
-    window.dataset_quality_cache = window._metric_chip("Cache: -", "Files reused from cache versus processed this run.")
-    window.dataset_quality_duplicates = window._metric_chip("Duplicates: -", "Likely exact or extracted-text duplicate files.")
-    window.dataset_quality_extraction = window._metric_chip("Extraction: -", "Files with suspicious text extraction quality.")
-    window.dataset_quality_warning = window._metric_chip("Warnings: None", "Dataset quality warnings, if any.")
+    window.dataset_quality_code = window._metric_chip("Code/Prose: —", "Code and prose sample split.")
+    window.dataset_quality_balance = window._metric_chip("Balance: —", "Code/prose balance detected during preview or preparation.")
+    window.dataset_quality_readiness = window._metric_chip("Readiness: —", "Training readiness score based on size, duplicates, extraction quality, and dataset mix.")
+    window.dataset_quality_cache = window._metric_chip("Cache: —", "Files reused from cache versus processed this run.")
+    window.dataset_quality_duplicates = window._metric_chip("Duplicates: —", "Likely exact or extracted-text duplicate files.")
+    window.dataset_quality_extraction = window._metric_chip("Extraction: —", "Files with suspicious text extraction quality.")
+    window.dataset_quality_warning = window._metric_chip("Warnings: none", "Dataset quality warnings, if any.")
     window.dataset_quality_warning.setObjectName("MetricChipWarning")
 
     header_quality_items = [
@@ -213,9 +213,33 @@ def build_dataset_tab(window: Any) -> QWidget:
     source_layout = QVBoxLayout()
     source_layout.setSpacing(8)
 
-    # Compatibility shims for dataset config persistence
+    # Source Directory Picker
     window.input_dir = QLineEdit()
+    window.input_dir.setPlaceholderText("Select raw text / source data directory...")
+    input_browse = QPushButton("Browse")
+    input_browse.setObjectName("IngestionBrowseBtn")
+    input_browse.setFixedWidth(75)
+    input_browse.clicked.connect(lambda: window._browse(window.input_dir, True))
+    input_row = QWidget()
+    input_h = QHBoxLayout(input_row)
+    input_h.setContentsMargins(0, 0, 0, 0)
+    input_h.setSpacing(6)
+    input_h.addWidget(window.input_dir, 1)
+    input_h.addWidget(input_browse, 0)
+
+    # Dataset Shards Directory Picker
     window.dataset_dir = QLineEdit(str(Path.cwd() / "runs" / "dataset"))
+    window.dataset_dir.setPlaceholderText("Select prepared dataset shards output directory...")
+    dataset_browse = QPushButton("Browse")
+    dataset_browse.setObjectName("IngestionBrowseBtn")
+    dataset_browse.setFixedWidth(75)
+    dataset_browse.clicked.connect(lambda: window._browse(window.dataset_dir, True))
+    dataset_row = QWidget()
+    dataset_h = QHBoxLayout(dataset_row)
+    dataset_h.setContentsMargins(0, 0, 0, 0)
+    dataset_h.setSpacing(6)
+    dataset_h.addWidget(window.dataset_dir, 1)
+    dataset_h.addWidget(dataset_browse, 0)
 
     window.max_workers = window._spin(1, 64, 4)
     window.max_workers.setFixedWidth(90)
@@ -239,6 +263,8 @@ def build_dataset_tab(window: Any) -> QWidget:
     window.include_source_code = QCheckBox("Include source files")
     window.include_source_code.setChecked(True)
 
+    source_layout.addWidget(_form_row("Source Folder", input_row, "Source directory containing documents, code, or JSONL files to ingest."))
+    source_layout.addWidget(_form_row("Dataset Out", dataset_row, "Target directory where tokenizer.json and token binary shards are saved."))
     source_layout.addWidget(_form_row("Parallel CPU Extraction Lanes", window.max_workers, "Parallel extraction lanes: Number of CPU worker processes extracting source files simultaneously."))
     source_layout.addWidget(_form_row("Prepare Mode", window.prepare_mode, "Prepare mode: 'Full rebuild' regenerates tokenizer and shards from scratch. 'Incremental' updates only new files."))
     source_layout.addWidget(_form_row("Tokenizer training cap", window.tokenizer_training_max_gb, "Tokenizer training cap: Maximum corpus sample size shown to the tokenizer trainer to build vocabulary."))
@@ -256,20 +282,7 @@ def build_dataset_tab(window: Any) -> QWidget:
     window.dataset_log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
     sample_telemetry = (
-        '<span style="color:#64748b;">[18:24:51]</span> <span style="color:#38bdf8; font-weight:bold;">[INFO]</span> <span style="color:#e2e8f0;">Initializing multi-process token pipeline</span><br>'
-        '<span style="color:#64748b;">[18:24:51]</span> <span style="color:#38bdf8; font-weight:bold;">[INFO]</span> <span style="color:#e2e8f0;">Initializing complete logs</span><br>'
-        '<span style="color:#64748b;">[18:24:53]</span> <span style="color:#fbbf24; font-weight:bold;">[AUDIT]</span> <span style="color:#e2e8f0;">Text extraction integrity</span> <span style="color:#38bdf8; font-weight:bold;">99.8%</span><br>'
-        '<span style="color:#64748b;">[18:24:53]</span> <span style="color:#fbbf24; font-weight:bold;">[AUDIT]</span> <span style="color:#e2e8f0;">Text extraction integrity</span> <span style="color:#38bdf8; font-weight:bold;">99.8%</span><br>'
-        '<span style="color:#64748b;">[18:24:53]</span> <span style="color:#38bdf8; font-weight:bold;">[INFO]</span> <span style="color:#e2e8f0;">Text: extraction pipeline</span><br>'
-        '<span style="color:#64748b;">[18:24:54]</span> <span style="color:#38bdf8; font-weight:bold;">[INFO]</span> <span style="color:#e2e8f0;">Finishing token pipeline</span><br>'
-        '<span style="color:#64748b;">[18:24:54]</span> <span style="color:#38bdf8; font-weight:bold;">[INFO]</span> <span style="color:#e2e8f0;">Finishing bottern cooline</span><br>'
-        '<span style="color:#64748b;">[18:24:55]</span> <span style="color:#fbbf24; font-weight:bold;">[AUDIT]</span> <span style="color:#e2e8f0;">Text extraction integrity</span> <span style="color:#38bdf8; font-weight:bold;">99.8%</span><br>'
-        '<span style="color:#64748b;">[18:24:55]</span> <span style="color:#fbbf24; font-weight:bold;">[AUDIT]</span> <span style="color:#e2e8f0;">Text extraction integrity</span> <span style="color:#38bdf8; font-weight:bold;">99.8%</span><br>'
-        '<span style="color:#64748b;">[18:24:56]</span> <span style="color:#fbbf24; font-weight:bold;">[AUDIT]</span> <span style="color:#e2e8f0;">Text extraction integrity</span> <span style="color:#38bdf8; font-weight:bold;">99.8%</span><br>'
-        '<span style="color:#64748b;">[18:24:56]</span> <span style="color:#fbbf24; font-weight:bold;">[AUDIT]</span> <span style="color:#e2e8f0;">Text extraction integrity</span> <span style="color:#38bdf8; font-weight:bold;">99.8%</span><br>'
-        '<span style="color:#64748b;">[18:24:56]</span> <span style="color:#fbbf24; font-weight:bold;">[AUDIT]</span> <span style="color:#e2e8f0;">Text extraction integrity</span> <span style="color:#38bdf8; font-weight:bold;">99.8%</span><br>'
-        '<span style="color:#64748b;">[18:24:57]</span> <span style="color:#fbbf24; font-weight:bold;">[AUDIT]</span> <span style="color:#e2e8f0;">Text extraction integrity</span> <span style="color:#38bdf8; font-weight:bold;">99.8%</span><br>'
-        '<span style="color:#64748b;">[18:24:57]</span> <span style="color:#fbbf24; font-weight:bold;">[AUDIT]</span> <span style="color:#e2e8f0;">Text extraction integrity</span> <span style="color:#38bdf8; font-weight:bold;">99.8%</span>'
+        '<span style="color:#64748b;">[STANDBY]</span> <span style="color:#38bdf8; font-weight:bold;">[READY]</span> <span style="color:#e2e8f0;">Ready to ingest, audit, and tokenize training corpus.</span>'
     )
     window.dataset_log.setHtml(sample_telemetry)
     window._tip(window.dataset_log, "Real-time streaming telemetry and audit logs during dataset preparation.")

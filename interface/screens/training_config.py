@@ -26,6 +26,8 @@ class TrainingConfigMixin:
             layer_count=self.n_layer.value(),
             dropout=self.dropout.value(),
             bias=self.use_bias.isChecked(),
+            intermediate_size=self.intermediate_size.value() if hasattr(self, "intermediate_size") else 0,
+            tie_word_embeddings=self.tie_embeddings.isChecked() if hasattr(self, "tie_embeddings") else True,
             attention_type=self._attention_type_value(),
             kv_head_count=self.kv_head_count.value(),
             attention_backend=self._attention_backend_value(),
