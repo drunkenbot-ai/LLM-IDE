@@ -922,6 +922,10 @@ class ClusterScreenMixin:
             )
             bus.set_job_status(job_id, "RUNNING")
             self._log_cluster_event(f"Successfully queued job {job_id} across cluster.")
+            if hasattr(self, "_switch_live_telemetry_mode"):
+                self._switch_live_telemetry_mode("cluster")
+            if hasattr(self, "_set_live_training_badge"):
+                self._set_live_training_badge("CLUSTER_ACTIVE", job_id=job_id, extra=f"Round 0/{max_rounds}")
             self._start_cluster_coordinator(bus, job_id)
 
             # Auto-launch local worker(s) if none are running on this host
@@ -1106,19 +1110,26 @@ class ClusterScreenMixin:
                 pass
 
         # 2. Update Live Tab Metrics
-        if hasattr(self, "live_loss_metric"):
-            self.live_loss_metric.setText(f"Loss: {global_loss:.4f}")
-        if hasattr(self, "live_tokens_metric"):
-            self.live_tokens_metric.setText(f"Tokens/sec: {speed:,.0f}")
-        if hasattr(self, "live_step_metric"):
-            self.live_step_metric.setText(f"Step: {effective_step:,}")
-        if hasattr(self, "live_epoch_metric"):
-            if epoch_val is not None:
-                self.live_epoch_metric.setText(f"Epoch: {epoch_val:.2f}/{target_epochs}")
-            else:
-                self.live_epoch_metric.setText(f"Round: {cur_round}/{max_rounds}")
-        if hasattr(self, "live_progress"):
-            self.live_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
+        if hasattr(self, "_update_live_cluster_metrics"):
+            self._update_live_cluster_metrics(telemetry)
+        else:
+            if hasattr(self, "live_loss_metric"):
+                self.live_loss_metric.setText(f"Loss: {global_loss:.4f}")
+            if hasattr(self, "live_tokens_metric"):
+                self.live_tokens_metric.setText(f"Tokens/sec: {speed:,.0f}")
+            if hasattr(self, "live_step_metric"):
+                self.live_step_metric.setText(f"Step: {effective_step:,}")
+            if hasattr(self, "live_epoch_metric"):
+                if epoch_val is not None:
+                    self.live_epoch_metric.setText(f"Epoch: {epoch_val:.2f}/{target_epochs}")
+                else:
+                    self.live_epoch_metric.setText(f"Round: {cur_round}/{max_rounds}")
+            if hasattr(self, "live_val_loss_metric"):
+                self.live_val_loss_metric.setText(f"{val_loss:.4f}" if val_loss is not None else "—")
+            if hasattr(self, "live_eta_metric"):
+                self.live_eta_metric.setText(eta_str)
+            if hasattr(self, "live_progress"):
+                self.live_progress.setValue(int((cur_round / max(max_rounds, 1)) * 100))
 
         # 3. Update Cluster Tab
         val_suffix = f" (Val: {val_loss:.4f})" if val_loss is not None else ""
@@ -1148,6 +1159,8 @@ class ClusterScreenMixin:
         """Handle coordinator completion signal."""
         if success:
             self._log_cluster_event(f"Cluster job {job_id} successfully completed all rounds.")
+            if hasattr(self, "_set_live_training_badge"):
+                self._set_live_training_badge("COMPLETED")
             if hasattr(self, "cluster_status_label"):
                 self.cluster_status_label.setText("Status: Completed")
             if hasattr(self, "project_state"):
@@ -1156,6 +1169,8 @@ class ClusterScreenMixin:
                 self.train_status.setText("Training: completed")
         else:
             self._log_cluster_event(f"Cluster job {job_id} stopped or cancelled.")
+            if hasattr(self, "_set_live_training_badge"):
+                self._set_live_training_badge("STOPPED")
             if hasattr(self, "project_state"):
                 self.project_state.setText("Idle")
             if hasattr(self, "train_status"):
@@ -1183,6 +1198,8 @@ class ClusterScreenMixin:
         if active:
             bus.set_job_status(active["job_id"], "PAUSED")
             self._log_cluster_event(f"Signal PAUSE set for job {active['job_id']}.")
+            if hasattr(self, "_set_live_training_badge"):
+                self._set_live_training_badge("PAUSED")
             if hasattr(self, "train_button"):
                 self.train_button.setEnabled(True)
                 self.train_button.setText("Resume Training")

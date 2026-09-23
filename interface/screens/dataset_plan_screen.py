@@ -20,7 +20,7 @@ class DatasetPlanScreenMixin:
             self.default_data_actions.clear()
             self.default_data_category_items.clear()
             self.default_data_tree.addTopLevelItem(
-                QTreeWidgetItem(["No project data files were found.", "", ""])
+                QTreeWidgetItem(["No project data files were found.", "", "", "", ""])
             )
 
     def _refresh_dataset_blueprint_source(
@@ -260,7 +260,10 @@ class DatasetPlanScreenMixin:
         self.default_data_tree_updating = True
         try:
             for path, item in self.default_data_actions.items():
-                item.setCheckState(0, Qt.Checked if path in selected else Qt.Unchecked)
+                is_chk = path in selected
+                item.setCheckState(0, Qt.Checked if is_chk else Qt.Unchecked)
+                if hasattr(item, "_toggle") and item._toggle is not None:
+                    item._toggle.setChecked(is_chk, block_signal=True)
             self._refresh_default_data_category_states()
         finally:
             self.default_data_tree_updating = False
@@ -270,7 +273,7 @@ class DatasetPlanScreenMixin:
 
         if hasattr(self, "dataset_plan_refresh_button"):
             self.dataset_plan_refresh_button.setEnabled(not busy)
-            self.dataset_plan_refresh_button.setText("Refreshing..." if busy else "Refresh")
+            self.dataset_plan_refresh_button.setText("Refreshing..." if busy else "Refresh Disk")
         if hasattr(self, "dataset_plan_progress"):
             if busy:
                 self.dataset_plan_progress.setRange(0, 0)
@@ -370,10 +373,16 @@ class DatasetPlanScreenMixin:
                     partial = True
             if partial or 0 < checked < category_item.childCount():
                 category_item.setCheckState(0, Qt.PartiallyChecked)
+                if hasattr(category_item, "_toggle") and category_item._toggle is not None:
+                    category_item._toggle.setChecked(True, block_signal=True)
             elif checked == category_item.childCount() and category_item.childCount() > 0:
                 category_item.setCheckState(0, Qt.Checked)
+                if hasattr(category_item, "_toggle") and category_item._toggle is not None:
+                    category_item._toggle.setChecked(True, block_signal=True)
             else:
                 category_item.setCheckState(0, Qt.Unchecked)
+                if hasattr(category_item, "_toggle") and category_item._toggle is not None:
+                    category_item._toggle.setChecked(False, block_signal=True)
 
     def _set_dataset_plan(self, plan: dict[str, Any], preset: str = "Custom") -> None:
         """Restore high-level dataset blueprint controls.

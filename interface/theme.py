@@ -140,3 +140,16 @@ def apply_theme(theme: object) -> str:
         if callable(refresh):
             refresh(selected_theme)
     return selected_theme
+
+
+def is_system_theme() -> bool:
+    """Return True if the current active application theme is 'system' (light mode)."""
+    app = QApplication.instance()
+    if app is not None:
+        prop = app.property(_THEME_PROPERTY)
+        if prop:
+            return str(prop).lower() == SYSTEM_THEME
+        for top in app.topLevelWidgets():
+            if hasattr(top, "theme_name"):
+                return str(top.theme_name).lower() == SYSTEM_THEME
+    return False

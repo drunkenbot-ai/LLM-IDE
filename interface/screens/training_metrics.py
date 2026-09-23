@@ -147,6 +147,7 @@ class TrainingMetricsMixin:
         if vram_allocated is not None or vram_reserved is not None:
             self.memory_chart.add_values(step_int, vram_allocated, vram_reserved)
         if hasattr(self, "live_epoch_metric"):
+            health_txt = self.training_health_metric.text() if hasattr(self, "training_health_metric") else None
             self._update_live_training_metrics(
                 step_int,
                 event,
@@ -162,6 +163,9 @@ class TrainingMetricsMixin:
                 system_cpu,
                 system_ram,
                 data_workers,
+                val_loss=val_loss,
+                eta_seconds=eta_seconds,
+                health_label=health_txt,
             )
 
     def _update_training_health(

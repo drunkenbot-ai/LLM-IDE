@@ -15,6 +15,8 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
+from interface.theme import is_system_theme
+
 
 class TransformerVisualizerWidget(QWidget):
     """Interactive visualizer dynamically displaying model transformer architecture blocks."""
@@ -28,6 +30,10 @@ class TransformerVisualizerWidget(QWidget):
         self.norm_type = "RMSNorm"
         self.activation_fn = "SwiGLU"
         self.attention_type = "Multi-Head (MHA)"
+
+    def apply_theme(self, theme: str) -> None:
+        """Repaint visualizer when application theme changes."""
+        self.update()
         self.pos_encoding = "RoPE"
         self.use_bias = False
 
@@ -85,36 +91,96 @@ class TransformerVisualizerWidget(QWidget):
             mlp_text = "Up & Down Proj"
             attn_text = "GQA Attention" if "GQA" in self.attention_type or "Grouped" in self.attention_type else "MHA Attention"
             pe_text = "Rotary Embed (RoPE)"
-            border_color = QColor("#8b5cf6")
-            norm_bg = QColor("#1e1b4b")
-            norm_pen = QColor("#6366f1")
-            norm_fg = QColor("#c7d2fe")
         elif is_neox:
             block_title = "GPT-NeoX Block"
             ff_text = "Feed Forward"
             mlp_text = f"{self.activation_fn} MLP" if self.activation_fn else "GELU MLP"
             attn_text = "Parallel Attention"
             pe_text = "Rotary Pos (RoPE)"
-            border_color = QColor("#ec4899")
-            norm_bg = QColor("#332415")
-            norm_pen = QColor("#d97706")
-            norm_fg = QColor("#fed7aa")
         else:
             block_title = "Transformer Block"
             ff_text = "Feed Forward"
             mlp_text = f"{self.activation_fn} MLP" if self.activation_fn else "MLP"
             attn_text = "Self Attention"
             pe_text = "Positional Encoding"
-            border_color = QColor("#8b5cf6")
-            norm_bg = QColor("#332415")
-            norm_pen = QColor("#d97706")
-            norm_fg = QColor("#fed7aa")
+
+        is_light = is_system_theme()
+        text_muted = QColor("#475569") if is_light else QColor("#cbd5e1")
+        text_main = QColor("#0f172a") if is_light else QColor("#f8fafc")
+        box_bg = QColor("#f8fafc") if is_light else QColor("#131522")
+
+        if is_light:
+            if is_llama:
+                border_color = QColor("#8b5cf6")
+                norm_bg = QColor("#ede9fe")
+                norm_pen = QColor("#6366f1")
+                norm_fg = QColor("#4338ca")
+            elif is_neox:
+                border_color = QColor("#db2777")
+                norm_bg = QColor("#fef3c7")
+                norm_pen = QColor("#d97706")
+                norm_fg = QColor("#92400e")
+            else:
+                border_color = QColor("#8b5cf6")
+                norm_bg = QColor("#fef3c7")
+                norm_pen = QColor("#d97706")
+                norm_fg = QColor("#92400e")
+            ff_bg = QColor("#e0f2fe")
+            ff_pen = QColor("#0284c7")
+            ff_fg = QColor("#0369a1")
+            mlp_bg = QColor("#f3e8ff")
+            mlp_pen = QColor("#9333ea")
+            mlp_fg = QColor("#7e22ce")
+            attn_bg = QColor("#ffedd5")
+            attn_pen = QColor("#ea580c")
+            attn_fg = QColor("#c2410c")
+            embed_bg = QColor("#f3e8ff")
+            embed_pen = QColor("#9333ea")
+            embed_fg = QColor("#7e22ce")
+            rope_bg = QColor("#cffafe")
+            rope_pen = QColor("#0891b2")
+            rope_fg = QColor("#0e7490")
+            pe_circle_bg = QColor("#f1f5f9")
+            pe_circle_pen = QColor("#94a3b8")
+        else:
+            if is_llama:
+                border_color = QColor("#8b5cf6")
+                norm_bg = QColor("#1e1b4b")
+                norm_pen = QColor("#6366f1")
+                norm_fg = QColor("#c7d2fe")
+            elif is_neox:
+                border_color = QColor("#ec4899")
+                norm_bg = QColor("#332415")
+                norm_pen = QColor("#d97706")
+                norm_fg = QColor("#fed7aa")
+            else:
+                border_color = QColor("#8b5cf6")
+                norm_bg = QColor("#332415")
+                norm_pen = QColor("#d97706")
+                norm_fg = QColor("#fed7aa")
+            ff_bg = QColor("#112436")
+            ff_pen = QColor("#0284c7")
+            ff_fg = QColor("#bae6fd")
+            mlp_bg = QColor("#241436")
+            mlp_pen = QColor("#9333ea")
+            mlp_fg = QColor("#f3e8ff")
+            attn_bg = QColor("#381e10")
+            attn_pen = QColor("#ea580c")
+            attn_fg = QColor("#ffedd5")
+            embed_bg = QColor("#241436")
+            embed_pen = QColor("#9333ea")
+            embed_fg = QColor("#f3e8ff")
+            rope_bg = QColor("#083344")
+            rope_pen = QColor("#06b6d4")
+            rope_fg = QColor("#67e8f9")
+            pe_circle_bg = QColor("#181b28")
+            pe_circle_pen = QColor("#cbd5e1")
 
         # 1. Output label at Top
-        painter.setPen(QColor("#f8fafc"))
         font_label = QFont("Arial", 9, QFont.Bold)
         font_pill = QFont("Arial", 9, QFont.Bold)
         painter.setFont(font_label)
+        painter.setPen(text_main)
         painter.drawText(QRectF(box_left, margin_top, block_w, 18), Qt.AlignCenter, "Output")
 
         # Arrow down from Output into Block
@@ -131,11 +197,11 @@ class TransformerVisualizerWidget(QWidget):
 
         # Draw outer container
         painter.setPen(QPen(border_color, 1.5, Qt.SolidLine))
-        painter.setBrush(QBrush(QColor("#131522")))
+        painter.setBrush(QBrush(box_bg))
         painter.drawRoundedRect(transformer_rect, 10, 10)
 
         # Block name and "Nx" label on the left
-        painter.setPen(QColor("#cbd5e1"))
+        painter.setPen(text_muted)
         painter.setFont(QFont("Arial", 8, QFont.DemiBold))
         name_parts = block_title.split(" ")
         painter.drawText(QPointF(transformer_box_left - 82.0, transformer_box_top + 28.0), name_parts[0])
@@ -158,31 +224,31 @@ class TransformerVisualizerWidget(QWidget):
         # Arrow down from Add & Norm to Feed Forward
         arrow1_y = pill_y1 + block_h
         arrow1_end = arrow1_y + 12.0
-        painter.setPen(QPen(QColor("#0284c7"), 1.8))
+        painter.setPen(QPen(ff_pen, 1.8))
         painter.drawLine(QPointF(center_x, arrow1_y), QPointF(center_x, arrow1_end))
 
         # 3b. Feed Forward / Gate
         pill_y2 = arrow1_end
         rect_ff = QRectF(box_left, pill_y2, block_w, block_h)
-        painter.setPen(QPen(QColor("#0284c7"), 1.5))
-        painter.setBrush(QBrush(QColor("#112436")))
+        painter.setPen(QPen(ff_pen, 1.5))
+        painter.setBrush(QBrush(ff_bg))
         painter.drawRoundedRect(rect_ff, 6, 6)
-        painter.setPen(QColor("#bae6fd"))
+        painter.setPen(ff_fg)
         painter.drawText(rect_ff, Qt.AlignCenter, ff_text)
 
         # Arrow down from Feed Forward to MLP
         arrow2_y = pill_y2 + block_h
         arrow2_end = arrow2_y + 12.0
-        painter.setPen(QPen(QColor("#9333ea"), 1.8))
+        painter.setPen(QPen(mlp_pen, 1.8))
         painter.drawLine(QPointF(center_x, arrow2_y), QPointF(center_x, arrow2_end))
 
         # 3c. MLP / Up-Down Projection
         pill_y3 = arrow2_end
         rect_mlp = QRectF(box_left, pill_y3, block_w, block_h)
-        painter.setPen(QPen(QColor("#9333ea"), 1.5))
-        painter.setBrush(QBrush(QColor("#241436")))
+        painter.setPen(QPen(mlp_pen, 1.5))
+        painter.setBrush(QBrush(mlp_bg))
         painter.drawRoundedRect(rect_mlp, 6, 6)
-        painter.setPen(QColor("#f3e8ff"))
+        painter.setPen(mlp_fg)
         painter.drawText(rect_mlp, Qt.AlignCenter, mlp_text)
 
         # Arrow down from MLP to Add & Norm 2
@@ -203,16 +269,16 @@ class TransformerVisualizerWidget(QWidget):
         # Arrow down from Add & Norm 2 to Attention
         arrow4_y = pill_y4 + block_h
         arrow4_end = arrow4_y + 12.0
-        painter.setPen(QPen(QColor("#ea580c"), 1.8))
+        painter.setPen(QPen(attn_pen, 1.8))
         painter.drawLine(QPointF(center_x, arrow4_y), QPointF(center_x, arrow4_end))
 
         # 3e. Attention
         pill_y5 = arrow4_end
         rect_attn = QRectF(box_left, pill_y5, block_w, block_h)
-        painter.setPen(QPen(QColor("#ea580c"), 1.5))
-        painter.setBrush(QBrush(QColor("#381e10")))
+        painter.setPen(QPen(attn_pen, 1.5))
+        painter.setBrush(QBrush(attn_bg))
         painter.drawRoundedRect(rect_attn, 6, 6)
-        painter.setPen(QColor("#ffedd5"))
+        painter.setPen(attn_fg)
         painter.drawText(rect_attn, Qt.AlignCenter, attn_text)
 
         # Residual Bypass Connections (Curved arrows on the right side)
@@ -247,38 +313,38 @@ class TransformerVisualizerWidget(QWidget):
         if is_llama or is_neox:
             # RoPE Rotary embedding indicator pill/diamond
             pe_rect = QRectF(center_x - 10.0, post_y, 20.0, 16.0)
-            painter.setPen(QPen(QColor("#06b6d4"), 1.5))
-            painter.setBrush(QBrush(QColor("#083344")))
+            painter.setPen(QPen(rope_pen, 1.5))
+            painter.setBrush(QBrush(rope_bg))
             painter.drawRoundedRect(pe_rect, 4, 4)
-            painter.setPen(QColor("#67e8f9"))
+            painter.setPen(rope_fg)
             painter.setFont(QFont("Arial", 7, QFont.Bold))
             painter.drawText(pe_rect, Qt.AlignCenter, "θ")
         else:
             # Positional Encoding Node (Circle with +)
-            painter.setPen(QPen(QColor("#cbd5e1"), 1.5))
-            painter.setBrush(QBrush(QColor("#181b28")))
+            painter.setPen(QPen(pe_circle_pen, 1.5))
+            painter.setBrush(QBrush(pe_circle_bg))
             painter.drawEllipse(QPointF(center_x, post_y + pe_radius), pe_radius, pe_radius)
             painter.drawLine(QPointF(center_x - 4.0, post_y + pe_radius), QPointF(center_x + 4.0, post_y + pe_radius))
             painter.drawLine(QPointF(center_x, post_y + pe_radius - 4.0), QPointF(center_x, post_y + pe_radius + 4.0))
 
         # Positional Encoding Label
-        painter.setPen(QColor("#94a3b8"))
+        painter.setPen(text_muted)
         painter.setFont(QFont("Arial", 8))
         painter.drawText(QPointF(center_x + 18.0, post_y + pe_radius + 4.0), pe_text)
 
         # Arrow from Positional Encoding to Input Embed
         pe_end_y = post_y + (pe_radius * 2)
         arrow5_end = pe_end_y + 12.0
-        painter.setPen(QPen(QColor("#9333ea"), 1.8))
+        painter.setPen(QPen(embed_pen, 1.8))
         painter.drawLine(QPointF(center_x, pe_end_y), QPointF(center_x, arrow5_end))
 
         # 5. Input Embed Pill
         pill_embed_y = arrow5_end
         rect_embed = QRectF(box_left, pill_embed_y, block_w, block_h)
-        painter.setPen(QPen(QColor("#9333ea"), 1.5))
-        painter.setBrush(QBrush(QColor("#241436")))
+        painter.setPen(QPen(embed_pen, 1.5))
+        painter.setBrush(QBrush(embed_bg))
         painter.drawRoundedRect(rect_embed, 6, 6)
-        painter.setPen(QColor("#f3e8ff"))
+        painter.setPen(embed_fg)
         painter.setFont(font_pill)
         painter.drawText(rect_embed, Qt.AlignCenter, "Input Embed")
 
@@ -287,8 +353,9 @@ class TransformerVisualizerWidget(QWidget):
         painter.setPen(QPen(QColor("#94a3b8"), 1.8))
         painter.drawLine(QPointF(center_x, arrow6_y), QPointF(center_x, arrow6_y + 12.0))
 
-        painter.setPen(QColor("#f8fafc"))
+        painter.setPen(text_main)
         painter.setFont(font_label)
         painter.drawText(QRectF(box_left, arrow6_y + 12.0, block_w, 18), Qt.AlignCenter, "Input Tokens")
+
 
         painter.end()

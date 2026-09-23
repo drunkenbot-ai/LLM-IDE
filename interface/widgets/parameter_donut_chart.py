@@ -14,6 +14,8 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
+from interface.theme import is_system_theme
+
 
 class ParameterDonutChartWidget(QWidget):
     """Donut chart visualizing Attention, MLP, and Embedding parameter breakdown."""
@@ -40,6 +42,10 @@ class ParameterDonutChartWidget(QWidget):
         self.mlp_pct = mlp_pct
         self.embed_pct = embed_pct
         self.total_params_str = total_params_str
+
+    def apply_theme(self, theme: str) -> None:
+        """Repaint chart when application theme changes."""
+        self.update()
 
         # Palette from Reference Image 1
         self.color_attn = QColor("#f59e0b")  # Amber / Gold
@@ -130,6 +136,10 @@ class ParameterDonutChartWidget(QWidget):
         font_label = QFont("Segoe UI", 8, QFont.Medium)
         font_val = QFont("Segoe UI", 8, QFont.Bold)
 
+        is_light = is_system_theme()
+        text_color = QColor("#334155") if is_light else QColor("#cbd5e1")
+        total_color = QColor("#0f172a") if is_light else QColor("#f8fafc")
+
         for i, (name, val, col) in enumerate(legend_items):
             row_y = legend_y + (i * 18.0)
 
@@ -139,7 +149,7 @@ class ParameterDonutChartWidget(QWidget):
             painter.drawEllipse(QRectF(legend_x, row_y + 3.0, 7.0, 7.0))
 
             # Name label
-            painter.setPen(QColor("#cbd5e1"))
+            painter.setPen(text_color)
             painter.setFont(font_label)
             painter.drawText(QPointF(legend_x + 14.0, row_y + 10.0), name)
 
@@ -149,7 +159,7 @@ class ParameterDonutChartWidget(QWidget):
 
         # 5. Total Params Readout
         total_y = legend_y + 62.0
-        painter.setPen(QColor("#f8fafc"))
+        painter.setPen(total_color)
         total_font = QFont("Segoe UI", 10, QFont.Bold)
         painter.setFont(total_font)
         painter.drawText(QPointF(legend_x, total_y), f"Total Params: {self.total_params_str}")

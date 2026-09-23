@@ -299,7 +299,28 @@ class FineTuningRunMixin:
         self.stability_chart.clear()
         self.throughput_chart.clear()
         self.memory_chart.clear()
+        if hasattr(self, "_switch_live_telemetry_mode"):
+            self._switch_live_telemetry_mode("local")
+        if hasattr(self, "_set_live_training_badge"):
+            self._set_live_training_badge("LOCAL_ACTIVE", pid=os.getpid())
         self.live_progress.setValue(0)
+        self.live_epoch_metric.setText("—")
+        self.live_step_metric.setText("—")
+        self.live_tokens_metric.setText("0 tok/s")
+        self.live_loss_metric.setText("—")
+        if hasattr(self, "live_val_loss_metric"):
+            self.live_val_loss_metric.setText("—")
+        if hasattr(self, "live_eta_metric"):
+            self.live_eta_metric.setText("—")
+        self.live_lr_metric.setText("—")
+        if hasattr(self, "live_grad_norm_metric"):
+            self.live_grad_norm_metric.setText("—")
+        if hasattr(self, "live_early_stop_metric"):
+            self.live_early_stop_metric.setText("Healthy (Starting)")
+        if hasattr(self, "live_probe_prompt"):
+            self.live_probe_prompt.setText("Waiting for training step sample...")
+        if hasattr(self, "live_probe_output"):
+            self.live_probe_output.setText("...")
         self.live_sample_text.setText("Training text: -")
         self.live_flow.set_state(self.n_layer.value(), self.n_head.value(), 0, None)
         self.fine_tune_log.append("Fine-tuning started...")
