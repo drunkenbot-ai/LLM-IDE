@@ -941,6 +941,10 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
 
     window.auto_tune_button = QPushButton("⚡ Auto-Tune Engine")
     window.auto_tune_button.setObjectName("SecondaryAction")
+    window.auto_tune_button.setStyleSheet(
+        "QPushButton { background: #0284c7; color: #ffffff; font-weight: 700; border: 1px solid #38bdf8; border-radius: 4px; padding: 4px 10px; }"
+        "QPushButton:hover { background: #0369a1; }"
+    )
     window.auto_tune_button.setToolTip("Re-run auto-optimization using the current model architecture, VRAM budget, and prepared dataset tokens.")
     vram_row.addWidget(window.training_vram)
     vram_row.addWidget(window.auto_tune_button, 1)
