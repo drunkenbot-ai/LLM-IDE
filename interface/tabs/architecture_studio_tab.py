@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import json
 import math
+import os
 from pathlib import Path
 from typing import Any
 
+import torch
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -28,6 +31,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from engine.training_planning import optimize_training_hyperparameters
 from interface.widgets.parameter_donut_chart import ParameterDonutChartWidget
 from interface.widgets.transformer_visualizer import TransformerVisualizerWidget
 
@@ -98,6 +102,224 @@ def _form_row(
     if widget:
         h.addWidget(widget, 1)
     return row
+
+
+def detect_prepared_dataset_token_stats(window: Any) -> tuple[int, int, str]:
+    """Detect available prepared dataset tokens and tokenizer vocab size.
+
+    Returns:
+        (total_tokens, vocab_size, description_string)
+    """
+    total_tokens = 0
+    vocab_size = 0
+    source_desc = "Default (250M tokens)"
+
+    candidate_dirs: list[Path] = []
+    if hasattr(window, "train_data_dir") and window.train_data_dir.text().strip():
+        candidate_dirs.append(Path(window.train_data_dir.text().strip()))
+    if hasattr(window, "dataset_dir") and window.dataset_dir.text().strip():
+        candidate_dirs.append(Path(window.dataset_dir.text().strip()))
+    candidate_dirs.append(Path.cwd() / "runs" / "dataset")
+
+    for cdir in candidate_dirs:
+        if not cdir.exists():
+            continue
+
+        # 1. Check dataset_summary.json
+        summary_path = cdir / "dataset_summary.json"
+        if summary_path.is_file():
+            try:
+                summary = json.loads(summary_path.read_text(encoding="utf-8"))
+                t_count = int(summary.get("train_token_count", summary.get("token_count", 0)) or 0)
+                v_count = int(summary.get("tokenizer_vocab_size", 0) or 0)
+                if t_count > 0:
+                    total_tokens = t_count
+                    vocab_size = v_count
+                    source_desc = f"Prepared dataset at {cdir.name} ({total_tokens / 1e6:.1f}M tokens)"
+                    break
+            except Exception:
+                pass
+
+        # 2. Check train_tokens.npy
+        npy_path = cdir / "train_tokens.npy"
+        if npy_path.is_file():
+            try:
+                sz = npy_path.stat().st_size
+                approx_tokens = max(1, sz // 2)
+                total_tokens = approx_tokens
+                source_desc = f"train_tokens.npy at {cdir.name} ({total_tokens / 1e6:.1f}M tokens)"
+                break
+            except Exception:
+                pass
+
+        # 3. Check binary shards
+        bin_files = list(cdir.glob("*.bin"))
+        if bin_files:
+            total_bytes = sum(f.stat().st_size for f in bin_files)
+            if total_bytes > 0:
+                total_tokens = total_bytes // 2
+                source_desc = f"Binary shards in {cdir.name} ({total_tokens / 1e6:.1f}M tokens)"
+                break
+
+    # If no prepared shards found yet, check active blueprint root or curated_2b_base
+    if total_tokens <= 0:
+        curated_root = Path(r"E:\AI_Projects\dataset\curated_2b_base")
+        if curated_root.is_dir():
+            total_tokens = 250_000_000
+            source_desc = "Curated 2B Base (250M tokens)"
+        else:
+            total_tokens = 250_000_000
+            source_desc = "Frontier 11-Pillar Recipe (250M tokens)"
+
+    # Also check tokenizer.json if vocab_size was not yet found
+    if vocab_size <= 0:
+        for cdir in candidate_dirs:
+            tok_path = cdir / "tokenizer.json"
+            if tok_path.is_file():
+                try:
+                    tok_data = json.loads(tok_path.read_text(encoding="utf-8"))
+                    vocab = tok_data.get("model", {}).get("vocab", {})
+                    if vocab:
+                        vocab_size = len(vocab)
+                        break
+                except Exception:
+                    pass
+
+    return total_tokens, vocab_size, source_desc
+
+
+def apply_auto_optimized_hyperparameters(window: Any) -> dict[str, Any]:
+    """Calculate and apply optimal training and runtime hyperparameters to all window controls."""
+    target_vram = float(window.training_vram.value()) if hasattr(window, "training_vram") else 16.0
+
+    mode = getattr(window, "active_training_mode", "pretrain")
+    if hasattr(window, "training_mode"):
+        t_mode_text = window.training_mode.currentText().lower()
+        if "fine-tune" in t_mode_text or "instruction" in t_mode_text:
+            mode = "fine_tune"
+
+    # Current model config
+    if hasattr(window, "_current_model_config"):
+        try:
+            model_config = window._current_model_config()
+        except Exception:
+            from engine.config import ModelConfig
+            model_config = ModelConfig(
+                vocab_size=int(window.vocab_size.value()) if hasattr(window, "vocab_size") else 50257,
+                context_length=int(window.context_length.value()) if hasattr(window, "context_length") else 2048,
+                embedding_size=int(window.hidden_size.value()) if hasattr(window, "hidden_size") else 4096,
+                head_count=int(window.num_heads.value()) if hasattr(window, "num_heads") else 32,
+                layer_count=int(window.num_layers.value()) if hasattr(window, "num_layers") else 32,
+            )
+    else:
+        from engine.config import ModelConfig
+        model_config = ModelConfig(
+            vocab_size=int(window.vocab_size.value()) if hasattr(window, "vocab_size") else 50257,
+            context_length=int(window.context_length.value()) if hasattr(window, "context_length") else 2048,
+            embedding_size=int(window.hidden_size.value()) if hasattr(window, "hidden_size") else 4096,
+            head_count=int(window.num_heads.value()) if hasattr(window, "num_heads") else 32,
+            layer_count=int(window.num_layers.value()) if hasattr(window, "num_layers") else 32,
+        )
+
+    train_tokens, vocab_size, source_desc = detect_prepared_dataset_token_stats(window)
+    if vocab_size > 0 and hasattr(window, "vocab_size"):
+        window.vocab_size.setValue(vocab_size)
+        model_config.vocab_size = vocab_size
+
+    device_type = "cuda" if (hasattr(window, "device") and "cuda" in window.device.currentText().lower()) else "cpu"
+    if not torch.cuda.is_available() and device_type == "cuda":
+        device_type = "cpu"
+    cpu_count = os.cpu_count() or 8
+
+    opt = optimize_training_hyperparameters(
+        model_config=model_config,
+        target_vram_gb=target_vram,
+        train_tokens=train_tokens,
+        training_mode=mode,
+        cpu_count=cpu_count,
+        device_type=device_type,
+    )
+
+    def _set_combo(cb: Any, text: str) -> None:
+        if hasattr(window, "_set_combo_text"):
+            window._set_combo_text(cb, text)
+        else:
+            idx = cb.findText(text)
+            if idx >= 0:
+                cb.setCurrentIndex(idx)
+
+    # Optimization engine parameters
+    if hasattr(window, "batch_size"):
+        window.batch_size.setValue(opt["batch_size"])
+    if hasattr(window, "gradient_accumulation"):
+        window.gradient_accumulation.setValue(opt["gradient_accumulation"])
+    if hasattr(window, "epochs"):
+        window.epochs.setValue(opt["epochs"])
+    if hasattr(window, "warmup_steps"):
+        window.warmup_steps.setValue(opt["warmup_steps"])
+    if hasattr(window, "eval_interval"):
+        window.eval_interval.setValue(opt["eval_interval"])
+    if hasattr(window, "max_eval_batches"):
+        window.max_eval_batches.setValue(opt["max_eval_batches"])
+    if hasattr(window, "save_interval"):
+        window.save_interval.setValue(opt["save_interval"])
+    if hasattr(window, "sample_stride"):
+        window.sample_stride.setValue(opt["sample_stride"])
+    if hasattr(window, "data_loader_workers"):
+        window.data_loader_workers.setValue(opt["data_loader_workers"])
+    if hasattr(window, "learning_rate"):
+        window.learning_rate.setValue(opt["learning_rate"])
+    if hasattr(window, "weight_decay"):
+        window.weight_decay.setValue(opt["weight_decay"])
+    if hasattr(window, "optimizer_name"):
+        _set_combo(window.optimizer_name, opt["optimizer_name"])
+    if hasattr(window, "scheduler_name"):
+        _set_combo(window.scheduler_name, opt["scheduler_name"])
+    if hasattr(window, "min_lr_ratio"):
+        window.min_lr_ratio.setValue(opt["min_lr_ratio"])
+    if hasattr(window, "polynomial_power"):
+        window.polynomial_power.setValue(opt["polynomial_power"])
+    if hasattr(window, "max_grad_norm"):
+        window.max_grad_norm.setValue(opt["max_grad_norm"])
+
+    # Hardware & Runtime parameters
+    if hasattr(window, "precision"):
+        _set_combo(window.precision, opt["precision"])
+    if hasattr(window, "use_amp"):
+        window.use_amp.setChecked(opt["use_amp"])
+    if hasattr(window, "activation_checkpointing"):
+        window.activation_checkpointing.setChecked(opt["activation_checkpointing"])
+
+    # LoRA fine-tuning parameters
+    if hasattr(window, "fine_tune_lora_rank"):
+        window.fine_tune_lora_rank.setValue(opt["lora_rank"])
+    if hasattr(window, "lora_rank"):
+        window.lora_rank.setValue(opt["lora_rank"])
+    if hasattr(window, "fine_tune_lora_alpha"):
+        window.fine_tune_lora_alpha.setValue(opt["lora_alpha"])
+    if hasattr(window, "lora_alpha"):
+        window.lora_alpha.setValue(opt["lora_alpha"])
+    if hasattr(window, "fine_tune_lora_dropout"):
+        window.fine_tune_lora_dropout.setValue(opt["lora_dropout"])
+    if hasattr(window, "lora_dropout"):
+        window.lora_dropout.setValue(opt["lora_dropout"])
+
+    # Update summary badge
+    if hasattr(window, "optimization_summary_chip"):
+        window.optimization_summary_chip.setText(f"⚡ {opt['summary_text']}")
+        window.optimization_summary_chip.setToolTip(
+            f"Dataset: {source_desc}\n"
+            f"Target VRAM: {target_vram:.0f} GB (Estimated Peak: {opt['estimated_vram_gb']} GB)\n"
+            f"Micro-Batch: {opt['batch_size']}, Grad Accum: {opt['gradient_accumulation']}\n"
+            f"Effective Batch Tokens: {opt['effective_batch_tokens']:,} tokens/step\n"
+            f"Steps per epoch: {opt['steps_per_epoch']:,}, Total steps: {opt['total_steps']:,}\n"
+            f"Warmup: {opt['warmup_steps']} steps, Eval every: {opt['eval_interval']} steps\n"
+            f"Save every: {opt['save_interval']} steps, Stride: {opt['sample_stride']} tokens\n"
+            f"Optimizer: {opt['optimizer_name']}, Precision: {opt['precision']}\n"
+            f"CPU Workers: {opt['data_loader_workers']}"
+        )
+
+    return opt
 
 
 def build_architecture_studio_tab(window: Any) -> QWidget:
@@ -177,6 +399,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
 
         if hasattr(window, "update_train_button_state"):
             window.update_train_button_state()
+        apply_auto_optimized_hyperparameters(window)
 
     window.base_mode_btn.clicked.connect(lambda: on_switch_mode("base"))
     window.finetune_mode_btn.clicked.connect(lambda: on_switch_mode("finetune"))
@@ -574,8 +797,17 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     lora_layout.addWidget(window.lora_section_widget)
 
     # -------------------------------------------------------------------------
-    # OPTIMIZATION ENGINE (Red Box 1 from Image 3)
+    # OPTIMIZATION ENGINE & SUMMARY
     # -------------------------------------------------------------------------
+    window.optimization_summary_chip = QLabel("⚡ Auto-Tuned: Initializing...")
+    window.optimization_summary_chip.setObjectName("OptimizationSummaryChip")
+    window.optimization_summary_chip.setWordWrap(True)
+    window.optimization_summary_chip.setStyleSheet(
+        "background: rgba(30, 27, 75, 0.75); color: #a5b4fc; border: 1px solid #4338ca; "
+        "border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 600;"
+    )
+    lora_layout.addWidget(window.optimization_summary_chip)
+
     opt_header = QLabel("OPTIMIZATION ENGINE")
     opt_header.setObjectName("SectionLabel")
     lora_layout.addWidget(opt_header)
@@ -685,6 +917,37 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     if hasattr(window, "_configure_device_options"):
         window._configure_device_options()
 
+    vram_widget = QWidget()
+    vram_row = QHBoxLayout(vram_widget)
+    vram_row.setContentsMargins(0, 0, 0, 0)
+    vram_row.setSpacing(6)
+
+    window.training_vram = window._spin(2, 512, 16)
+    window.training_vram.setSuffix(" GB")
+    window.training_vram.setFixedWidth(85)
+    window._tip(
+        window.training_vram,
+        "Target training VRAM budget in GB. Automatically sizes batch size, gradient accumulation, eval intervals, stride, save checkpoints, and CPU workers based on your model and prepared dataset tokens.",
+    )
+
+    if torch.cuda.is_available():
+        try:
+            _, total_bytes = torch.cuda.mem_get_info()
+            det_gb = round(total_bytes / (1024 ** 3))
+            if det_gb >= 2:
+                window.training_vram.setValue(int(det_gb))
+        except Exception:
+            pass
+
+    window.auto_tune_button = QPushButton("⚡ Auto-Tune Engine")
+    window.auto_tune_button.setObjectName("SecondaryAction")
+    window.auto_tune_button.setToolTip("Re-run auto-optimization using the current model architecture, VRAM budget, and prepared dataset tokens.")
+    vram_row.addWidget(window.training_vram)
+    vram_row.addWidget(window.auto_tune_button, 1)
+
+    window.training_vram.valueChanged.connect(lambda _: apply_auto_optimized_hyperparameters(window))
+    window.auto_tune_button.clicked.connect(lambda: apply_auto_optimized_hyperparameters(window))
+
     window.precision = QComboBox()
     window.precision.addItems(["BF16", "FP16", "FP32"])
     window._tip(window.precision, "Numeric precision mode. BF16 is fast and numerically stable on modern GPUs.")
@@ -727,6 +990,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window._tip(window.resume_check_button, "Inspect checkpoint compatibility before starting training.")
 
     runtime_form.addWidget(_form_row("Hardware", window.device_info, label_width=110, window=window))
+    runtime_form.addWidget(_form_row("Training VRAM ⓘ", vram_widget, label_width=110, window=window))
     runtime_form.addWidget(_form_row("Precision", _paired_row(window.use_amp, "Mode", window.precision), label_width=110, window=window))
     runtime_form.addWidget(_form_row("VRAM saver", _paired_row(window.activation_checkpointing, "", None), label_width=110, window=window))
     runtime_form.addWidget(_form_row("Resume", _paired_row(window.resume_training, "", window.resume_safety), label_width=110, window=window))
@@ -1029,6 +1293,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
             window.activation_fn.setCurrentText("SwiGLU")
             window.norm_type.setCurrentText("RMSNorm")
         update_visualizer_from_ui()
+        apply_auto_optimized_hyperparameters(window)
 
     window.preset.currentTextChanged.connect(on_preset_changed)
     window.norm_type.currentTextChanged.connect(lambda _: update_visualizer_from_ui())
@@ -1225,5 +1490,10 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     window.benchmark_temperature = window._double_spin(0.0, 2.0, 0.7, 0.05, 2)
     window.benchmark_kv_cache = QCheckBox()
     window.benchmark_kv_cache.setChecked(True)
+
+    try:
+        apply_auto_optimized_hyperparameters(window)
+    except Exception:
+        pass
 
     return page

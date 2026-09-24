@@ -87,7 +87,11 @@ from engine.runpod_cloud import (
 from engine.telemetry_store import (
     initialize_store, insert_metric, latest_run, rows_until, telemetry_db_path,
 )
-from engine.training_planning import estimate_training_resources, format_bytes
+from engine.training_planning import (
+    estimate_training_resources,
+    format_bytes,
+    optimize_training_hyperparameters,
+)
 from engine.training_resume import check_resume_compatibility, latest_checkpoint
 from engine.training_service import run_training_job
 
