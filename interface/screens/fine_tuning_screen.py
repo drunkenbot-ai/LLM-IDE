@@ -91,7 +91,30 @@ class FineTuningScreenMixin:
             self.lora_alpha.setValue(16.0)
             self.lora_dropout.setValue(0.05)
             self._set_combo_text(self.lora_targets, "Attention projections")
+        self._suggest_fine_tune_corpus()
         self.refresh_fine_tune_workflow()
+
+    # Map training stages to their dataset corpus directories
+    FINE_TUNE_CORPUS_MAP = {
+        "instruction": r"E:\AI_Projects\dataset\fine_tune_instruction",
+        "conversation": r"E:\AI_Projects\dataset\fine_tune_conversation",
+        "tool_call": r"E:\AI_Projects\dataset\fine_tune_tool_call",
+        "code": r"E:\AI_Projects\dataset\fine_tune_code",
+        "thinking": r"E:\AI_Projects\dataset\fine_tune_thinking",
+        "domain": r"E:\AI_Projects\dataset\user_system_prompt_training",
+    }
+
+    def _suggest_fine_tune_corpus(self) -> None:
+        """Auto-populate the input directory with the matching fine-tune corpus if available."""
+
+        stage = self._training_stage_value()
+        corpus_path = self.FINE_TUNE_CORPUS_MAP.get(stage)
+        if corpus_path and Path(corpus_path).is_dir():
+            if hasattr(self, "input_dir"):
+                current = self.input_dir.text().strip()
+                # Only auto-fill if the field is empty, or already points at a known corpus
+                if not current or any(current == v for v in self.FINE_TUNE_CORPUS_MAP.values()):
+                    self.input_dir.setText(corpus_path)
 
     def _current_dataset_summary(self) -> dict[str, Any]:
         """Read the active prepared dataset summary.

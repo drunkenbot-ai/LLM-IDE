@@ -54,13 +54,22 @@ CATEGORY_PALETTE = [
 ]
 
 
-def default_data_root() -> Path:
-    """Return the bundled default data folder.
+IGNORED_DATASET_FOLDERS = {"_quarantine", ".git", ".idea", "dist", "__pycache__", "tools", ".github"}
 
-    Returns:
-        Absolute path to the packaged ``default_data`` folder.
+
+def default_data_root() -> Path:
+    """Return the primary dataset folder.
+
+    Prioritizes known dataset repository at E:\\AI_Projects\\dataset if present,
+    otherwise packaged default_data folder.
     """
-    return Path(__file__).resolve().parents[2] / "default_data"
+    dataset_repo = Path(r"E:\AI_Projects\dataset")
+    if dataset_repo.is_dir():
+        return dataset_repo
+    bundled = Path(__file__).resolve().parents[2] / "default_data"
+    if bundled.is_dir():
+        return bundled
+    return Path.cwd() / "default_data"
 
 
 def blueprint_data_root(window: Any | None = None) -> Path:
@@ -70,13 +79,30 @@ def blueprint_data_root(window: Any | None = None) -> Path:
         window: Optional main window carrying a project-local data root.
 
     Returns:
-        Project-local training data root when available, otherwise bundled data.
+        Project-local training data root when available, otherwise known dataset repository.
     """
     root = getattr(window, "blueprint_data_root", None)
     if root:
         path = Path(root)
         if path.exists():
             return path
+    if window is not None:
+        p_file = getattr(window, "current_project_file", None)
+        if p_file and p_file.parent.is_dir():
+            for sub in [p_file.parent / "training_data", p_file.parent / "datasets"]:
+                if sub.is_dir():
+                    return sub
+        p_dir = getattr(window, "current_project_dir", None)
+        if p_dir:
+            p_path = Path(p_dir)
+            for sub in [p_path / "training_data", p_path / "datasets"]:
+                if sub.is_dir():
+                    return sub
+        in_dir = getattr(window, "input_dir", None)
+        if in_dir and in_dir.text().strip():
+            in_p = Path(in_dir.text().strip())
+            if in_p.is_dir():
+                return in_p
     return default_data_root()
 
 
@@ -102,7 +128,31 @@ def dataset_category_label(key: str) -> str:
     Returns:
         User-facing label.
     """
-    return key.replace("_", " ").title()
+    labels = {
+        "curated_2b_base": "11-Pillar Pre-Training Mixture (250M)",
+        "code_pretraining": "Systems Code & Architecture",
+        "algorithms_pretraining": "Competitive Algorithms & Graphs",
+        "stem_pretraining": "STEM & Formal Mathematics",
+        "medicine_pretraining": "Biomedicine & Clinical Pharma",
+        "hardware_pretraining": "Hardware RTL & Semiconductor",
+        "cybersecurity_pretraining": "Cybersecurity & Exploits",
+        "finance": "Quantitative Finance & Economics",
+        "law_pretraining": "Law, Contracts & Governance",
+        "multilingual_pretraining": "Multilingual Cross-Alignment",
+        "encyclopedic": "Encyclopedic & World Knowledge",
+        "science_pretraining": "Physical Sciences & Textbooks",
+        "fine_tune_instruction": "Instruction Tuning (SFT)",
+        "fine_tune_thinking": "Reasoning & Thinking Traces (CoT)",
+        "fine_tune_code": "Code Specialization Tuning",
+        "fine_tune_tool_call": "Tool & Function Calling",
+        "fine_tune_conversation": "Multi-Turn Dialogue & Chat",
+        "user_system_prompt_training": "System Prompt & Persona Steering",
+        "base_training": "Base Corpus Pool",
+        "ebooks": "Domain Literature E-Books",
+        "computer_science": "Computer Science Textbooks",
+        "research_papers": "Peer-Reviewed Research Papers",
+    }
+    return labels.get(key, key.replace("_", " ").title())
 
 
 def default_data_category(path: Path, root: Path | None = None) -> str:
@@ -146,25 +196,37 @@ def default_data_stage(path: Path, root: Path | None = None) -> str:
 def infer_category_type(category_slug: str) -> tuple[str, str]:
     """Return (icon_symbol, type_label) for category slug matching concept art."""
     slug = category_slug.lower()
-    if any(k in slug for k in ["base", "clean", "general", "academic"]):
-        return ("✦", "Base Pretraining")
-    if any(k in slug for k in ["prose", "wiki", "book", "web", "article"]):
-        return ("✦", "Pre-training Base")
-    if any(k in slug for k in ["reason", "math", "logic", "stem", "cot"]):
-        return ("◆", "Formal Reasoning")
-    if any(k in slug for k in ["instruct", "chat", "dialog", "eval", "sft"]):
-        return ("◆", "Instruction")
-    if any(k in slug for k in ["code", "system", "kernel", "algo", "python", "c_"]):
-        return ("◈", "Systems Code")
+    if "curated" in slug or "base_training" in slug:
+        return ("★", "Base Pretraining Mixture")
+    if any(k in slug for k in ["prose", "wiki", "book", "encyclopedic", "article"]):
+        return ("✦", "Encyclopedic Knowledge")
+    if any(k in slug for k in ["reason", "math", "logic", "stem", "cot", "think"]):
+        return ("◆", "Formal Reasoning & Math")
+    if any(k in slug for k in ["instruct", "chat", "dialog", "eval", "sft", "conversation"]):
+        return ("◆", "Instruction & Dialogue")
+    if any(k in slug for k in ["code", "algo", "python", "kernel", "c_"]):
+        return ("◈", "Systems Code & Algorithms")
+    if any(k in slug for k in ["hardware", "rtl", "verilog", "riscv"]):
+        return ("◈", "Hardware RTL & Silicon")
+    if any(k in slug for k in ["cyber", "security", "exploit"]):
+        return ("◈", "Cybersecurity & Exploits")
+    if any(k in slug for k in ["medicine", "clinical", "pharma", "bio"]):
+        return ("●", "Biomedicine & Pharma")
+    if any(k in slug for k in ["finance", "market"]):
+        return ("●", "Quantitative Finance")
+    if any(k in slug for k in ["law", "legal"]):
+        return ("●", "Law & Governance")
+    if any(k in slug for k in ["multilingual"]):
+        return ("●", "Multilingual Alignment")
     if any(k in slug for k in ["tool", "agent", "trajectory", "action"]):
         return ("▲", "Tool Calling")
-    if any(k in slug for k in ["identity", "fact", "synthetic", "forge"]):
-        return ("★", "Synthetic Identity")
+    if any(k in slug for k in ["identity", "fact", "synthetic", "forge", "prompt"]):
+        return ("★", "System Prompt & Steering")
     return ("●", "Discipline")
 
 
 def iter_default_data_files(root: Path | None = None) -> list[tuple[Path, str]]:
-    """List default/project data files with categories.
+    """List default/project data files with categories, pruning quarantine and VCS directories.
 
     Args:
         root: Optional source root. Defaults to bundled default data.
@@ -175,18 +237,33 @@ def iter_default_data_files(root: Path | None = None) -> list[tuple[Path, str]]:
     root = root or default_data_root()
     if not root.exists():
         return []
-    return [
-        (path, default_data_category(path, root))
-        for path in sorted(root.rglob("*"))
-        if (
-            path.is_file()
-            and path.suffix.lower() in SUPPORTED_DEFAULT_SUFFIXES
-            and path.stat().st_size > 0
-        )
-    ]
+
+    files: list[tuple[Path, str]] = []
+    try:
+        top_items = sorted(root.iterdir())
+    except OSError:
+        return []
+
+    for top in top_items:
+        if top.name in IGNORED_DATASET_FOLDERS:
+            continue
+        if top.is_dir():
+            for path in sorted(top.rglob("*")):
+                if any(part in path.parts for part in IGNORED_DATASET_FOLDERS):
+                    continue
+                if (
+                    path.is_file()
+                    and path.suffix.lower() in SUPPORTED_DEFAULT_SUFFIXES
+                    and path.stat().st_size > 0
+                ):
+                    files.append((path, default_data_category(path, root)))
+        elif top.is_file() and top.suffix.lower() in SUPPORTED_DEFAULT_SUFFIXES and top.stat().st_size > 0:
+            files.append((top, default_data_category(top, root)))
+
+    return files
 
 
-def file_token_vocab_stats(path: Path, sample_bytes: int = 256 * 1024) -> dict[str, int | bool]:
+def file_token_vocab_stats(path: Path, sample_bytes: int = 64 * 1024) -> dict[str, int | bool]:
     """Estimate token and vocabulary counts for a data file.
 
     Args:
@@ -582,6 +659,22 @@ def build_dataset_plan_tab(window: Any) -> QWidget:
     window.dataset_plan_source_label.setMaximumWidth(340)
     window._tip(window.dataset_plan_source_label, f"Active data root: {active_data_root}")
     header_row.addWidget(window.dataset_plan_source_label)
+
+    change_root_btn = QPushButton("Browse...")
+    change_root_btn.setObjectName("SecondaryAction")
+    change_root_btn.setFixedWidth(75)
+
+    def _on_change_root():
+        selected = QFileDialog.getExistingDirectory(window, "Select Dataset Root Folder", str(window.blueprint_data_root))
+        if selected:
+            p = Path(selected)
+            window.blueprint_data_root = p
+            window.dataset_plan_source_label.setText(f"Source: {p}")
+            window._tip(window.dataset_plan_source_label, f"Active data root: {p}")
+            populate_default_data_tree(window, p)
+
+    change_root_btn.clicked.connect(_on_change_root)
+    header_row.addWidget(change_root_btn)
 
     header_row.addStretch(1)
 

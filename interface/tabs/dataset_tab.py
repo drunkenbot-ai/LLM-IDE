@@ -214,7 +214,14 @@ def build_dataset_tab(window: Any) -> QWidget:
     source_layout.setSpacing(8)
 
     # Source Directory Picker
-    window.input_dir = QLineEdit()
+    default_input_path = ""
+    curated_2b = Path(r"E:\AI_Projects\dataset\curated_2b_base")
+    if curated_2b.is_dir():
+        default_input_path = str(curated_2b)
+    elif Path(r"E:\AI_Projects\dataset").is_dir():
+        default_input_path = str(Path(r"E:\AI_Projects\dataset"))
+
+    window.input_dir = QLineEdit(default_input_path)
     window.input_dir.setPlaceholderText("Select raw text / source data directory...")
     input_browse = QPushButton("Browse")
     input_browse.setObjectName("IngestionBrowseBtn")
@@ -226,6 +233,27 @@ def build_dataset_tab(window: Any) -> QWidget:
     input_h.setSpacing(6)
     input_h.addWidget(window.input_dir, 1)
     input_h.addWidget(input_browse, 0)
+
+    preset_row = QWidget()
+    preset_h = QHBoxLayout(preset_row)
+    preset_h.setContentsMargins(0, 0, 0, 2)
+    preset_h.setSpacing(6)
+    preset_lbl = QLabel("Quick Presets:")
+    preset_lbl.setStyleSheet("color: #94a3b8; font-size: 11px;")
+    preset_h.addWidget(preset_lbl)
+
+    btn_curated = QPushButton("Curated 2B Base (250M tokens)")
+    btn_curated.setObjectName("SourceFilterBtn")
+    btn_curated.setFixedHeight(22)
+    btn_curated.clicked.connect(lambda: window.input_dir.setText(r"E:\AI_Projects\dataset\curated_2b_base"))
+    preset_h.addWidget(btn_curated)
+
+    btn_full = QPushButton("Dataset Root")
+    btn_full.setObjectName("SourceFilterBtn")
+    btn_full.setFixedHeight(22)
+    btn_full.clicked.connect(lambda: window.input_dir.setText(r"E:\AI_Projects\dataset"))
+    preset_h.addWidget(btn_full)
+    preset_h.addStretch(1)
 
     # Dataset Shards Directory Picker
     window.dataset_dir = QLineEdit(str(Path.cwd() / "runs" / "dataset"))
@@ -264,6 +292,7 @@ def build_dataset_tab(window: Any) -> QWidget:
     window.include_source_code.setChecked(True)
 
     source_layout.addWidget(_form_row("Source Folder", input_row, "Source directory containing documents, code, or JSONL files to ingest."))
+    source_layout.addWidget(preset_row)
     source_layout.addWidget(_form_row("Dataset Out", dataset_row, "Target directory where tokenizer.json and token binary shards are saved."))
     source_layout.addWidget(_form_row("Parallel CPU Extraction Lanes", window.max_workers, "Parallel extraction lanes: Number of CPU worker processes extracting source files simultaneously."))
     source_layout.addWidget(_form_row("Prepare Mode", window.prepare_mode, "Prepare mode: 'Full rebuild' regenerates tokenizer and shards from scratch. 'Incremental' updates only new files."))
