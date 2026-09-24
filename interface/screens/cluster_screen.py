@@ -252,6 +252,7 @@ class ClusterScreenMixin:
                         rounds = bus.get_all_round_history(str(active_job["job_id"]))
                         if rounds:
                             active_job["_latest_round"] = rounds[-1]
+                            active_job["_rounds"] = rounds
                     except Exception:
                         pass
                 else:
@@ -421,6 +422,48 @@ class ClusterScreenMixin:
                 if hasattr(self, "training_val_metric"):
                     self.training_val_metric.setText(f"Val loss: {float(v_loss):.4f}" if v_loss is not None else "Val loss: -")
 
+            job_rounds = active_job.get("_rounds", [])
+            total_compute = 0.0
+            total_sync = 0.0
+            for r in job_rounds:
+                rm = r.get("metrics", {})
+                if rm.get("avg_compute_sec") is not None:
+                    total_compute += float(rm.get("avg_compute_sec") or 0.0)
+                if rm.get("coordinator_agg_sec") is not None:
+                    total_sync += float(rm.get("coordinator_agg_sec") or 0.0)
+
+            if st in {"RUNNING", "QUEUED"}:
+                last_ts = job_rounds[-1].get("averaged_at") if job_rounds else (active_job.get("created_at") or active_job.get("updated_at"))
+                if last_ts:
+                    try:
+                        elapsed = max(0.0, time.time() - float(last_ts))
+                        in_sync = any("SYNC" in str(w.get("status", "")).upper() for w in (workers or []))
+                        if in_sync:
+                            total_sync += elapsed
+                        else:
+                            total_compute += elapsed
+                    except Exception:
+                        pass
+
+            def _fmt_cluster_time(sec: float) -> str:
+                sec = max(0.0, sec)
+                if sec < 60:
+                    return f"{sec:.0f}s"
+                m, s = divmod(int(sec), 60)
+                if m < 60:
+                    return f"{m}m {s:02d}s"
+                h, m = divmod(m, 60)
+                return f"{h}h {m:02d}m {s:02d}s"
+
+            if hasattr(self, "cluster_train_time_label"):
+                self.cluster_train_time_label.setText(
+                    f"Train Time: {_fmt_cluster_time(total_compute)}" if (job_rounds or st in {"RUNNING", "QUEUED"}) else "Train Time: -"
+                )
+            if hasattr(self, "cluster_sync_time_label"):
+                self.cluster_sync_time_label.setText(
+                    f"Sync Time: {_fmt_cluster_time(total_sync)}" if (job_rounds or st in {"RUNNING", "QUEUED"}) else "Sync Time: -"
+                )
+
                 # Update Fine-Tuning screen metric chips
                 if is_fine_tune:
                     if hasattr(self, "fine_tune_loss_metric") and g_loss is not None:
@@ -566,6 +609,10 @@ class ClusterScreenMixin:
                 self.cluster_status_label.setText("Status: Fleet Idle")
             if hasattr(self, "cluster_round_label"):
                 self.cluster_round_label.setText("Round: -")
+            if hasattr(self, "cluster_train_time_label"):
+                self.cluster_train_time_label.setText("Train Time: -")
+            if hasattr(self, "cluster_sync_time_label"):
+                self.cluster_sync_time_label.setText("Sync Time: -")
 
     def _sync_completed_cluster_artifacts_to_project(self, active_job: dict[str, Any]) -> None:
         """Copy completed cluster training artifacts to the local project output folder."""

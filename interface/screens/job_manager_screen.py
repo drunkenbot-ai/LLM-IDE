@@ -51,16 +51,20 @@ class JobManagerScreenMixin:
             return
 
         # Check if Job Manager tab is currently active or if an active job needs monitoring
+        target_page_idx = getattr(self, "job_manager_page_index", 4)
         is_job_mgr_active = False
         if hasattr(self, "pages") and hasattr(self.pages, "currentIndex"):
-            is_job_mgr_active = (self.pages.currentIndex() == 5)
+            cur_idx = self.pages.currentIndex()
+            is_job_mgr_active = (cur_idx == target_page_idx or cur_idx == 4)
 
         # Always refresh cluster fleet hardware telemetry in the background
         if hasattr(self, "refresh_cluster_status"):
             self.refresh_cluster_status()
 
         # If user is not viewing the Job Manager tab and there is no active job, skip heavy job table polling
-        if not is_job_mgr_active and not getattr(self, "_has_active_cluster_job", False):
+        # BUT if the jobs table is empty, always run at least once to populate existing jobs!
+        table_empty = (self.cluster_jobs_table.rowCount() == 0)
+        if not is_job_mgr_active and not getattr(self, "_has_active_cluster_job", False) and not table_empty:
             return
 
         bus = self._get_cluster_bus() if hasattr(self, "_get_cluster_bus") else None
@@ -244,6 +248,48 @@ class JobManagerScreenMixin:
                             f"• Round {r_num}: Global Loss {r_loss:.4f}{val_str} | Speed: {r_spd:,.0f} tok/s{timing_str} | Workers: [{r_workers}]"
                         )
 
+                    # Compute aggregate fleet compute and sync times across all rounds
+                    total_compute_sec = 0.0
+                    total_sync_sec = 0.0
+                    for r in rounds:
+                        rm = r.get("metrics", {})
+                        if rm.get("avg_compute_sec") is not None:
+                            total_compute_sec += float(rm.get("avg_compute_sec") or 0.0)
+                        if rm.get("coordinator_agg_sec") is not None:
+                            total_sync_sec += float(rm.get("coordinator_agg_sec") or 0.0)
+
+                    # Also account for active round compute/sync in progress
+                    if job_info and str(job_info.get("status", "")).upper() in {"RUNNING", "QUEUED"}:
+                        last_ts = None
+                        if rounds:
+                            last_ts = rounds[-1].get("averaged_at")
+                        if not last_ts:
+                            last_ts = job_info.get("created_at") or job_info.get("updated_at")
+                        if last_ts:
+                            active_elapsed = max(0.0, time.time() - float(last_ts))
+                            active_workers = tasks or []
+                            in_sync = any("SYNC" in (str(w.get("participant_status", "")) + str(w.get("status", ""))).upper() for w in active_workers)
+                            if in_sync:
+                                total_sync_sec += active_elapsed
+                            else:
+                                total_compute_sec += active_elapsed
+
+                    def _fmt_dur(sec: float) -> str:
+                        sec = max(0.0, sec)
+                        if sec < 60:
+                            return f"{sec:.0f}s"
+                        m, s = divmod(int(sec), 60)
+                        if m < 60:
+                            return f"{m}m {s:02d}s"
+                        h, m = divmod(m, 60)
+                        return f"{h}h {m:02d}m {s:02d}s"
+
+                    train_time_str = _fmt_dur(total_compute_sec)
+                    sync_time_str = _fmt_dur(total_sync_sec)
+                    manifest_lines.append(
+                        f"⏱ Combined Fleet Timing: Training Time: {train_time_str} | SYNC Time: {sync_time_str}"
+                    )
+
                     # Check for coordinator log tail
                     coord_log = bus.jobs_dir / chosen_job_id / "coordinator.log"
                     if coord_log.exists():
@@ -296,6 +342,8 @@ class JobManagerScreenMixin:
                     "task_rows": task_rows,
                     "manifest_text": "\n".join(manifest_lines),
                     "rounds": rounds,
+                    "train_time_str": train_time_str if chosen_job_id else "-",
+                    "sync_time_str": sync_time_str if chosen_job_id else "-",
                     "coord_log_tail": coord_log_tail,
                     "worker_log_tail": worker_log_tail,
                     "worker_label": worker_label,
@@ -341,6 +389,13 @@ class JobManagerScreenMixin:
 
         if hasattr(self, "job_manager_progress"):
             self.job_manager_progress.setValue(100)
+
+        train_time_str = data.get("train_time_str")
+        sync_time_str = data.get("sync_time_str")
+        if train_time_str and hasattr(self, "cluster_train_time_label"):
+            self.cluster_train_time_label.setText(f"Train Time: {train_time_str}")
+        if sync_time_str and hasattr(self, "cluster_sync_time_label"):
+            self.cluster_sync_time_label.setText(f"Sync Time: {sync_time_str}")
 
         # Update Tasks & Shards Table
         if hasattr(self, "cluster_tasks_table"):
