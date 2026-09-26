@@ -13,6 +13,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QAbstractItemView,
     QCheckBox,
     QFrame,
     QHBoxLayout,
@@ -41,6 +42,10 @@ def _styled_table(headers: list[str], min_height: int = 140) -> QTableWidget:
     table.verticalHeader().setVisible(False)
     table.horizontalHeader().setStretchLastSection(True)
     table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+    table.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+    table.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+    table.verticalScrollBar().setSingleStep(20)
+    table.horizontalScrollBar().setSingleStep(20)
     table.setMinimumHeight(min_height)
     return table
 

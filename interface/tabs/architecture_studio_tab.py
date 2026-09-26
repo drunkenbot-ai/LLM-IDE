@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import json
+import logging
 import math
 import os
 from pathlib import Path
 from typing import Any
 
 import torch
+
+LOGGER = logging.getLogger("interface.architecture_studio")
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -188,9 +191,21 @@ def detect_prepared_dataset_token_stats(window: Any) -> tuple[int, int, str]:
     return total_tokens, vocab_size, source_desc
 
 
-def apply_auto_optimized_hyperparameters(window: Any) -> dict[str, Any]:
+def apply_auto_optimized_hyperparameters(window: Any, explicit_click: bool = False) -> dict[str, Any]:
     """Calculate and apply optimal training and runtime hyperparameters to all window controls."""
     target_vram = float(window.training_vram.value()) if hasattr(window, "training_vram") else 16.0
+
+    # Snapshot current values before applying to detect and report exact changes
+    old_b = int(window.batch_size.value()) if hasattr(window, "batch_size") else None
+    old_ga = int(window.gradient_accumulation.value()) if hasattr(window, "gradient_accumulation") else None
+    old_ep = int(window.epochs.value()) if hasattr(window, "epochs") else None
+    old_lr = float(window.learning_rate.value()) if hasattr(window, "learning_rate") else None
+    old_wd = float(window.weight_decay.value()) if hasattr(window, "weight_decay") else None
+    old_opt = str(window.optimizer_name.currentText()) if hasattr(window, "optimizer_name") else None
+    old_pr = str(window.precision.currentText()) if hasattr(window, "precision") else None
+    old_ac = bool(window.activation_checkpointing.isChecked()) if hasattr(window, "activation_checkpointing") else None
+    old_wu = int(window.warmup_steps.value()) if hasattr(window, "warmup_steps") else None
+    old_st = int(window.sample_stride.value()) if hasattr(window, "sample_stride") else None
 
     mode = getattr(window, "active_training_mode", "pretrain")
     if hasattr(window, "training_mode"):
@@ -318,6 +333,58 @@ def apply_auto_optimized_hyperparameters(window: Any) -> dict[str, Any]:
             f"Optimizer: {opt['optimizer_name']}, Precision: {opt['precision']}\n"
             f"CPU Workers: {opt['data_loader_workers']}"
         )
+
+    # Detect exact parameter changes and compile rationale
+    diffs: list[str] = []
+    if old_b is not None and old_b != opt["batch_size"]:
+        diffs.append(f"Micro-Batch Size: {old_b} -> {opt['batch_size']} (sized to utilize available VRAM headroom safely)")
+    if old_ga is not None and old_ga != opt["gradient_accumulation"]:
+        diffs.append(f"Gradient Accumulation: {old_ga} -> {opt['gradient_accumulation']} (effective batch: {opt.get('effective_batch_tokens', 0):,} tokens/step)")
+    if old_ep is not None and old_ep != opt["epochs"]:
+        diffs.append(f"Epochs: {old_ep} -> {opt['epochs']} (calibrated for dataset token budget)")
+    if old_lr is not None and abs(old_lr - opt["learning_rate"]) > 1e-7:
+        diffs.append(f"Learning Rate: {old_lr:.1e} -> {opt['learning_rate']:.1e} (Chinchilla/scaling law normalized)")
+    if old_wd is not None and abs(old_wd - opt["weight_decay"]) > 1e-4:
+        diffs.append(f"Weight Decay: {old_wd} -> {opt['weight_decay']}")
+    if old_opt is not None and old_opt != opt["optimizer_name"]:
+        diffs.append(f"Optimizer: {old_opt} -> {opt['optimizer_name']}")
+    if old_pr is not None and old_pr != opt["precision"]:
+        diffs.append(f"Precision: {old_pr} -> {opt['precision']}")
+    if old_ac is not None and old_ac != opt["activation_checkpointing"]:
+        diffs.append(f"Activation Checkpointing: {old_ac} -> {opt['activation_checkpointing']}")
+    if old_wu is not None and old_wu != opt["warmup_steps"]:
+        diffs.append(f"Warmup Steps: {old_wu} -> {opt['warmup_steps']}")
+    if old_st is not None and old_st != opt["sample_stride"]:
+        diffs.append(f"Sample Stride: {old_st} -> {opt['sample_stride']}")
+
+    mode_title = "LoRA Fine-Tuning" if mode == "fine_tune" else "Base Pre-Training"
+    est_vram = opt.get("estimated_vram_gb", target_vram)
+    log_lines = [
+        f"⚡ [Auto-Tune Engine] Applied optimization for {mode_title}:",
+        f"   • Basis: Target VRAM = {target_vram:.0f} GB | Est Peak VRAM = {est_vram} GB | Architecture = {opt.get('params_formatted', '-')} ({model_config.layer_count}L, {model_config.head_count}H, {model_config.embedding_size}D, ctx {model_config.context_length}) | Dataset = {train_tokens:,} tokens ({source_desc}) | Hardware = {device_type.upper()}",
+    ]
+    if diffs:
+        log_lines.append(f"   • Parameter Updates ({len(diffs)} changed):")
+        for d in diffs:
+            log_lines.append(f"     ✓ {d}")
+    else:
+        log_lines.append(f"   • Parameter Status: Hyperparameters were already at their optimal configuration for {target_vram:.0f} GB VRAM (Micro-Batch={opt['batch_size']}, Accum={opt['gradient_accumulation']}, LR={opt['learning_rate']:.1e}, {opt['optimizer_name']}, {opt['precision']}).")
+
+    log_msg = "\n".join(log_lines)
+    LOGGER.info("%s", log_msg)
+    print(log_msg)
+
+    if hasattr(window, "training_log"):
+        try:
+            window.training_log.append(f"\n{log_msg}\n")
+        except Exception:
+            pass
+    if hasattr(window, "statusBar") and window.statusBar():
+        try:
+            status_summary = f"⚡ Auto-Tune: Updated {len(diffs)} parameter(s) for {target_vram:.0f} GB VRAM" if diffs else f"⚡ Auto-Tune: Hyperparameters already optimal for {target_vram:.0f} GB VRAM"
+            window.statusBar().showMessage(status_summary, 6000)
+        except Exception:
+            pass
 
     return opt
 
@@ -930,7 +997,7 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
         "Target training VRAM budget in GB. Automatically sizes batch size, gradient accumulation, eval intervals, stride, save checkpoints, and CPU workers based on your model and prepared dataset tokens.",
     )
 
-    if torch.cuda.is_available():
+    if not getattr(window, "_training_vram_user_set", False) and torch.cuda.is_available():
         try:
             _, total_bytes = torch.cuda.mem_get_info()
             det_gb = round(total_bytes / (1024 ** 3))
@@ -949,8 +1016,12 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     vram_row.addWidget(window.training_vram)
     vram_row.addWidget(window.auto_tune_button, 1)
 
-    window.training_vram.valueChanged.connect(lambda _: apply_auto_optimized_hyperparameters(window))
-    window.auto_tune_button.clicked.connect(lambda: apply_auto_optimized_hyperparameters(window))
+    def _on_training_vram_changed(val):
+        window._training_vram_user_set = True
+        apply_auto_optimized_hyperparameters(window, explicit_click=False)
+
+    window.training_vram.valueChanged.connect(_on_training_vram_changed)
+    window.auto_tune_button.clicked.connect(lambda: apply_auto_optimized_hyperparameters(window, explicit_click=True))
 
     window.precision = QComboBox()
     window.precision.addItems(["BF16", "FP16", "FP32"])

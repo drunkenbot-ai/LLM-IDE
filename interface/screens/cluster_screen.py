@@ -844,30 +844,48 @@ class ClusterScreenMixin:
             except Exception:
                 is_under_shared = False
 
+            orig_dir = Path(dataset_path).parent
+            val_dataset_path = None
+            targets_path = None
+            val_targets_path = None
+
             if not is_under_shared:
                 shared_candidate = bus.shared_dir / Path(dataset_path).name
                 if not shared_candidate.exists() or shared_candidate.stat().st_size != Path(dataset_path).stat().st_size:
                     self._log_cluster_event(f"Copying dataset to shared storage for cluster workers: {shared_candidate.name}...")
                     import shutil
                     shutil.copyfile(dataset_path, shared_candidate)
-                # Also copy tokenizer/summary metadata and validation tokens if available in dataset folder
-                orig_dir = Path(dataset_path).parent
-                for meta_file in ["dataset_summary.json", "tokenizer.json", "val_tokens.npy"]:
+                # Also copy tokenizer/summary metadata, validation tokens, and instruction targets if available in dataset folder
+                for meta_file in ["dataset_summary.json", "tokenizer.json", "val_tokens.npy", "train_targets.npy", "val_targets.npy"]:
                     src_meta = orig_dir / meta_file
                     dst_meta = bus.shared_dir / meta_file
-                    if src_meta.exists() and (not dst_meta.exists() or dst_meta.stat().st_size != src_meta.stat().st_size):
-                        try:
-                            import shutil
-                            shutil.copyfile(src_meta, dst_meta)
-                        except Exception:
-                            pass
+                    if src_meta.exists():
+                        if not dst_meta.exists() or dst_meta.stat().st_size != src_meta.stat().st_size:
+                            try:
+                                import shutil
+                                shutil.copyfile(src_meta, dst_meta)
+                            except Exception:
+                                pass
+                        if meta_file == "val_tokens.npy":
+                            val_dataset_path = str(dst_meta)
+                        elif meta_file == "train_targets.npy":
+                            targets_path = str(dst_meta)
+                        elif meta_file == "val_targets.npy":
+                            val_targets_path = str(dst_meta)
                 dataset_path = str(shared_candidate)
             else:
-                # If dataset is already under shared drive, make sure val_tokens.npy is alongside it
-                orig_dir = Path(dataset_path).parent
+                # If dataset is already under shared drive, make sure val_tokens.npy and targets are tracked
                 cand_val = orig_dir / "val_tokens.npy"
                 if cand_val.exists():
+                    val_dataset_path = str(cand_val)
                     self._log_cluster_event(f"Detected validation tokens on shared storage: {cand_val.name}")
+                cand_tgt = orig_dir / "train_targets.npy"
+                if cand_tgt.exists():
+                    targets_path = str(cand_tgt)
+                    self._log_cluster_event(f"Detected instruction targets on shared storage: {cand_tgt.name}")
+                cand_vtgt = orig_dir / "val_targets.npy"
+                if cand_vtgt.exists():
+                    val_targets_path = str(cand_vtgt)
 
             # Check fleet for degraded/incompatible workers and warn
             fleet = bus.list_workers()
@@ -1001,6 +1019,9 @@ class ClusterScreenMixin:
                 base_checkpoint_path=base_checkpoint,
                 peft_method=peft_method,
                 lora_config=lora_config,
+                val_dataset_path=val_dataset_path,
+                targets_path=targets_path,
+                val_targets_path=val_targets_path,
             )
             bus.set_job_status(job_id, "RUNNING")
             self._log_cluster_event(f"Successfully queued job {job_id} across cluster.")

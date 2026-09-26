@@ -2,6 +2,7 @@ from __future__ import annotations
 
 # WindowCoreMixin mixin. Shared runtime names are provided by interface.app.
 from typing import Any, Optional, Union  # noqa: F401
+from PySide6.QtWidgets import QAbstractScrollArea, QAbstractItemView
 from interface.widgets.app_shell import build_main_shell, update_navigation_icons
 from interface.theme import apply_theme, current_theme, normalize_theme
 from interface import app as _app
@@ -97,13 +98,14 @@ class WindowCoreMixin:
         update_navigation_icons(self)
         self._install_ui_event_logging(shell)
         self._install_wheel_guard(shell)
+        self._install_scroll_tuning(shell)
         self._refresh_notification_manager()
         self._initialize_training_controller()
         self._refresh_plugin_navigation()
         self.job_manager_timer.start()
 
     def eventFilter(self, watched: QObject, event: QEvent) -> bool:
-        """Prevent accidental wheel changes on compact option widgets.
+        """Prevent accidental wheel changes on compact option widgets and control scroll increment.
 
         Args:
             watched: Widget receiving the event.
@@ -121,7 +123,52 @@ class WindowCoreMixin:
                 watched.setProperty("_wheel_enabled_after_click", False)
             elif event.type() == QEvent.Type.Wheel and not watched.property("_wheel_enabled_after_click"):
                 return True
+
+        # Ensure scrollbars and scroll areas advance by small, comfortable amounts rather than large jumps
+        if event.type() == QEvent.Type.Wheel:
+            parent_area = watched.parent() if isinstance(watched, QWidget) else None
+            scroll_area = watched if isinstance(watched, QAbstractScrollArea) else (parent_area if isinstance(parent_area, QAbstractScrollArea) else None)
+            if scroll_area is not None:
+                delta_y = event.angleDelta().y()
+                if delta_y != 0:
+                    vsb = scroll_area.verticalScrollBar()
+                    if vsb and vsb.maximum() > 0:
+                        steps = delta_y / 120.0
+                        step_size = max(15, min(30, vsb.singleStep()))
+                        move_px = int(round(steps * step_size))
+                        vsb.setValue(vsb.value() - move_px)
+                        return True
+                delta_x = event.angleDelta().x()
+                if delta_x != 0:
+                    hsb = scroll_area.horizontalScrollBar()
+                    if hsb and hsb.maximum() > 0:
+                        steps = delta_x / 120.0
+                        step_size = max(15, min(30, hsb.singleStep()))
+                        move_px = int(round(steps * step_size))
+                        hsb.setValue(hsb.value() - move_px)
+                        return True
+
         return super().eventFilter(watched, event)
+
+    def _install_scroll_tuning(self, root: QWidget) -> None:
+        """Configure small, smooth scroll increments across all scroll areas and tables.
+
+        Ensures scrollbars and mouse wheel events scroll by small, controlled amounts
+        rather than leaping over large viewport sections.
+        """
+        for area in root.findChildren(QAbstractScrollArea):
+            if isinstance(area, QAbstractItemView):
+                area.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+                area.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+            vsb = area.verticalScrollBar()
+            if vsb:
+                vsb.setSingleStep(20)
+            hsb = area.horizontalScrollBar()
+            if hsb:
+                hsb.setSingleStep(20)
+            viewport = area.viewport()
+            if viewport:
+                viewport.installEventFilter(self)
 
     def _install_wheel_guard(self, root: QWidget) -> None:
         """Require a click before spin boxes and combos react to mouse wheel.

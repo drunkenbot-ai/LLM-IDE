@@ -145,7 +145,7 @@ class JobManagerScreenMixin:
                                 if v_val is not None:
                                     latest_loss = f"{float(l_val):.4f} (Val: {float(v_val):.4f})"
                                 else:
-                                    latest_loss = f"{float(l_val):.4f}"
+                                    latest_loss = f"{float(l_val):.4f} (Val: -)"
                             except Exception:
                                 latest_loss = str(l_val)
                         s_val = m_dict.get("aggregate_tokens_per_sec")
@@ -154,6 +154,24 @@ class JobManagerScreenMixin:
                                 latest_speed = f"{float(s_val):,.0f} tok/s"
                             except Exception:
                                 latest_speed = str(s_val)
+                    else:
+                        # Fallback for active job in round 0 before first round aggregation
+                        try:
+                            active_tasks = bus.get_job_tasks(jid)
+                            t_losses = [float(t["telemetry"]["avg_loss"]) for t in active_tasks if t.get("telemetry", {}).get("avg_loss") is not None]
+                            t_vals = [float(t["telemetry"]["val_loss"]) for t in active_tasks if t.get("telemetry", {}).get("val_loss") is not None]
+                            t_spds = [float(t["telemetry"]["tokens_per_sec"]) for t in active_tasks if t.get("telemetry", {}).get("tokens_per_sec") is not None]
+                            if t_losses:
+                                avg_l = sum(t_losses) / len(t_losses)
+                                if t_vals:
+                                    avg_v = sum(t_vals) / len(t_vals)
+                                    latest_loss = f"{avg_l:.4f} (Val: {avg_v:.4f})"
+                                else:
+                                    latest_loss = f"{avg_l:.4f} (Val: -)"
+                            if t_spds:
+                                latest_speed = f"{sum(t_spds):,.0f} tok/s"
+                        except Exception:
+                            pass
 
                     created_ts = j.get("created_at")
                     created_str = (
@@ -201,7 +219,7 @@ class JobManagerScreenMixin:
                             if val_loss_val is not None:
                                 loss_str = f"{float(loss_val):.4f} (Val: {float(val_loss_val):.4f})"
                             else:
-                                loss_str = f"{float(loss_val):.4f}"
+                                loss_str = f"{float(loss_val):.4f} (Val: -)"
                         else:
                             loss_str = "-"
                         speed_val = telem.get("tokens_per_sec")
@@ -235,7 +253,11 @@ class JobManagerScreenMixin:
                         r_metrics = r.get("metrics", {})
                         r_spd = r_metrics.get("aggregate_tokens_per_sec", 0.0)
                         r_val = r_metrics.get("val_loss")
-                        val_str = f" | Validation Loss {float(r_val):.4f}" if r_val is not None else ""
+                        if r_val is None and "worker_val_losses" in r_metrics:
+                            w_vals = [float(v) for v in r_metrics["worker_val_losses"].values() if v is not None]
+                            if w_vals:
+                                r_val = sum(w_vals) / len(w_vals)
+                        val_str = f" | Validation Loss: {float(r_val):.4f}" if r_val is not None else " | Validation Loss: -"
                         r_compute = r_metrics.get("avg_compute_sec")
                         r_agg = r_metrics.get("coordinator_agg_sec")
                         timing_parts = []

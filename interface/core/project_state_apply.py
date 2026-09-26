@@ -216,6 +216,14 @@ class ProjectStateApplyMixin:
         self.resume_safety.setChecked(bool(training.get("require_compatible_resume", True)))
         self.early_stopping.setChecked(bool(training.get("early_stopping", True)))
         self.early_stopping_patience.setValue(int(training.get("early_stopping_patience", self.early_stopping_patience.value())))
+        if hasattr(self, "training_vram") and "training_vram" in training:
+            try:
+                self.training_vram.blockSignals(True)
+                self.training_vram.setValue(int(training.get("training_vram", 16)))
+                self.training_vram.blockSignals(False)
+                self._training_vram_user_set = True
+            except Exception:
+                pass
         self.benchmark_prompts.setPlainText(str(training.get("benchmark_prompts", self.benchmark_prompts.toPlainText())))
         self.benchmark_tokens.setValue(int(training.get("benchmark_tokens", self.benchmark_tokens.value())))
         self.benchmark_temperature.setValue(float(training.get("benchmark_temperature", self.benchmark_temperature.value())))

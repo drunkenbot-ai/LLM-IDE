@@ -14,6 +14,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QAbstractItemView,
     QCheckBox,
     QFormLayout,
     QHBoxLayout,
@@ -40,6 +41,10 @@ def _cluster_table(headers: list[str]) -> QTableWidget:
     table.verticalHeader().setVisible(False)
     table.horizontalHeader().setStretchLastSection(True)
     table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+    table.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+    table.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+    table.verticalScrollBar().setSingleStep(20)
+    table.horizontalScrollBar().setSingleStep(20)
     table.setMinimumHeight(150)
     return table
 
