@@ -218,8 +218,9 @@ class ProjectStateApplyMixin:
         self.early_stopping_patience.setValue(int(training.get("early_stopping_patience", self.early_stopping_patience.value())))
         if hasattr(self, "training_vram") and "training_vram" in training:
             try:
+                from interface.core.project_state import detect_system_vram_gb
                 self.training_vram.blockSignals(True)
-                self.training_vram.setValue(int(training.get("training_vram", 16)))
+                self.training_vram.setValue(int(training.get("training_vram", detect_system_vram_gb())))
                 self.training_vram.blockSignals(False)
                 self._training_vram_user_set = True
             except Exception:

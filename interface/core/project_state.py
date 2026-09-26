@@ -7,6 +7,20 @@ from interface import app as _app
 globals().update({name: value for name, value in vars(_app).items() if not name.startswith("__")})
 
 
+def detect_system_vram_gb() -> int:
+    """Dynamically probe available GPU VRAM without assuming any hardcoded GPU size."""
+    try:
+        import torch
+        if torch.cuda.is_available():
+            _, total_bytes = torch.cuda.mem_get_info()
+            gb = round(total_bytes / (1024 ** 3))
+            if gb >= 2:
+                return int(gb)
+    except Exception:
+        pass
+    return 8
+
+
 class ProjectStateMixin:
     def _default_project_state(self) -> dict[str, Any]:
         """Build the default state used for a newly created project.
@@ -110,7 +124,7 @@ class ProjectStateMixin:
                 "require_compatible_resume": True,
                 "early_stopping": True,
                 "early_stopping_patience": 3,
-                "training_vram": 16,
+                "training_vram": detect_system_vram_gb(),
                 "benchmark_prompts": "\n\n".join(DEFAULT_BENCHMARK_PROMPTS),
                 "benchmark_tokens": 128,
                 "benchmark_temperature": 0.7,
@@ -376,7 +390,7 @@ class ProjectStateMixin:
                 "require_compatible_resume": self.resume_safety.isChecked(),
                 "early_stopping": self.early_stopping.isChecked(),
                 "early_stopping_patience": self.early_stopping_patience.value(),
-                "training_vram": self.training_vram.value() if hasattr(self, "training_vram") else 16,
+                "training_vram": self.training_vram.value() if hasattr(self, "training_vram") else detect_system_vram_gb(),
                 "benchmark_prompts": self.benchmark_prompts.toPlainText(),
                 "benchmark_tokens": self.benchmark_tokens.value(),
                 "benchmark_temperature": self.benchmark_temperature.value(),

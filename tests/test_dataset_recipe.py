@@ -55,17 +55,17 @@ def test_frontier_11_pillar_preset_has_all_11_pillars() -> None:
     assert len(recipe.categories) == 11
 
     expected_slugs = [
+        "encyclopedic",
         "code_pretraining",
-        "stem_pretraining",
         "algorithms_pretraining",
+        "stem_pretraining",
+        "medicine_pretraining",
         "hardware_pretraining",
         "cybersecurity_pretraining",
-        "medicine_pretraining",
-        "science_pretraining",
         "finance",
         "law_pretraining",
         "multilingual_pretraining",
-        "encyclopedic",
+        "fine_tune_conversation",
     ]
     actual_slugs = [c.slug for c in recipe.categories]
     assert actual_slugs == expected_slugs
