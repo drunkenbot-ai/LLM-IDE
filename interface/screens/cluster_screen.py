@@ -23,12 +23,15 @@ from interface.tabs.cluster_tab import set_cluster_table_rows
 if not hasattr(ClusterStorageBus, "is_worker_enabled"):
     def _is_worker_enabled(self: Any, worker_id: str) -> bool:
         def _op(conn: sqlite3.Connection) -> bool:
-            cursor = conn.execute("SELECT enabled FROM workers WHERE worker_id = ?;", (worker_id,))
-            row = cursor.fetchone()
-            if row is not None and row[0] is not None:
-                return bool(row[0])
+            try:
+                cursor = conn.execute("SELECT enabled FROM workers WHERE worker_id = ?;", (worker_id,))
+                row = cursor.fetchone()
+                if row is not None and row[0] is not None:
+                    return bool(row[0])
+            except Exception:
+                return True
             return True
-        return self._run_with_retry(_op, default_on_error=True)
+        return self._run_with_retry(_op, default_on_error=True, silent=True)
     ClusterStorageBus.is_worker_enabled = _is_worker_enabled  # type: ignore[attr-defined]
 
 if not hasattr(ClusterStorageBus, "set_worker_enabled"):
@@ -464,24 +467,24 @@ class ClusterScreenMixin:
                     f"Sync Time: {_fmt_cluster_time(total_sync)}" if (job_rounds or st in {"RUNNING", "QUEUED"}) else "Sync Time: -"
                 )
 
-                # Update Fine-Tuning screen metric chips
-                if is_fine_tune:
-                    if hasattr(self, "fine_tune_loss_metric") and g_loss is not None:
-                        self.fine_tune_loss_metric.setText(f"Train loss: {g_loss:.4f}")
-                    if hasattr(self, "fine_tune_val_metric"):
-                        self.fine_tune_val_metric.setText(f"Val loss: {float(v_loss):.4f}" if v_loss is not None else "Val loss: -")
-                    if hasattr(self, "fine_tune_speed_metric") and spd is not None:
-                        self.fine_tune_speed_metric.setText(f"Speed: {float(spd):,.0f} tok/s")
+            # Update Fine-Tuning screen metric chips
+            if is_fine_tune:
+                if hasattr(self, "fine_tune_loss_metric") and g_loss is not None:
+                    self.fine_tune_loss_metric.setText(f"Train loss: {g_loss:.4f}")
+                if hasattr(self, "fine_tune_val_metric"):
+                    self.fine_tune_val_metric.setText(f"Val loss: {float(v_loss):.4f}" if v_loss is not None else "Val loss: -")
+                if hasattr(self, "fine_tune_speed_metric") and spd is not None:
+                    self.fine_tune_speed_metric.setText(f"Speed: {float(spd):,.0f} tok/s")
 
-                    # Append to fine_tune_log on new round
-                    last_logged = getattr(self, f"_last_fine_tune_logged_{jid}", -1)
-                    r_num = latest_r.get("round_number", cur_round - 1)
-                    if r_num > last_logged and hasattr(self, "fine_tune_log"):
-                        setattr(self, f"_last_fine_tune_logged_{jid}", r_num)
-                        r_workers = ", ".join(latest_r.get("participating_workers", []))
-                        val_str = f" | Validation Loss {float(v_loss):.4f}" if v_loss is not None else ""
-                        spd_val = float(spd or 0.0)
-                        self.fine_tune_log.append(f"• Round {r_num + 1}: Global Loss {float(g_loss or 0.0):.4f}{val_str} | Speed: {spd_val:,.0f} tok/s | Workers: [{r_workers}]")
+                # Append to fine_tune_log on new round
+                last_logged = getattr(self, f"_last_fine_tune_logged_{jid}", -1)
+                r_num = latest_r.get("round_number", cur_round - 1)
+                if r_num > last_logged and hasattr(self, "fine_tune_log"):
+                    setattr(self, f"_last_fine_tune_logged_{jid}", r_num)
+                    r_workers = ", ".join(latest_r.get("participating_workers", []))
+                    val_str = f" | Validation Loss {float(v_loss):.4f}" if v_loss is not None else ""
+                    spd_val = float(spd or 0.0)
+                    self.fine_tune_log.append(f"• Round {r_num + 1}: Global Loss {float(g_loss or 0.0):.4f}{val_str} | Speed: {spd_val:,.0f} tok/s | Workers: [{r_workers}]")
 
             if st == "RUNNING":
                 prefix = "Fine-Tuning" if is_fine_tune else "Training"
@@ -1687,7 +1690,11 @@ class ClusterScreenMixin:
         view_logs_act = menu.addAction(f"View Logs for '{worker_id}'")
         menu.addSeparator()
         bus = self._get_cluster_bus()
-        is_enabled = getattr(bus, "is_worker_enabled", lambda wid: True)(worker_id) if bus else True
+        try:
+            is_enabled = getattr(bus, "is_worker_enabled", lambda wid: True)(worker_id) if bus else True
+        except Exception as exc:
+            self._log_cluster_event(f"Notice: Could not read worker '{worker_id}' status (database busy): {exc}")
+            is_enabled = True
         if is_enabled:
             toggle_act = menu.addAction(f"Disable Worker '{worker_id}' (Keep active, pause job pickup)")
         else:
@@ -1721,11 +1728,24 @@ class ClusterScreenMixin:
         bus = self._get_cluster_bus()
         if not bus:
             return
-        current = getattr(bus, "is_worker_enabled", lambda wid: True)(worker_id)
+        try:
+            current = getattr(bus, "is_worker_enabled", lambda wid: True)(worker_id)
+        except Exception:
+            current = True
         new_val = not current
         set_enabled_fn = getattr(bus, "set_worker_enabled", None)
         if callable(set_enabled_fn):
-            set_enabled_fn(worker_id, new_val)
+            try:
+                set_enabled_fn(worker_id, new_val)
+            except Exception as exc:
+                self._log_cluster_event(f"Error toggling worker '{worker_id}' enabled state: {exc}")
+                try:
+                    from PyQt6.QtWidgets import QApplication, QWidget
+                    if QApplication.instance() and isinstance(self, QWidget):
+                        QMessageBox.warning(self, "Cluster Warning", f"Could not toggle worker status (database busy): {exc}")
+                except Exception:
+                    pass
+                return
         st_str = "ENABLED (Job pickup: Active)" if new_val else "DISABLED (Job pickup: Paused)"
         self._log_cluster_event(f"Worker '{worker_id}' is now {st_str}.")
         self.refresh_cluster_status()
@@ -1823,9 +1843,12 @@ class ClusterScreenMixin:
         """Send STOP command to worker to abort its active training run and return to IDLE."""
         bus = self._get_cluster_bus()
         if bus:
-            bus.set_worker_command(worker_id, "STOP")
-            bus.heartbeat(worker_id, status="IDLE", current_job_id=None)
-            self._log_cluster_event(f"Sent STOP command to worker '{worker_id}' (worker returning to IDLE).")
+            try:
+                bus.set_worker_command(worker_id, "STOP")
+                bus.heartbeat(worker_id, status="IDLE", current_job_id=None)
+                self._log_cluster_event(f"Sent STOP command to worker '{worker_id}' (worker returning to IDLE).")
+            except Exception as exc:
+                self._log_cluster_event(f"Notice: Could not send STOP command to worker '{worker_id}' (database busy): {exc}")
             self.refresh_cluster_status()
             if hasattr(self, "refresh_job_manager_tab"):
                 self.refresh_job_manager_tab()
@@ -1865,9 +1888,12 @@ class ClusterScreenMixin:
 
         bus = self._get_cluster_bus()
         if bus:
-            bus.set_worker_command(worker_id, "SHUTDOWN")
-            bus.heartbeat(worker_id, status="OFFLINE", current_job_id=None)
-            self._log_cluster_event(f"Sent SHUTDOWN command to worker '{worker_id}' (process terminated).")
+            try:
+                bus.set_worker_command(worker_id, "SHUTDOWN")
+                bus.heartbeat(worker_id, status="OFFLINE", current_job_id=None)
+                self._log_cluster_event(f"Sent SHUTDOWN command to worker '{worker_id}' (process terminated).")
+            except Exception as exc:
+                self._log_cluster_event(f"Notice: Could not send SHUTDOWN to worker '{worker_id}' (database busy): {exc}")
             self.refresh_cluster_status()
             if hasattr(self, "refresh_job_manager_tab"):
                 self.refresh_job_manager_tab()
@@ -1985,10 +2011,13 @@ class ClusterScreenMixin:
 
         bus = self._get_cluster_bus()
         if bus:
-            del_fn = getattr(bus, "delete_worker", None)
-            if callable(del_fn):
-                del_fn(worker_id)
-            self._log_cluster_event(f"Removed worker '{worker_id}' from cluster database.")
+            try:
+                del_fn = getattr(bus, "delete_worker", None)
+                if callable(del_fn):
+                    del_fn(worker_id)
+                self._log_cluster_event(f"Removed worker '{worker_id}' from cluster database.")
+            except Exception as exc:
+                self._log_cluster_event(f"Notice: Could not remove worker '{worker_id}' from database (database busy): {exc}")
             self.refresh_cluster_status()
             if hasattr(self, "refresh_job_manager_tab"):
                 self.refresh_job_manager_tab()

@@ -1603,6 +1603,77 @@ def test_cluster_worker_micro_batch_and_gradient_accumulation(tmp_path: Path) ->
     assert getattr(model, "gradient_checkpointing", False) is True
 
 
+def test_database_locked_resilience_and_graceful_handling(tmp_path: Path) -> None:
+    """Verify that SQLite 'database is locked' errors are gracefully handled without crashing workers or UI."""
+    import sqlite3
+    from unittest.mock import MagicMock
+    from cluster.bus import ClusterStorageBus
+    from interface.screens.cluster_screen import ClusterScreenMixin
+
+    bus = ClusterStorageBus(tmp_path)
+    bus.register_worker("node_locked_test", "host_x", "RTX 4090", 24.0)
+
+    # 1. Verify default enabled state is True
+    assert bus.is_worker_enabled("node_locked_test") is True
+
+    # 2. Test _run_with_retry with default_on_error when DB is permanently locked
+    lock_err = sqlite3.OperationalError("database is locked")
+
+    def _always_locked(_conn):
+        raise lock_err
+
+    # default_on_error=True returns True
+    res_true = bus._run_with_retry(_always_locked, max_retries=2, default_on_error=True, silent=True)
+    assert res_true is True
+
+    # default_on_error=False returns False
+    res_false = bus._run_with_retry(_always_locked, max_retries=2, default_on_error=False, silent=True)
+    assert res_false is False
+
+    # default_on_error=None returns None
+    res_none = bus._run_with_retry(_always_locked, max_retries=2, default_on_error=None, silent=True)
+    assert res_none is None
+
+    # silent=True without default_on_error returns None
+    res_silent = bus._run_with_retry(_always_locked, max_retries=2, silent=True)
+    assert res_silent is None
+
+    # 3. Simulate is_worker_enabled when database raises OperationalError: database is locked
+    orig_run = bus._run_with_retry
+    bus._run_with_retry = MagicMock(side_effect=sqlite3.OperationalError("database is locked"))
+    # When is_worker_enabled encounters an unhandled DB error or bus raises, it safely falls back
+    assert bus.is_worker_enabled("node_locked_test") is True
+    bus._run_with_retry = orig_run
+
+    # 4. Verify UI helper toggle_cluster_worker_enabled safely handles DB lock without crashing
+    class _MockHost(ClusterScreenMixin):
+        def __init__(self, test_bus):
+            self._storage_bus = test_bus
+            self.events: list[str] = []
+
+        def _get_cluster_bus(self):
+            return self._storage_bus
+
+        def _log_cluster_event(self, msg: str) -> None:
+            self.events.append(msg)
+
+        def refresh_cluster_status(self) -> None:
+            pass
+
+    host = _MockHost(bus)
+    host.toggle_cluster_worker_enabled("node_locked_test")
+    assert any("Worker 'node_locked_test' is now" in e for e in host.events)
+
+    # When bus raises database is locked on set_worker_enabled
+    mock_bus_locked = MagicMock()
+    mock_bus_locked.is_worker_enabled.side_effect = sqlite3.OperationalError("database is locked")
+    mock_bus_locked.set_worker_enabled.side_effect = sqlite3.OperationalError("database is locked")
+    host_locked = _MockHost(mock_bus_locked)
+    # Should not raise uncaught exception
+    host_locked.toggle_cluster_worker_enabled("node_locked_test")
+
+
+
 
 
 
