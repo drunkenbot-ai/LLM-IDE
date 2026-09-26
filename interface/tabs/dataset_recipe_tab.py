@@ -802,6 +802,7 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     window.recipe_preset_combo = QComboBox()
     window.recipe_preset_combo.addItems([
         "Default 11-Pillar Frontier Base",
+        "Frontier 1B Model Curriculum (12B Tokens)",
         "Code & Systems Heavy",
         "STEM & Formal Reasoning",
         "Balanced Tiny LLM",
@@ -813,9 +814,10 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     preset_list.setObjectName("PresetTree")
     preset_list.setHeaderHidden(True)
     preset_list.setRootIsDecorated(False)
-    preset_list.setMinimumHeight(150)
+    preset_list.setMinimumHeight(170)
     preset_names = [
         "● Default 11-Pillar Frontier Base",
+        "● Frontier 1B Curriculum (12B)",
         "● Code Heavy",
         "● Math & Reasoning",
         "● Balanced Tiny LLM",
@@ -994,22 +996,24 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
         update_metrics_and_bar()
 
         # Switch preset selection to Custom if user adjusted percentages
-        if preset_list.topLevelItemCount() > 4:
-            preset_list.setCurrentItem(preset_list.topLevelItem(4))
-        if window.recipe_preset_combo.currentIndex() != 4:
+        custom_idx = preset_list.topLevelItemCount() - 1
+        if custom_idx >= 0:
+            preset_list.setCurrentItem(preset_list.topLevelItem(custom_idx))
+        if window.recipe_preset_combo.currentIndex() != custom_idx:
             window.recipe_preset_combo.blockSignals(True)
-            window.recipe_preset_combo.setCurrentIndex(4)  # Custom Mixture
+            window.recipe_preset_combo.setCurrentIndex(custom_idx)  # Custom Mixture
             window.recipe_preset_combo.blockSignals(False)
 
     def on_row_changed() -> None:
         update_metrics_and_bar()
         for rw in window._recipe_row_widgets:
             rw.refresh_from_category()
-        if preset_list.topLevelItemCount() > 4:
-            preset_list.setCurrentItem(preset_list.topLevelItem(4))
-        if window.recipe_preset_combo.currentIndex() != 4:
+        custom_idx = preset_list.topLevelItemCount() - 1
+        if custom_idx >= 0:
+            preset_list.setCurrentItem(preset_list.topLevelItem(custom_idx))
+        if window.recipe_preset_combo.currentIndex() != custom_idx:
             window.recipe_preset_combo.blockSignals(True)
-            window.recipe_preset_combo.setCurrentIndex(4)  # Custom Mixture
+            window.recipe_preset_combo.setCurrentIndex(custom_idx)  # Custom Mixture
             window.recipe_preset_combo.blockSignals(False)
 
     def on_row_delete(cat: RecipeCategory) -> None:
@@ -1060,7 +1064,7 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
         update_metrics_and_bar()
 
     def on_preset_selected(idx: int) -> None:
-        preset_keys = ["frontier_11_pillar", "code_heavy", "stem_reasoning", "balanced_tiny"]
+        preset_keys = ["frontier_11_pillar", "frontier_1b_curriculum", "code_heavy", "stem_reasoning", "balanced_tiny"]
         if idx < len(preset_keys):
             key = preset_keys[idx]
             preset = DEFAULT_RECIPE_PRESETS.get(key)
