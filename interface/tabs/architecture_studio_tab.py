@@ -193,7 +193,16 @@ def detect_prepared_dataset_token_stats(window: Any) -> tuple[int, int, str]:
 
 def apply_auto_optimized_hyperparameters(window: Any, explicit_click: bool = False) -> dict[str, Any]:
     """Calculate and apply optimal training and runtime hyperparameters to all window controls."""
-    target_vram = float(window.training_vram.value()) if hasattr(window, "training_vram") else 16.0
+    if hasattr(window, "training_vram"):
+        target_vram = float(window.training_vram.value())
+    elif torch.cuda.is_available():
+        try:
+            _, total_bytes = torch.cuda.mem_get_info()
+            target_vram = float(round(total_bytes / (1024 ** 3)))
+        except Exception:
+            target_vram = 24.0
+    else:
+        target_vram = 16.0
 
     # Snapshot current values before applying to detect and report exact changes
     old_b = int(window.batch_size.value()) if hasattr(window, "batch_size") else None
@@ -989,22 +998,23 @@ def build_architecture_studio_tab(window: Any) -> QWidget:
     vram_row.setContentsMargins(0, 0, 0, 0)
     vram_row.setSpacing(6)
 
-    window.training_vram = window._spin(2, 512, 16)
+    initial_vram = 24
+    if torch.cuda.is_available():
+        try:
+            _, total_bytes = torch.cuda.mem_get_info()
+            det_gb = round(total_bytes / (1024 ** 3))
+            if det_gb >= 2:
+                initial_vram = int(det_gb)
+        except Exception:
+            pass
+
+    window.training_vram = window._spin(2, 512, initial_vram)
     window.training_vram.setSuffix(" GB")
     window.training_vram.setFixedWidth(85)
     window._tip(
         window.training_vram,
         "Target training VRAM budget in GB. Automatically sizes batch size, gradient accumulation, eval intervals, stride, save checkpoints, and CPU workers based on your model and prepared dataset tokens.",
     )
-
-    if not getattr(window, "_training_vram_user_set", False) and torch.cuda.is_available():
-        try:
-            _, total_bytes = torch.cuda.mem_get_info()
-            det_gb = round(total_bytes / (1024 ** 3))
-            if det_gb >= 2:
-                window.training_vram.setValue(int(det_gb))
-        except Exception:
-            pass
 
     window.auto_tune_button = QPushButton("⚡ Auto-Tune Engine")
     window.auto_tune_button.setObjectName("SecondaryAction")

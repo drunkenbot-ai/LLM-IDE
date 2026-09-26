@@ -802,7 +802,6 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     window.recipe_preset_combo = QComboBox()
     window.recipe_preset_combo.addItems([
         "Default 11-Pillar Frontier Base",
-        "Frontier 1B Model Curriculum (12B Tokens)",
         "Code & Systems Heavy",
         "STEM & Formal Reasoning",
         "Balanced Tiny LLM",
@@ -814,10 +813,9 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
     preset_list.setObjectName("PresetTree")
     preset_list.setHeaderHidden(True)
     preset_list.setRootIsDecorated(False)
-    preset_list.setMinimumHeight(170)
+    preset_list.setMinimumHeight(150)
     preset_names = [
         "● Default 11-Pillar Frontier Base",
-        "● Frontier 1B Curriculum (12B)",
         "● Code Heavy",
         "● Math & Reasoning",
         "● Balanced Tiny LLM",
@@ -1064,7 +1062,7 @@ def build_dataset_recipe_tab(window: Any) -> QWidget:
         update_metrics_and_bar()
 
     def on_preset_selected(idx: int) -> None:
-        preset_keys = ["frontier_11_pillar", "frontier_1b_curriculum", "code_heavy", "stem_reasoning", "balanced_tiny"]
+        preset_keys = ["frontier_11_pillar", "code_heavy", "stem_reasoning", "balanced_tiny"]
         if idx < len(preset_keys):
             key = preset_keys[idx]
             preset = DEFAULT_RECIPE_PRESETS.get(key)
