@@ -80,7 +80,7 @@ class ClusterTelemetryBridge(QObject):
     worker_logs_ready = Signal(str, object, object)  # worker_id, logs, error
 
 
-class ClusterCoordinatorThread(QThread):
+class ClusterCoordinatorThread(QObject):
     """Background worker thread executing the ClusterCoordinator round-averaging loop."""
 
     round_telemetry_ready = Signal(dict)
@@ -92,8 +92,43 @@ class ClusterCoordinatorThread(QThread):
         self.job_id = job_id
         self.poll_interval = poll_interval
         self._stop_event = threading.Event()
+        self._thread: Optional[threading.Thread] = None
 
-    def run(self) -> None:
+    def start(self) -> None:
+        if self._thread is not None and self._thread.is_alive():
+            return
+        self._stop_event.clear()
+        self._thread = threading.Thread(
+            target=self._run,
+            name=f"CoordinatorThread-{self.job_id}",
+            daemon=True,
+        )
+        self._thread.start()
+
+    def isRunning(self) -> bool:
+        return self._thread is not None and self._thread.is_alive()
+
+    def is_alive(self) -> bool:
+        return self.isRunning()
+
+    def wait(self, timeout_ms: Optional[float] = None) -> bool:
+        if self._thread is None:
+            return True
+        timeout_sec = (timeout_ms / 1000.0) if timeout_ms is not None else None
+        self._thread.join(timeout=timeout_sec)
+        return not self._thread.is_alive()
+
+    def stop(self) -> None:
+        self._stop_event.set()
+        try:
+            if hasattr(self.bus, "jobs_dir"):
+                s_dir = self.bus.jobs_dir / self.job_id / "signals"
+                s_dir.mkdir(parents=True, exist_ok=True)
+                (s_dir / "stop.sig").touch()
+        except Exception:
+            pass
+
+    def _run(self) -> None:
         from cluster.coordinator import ClusterCoordinator
         coordinator = ClusterCoordinator(self.bus, self.job_id)
         coord_log_path = self.bus.jobs_dir / self.job_id / "coordinator.log"
@@ -145,9 +180,6 @@ class ClusterCoordinatorThread(QThread):
                 pass
             success = False
         self.job_finished.emit(self.job_id, success)
-
-    def stop(self) -> None:
-        self._stop_event.set()
 
 
 def _sanitize_for_json(obj: Any) -> Any:
@@ -1021,10 +1053,12 @@ class ClusterScreenMixin:
     def _start_cluster_coordinator(self, bus: ClusterStorageBus, job_id: str) -> None:
         """Launch in-process coordinator thread with live Qt telemetry to handle round synchronization."""
         if hasattr(self, "_coordinator_thread") and self._coordinator_thread and self._coordinator_thread.isRunning():
+            if getattr(self._coordinator_thread, "job_id", None) == job_id:
+                return
             self._coordinator_thread.stop()
             self._coordinator_thread.wait(2000)
 
-        self._coordinator_thread = ClusterCoordinatorThread(bus, job_id, poll_interval=1.0)
+        self._coordinator_thread = ClusterCoordinatorThread(bus, job_id, poll_interval=1.0, parent=self)
         self._coordinator_thread.round_telemetry_ready.connect(self._on_cluster_round_telemetry)
         self._coordinator_thread.job_finished.connect(self._on_cluster_job_finished)
         self._coordinator_thread.start()
@@ -1264,6 +1298,9 @@ class ClusterScreenMixin:
 
     def _is_coordinator_running(self, bus: ClusterStorageBus, job_id: str) -> bool:
         """Check if coordinator process is currently running for this job."""
+        if hasattr(self, "_coordinator_thread") and self._coordinator_thread:
+            if getattr(self._coordinator_thread, "job_id", None) == job_id and self._coordinator_thread.isRunning():
+                return True
         if hasattr(self, "_coordinator_proc") and self._coordinator_proc:
             if self._coordinator_proc.poll() is None:
                 return True
@@ -1404,6 +1441,7 @@ class ClusterScreenMixin:
         """Stop active or selected cluster job and terminate coordinator daemon."""
         if hasattr(self, "_coordinator_thread") and self._coordinator_thread:
             self._coordinator_thread.stop()
+            self._coordinator_thread.wait(2000)
         if hasattr(self, "_coordinator_proc") and self._coordinator_proc:
             try:
                 if self._coordinator_proc.poll() is None:

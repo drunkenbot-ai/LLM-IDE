@@ -317,3 +317,46 @@ def test_cluster_start_and_resume_button_disabling_and_min_workers_clamping(qt_a
     assert host.fine_tune_button.text() == "Start Fine-Tune"
     assert not host.stop_training_button.isEnabled()
     assert not host.stop_fine_tune_button.isEnabled()
+
+
+def test_coordinator_thread_lifecycle_and_stop_safety(qt_app, tmp_path: Path) -> None:
+    """Verify ClusterCoordinatorThread starts, responds to stop signals, and cleanly exits without QThread crashes."""
+    import time
+    from interface.screens.cluster_screen import ClusterCoordinatorThread
+    from cluster.bus import ClusterStorageBus
+
+    bus = ClusterStorageBus(tmp_path)
+    job_id = "job_coord_test"
+    bus.create_job(
+        job_id=job_id,
+        model_config={"vocab_size": 32, "context_length": 8, "embedding_size": 16, "head_count": 2, "layer_count": 2},
+        training_config={"learning_rate": 1e-3, "batch_size": 2},
+        dataset_path=str(tmp_path / "train.npy"),
+        max_rounds=5,
+    )
+    bus.set_job_status(job_id, "RUNNING")
+
+    coord_thread = ClusterCoordinatorThread(bus, job_id, poll_interval=0.1)
+    telemetry_received = []
+    coord_thread.round_telemetry_ready.connect(lambda t: telemetry_received.append(t))
+
+    finished_received = []
+    coord_thread.job_finished.connect(lambda jid, success: finished_received.append((jid, success)))
+
+    coord_thread.start()
+    assert coord_thread.isRunning() is True
+
+    # Allow it a brief moment to enter loop
+    time.sleep(0.2)
+
+    # Now stop the thread
+    coord_thread.stop()
+    clean_exit = coord_thread.wait(timeout_ms=3000)
+
+    assert clean_exit is True
+    assert coord_thread.isRunning() is False
+
+    qt_app.processEvents()
+    assert len(finished_received) == 1
+    assert finished_received[0][0] == job_id
+
